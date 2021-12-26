@@ -65,7 +65,7 @@ const TabNavigator = () => {
                 }}
             /> */}
 
-            <Tab.Screen
+            {/* <Tab.Screen
                 name = 'Chat'
                 component = {Schedulescreen}
                 options = {{
@@ -78,7 +78,7 @@ const TabNavigator = () => {
                         />
                     )
                 }}
-            />
+            /> */}
 
             <Tab.Screen
                 name = 'Account'

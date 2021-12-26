@@ -1,7 +1,7 @@
 import React from 'react'
-import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Pressable } from 'react-native'
+import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Pressable, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Icon } from 'react-native-elements'
+import { Button, Icon } from 'react-native-elements'
 
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
@@ -11,7 +11,11 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Specialpickupscreen = ({navigation}) => {
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+        <SafeAreaView style = {{backgroundColor: colors.blue1, marginBottom: 15}}>
+            <ScrollView 
+            showsVerticalScrollIndicator = {false}
+            stickyHeaderIndices={[0]}
+            >
             <View>
                 <TouchableOpacity style = {styles.container}
                     onPress={() => navigation.navigate('Home')}
@@ -60,10 +64,29 @@ const Specialpickupscreen = ({navigation}) => {
                     </Pressable>               
                 </View>
                 
-                <View style = {styles.container3}>
+                <View style = {styles.container3} >
+                    <Text style = {styles.text4}>Trash Categories</Text>
+                    <View style = {styles.view1}>
 
+                    </View>
+
+                    <Text style = {styles.text5}>Weight Estimation</Text>
+                    <View style = {styles.view2}>
+
+                    </View>
+
+                    <Text style = {styles.text5}>Payment</Text>
+                    <View style = {styles.view3}>
+
+                    </View>
+                    
+                    <Button
+                        title = 'Pick Up Trash'
+                        buttonStyle = {styles.button}
+                    />
                 </View>
             </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
@@ -90,7 +113,6 @@ const styles = StyleSheet.create({
     container2:{
         backgroundColor: colors.grey8,
         paddingLeft: 25, 
-        //marginBottom: 0,
         height: SCREEN_HEIGHT/7,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30
@@ -108,11 +130,44 @@ const styles = StyleSheet.create({
     },
     container3:{
         backgroundColor: colors.white,
-        paddingLeft: 25, 
-        //marginBottom: 0,
+        padding: 25, 
         height: SCREEN_HEIGHT - (SCREEN_HEIGHT/7 + SCREEN_HEIGHT/10),
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30
     },
+    text4:{
+        color: colors.blue2,
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    view1:{
+        backgroundColor: colors.grey9,
+        height: SCREEN_HEIGHT/6,
+        borderRadius: 15,
+        marginTop: 10,
+    },
+    text5:{
+        color: colors.blue2,
+        fontWeight: 'bold',
+        fontSize: 16,
+        paddingTop: 20
+    },
+    view2:{
+        backgroundColor: colors.grey9,
+        height: SCREEN_HEIGHT/8,
+        borderRadius: 15,
+        marginTop: 10,
+    },
+    view3:{
+        backgroundColor: colors.blue1,
+        height: SCREEN_HEIGHT/7,
+        borderRadius: 15,
+        marginTop: 10,
+    },
+    button:{
+        marginTop: 20,
+        backgroundColor: colors.buttons,
+        borderRadius: 10,
+    }
 
 })
