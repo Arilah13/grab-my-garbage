@@ -1,5 +1,6 @@
 import React from 'react'
-import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Pressable, ScrollView } from 'react-native'
+import { useSelector, useDispatch } from 'react-redux'
+import { View, StyleSheet, Text, Image, Dimensions, TouchableOpacity, Pressable, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
 
@@ -10,6 +11,12 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Specialpickupscreen = ({navigation}) => {
+
+    const map = useSelector((state) => state.map)
+    const { address } = map
+
+    var array_address = address.split(',')
+
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1, marginBottom: 15}}>
             <ScrollView 
@@ -18,7 +25,7 @@ const Specialpickupscreen = ({navigation}) => {
             >
             <View>
                 <TouchableOpacity style = {styles.container}
-                    onPress={() => navigation.navigate('Home')}
+                    onPress = {() => navigation.goBack()}
                 >
                     <Icon
                         type = 'material'
@@ -31,13 +38,13 @@ const Specialpickupscreen = ({navigation}) => {
                             display: 'flex'
                         }}
                     />
-                    <Text style = {styles.text1}>Home</Text>
+                    <Text style = {styles.text1}>Select location</Text>
                 </TouchableOpacity>
             </View>
 
             <View style={{backgroundColor: colors.grey8}}>
                 <View style={styles.container2}>
-                    <Pressable>
+                    <Pressable onPress = {() => navigation.navigate('Destination')}>
                         <Icon 
                             type = 'feather'
                             name = 'map-pin'
@@ -49,7 +56,7 @@ const Specialpickupscreen = ({navigation}) => {
                             }}
                         />
                         <Text style = {styles.text2}>Pick Up Location</Text>
-                        <Text style = {styles.text3}>Thamarin City Residence, Jakarta</Text>
+                        <Text style = {styles.text3}>{array_address[0]}, {array_address[1]}</Text>
                         {/* <Icon 
                             type = 'material-community'
                             name = 'dots-vertical'
@@ -67,7 +74,20 @@ const Specialpickupscreen = ({navigation}) => {
                 <View style = {styles.container3} >
                     <Text style = {styles.text4}>Trash Categories</Text>
                     <View style = {styles.view1}>
-
+                        <Icon
+                            type = 'material'
+                            name = 'unfold-more'
+                            color = {colors.blue5}
+                            size = {20}
+                            style = {{
+                                alignSelf: 'flex-start',
+                                marginTop: 15,
+                                marginLeft: 10,
+                                display: 'flex'
+                            }}
+                        />
+                        <Text style = {styles.text6}>Select Category</Text>
+                        <Image />
                     </View>
 
                     <Text style = {styles.text5}>Weight Estimation</Text>
@@ -104,7 +124,7 @@ const styles = StyleSheet.create({
     },
     text1:{
         display: 'flex',
-        top: 25,
+        top: 26,
         left: 15,
         color: colors.blue2,
         fontWeight: 'bold',
@@ -114,8 +134,6 @@ const styles = StyleSheet.create({
         backgroundColor: colors.grey8,
         paddingLeft: 25, 
         height: SCREEN_HEIGHT/7,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
     },
     text2:{
         color: colors.blue7,
@@ -168,6 +186,13 @@ const styles = StyleSheet.create({
         marginTop: 20,
         backgroundColor: colors.buttons,
         borderRadius: 10,
+    },
+    text6: {
+        left: 40,
+        bottom: 21,
+        color: colors.blue2,
+        fontSize: 14,
+        fontWeight: 'bold'
     }
 
 })

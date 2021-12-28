@@ -35,7 +35,7 @@ const TabNavigator = () => {
             initialRouteName = 'Home'
         >
             <Tab.Screen
-                name = 'Home'
+                name = 'HomeScreen'
                 component = {Homescreen}
                 options = {{
                     tabBarLabel: 'Home',

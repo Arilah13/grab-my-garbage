@@ -29,7 +29,7 @@ const Homescreen = ({navigation}) => {
 
                     </View>
 
-                    <ScrollView bounces = {false}>
+                    <View>
                         <FlatList
                             numColumns = {2}
                             showsHorizontalScrollIndicator = {false}
@@ -46,7 +46,7 @@ const Homescreen = ({navigation}) => {
                                 </TouchableOpacity>
                             )}
                         />
-                    </ScrollView> 
+                    </View> 
                 </View>
             </View>
         </SafeAreaView>
