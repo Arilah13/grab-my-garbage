@@ -8,12 +8,39 @@ import Paymentmethodscreen from '../screens/PaymentMethodScreen'
 import Paymentscreen from '../screens/PaymentScreen'
 import Addcardscreen from '../screens/AddCardScreen'
 import Schedulescreen from '../screens/ScheduleScreen'
+import Welcomescreen from '../screens/authScreens/WelcomeScreen'
+import Signupscreen from '../screens/authScreens/SignUpScreen'
+import Signinscreen from '../screens/authScreens/SignInScreen'
 
 const Stack = createStackNavigator();
 
 const StackNavigator = () => {
     return (
         <Stack.Navigator>
+            <Stack.Screen
+                name = 'Welcome'
+                component = {Welcomescreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
+                name = 'SignUp'
+                component = {Signupscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
+                name = 'SignIn'
+                component = {Signinscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
             <Stack.Screen
                 name = 'Home'
                 component = {TabNavigator}
