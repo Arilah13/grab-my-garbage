@@ -16,7 +16,7 @@ const Stack = createStackNavigator();
 
 const StackNavigator = () => {
     return (
-        <Stack.Navigator>
+        <Stack.Navigator>         
             <Stack.Screen
                 name = 'Welcome'
                 component = {Welcomescreen}
