@@ -1,5 +1,6 @@
-import React from 'react'
-import { View, StyleSheet, Text, ScrollView, FlatList, Dimensions, Image, TouchableOpacity } from 'react-native'
+import React, { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { View, StyleSheet, Text, FlatList, Dimensions, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { colors } from '../global/styles'
@@ -10,15 +11,18 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Homescreen = ({navigation}) => {
 
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
     return (
         <SafeAreaView>
             <View style={{backgroundColor: colors.blue1}}>
                 <View style = {styles.container}>
                     <View style = {styles.view1}>
-                        <Text style = {styles.text1}>Hi Johnny</Text>
-                        <Text style = {styles.text2}>Have you take out the trash today?</Text>
+                        <Text style = {styles.text1}>Hi {userInfo.name}</Text>
+                        <Text style = {styles.text2}>Have you taken out the trash today?</Text>
                         <Image
-                            source = {require('../../assets/person.jpg')}
+                            source = {userInfo.photoUrl ? {uri: userInfo.photoUrl} : require('../../assets/user.png')}
                             style = {styles.image1}
                         />
                     </View>

@@ -1,21 +1,172 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { View, Text, StyleSheet, TextInput, Dimensions, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Formik } from 'formik'
 import { Icon, SocialIcon, Button } from 'react-native-elements'
+import * as Google from 'expo-google-app-auth'
+import { showMessage } from 'react-native-flash-message'
 
 import { colors } from '../../global/styles'
+import { specialLogin, Login } from '../../redux/actions/userActions'
+import { ANDROID_CLIENT_ID } from '@env'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
+const initialValues = {email: '', password: ''}
+
 const Signinscreen = ({navigation}) => {
 
+    const dispatch = useDispatch()
+
     const [show, setShow] = useState(false)
+    const [googleSubmitting, setGoogleSubmitting] = useState(false)
+    const [status, setStatus] = useState(false)
+    const [validated, setValidated] = useState(false)
+
+    const formikRef = useRef()
+    const password1 = useRef('password')
+
+    const userLogin = useSelector(state => state.userLogin)
+    const {success, error} = userLogin
 
     const handleVisibility = () => {
         setShow(!show)
     }
+
+    const validate = (values) => {
+        let errors = {}
+        
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i
+        if(!values.email) {
+            errors.email = 'Email address is required'
+        } else if (!regex.test(values.email)) {
+            errors.email = 'Invalid email address provided'
+        } else if (values.email && regex.test(values.email)) {
+            errors.email = null
+        }
+
+        if(!values.password) {
+            errors.password = 'Password is required'
+        } else if (values.password.length < 6) {
+            errors.password = 'Password must be atleast 6 characters'
+        } else if(values.password.length > 50) {
+            errors.password = 'Password must not be more than 50 characters'
+        } else if(values.password && values.password.length > 5 && values.password.length < 51) {
+            errors.password = null
+        }
+
+        if(errors.email !== null && errors.password !== null){
+            displayMessage(errors.email, errors.password)
+        } else if (errors.password) {
+            displayMessage(errors.password, null)
+        } else if (errors.email) {
+            displayMessage(errors.email, null)
+        }
+
+        if(errors.email === null && errors.password === null)
+            setValidated(true)
+
+    }
+
+    const handleLogin = (values) => {
+        dispatch(Login(values.email, values.password))
+        setTimeout(() => setStatus(true), 200)
+    }
+
+    const handleGoogleSignIn = () => {
+        setGoogleSubmitting(true)
+        const config = {
+            androidClientId: ANDROID_CLIENT_ID,
+            scopes: ['profile', 'email']
+        }
+
+        Google
+            .logInAsync(config)
+            .then((result) => {
+                const {type, user} = result
+
+                if(type == 'success') 
+                {          
+                    setGoogleSubmitting(false)  
+                    showMessage({
+                        message: 'Google SignIn Successful',
+                        type: 'success',
+                        autoHide: true,
+                        animated: true,
+                        animationDuration: 150,
+                        duration: 800,
+                    })
+                    dispatch(specialLogin(user))
+                    setTimeout(() => navigation.navigate('Home'), 900)
+                }
+                else
+                {
+                    setGoogleSubmitting(false)
+                    showMessage({
+                        message: 'Google SignIn Unsuccessful',
+                        type: 'warning',
+                        autoHide: true,
+                        animated: true,
+                        animationDuration: 150,
+                        duration: 800,
+                    })
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
+    const displayMessage = (error, error1) => {
+        if(error !== null && error1 === null)
+            showMessage({
+                message: error,
+                type: 'danger',
+                autoHide: true,
+                animated: true,
+                animationDuration: 150,
+                duration: 800,
+            })
+        else
+            showMessage({
+                message: error + '\n' + error1,
+                type: 'danger',
+                autoHide: true,
+                animated: true,
+                animationDuration: 150,
+                duration: 1500,
+                style: {
+                    height: 70
+                }
+            })
+    }
+
+    useEffect(() => {
+        if(status)
+        {
+            if(success === true)
+            {  
+                setStatus(false)
+                showMessage({
+                    message: 'Login Successful',
+                    type: 'success',
+                    autoHide: true,
+                    animated: true,
+                    animationDuration: 150,
+                    duration: 800,
+                })
+                formikRef.current.resetForm()
+                setTimeout(() => navigation.navigate('Home'), 800) 
+            }
+            else
+            {
+                setStatus(false)
+                displayMessage(error, null)
+            }
+        }
+    }, [handleLogin])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -45,22 +196,45 @@ const Signinscreen = ({navigation}) => {
             </View>
 
             <Formik
-                initialValues = {{email: '', password: '', }}
-                onSubmit = {(values) => {
-                    
+                initialValues = {initialValues}
+                onSubmit = {(values, {setSubmitting}) => {
+                    validate(values)
+                    if(validated) {
+                        setTimeout(() => {
+                            setSubmitting(false)
+                            handleLogin(values)
+                        }, 400)
+                    } else {
+                        setSubmitting(false)
+                    }
                 }}
+                innerRef = {formikRef}
             >
             {   
                 (props) =>
                 <View style = {{height: 7*SCREEN_HEIGHT/20}}>
                     <View style = {{padding: 20}}>
-                        <TextInput
-                            placeholder = 'Email'
-                            keyboardType = 'email-address'
-                            style = {styles.textInput}
-                            onChangeText = {props.handleChange('email')}
-                            value = {props.values.email}
-                        />
+                        <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
+                            <View>
+                                <Icon
+                                    name = 'email'
+                                    color = {colors.grey1}
+                                    type = 'material'
+                                />
+                            </View>
+                            <View>
+                                <TextInput 
+                                    placeholder = 'Email'
+                                    keyboardType = 'email-address'
+                                    autoFocus = {false}
+                                    style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
+                                    onChangeText = {props.handleChange('email')}
+                                    value = {props.values.email}
+                                    onSubmitEditing = {() => password1.current.focus()}
+                                />
+                            </View>
+                        </View>
+                        
                         <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
                             <Icon
                                 name = 'lock'
@@ -70,9 +244,11 @@ const Signinscreen = ({navigation}) => {
                             <TextInput
                                 secureTextEntry = {show ? false : true}
                                 placeholder = 'Password'
+                                autoFocus = {false}
                                 style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
                                 onChangeText = {props.handleChange('password')}
                                 value = {props.values.password}
+                                ref = {password1}
                             />                              
                                 {
                                     show ? (
@@ -95,7 +271,9 @@ const Signinscreen = ({navigation}) => {
                         <Button 
                             title = 'SIGN IN'
                             buttonStyle = {styles.button}
-                            onPress={props.handleSubmit}
+                            onPress = {props.handleSubmit}
+                            loading = {props.isSubmitting}
+                            disabled = {props.isSubmitting}
                         />
                     </View>
                 </View>
@@ -120,7 +298,9 @@ const Signinscreen = ({navigation}) => {
                     button
                     type = 'google'
                     style = {styles.SocialIcon}
-                    onPress = {() => {}}
+                    onPress = {handleGoogleSignIn}
+                    loading = {googleSubmitting}
+                    disabled = {googleSubmitting}
                 />
             </View>
 

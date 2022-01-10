@@ -1,15 +1,32 @@
-import React from 'react'
-import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { View, Text, Image, StyleSheet, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button } from 'react-native-elements'
 import Swiper from 'react-native-swiper'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { colors } from '../../global/styles'
+import { specialLogin } from '../../redux/actions/userActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Welcomescreen = ({navigation}) => {
+
+    const dispatch = useDispatch()
+
+    const [isSignedIn, setIsSignedIn] = useState(false)
+
+    // useEffect(async() => {
+    //     const result = await AsyncStorage.getItem('userInfo')
+    //     if(result !== null)
+    //     {
+    //         dispatch(specialLogin(JSON.parse(result)))
+    //         setIsSignedIn(true)
+    //     }
+    // }, [navigation])
+
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
             <View style = {styles.header}>
@@ -61,12 +78,12 @@ const Welcomescreen = ({navigation}) => {
                     <Button 
                         title = 'SIGN IN'
                         buttonStyle = {styles.button1}
-                        onPress = {() => navigation.navigate('SignIn')}
+                        onPress = {() => isSignedIn ? navigation.navigate('Home') : navigation.navigate('SignIn')}
                     />
                     <Button
                         title = 'CREATE ACCOUNT'
                         buttonStyle = {styles.button2}
-                        onPress={() => navigation.navigate('SignUp')}
+                        onPress={() => isSignedIn ? navigation.navigate('Home') : navigation.navigate('SignUp')}
                     />
                 </View>
             </View>      
