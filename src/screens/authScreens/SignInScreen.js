@@ -25,6 +25,7 @@ const Signinscreen = ({navigation}) => {
     const [googleSubmitting, setGoogleSubmitting] = useState(false)
     const [status, setStatus] = useState(false)
     const [validated, setValidated] = useState(false)
+    const [mark, setMark] = useState(false)
 
     const formikRef = useRef()
     const password1 = useRef('password')
@@ -85,11 +86,14 @@ const Signinscreen = ({navigation}) => {
 
         Google
             .logInAsync(config)
-            .then((result) => {
+            .then(async(result) => {
                 const {type, user} = result
 
-                if(type == 'success') 
+                dispatch(specialLogin(user))
+
+                if(type === 'success') 
                 {          
+                    setMark(false)
                     setGoogleSubmitting(false)  
                     showMessage({
                         message: 'Google SignIn Successful',
@@ -98,8 +102,7 @@ const Signinscreen = ({navigation}) => {
                         animated: true,
                         animationDuration: 150,
                         duration: 800,
-                    })
-                    dispatch(specialLogin(user))
+                    })                
                     setTimeout(() => navigation.navigate('Home'), 900)
                 }
                 else

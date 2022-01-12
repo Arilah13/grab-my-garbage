@@ -30,8 +30,21 @@ export const Login = (email, password) => async (dispatch) => {
     }
 }
 
-export const specialLogin = (data) => async(dispatch) => {
+export const specialLogin = (info) => async(dispatch) => {
     try{
+        const config = {
+            headers: {
+                'Content-type': 'application/json'
+            },
+        }
+        const registerrole = 'user'
+
+        const { name, email, photoUrl } = info
+
+        const { data } = await axios.post('http://192.168.13.1:5000/users/register',
+            {name, email, registerrole, photoUrl}, config, 
+        ).catch((err) => console.log(err))
+
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,
             payload: data
@@ -39,11 +52,14 @@ export const specialLogin = (data) => async(dispatch) => {
 
         AsyncStorage.setItem('userInfo', JSON.stringify(data))
     } catch (err) {
-        console.log(err)
+        dispatch({
+            type: actionTypes.USER_REGISTER_FAIL,
+            payload: err.response.data.msg
+        })
     }
 }
 
-export const register = ({name, email, password, phone_number}) => async(dispatch) => {
+export const register = ({name, email, password, phone_number, image}) => async(dispatch) => {
     try {
         dispatch({
             type: actionTypes.USER_REGISTER_REQUEST,
@@ -57,7 +73,7 @@ export const register = ({name, email, password, phone_number}) => async(dispatc
         const registerrole = 'user'
 
         const { data } = await axios.post('http://192.168.13.1:5000/users/register',
-            {name, email, password, phone_number, registerrole}, config, 
+            {name, email, password, phone_number, registerrole, image}, config, 
         ).catch((err) => console.log(err))
 
         dispatch({
@@ -93,7 +109,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`/users/${id}`, config)
+        const { data } = await axios.get(`http://192.168.13.1:5000/users/${id}`, config)
 
         dispatch({
             type: actionTypes.USER_DETAILS_SUCCESS,

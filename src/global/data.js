@@ -1,27 +1,27 @@
 export const menuData = [ 
   {
-    name:"Schedule Pickup",
+    name: 'Schedule Pickup',
     image: require('../../assets/calendar.png'), 
-    id:"0", 
-    destination:'Destination'
+    id: '0', 
+    destination: 'Destination'
   },
   {
-    name:"Special Pickup",
-    image:require("../../assets/truck.png"),
-    id:"1", 
-    destination:'Destination'
+    name: 'Special Pickup',
+    image: require('../../assets/truck.png'),
+    id: '1', 
+    destination: 'Destination'
   },
   {
-    name:"Requests",
-    image:require("../../assets/request.png"),
-    id:"2",
-    destination:''
+    name: 'Requests',
+    image: require('../../assets/request.png'),
+    id: '2',
+    destination: ''
   },
   {
-    name:"Payments",
-    image:require("../../assets/payments.png"),
-    id:"3",
-    destination:''
+    name: 'Payments',
+    image: require('../../assets/payments.png'),
+    id: '3',
+    destination: ''
   }                  
 ];
 
@@ -61,23 +61,29 @@ export const timeIntervalData = [
 
 export const accountData = [
   {
-    name:"Edit Profile",
+    name: 'Edit Profile',
     image: require('../../assets/edit_profile.png'), 
-    id:"0", 
-    destination:'Editprofile'
+    id: '0', 
+    destination: 'Editprofile'
   },
   {
-    name:"Payment Option",
+    name: 'Change Password',
+    image: require('../../assets/lock.png'),
+    id: '1',
+    destination: 'Changepassword'
+  },
+  {
+    name: 'Payment Option',
     image: require('../../assets/payment_option.png'), 
-    id:"1", 
-    destination:'Paymentoption'
+    id: '2', 
+    destination: 'Paymentoption'
   },
   {
-    name:"LogOut",
+    name: 'Signout',
     image: require('../../assets/logout.png'), 
-    id:"2", 
-    destination:'Logout'
-  }
+    id: '3', 
+    destination: 'Logout'
+  },
 ]
 
 export const cardDetails = [

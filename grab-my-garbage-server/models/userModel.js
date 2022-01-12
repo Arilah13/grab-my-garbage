@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false,
     },
     phone: {
         type: Number,
@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
     role: {
         type: Number,
         default: 0,
+    },
+    image: {
+        type: String,
+        required: false
     }
 }, {
     timestamps: true

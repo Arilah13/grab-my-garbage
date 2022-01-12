@@ -22,7 +22,7 @@ const Homescreen = ({navigation}) => {
                         <Text style = {styles.text1}>Hi {userInfo.name}</Text>
                         <Text style = {styles.text2}>Have you taken out the trash today?</Text>
                         <Image
-                            source = {userInfo.photoUrl ? {uri: userInfo.photoUrl} : require('../../assets/user.png')}
+                            source = {userInfo.image ? {uri: userInfo.image} : require('../../assets/user.png')}
                             style = {styles.image1}
                         />
                     </View>

@@ -12,4 +12,6 @@ router.post('/refresh_token', auth, userController.refreshtoken)
 
 router.route('/profile').get(auth, userController.getUserProfile).put(auth, userController.updateUserProfile)
 
+router.route('/:id').get(auth, userController.getUserById)
+
 module.exports = router

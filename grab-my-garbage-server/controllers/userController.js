@@ -5,36 +5,74 @@ const jwt = require('jsonwebtoken')
 const userController = {
     register: async(req, res) => {
         try{
-            const {name, email, password, phone_number, registerrole} = req.body
+            const {name, email, password, phone_number, registerrole, photoUrl} = req.body
 
-            const user = await Users.findOne({email})
-            if(user)
-                return res.status(400).json({msg: "The email already exists."})
-            
-            if(password.length < 6)
-                return res.status(400).json({msg: "Password should be atleast 6 character long"});
+            const user = await Users.findOne({email}) 
+            if(user) {
+                const accesstoken = createAccessToken(user._id)
 
-            const passwordHash = await bcrypt.hash(password, 10)
-            const newUser = new Users({
-                name: name,
-                email: email,
-                phone: phone_number,
-                role: registerrole === "user" ? 0 : 1,
-                password: passwordHash
-            })
+                res.json({
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    image: user.image,
+                    token: accesstoken
+                })
+            } else {
+                if(password !== undefined) {
+                    if(password.length < 6)
+                        return res.status(400).json({msg: "Password should be atleast 6 character long"});
 
-            await newUser.save()
+                    const passwordHash = await bcrypt.hash(password, 10)
 
-            const accesstoken = createAccessToken(newUser._id)
-            const refreshtoken = createRefreshToken(newUser._id)
+                    const newUser = new Users({
+                        name: name,
+                        email: email,
+                        phone: phone_number,
+                        role: registerrole === "user" ? 0 : 1,
+                        password: passwordHash,
+                        //image: photoUrl
+                    })
 
-            res.json({
-                _id: newUser._id,
-                name: newUser.name,
-                email: newUser.email,
-                role: newUser.role,
-                token: accesstoken
-            })
+                    await newUser.save()
+
+                    const accesstoken = createAccessToken(newUser._id)
+                    const refreshtoken = createRefreshToken(newUser._id)
+
+                    res.json({
+                        _id: newUser._id,
+                        name: newUser.name,
+                        email: newUser.email,
+                        phone: newUser.phone,
+                        role: newUser.role,
+                        token: accesstoken
+                    })
+                } else {
+                    const newUser = new Users({
+                        name: name,
+                        email: email,
+                        //phone: phone_number,
+                        role: registerrole === "user" ? 0 : 1,
+                        //password: passwordHash,
+                        image: photoUrl
+                    })
+
+                    await newUser.save()
+
+                    const accesstoken = createAccessToken(newUser._id)
+                    const refreshtoken = createRefreshToken(newUser._id)
+
+                    res.json({
+                        _id: newUser._id,
+                        name: newUser.name,
+                        email: newUser.email,
+                        role: newUser.role,
+                        image: newUser.image,
+                        token: accesstoken
+                    })
+                }
+            }
 
         } catch(err) {
             return res.status(500).json({msg: err.message})
@@ -42,10 +80,12 @@ const userController = {
     },
     login: async(req, res) => {
         try {
-            const {email, password} = req.body;
+            const {email, password} = req.body       
 
             const user = await Users.findOne({email})
             if(!user) return res.status(400).json({msg: "User does not exist"})
+
+            if(!user.password) return res.status(400).json({msg: "Login Unsuccessful"})
 
             const isMatch = await bcrypt.compare(password, user.password)
             if(!isMatch) return res.status(400).json({msg: "Incorrect password"})
@@ -91,7 +131,7 @@ const userController = {
     },
     getUserProfile: async(req, res) => {
         try{
-            const user = await Users.findById(req.user._id)
+            const user = await Users.findById(req.params.id)
             if(!user) return res.status(400).json({msg: "User does not exists."})
 
             res.json(user)
@@ -101,7 +141,7 @@ const userController = {
     },
     updateUserProfile: async(req, res) => {
         try{
-            const user = await Users.findById(req.user._id)
+            const user = await Users.findById(req.user._id).select('-password')
             if(!user) return res.status(400).json({msg: "User does not exists."})
 
             user.name = req.body.name || user.name
@@ -125,7 +165,16 @@ const userController = {
             return res.status(500).json({msg: err.message})
         }
     },
+    getUserById: async(req, res) => {
+        try {
+            const user = await Users.findById(req.params.id)
+            if(!user) return res.status(400).json({msg: "User does not exists."})
 
+            res.json(user)         
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
 }
 
 const createAccessToken = (user) => {

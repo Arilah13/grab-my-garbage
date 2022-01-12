@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -21,10 +21,15 @@ const Accountscreen = ({navigation}) => {
         if(path !== 'Logout') {
             navigation.navigate(path, {destination: name})
         } else if(path === 'Logout') {
-            navigation.navigate('Welcome')
-            setTimeout(() => dispatch(logout()), 100)        
+            //navigation.navigate('Welcome')
+            dispatch(logout())      
         }
     }
+
+    useEffect(() => {
+        if(!userInfo)
+            navigation.navigate('Welcome')
+    }, [userInfo, navigation])
 
     return (
         <SafeAreaView>
@@ -32,7 +37,7 @@ const Accountscreen = ({navigation}) => {
                 <Pressable onPress = {() => navigation.navigate('Editprofile')} style = {styles.view1} >
                         <Text style = {styles.text1}>{userInfo.name}</Text>
                         <Image
-                            source = {userInfo.photoUrl ? {uri: userInfo.photoUrl} : require('../../assets/user.png')}
+                            source = {userInfo.image ? {uri: userInfo.image} : require('../../assets/user.png')}
                             resizeMode = 'contain'
                             style = {styles.image1}
                         />
@@ -147,7 +152,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     view5:{
-        marginTop: 20
+        marginTop: 5
     }
 
 })
