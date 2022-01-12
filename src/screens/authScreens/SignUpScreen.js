@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, KeyboardAvoidingView } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Formik } from 'formik'
 import { Icon, Button } from 'react-native-elements'
 import { showMessage } from 'react-native-flash-message'
-import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
 import { register } from '../../redux/actions/userActions'
+import Headercomponent from '../../components/HeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -185,23 +185,14 @@ const Signupscreen = ({navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <TouchableOpacity style = {styles.container}
-                onPress = {() => navigation.navigate('Welcome')}
-            >
-                <Icon
-                    type = 'material'
-                    name = 'arrow-back'
-                    color = {colors.blue5}
-                    size = {25}
-                    style = {{
-                        alignSelf: 'flex-start',
-                        marginTop: 25,
-                        display: 'flex'
-                    }}
-                />
-                <Text style = {styles.text1}>Welcome</Text>
-            </TouchableOpacity>
-            <View style = {{backgroundColor: colors.white, borderTopLeftRadius: 30, borderTopRightRadius: 30}}>
+        {/* <ScrollView 
+            showsVerticalScrollIndicator = {false}
+            stickyHeaderIndices = {[0]}
+        > */}
+            <View style = {{height: SCREEN_HEIGHT/10}}>
+                <Headercomponent name = 'Welcome' />
+            </View>
+            <View style = {{backgroundColor: colors.white, borderTopLeftRadius: 30, borderTopRightRadius: 30, height: 9*SCREEN_HEIGHT/10}}>
                 <View style = {styles.view1}>
                     <Text style = {styles.title}>Sign-Up</Text>
                 </View>
@@ -322,27 +313,28 @@ const Signupscreen = ({navigation}) => {
                                             disabled = {props.isSubmitting}
                                         />
                                     </View>
+                                    <View style = {styles.view5}>
+                                        <Text style = {{fontSize:15, fontWeight:'bold',}}>OR</Text>
+                                    </View>
+                                    <View style = {styles.view6}>
+                                        <View style = {{marginTop: -20}}>
+                                            <Text>Already have an account with XpressFood?</Text>
+                                        </View>
+                                        <View>
+                                            <Button
+                                                title = 'Sign-In'
+                                                buttonStyle = {{...styles.button, marginTop: 5, height: 45, width: SCREEN_WIDTH/3, alignSelf: 'flex-end'}}
+                                                onPress = {() => {navigation.navigate('SignIn')}}
+                                            />
+                                        </View>
+                                    </View>
                             </View>
                         )
                     }
                 </Formik>
                 </KeyboardAvoidingView>
-                <View style = {styles.view5}>
-                    <Text style = {{fontSize:15, fontWeight:'bold',}}>OR</Text>
-                </View>
-                <View style = {styles.view6}>
-                    <View>
-                        <Text>Already have an account with XpressFood?</Text>
-                    </View>
-                    <View>
-                        <Button
-                            title = 'Sign-In'
-                            buttonStyle = {{...styles.button, marginTop: 5, height: 45, width: SCREEN_WIDTH/3.5, alignSelf: 'flex-end'}}
-                            onPress = {() => {navigation.navigate('SignIn')}}
-                        />
-                    </View>
-                </View>
             </View>
+        {/* </ScrollView> */}
         </SafeAreaView>
     );
 }
@@ -350,29 +342,13 @@ const Signupscreen = ({navigation}) => {
 export default Signupscreen
 
 const styles = StyleSheet.create({
-
-    container:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
-        //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
-        flexDirection: 'row',
-        zIndex: 10
-    },
-    text1:{
-        display: 'flex',
-        top: 26,
-        left: 15,
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 16
-    },
+ 
     view1:{
-        justifyContent:'center',
-        alignItems:'flex-start',
-        marginTop:10,
-        marginBottom:10,
-        paddingHorizontal:15,
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        marginTop: 10,
+        marginBottom: 10,
+        paddingHorizontal: 15,
         height: SCREEN_HEIGHT/20
     },
     title:{
@@ -382,10 +358,10 @@ const styles = StyleSheet.create({
         marginLeft: 20
     },
     view2:{
-        justifyContent:'flex-start',
-        backgroundColor:'white',
-        paddingHorizontal:15,
-        height: 6.3*SCREEN_HEIGHT/10
+        justifyContent: 'flex-start',
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+        height: 19*SCREEN_HEIGHT/20
     },
     textInput:{
         backgroundColor: colors.grey8,
@@ -399,14 +375,14 @@ const styles = StyleSheet.create({
         color: colors.grey1,
     },
     view3:{
-        alignItems:'center',
-        justifyContent:'center',
-        marginTop:10
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10
     },
     text4:{
-        textDecorationLine:'underline',
-        color:'green',
-        fontSize:13
+        textDecorationLine: 'underline',
+        color: 'green',
+        fontSize: 13
     },
     button:{
         marginTop: SCREEN_HEIGHT/40,
@@ -415,15 +391,15 @@ const styles = StyleSheet.create({
         height: 50,
     },
     view5:{
-        justifyContent:'flex-start',
-        alignItems:'center',
-        paddingTop:15,
-        height: 0.5*SCREEN_HEIGHT/10
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingTop: 5,
+        height: 50
     },
     view6:{
-        backgroundColor:'white',
-        paddingHorizontal:15,   
-        height: 2.2*SCREEN_HEIGHT/10 
+        backgroundColor: 'white',
+        paddingHorizontal: 5,   
+        height: 40 
     },
 
 })

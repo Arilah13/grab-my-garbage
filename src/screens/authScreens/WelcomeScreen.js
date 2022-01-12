@@ -18,14 +18,14 @@ const Welcomescreen = ({navigation}) => {
 
     const [isSignedIn, setIsSignedIn] = useState(false)
 
-    // useEffect(async() => {
-    //     const result = await AsyncStorage.getItem('userInfo')
-    //     if(result !== null)
-    //     {
-    //         dispatch(specialLogin(JSON.parse(result)))
-    //         setIsSignedIn(true)
-    //     }
-    // }, [navigation])
+    useEffect(async() => {
+        const result = await AsyncStorage.getItem('userInfo')
+        if(result !== null)
+        {
+            dispatch(specialLogin(JSON.parse(result)))
+            setIsSignedIn(true)
+        }
+    }, [navigation])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>

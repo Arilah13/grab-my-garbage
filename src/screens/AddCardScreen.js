@@ -1,69 +1,66 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, Pressable } from 'react-native'
+import React, { useState } from 'react'
+import { View, Text, StyleSheet, Dimensions, TextInput, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Icon, Button } from 'react-native-elements'
-import DateTimePickerModal from 'react-native-modal-datetime-picker'
+import { Button } from 'react-native-elements'
+import { TextInputMask } from 'react-native-masked-text'
 
 import { colors } from '../global/styles'
+import Headercomponent from '../components/HeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Addcardscreen = ({navigation}) => {
 
-    const [date, setDate] = useState(new Date())
-    const [showDate, setShowDate] = useState(false)
-
-    let formattedDate = date.toLocaleDateString().split('/')
-
-    const handleConfirmDate = (date) => {
-        setShowDate(false)
-        setDate(date)
-    }
+    const [date, setDate] = useState()
+    const [creditcard, setCreditcard] = useState()
+    const [issuer, setIssuer] = useState('visa-or-mastercard')
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <TouchableOpacity style = {styles.container}
-                onPress = {() => navigation.navigate('Payment')}
-            >
-                <Icon
-                    type = 'material'
-                    name = 'arrow-back'
-                    color = {colors.blue5}
-                    size = {25}
-                    style = {{
-                        alignSelf: 'flex-start',
-                        marginTop: 25,
-                        display: 'flex'
-                    }}
-                />
-                <Text style = {styles.text1}>Payment Confirmation</Text>
-            </TouchableOpacity>
+            <Headercomponent path = 'Paymentoption' name = 'Payment Option' />
 
             <View style = {styles.container2}>
                 <View style = {{padding: 20}}>
                     <Text style = {styles.text2}>Card Number</Text>
-                    <TextInput 
+                    <TextInputMask
                         style = {styles.textInput}
+                        type = 'credit-card'
+                        options = {{
+                            obfuscated: false,
+                            issuer: issuer
+                        }}
+                        onChangeText = {text => {
+                            setCreditcard(text)
+                            text.startsWith(4) || text.startsWith(5) ? 
+                            setIssuer('visa-or-mastercard') :
+                            setIssuer('amex')
+                        }}
+                        value = {creditcard}
                         placeholder = 'Card Number'
                     />
+                    {/* <Image 
+                        source = {issuer === 'amex' ? require('../../assets/amex.png') : require('../')}
+                    /> */}
                     <View style = {{flexDirection: 'row'}}>
                         <Text style = {styles.text2}>Expiry Date</Text>                      
-                        <Text style = {{...styles.text2, marginLeft: SCREEN_WIDTH/3}}>CVV</Text>                       
+                        <Text style = {{...styles.text2, marginLeft: SCREEN_WIDTH/2.9}}>CVV</Text>                       
                     </View>
                     <View style = {{flexDirection: 'row'}}>
-                        <Pressable style = {styles.view} onPress = {() => setShowDate(true)}>
-                            <Text style = {styles.text3}>{formattedDate[0]}/{formattedDate[1]}/{formattedDate[2]}</Text>
-                            <DateTimePickerModal
-                                isVisible = {showDate}
-                                date = {date}
-                                mode = 'date'
-                                onConfirm = {(date) => handleConfirmDate(date)}
-                                onCancel = {() => setDate(false)}
-                            />
-                        </Pressable>
+                        <TextInputMask 
+                            style = {{...styles.textInput, width: SCREEN_WIDTH/4}}
+                            keyboardType = 'number-pad'
+                            type = 'custom'
+                            options = {{
+                                mask: '99/99'
+                            }}
+                            onChangeText = {text => setDate(text)}
+                            value = {date}
+                            placeholder = 'MM/YY'
+                        />
                         <TextInput
-                            style = {{...styles.textInput, width: SCREEN_WIDTH/3.8, marginLeft: SCREEN_WIDTH/6}}
+                            style = {{...styles.textInput, width: SCREEN_WIDTH/3.8, marginLeft: SCREEN_WIDTH/4}}
+                            keyboardType = 'number-pad'
                             placeholder = 'CVV'
                         />
                     </View>
@@ -74,7 +71,7 @@ const Addcardscreen = ({navigation}) => {
                     />
                 </View>
 
-                <View style = {{top: SCREEN_HEIGHT/1.36, position: 'absolute', width: SCREEN_WIDTH, padding: 15}}>
+                <View style = {{top: SCREEN_HEIGHT/1.35, position: 'absolute', width: SCREEN_WIDTH, padding: 15}}>
                     <Button
                         title = 'Add Card'
                         buttonStyle = {styles.button}
@@ -90,21 +87,6 @@ export default Addcardscreen
 
 const styles = StyleSheet.create({
 
-    container:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
-        //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
-        flexDirection: 'row'
-    },
-    text1:{
-        display: 'flex',
-        top: 26,
-        left: 15,
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 16
-    },
     container2:{
         display: 'flex',
         backgroundColor: colors.white,
@@ -132,17 +114,5 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         color: colors.grey1
     },
-    text3:{
-        color: colors.grey1,
-        marginTop: '9%',
-        marginLeft: 20,
-    },
-    view:{
-        backgroundColor: colors.grey8,
-        width: SCREEN_WIDTH/3,
-        height: 45,
-        marginTop: 10,
-        borderRadius: 10
-    }
 
 })

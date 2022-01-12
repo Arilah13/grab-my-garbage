@@ -11,6 +11,7 @@ import { DefaultTheme } from 'react-native-paper'
 
 import { colors } from '../global/styles'
 import { trashCategoryData } from '../global/data'
+import Headercomponent from '../components/HeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -52,7 +53,7 @@ const Specialpickupscreen = ({navigation}) => {
     }
     const changeDate = () => {
         date1.setDate(date1.getDate() + 1)
-        date2.setDate(date2.getMonth() + 1)
+        date2.setDate(date2.getDate() + 30)
     }
     const selectGallery = async() => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -97,26 +98,9 @@ const Specialpickupscreen = ({navigation}) => {
                 showsVerticalScrollIndicator = {false}
                 stickyHeaderIndices = {[0]}
             >
-            <View>
-                <TouchableOpacity style = {styles.container}
-                    onPress = {() => navigation.navigate('Home')}
-                >
-                    <Icon
-                        type = 'material'
-                        name = 'arrow-back'
-                        color = {colors.blue5}
-                        size = {25}
-                        style = {{
-                            alignSelf: 'flex-start',
-                            marginTop: 25,
-                            display: 'flex'
-                        }}
-                    />
-                    <Text style = {styles.text1}>Home</Text>
-                </TouchableOpacity>
-            </View>
+            <Headercomponent name = 'Home' />    
 
-            <View style = {{backgroundColor: colors.grey8}}>
+            <View style = {{backgroundColor: colors.grey8, borderTopStartRadius: 30, borderTopEndRadius: 30}}>
                 <View style = {styles.container2}>
                     <Pressable onPress = {() => navigation.navigate('Destination')}>
                         <Icon 
@@ -342,25 +326,12 @@ export default Specialpickupscreen
 
 const styles = StyleSheet.create({
 
-    container:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
-        //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
-        flexDirection: 'row'
-    },
-    text1:{
-        display: 'flex',
-        top: 26,
-        left: 15,
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 16
-    },
     container2:{
         backgroundColor: colors.grey8,
         paddingLeft: 25, 
         height: SCREEN_HEIGHT/8,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30
     },
     text2:{
         color: colors.blue7,

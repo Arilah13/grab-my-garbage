@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
+import { View, Text, Image, StyleSheet, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon, CheckBox, Button } from 'react-native-elements'
 import { showMessage } from 'react-native-flash-message'
 
 import { colors } from '../global/styles'
+import Headercomponent from '../components/HeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -61,22 +62,7 @@ const Paymentmethodscreen = ({route, navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <TouchableOpacity style = {styles.container}
-                onPress = {() => navigation.navigate(name === 'Special' ? 'SpecialPickup' : 'Schedule')}
-            >
-                <Icon
-                    type = 'material'
-                    name = 'arrow-back'
-                    color = {colors.blue5}
-                    size = {25}
-                    style = {{
-                        alignSelf: 'flex-start',
-                        marginTop: 25,
-                        display: 'flex'
-                    }}
-                />
-                <Text style = {styles.text1}>{name === 'Special' ? 'Special Pickup' : 'Schedule Pickup'}</Text>
-            </TouchableOpacity>
+            <Headercomponent name = {name === 'Special' ? 'Special Pickup' : 'Schedule'} />
 
             <View style = {styles.container2}>
                 <Text style = {styles.text2}>Payment Methods</Text>
@@ -167,21 +153,6 @@ export default Paymentmethodscreen
 
 const styles = StyleSheet.create({
 
-    container:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
-        //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
-        flexDirection: 'row'
-    },
-    text1:{
-        display: 'flex',
-        top: 26,
-        left: 15,
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 16
-    },
     container2:{
         display: 'flex',
         backgroundColor: colors.grey9,

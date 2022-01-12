@@ -11,6 +11,9 @@ import Schedulescreen from '../screens/ScheduleScreen'
 import Welcomescreen from '../screens/authScreens/WelcomeScreen'
 import Signupscreen from '../screens/authScreens/SignUpScreen'
 import Signinscreen from '../screens/authScreens/SignInScreen'
+import Accountscreen from '../screens/AccountScreen'
+import Editprofilescreen from '../screens/EditProfileScreen'
+import Paymentoptionsscreen from '../screens/PaymentOptionsScreen'
 
 const Stack = createStackNavigator();
 
@@ -92,6 +95,22 @@ const StackNavigator = () => {
             <Stack.Screen
                 name = 'Schedule'
                 component = {Schedulescreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
+                name = 'Editprofile'
+                component = {Editprofilescreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
+                name = 'Paymentoption'
+                component = {Paymentoptionsscreen}
                 options = {{
                     headerShown: false
                 }}

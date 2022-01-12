@@ -73,6 +73,7 @@ const Destinationscreen = ({route, navigation}) => {
                 <Mapcomponent 
                     latlng = {latlng}
                 />
+
                 <TouchableOpacity style = {styles.view}
                         onPress = {() => navigation.navigate('Home')}
                     >

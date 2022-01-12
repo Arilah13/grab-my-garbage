@@ -10,6 +10,7 @@ import { Button } from 'react-native-elements'
 
 import { colors } from '../global/styles'
 import { timeIntervalData } from '../global/data'
+import Headercomponent from '../components/HeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -58,27 +59,10 @@ const Schedulescreen = ({navigation}) => {
     }, [handleConfirmDate1, handleConfirmDate2])
 
     return (
-        <SafeAreaView>
-            <View>
-                <TouchableOpacity style = {styles.container}
-                    onPress = {() => navigation.navigate('Home')}
-                >
-                    <Icon
-                        type = 'material'
-                        name = 'arrow-back'
-                        color = {colors.blue5}
-                        size = {25}
-                        style = {{
-                            alignSelf: 'flex-start',
-                            marginTop: 25,
-                            display: 'flex'
-                        }}
-                    />
-                    <Text style = {styles.text1}>Home</Text>
-                </TouchableOpacity>
-            </View>
+        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+            <Headercomponent name = 'Home' />
             
-            <View style = {{backgroundColor: colors.grey8}}>
+            <View style = {{backgroundColor: colors.grey8, borderTopRightRadius: 30, borderTopLeftRadius: 30}}>
                 <View style = {styles.container2}>
                     <Pressable onPress = {() => navigation.navigate('Destination')}>
                         <Icon 
@@ -250,25 +234,12 @@ export default Schedulescreen
 
 const styles = StyleSheet.create({
 
-    container:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
-        //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
-        flexDirection: 'row'
-    },
-    text1:{
-        display: 'flex',
-        top: 26,
-        left: 15,
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 16
-    },
     container2:{
         backgroundColor: colors.grey8,
         paddingLeft: 25, 
         height: SCREEN_HEIGHT/8,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30
     },
     text2:{
         color: colors.blue7,

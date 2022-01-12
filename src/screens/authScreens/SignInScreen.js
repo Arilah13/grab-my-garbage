@@ -10,6 +10,7 @@ import { showMessage } from 'react-native-flash-message'
 import { colors } from '../../global/styles'
 import { specialLogin, Login } from '../../redux/actions/userActions'
 import { ANDROID_CLIENT_ID } from '@env'
+import Headercomponent from '../../components/HeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -170,22 +171,7 @@ const Signinscreen = ({navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <TouchableOpacity style = {styles.container}
-                onPress = {() => navigation.navigate('Welcome')}
-            >
-                <Icon
-                    type = 'material'
-                    name = 'arrow-back'
-                    color = {colors.blue5}
-                    size = {25}
-                    style = {{
-                        alignSelf: 'flex-start',
-                        marginTop: 25,
-                        display: 'flex'
-                    }}
-                />
-                <Text style = {styles.text1}>Welcome</Text>
-            </TouchableOpacity>
+            <Headercomponent name = 'Welcome' />
             <View style = {{height: 9*SCREEN_HEIGHT/10, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30}}>
             <View style = {{marginLeft: 4, marginTop: 20, height: SCREEN_HEIGHT/20 }}>
                 <Text style = {styles.title}>Sign In</Text>
@@ -323,19 +309,6 @@ export default Signinscreen
 
 const styles = StyleSheet.create({
 
-    container:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
-        //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
-        flexDirection: 'row'
-    },
-    title:{
-        color: colors.blue2,
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginLeft: 20
-    },
     text1:{
         display: 'flex',
         top: 26,
@@ -344,6 +317,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16
     },
+    title:{
+        color: colors.blue2,
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginLeft: 20
+    },
+    
     text2:{
         color: colors.grey1,
         fontSize: 16

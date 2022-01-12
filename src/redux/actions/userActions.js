@@ -197,11 +197,7 @@ export const updateUser = (user) => async (dispatch, getState) => {
 }
 
 export const logout = () => async (dispatch) => {
-    localStorage.removeItem('userInfo')
-    localStorage.removeItem('cartItems')
-    localStorage.removeItem('shippingAddress')
-    localStorage.removeItem('paymentMethod')
+    AsyncStorage.removeItem('userInfo')
 
     dispatch({ type: actionTypes.USER_LOGOUT })
-
 }

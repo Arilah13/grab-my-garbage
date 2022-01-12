@@ -6,6 +6,7 @@ import { showMessage } from 'react-native-flash-message'
 import { Icon, Button } from 'react-native-elements'
 
 import { colors } from '../global/styles'
+import Headercomponent from '../components/HeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -22,7 +23,7 @@ const Paymentscreen = ({route, navigation}) => {
         if(paypal === true)
             setShowGateway(true)
         if(cash === true)
-            navigation.navigate('AddCard')
+            navigation.navigate('')
     }
 
     const onMessage = (e) => {
@@ -56,22 +57,7 @@ const Paymentscreen = ({route, navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <TouchableOpacity style = {styles.container}
-                onPress = {() => navigation.navigate('PaymentMethod')}
-            >
-                <Icon
-                    type = 'material'
-                    name = 'arrow-back'
-                    color = {colors.blue5}
-                    size = {25}
-                    style = {{
-                        alignSelf: 'flex-start',
-                        marginTop: 25,
-                        display: 'flex'
-                    }}
-                />
-                <Text style = {styles.text1}>Payment Method</Text>
-            </TouchableOpacity>
+            <Headercomponent name = 'Payment Method' />
 
             <View style = {styles.container2}>
                 <Text style = {styles.text2}>Confirm Payment</Text>
@@ -158,21 +144,6 @@ export default Paymentscreen
 
 const styles = StyleSheet.create({
 
-    container:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
-        //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
-        flexDirection: 'row'
-    },
-    text1:{
-        display: 'flex',
-        top: 26,
-        left: 15,
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 16
-    },
     container2:{
         display: 'flex',
         backgroundColor: colors.white,

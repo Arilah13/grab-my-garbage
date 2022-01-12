@@ -58,3 +58,57 @@ export const timeIntervalData = [
     label: '2.00 P.M - 6.00 P.M'
   },
 ]
+
+export const accountData = [
+  {
+    name:"Edit Profile",
+    image: require('../../assets/edit_profile.png'), 
+    id:"0", 
+    destination:'Editprofile'
+  },
+  {
+    name:"Payment Option",
+    image: require('../../assets/payment_option.png'), 
+    id:"1", 
+    destination:'Paymentoption'
+  },
+  {
+    name:"LogOut",
+    image: require('../../assets/logout.png'), 
+    id:"2", 
+    destination:'Logout'
+  }
+]
+
+export const cardDetails = [
+  {
+    cardNo: 'Cash',
+    id: '0',
+    type: 'Cash',
+  },
+  {
+    cardNo: '5234 1234 1234',
+    id: '1',
+    type: 'Master',
+  },
+  {
+    cardNo: '4321 4321 4321',
+    id: '2',
+    type: 'Visa'
+  },
+  {
+    cardNo: '3778 5678 5678',
+    id: '3',
+    type: 'Amex'
+  },
+  {
+    cardNo: '3778 5678 5678',
+    id: '4',
+    type: 'Amex'
+  },
+  {
+    cardNo: '3778 5678 5678',
+    id: '5',
+    type: 'Amex'
+  }
+]
