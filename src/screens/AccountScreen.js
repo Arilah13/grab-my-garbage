@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '../global/styles'
 import { accountData } from '../global/data'
 import { logout } from '../redux/actions/userActions'
+
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -15,29 +16,26 @@ const Accountscreen = ({navigation}) => {
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
+    const userDetail = useSelector((state) => state.userDetail)
+    const { user } = userDetail
+
     const dispatch = useDispatch()
 
     const handleClick = (path, name) => {
         if(path !== 'Logout') {
             navigation.navigate(path, {destination: name})
         } else if(path === 'Logout') {
-            //navigation.navigate('Welcome')
             dispatch(logout())      
         }
     }
-
-    useEffect(() => {
-        if(!userInfo)
-            navigation.navigate('Welcome')
-    }, [userInfo, navigation])
 
     return (
         <SafeAreaView>
             <View style = {styles.container1}>
                 <Pressable onPress = {() => navigation.navigate('Editprofile')} style = {styles.view1} >
-                        <Text style = {styles.text1}>{userInfo.name}</Text>
+                        <Text style = {styles.text1}>{user.name}</Text>
                         <Image
-                            source = {userInfo.image ? {uri: userInfo.image} : require('../../assets/user.png')}
+                            source = {user.image ? {uri: user.image} : require('../../assets/user.png')}
                             resizeMode = 'contain'
                             style = {styles.image1}
                         />
@@ -92,7 +90,8 @@ const styles = StyleSheet.create({
     view1:{
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        height: SCREEN_HEIGHT/10
+        height: SCREEN_HEIGHT/10,
+        //width: -SCREEN_WIDTH/3
     },
     text1:{
         marginTop: SCREEN_HEIGHT/25,

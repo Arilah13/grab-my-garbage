@@ -21,7 +21,7 @@ export const Login = (email, password) => async (dispatch) => {
             payload: data
         })
 
-        localStorage.setItem('userInfo', JSON.stringify(data))
+        AsyncStorage.setItem('userInfo', JSON.stringify(data))
     } catch (err) {
         dispatch({
             type: actionTypes.USER_LOGIN_FAIL,
@@ -41,7 +41,7 @@ export const specialLogin = (info) => async(dispatch) => {
 
         const { name, email, photoUrl } = info
 
-        const { data } = await axios.post('http://192.168.13.1:5000/users/register',
+        const { data } = await axios.post('http://192.168.13.1:5000/users/googleregister',
             {name, email, registerrole, photoUrl}, config, 
         ).catch((err) => console.log(err))
 
@@ -54,7 +54,7 @@ export const specialLogin = (info) => async(dispatch) => {
     } catch (err) {
         dispatch({
             type: actionTypes.USER_REGISTER_FAIL,
-            payload: err.response.data.msg
+            payload: err.response.data.msg || 'Expo broken'
         })
     }
 }
@@ -94,6 +94,32 @@ export const register = ({name, email, password, phone_number, image}) => async(
     }
 }
 
+export const uploadDetails = (info) => async (dispatch) => {
+    try{
+        const config = {
+            headers: {
+                'Content-type': 'application/json'
+            },
+        }
+
+        const { email } = info
+
+        const { data } = await axios.post('http://192.168.13.1:5000/users/get',
+            {email}, config, 
+        ).catch((err) => console.log(err))
+
+        dispatch({
+            type: actionTypes.USER_LOGIN_SUCCESS,
+            payload: data
+        })
+    } catch (err){
+        dispatch({
+            type: actionTypes.USER_LOGIN_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}
+
 export const getUserDetails = (id) => async (dispatch, getState) => {
     try {
         dispatch({
@@ -109,7 +135,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`http://192.168.13.1:5000/users/${id}`, config)
+        const { data } = await axios.get(`http://192.168.13.1:5000/users/profile/${id}`, config)
 
         dispatch({
             type: actionTypes.USER_DETAILS_SUCCESS,
@@ -125,6 +151,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
 
 export const updateUserProfile = (user) => async (dispatch, getState) => {
     try {
+        
         dispatch({
             type: actionTypes.USER_UPDATE_PROFILE_REQUEST
         })
@@ -137,8 +164,8 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
                 Authorization: `Bearer ${userInfo.token}`
             },
         }
-
-        const { data } = await axios.put('/users/profile', user, config)
+        
+        const { data } = await axios.put(`http://192.168.13.1:5000/users/profile/${userInfo._id}`, user, config)
 
         dispatch({
             type: actionTypes.USER_UPDATE_PROFILE_SUCCESS,

@@ -10,7 +10,8 @@ import {
     googleUserLoginReducer,
     userRegisterReducer,
     userLoginReducer,
-    userDetailsReducer
+    userDetailsReducer,
+    userUpdateProfileReducer
 } from './reducers/userReducers'
 
 const reducer = combineReducers({
@@ -19,7 +20,8 @@ const reducer = combineReducers({
     userLogin: googleUserLoginReducer,
     userRegister: userRegisterReducer,
     userLogin:  userLoginReducer,
-    userDetail: userDetailsReducer
+    userDetail: userDetailsReducer,
+    userUpdateProfile: userUpdateProfileReducer
 })
 
 const middleware = [thunk]

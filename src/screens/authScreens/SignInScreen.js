@@ -25,7 +25,6 @@ const Signinscreen = ({navigation}) => {
     const [googleSubmitting, setGoogleSubmitting] = useState(false)
     const [status, setStatus] = useState(false)
     const [validated, setValidated] = useState(false)
-    const [mark, setMark] = useState(false)
 
     const formikRef = useRef()
     const password1 = useRef('password')
@@ -93,17 +92,7 @@ const Signinscreen = ({navigation}) => {
 
                 if(type === 'success') 
                 {          
-                    setMark(false)
                     setGoogleSubmitting(false)  
-                    showMessage({
-                        message: 'Google SignIn Successful',
-                        type: 'success',
-                        autoHide: true,
-                        animated: true,
-                        animationDuration: 150,
-                        duration: 800,
-                    })                
-                    setTimeout(() => navigation.navigate('Home'), 900)
                 }
                 else
                 {
@@ -153,16 +142,7 @@ const Signinscreen = ({navigation}) => {
             if(success === true)
             {  
                 setStatus(false)
-                showMessage({
-                    message: 'Login Successful',
-                    type: 'success',
-                    autoHide: true,
-                    animated: true,
-                    animationDuration: 150,
-                    duration: 800,
-                })
                 formikRef.current.resetForm()
-                setTimeout(() => navigation.navigate('Home'), 800) 
             }
             else
             {

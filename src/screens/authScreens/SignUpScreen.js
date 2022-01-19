@@ -64,11 +64,17 @@ const Signupscreen = ({navigation}) => {
         }
 
         const isNum = /^\d+$/
-        if(!isNum.test(values.phone_number)) {
-            errors.phone = 'Must be only digits'
-        } else if(isNum.test(values.phone_number)) {
+        if(values.phone_number) {
+            if(!isNum.test(values.phone_number)) {
+                errors.phone = 'Phone Number Must be only digits'
+            } else if(isNum.test(values.phone_number)) {
+                errors.phone = null
+            }
+        } else {
             errors.phone = null
         }
+
+        console.log(errors)
 
         if(errors.email !== null && errors.password !== null && errors.name !== null && errors.phone !== null){
             displayMessage(errors.email, errors.password, errors.name, errors.phone)
@@ -78,29 +84,29 @@ const Signupscreen = ({navigation}) => {
             displayMessage(errors.email, null, null, null)
         } else if (errors.name !== null, errors.password === null && errors.email === null && errors.phone === null) {
             displayMessage(errors.name, null, null, null)
-        } else if (errors.password !== null && errors.name !== null && errors.email === null && error.phone === null) {
+        } else if (errors.name === null, errors.password === null && errors.email === null && errors.phone !== null) {
+            displayMessage(errors.phone, null, null, null)
+        } else if (errors.password !== null && errors.name !== null && errors.email === null && errors.phone === null) {
             displayMessage(errors.password, errors.name, null, null)
-        } else if (errors.password !== null && errors.name !== null && errors.email !== null && error.phone === null) {
+        } else if (errors.password !== null && errors.name !== null && errors.email !== null && errors.phone === null) {
             displayMessage(errors.password, errors.name, errors.email, null)
-        } else if (errors.password !== null && errors.name === null && errors.email !== null && error.phone === null) {
+        } else if (errors.password !== null && errors.name === null && errors.email !== null && errors.phone === null) {
             displayMessage(errors.password, errors.email, null, null)
-        } else if (errors.password !== null && errors.name === null && errors.email === null && error.phone !== null) {
+        } else if (errors.password !== null && errors.name === null && errors.email === null && errors.phone !== null) {
             displayMessage(errors.password, errors.phone, null, null)
-        } else if (errors.password !== null && errors.name !== null && errors.email === null && error.phone !== null) {
+        } else if (errors.password !== null && errors.name !== null && errors.email === null && errors.phone !== null) {
             displayMessage(errors.password, errors.name, errors.phone, null)
-        } else if (errors.password !== null && errors.name === null && errors.email !== null && error.phone !== null) {
+        } else if (errors.password !== null && errors.name === null && errors.email !== null && errors.phone !== null) {
             displayMessage(errors.password, errors.email, errors.phone, null)
-        } else if (errors.password === null && errors.name !== null && errors.email !== null && error.phone === null) {
+        } else if (errors.password === null && errors.name !== null && errors.email !== null && errors.phone === null) {
             displayMessage(errors.name, errors.email, null, null)
-        } else if (errors.password === null && errors.name !== null && errors.email === null && error.phone !== null) {
+        } else if (errors.password === null && errors.name !== null && errors.email === null && errors.phone !== null) {
             displayMessage(errors.name, errors.phone, null, null)
-        } else if (errors.password === null && errors.name !== null && errors.email !== null && error.phone !== null) {
+        } else if (errors.password === null && errors.name !== null && errors.email !== null && errors.phone !== null) {
             displayMessage(errors.name, errors.phone, errors.email, null)
-        } else if (errors.password === null && errors.name === null && errors.email !== null && error.phone !== null) {
+        } else if (errors.password === null && errors.name === null && errors.email !== null && errors.phone !== null) {
             displayMessage(errors.email, errors.phone, null, null)
-        }
-
-        if(errors.email === null && errors.password === null && errors.name === null && errors.phone === null)
+        } else if(errors.email === null && errors.password === null && errors.name === null && errors.phone === null)
             setValidated(true)
 
     }
@@ -141,7 +147,7 @@ const Signupscreen = ({navigation}) => {
                 animationDuration: 150,
                 duration: 1200,
                 style: {
-                    height: 70
+                    height: 80
                 }
             })
         else
@@ -153,7 +159,7 @@ const Signupscreen = ({navigation}) => {
                 animationDuration: 150,
                 duration: 1500,
                 style: {
-                    height: 80
+                    height: 102
                 }
             })
     }
@@ -185,156 +191,149 @@ const Signupscreen = ({navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-        {/* <ScrollView 
-            showsVerticalScrollIndicator = {false}
-            stickyHeaderIndices = {[0]}
-        > */}
             <View style = {{height: SCREEN_HEIGHT/10}}>
                 <Headercomponent name = 'Welcome' />
             </View>
-            <View style = {{backgroundColor: colors.white, borderTopLeftRadius: 30, borderTopRightRadius: 30, height: 9*SCREEN_HEIGHT/10}}>
-                <View style = {styles.view1}>
-                    <Text style = {styles.title}>Sign-Up</Text>
-                </View>
-                <KeyboardAvoidingView behavior = 'position'>
-                <Formik 
-                    initialValues = {initialValues} 
-                    onSubmit = {(values, {setSubmitting}) => {
-                        validate(values)
-                        if(validated) {
-                            setTimeout(() => {
-                                setSubmitting(false)
-                                SignUp(values)
-                            }, 400)
-                        } else {
+            
+            <Formik 
+                initialValues = {initialValues} 
+                onSubmit = {(values, {setSubmitting}) => {
+                    validate(values)
+                    if(validated) {
+                        setTimeout(() => {
                             setSubmitting(false)
-                        }
-                    }}
-                    innerRef = {formikRef}
-                >
-                    {
-                        (props) => (
-                            <View style = {styles.view2}>
-                                <View>
-                                    <Text style = {{fontSize:15, color:colors.grey1}}>New on XpressFood ?</Text>
-                                </View>
+                            SignUp(values)
+                        }, 400)
+                    } else {
+                        setSubmitting(false)
+                    }
+                }}
+                innerRef = {formikRef}
+            >
+                {
+                    (props) => (       
+                        <View style = {{backgroundColor: colors.white, borderTopLeftRadius: 30, borderTopRightRadius: 30, height: 9*SCREEN_HEIGHT/10}}>
+                            <Text style = {styles.title}>Sign-Up</Text>
+
+                            <Text style = {{fontSize:15, color:colors.grey1, marginHorizontal: 15}}>New on XpressFood ?</Text>
+ 
+                            <View style = {styles.view1}>  
+                                <TextInput 
+                                    placeholder = 'Name'
+                                    style = {styles.textInput}
+                                    autoFocus = {false}
+                                    onChangeText = {props.handleChange('name')}
+                                    value = {props.values.name}
+                                    onSubmitEditing = {() => mobile1.current.focus()}
+                                />
+                                <TextInput 
+                                    placeholder = 'Mobile Number'
+                                    style = {styles.textInput}
+                                    keyboardType = 'number-pad'
+                                    autoFocus = {false}
+                                    onChangeText = {props.handleChange('phone_number')}
+                                    value = {props.values.phone_number}
+                                    ref = {mobile1}
+                                    onSubmitEditing = {() => email1.current.focus()}
+                                />                                     
+
+                                <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
                                     <View>
-                                        <TextInput 
-                                            placeholder = 'Name'
-                                            style = {styles.textInput}
-                                            autoFocus = {false}
-                                            onChangeText = {props.handleChange('name')}
-                                            value = {props.values.name}
-                                            onSubmitEditing = {() => mobile1.current.focus()}
-                                        />
-                                        <TextInput 
-                                            placeholder = 'Mobile Number'
-                                            style = {styles.textInput}
-                                            keyboardType = 'number-pad'
-                                            autoFocus = {false}
-                                            onChangeText = {props.handleChange('phone_number')}
-                                            value = {props.values.phone_number}
-                                            ref = {mobile1}
-                                            onSubmitEditing = {() => email1.current.focus()}
-                                        />                                     
-                                    </View>
-
-                                    <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
-                                        <View>
-                                            <Icon
-                                                name = 'email'
-                                                color = {colors.grey1}
-                                                type = 'material'
-                                            />
-                                        </View>
-                                        <View>
-                                            <TextInput 
-                                                placeholder = 'Email'
-                                                style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
-                                                autoFocus = {false}
-                                                keyboardType = 'email-address'
-                                                onChangeText = {props.handleChange('email')}
-                                                value = {props.values.email}
-                                                ref = {email1}
-                                                onSubmitEditing = {() => password1.current.focus()}
-                                            />
-                                        </View>
-                                    </View>
-
-                                    <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
-                                        <Icon 
-                                            name = 'lock'
+                                        <Icon
+                                            name = 'email'
                                             color = {colors.grey1}
                                             type = 'material'
                                         />
-                                        <TextInput 
-                                            placeholder = 'Password'
-                                            secureTextEntry = {show ? false : true}
-                                            style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
-                                            autoFocus = {false}
-                                            onChangeText = {props.handleChange('password')}
-                                            value = {props.values.password}
-                                            ref = {password1}
-                                        />
-                                        {
-                                            show ? (
-                                                <Icon 
-                                                name = 'visibility-off'
-                                                onPress = {handleVisibility}
-                                                color = {colors.grey1}
-                                                type = 'material'
-                                                />
-                                                ) : (
-                                                <Icon 
-                                                name = 'visibility'
-                                                onPress = {handleVisibility}
-                                                color = {colors.grey1}
-                                                type = 'material'
-                                                />
-                                            )
-                                        } 
-                                    </View>
-
-                                    <View style = {styles.view3}>
-                                        <Text style = {{fontSize:13}}>By Creating or logging into an account you are</Text>
-                                        <View style = {{flexDirection:'row'}}>
-                                            <Text style = {{fontSize:13}}>agreeing with our </Text>
-                                            <Text style = {styles.text4}> Terms & Conditions</Text>
-                                            <Text style = {{fontSize:13}}> and </Text>
-                                        </View>
-                                        <Text style = {styles.text4}> Privacy Statement</Text>
                                     </View>
                                     <View>
-                                        <Button 
-                                            title = 'Create my account'
-                                            buttonStyle = {styles.button}
-                                            onPress = {props.handleSubmit}
-                                            loading = {props.isSubmitting}
-                                            disabled = {props.isSubmitting}
+                                        <TextInput 
+                                            placeholder = 'Email'
+                                            style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
+                                            autoFocus = {false}
+                                            keyboardType = 'email-address'
+                                            onChangeText = {props.handleChange('email')}
+                                            value = {props.values.email}
+                                            ref = {email1}
+                                            onSubmitEditing = {() => password1.current.focus()}
                                         />
                                     </View>
-                                    <View style = {styles.view5}>
-                                        <Text style = {{fontSize:15, fontWeight:'bold',}}>OR</Text>
-                                    </View>
-                                    <View style = {styles.view6}>
-                                        <View style = {{marginTop: -20}}>
-                                            <Text>Already have an account with XpressFood?</Text>
-                                        </View>
-                                        <View>
-                                            <Button
-                                                title = 'Sign-In'
-                                                buttonStyle = {{...styles.button, marginTop: 5, height: 45, width: SCREEN_WIDTH/3, alignSelf: 'flex-end'}}
-                                                onPress = {() => {navigation.navigate('SignIn')}}
+                                </View>     
+                                <KeyboardAvoidingView behavior = 'position'> 
+                                <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
+                                    <Icon 
+                                        name = 'lock'
+                                        color = {colors.grey1}
+                                        type = 'material'
+                                    />
+                                    <TextInput 
+                                        placeholder = 'Password'
+                                        secureTextEntry = {show ? false : true}
+                                        style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
+                                        autoFocus = {false}
+                                        onChangeText = {props.handleChange('password')}
+                                        value = {props.values.password}
+                                        ref = {password1}
+                                    />
+                                    {
+                                        show ? (
+                                            <Icon 
+                                            name = 'visibility-off'
+                                            onPress = {handleVisibility}
+                                            color = {colors.grey1}
+                                            type = 'material'
                                             />
-                                        </View>
+                                            ) : (
+                                            <Icon 
+                                            name = 'visibility'
+                                            onPress = {handleVisibility}
+                                            color = {colors.grey1}
+                                            type = 'material'
+                                            />
+                                        )
+                                    } 
+                                </View>
+                    
+                                <View style = {styles.view3}>
+                                    <Text style = {{fontSize:13}}>By Creating or logging into an account you are</Text>
+                                    <View style = {{flexDirection:'row'}}>
+                                        <Text style = {{fontSize:13}}>agreeing with our </Text>
+                                        <Text style = {styles.text4}> Terms & Conditions</Text>
+                                        <Text style = {{fontSize:13}}> and </Text>
                                     </View>
-                            </View>
-                        )
-                    }
-                </Formik>
-                </KeyboardAvoidingView>
-            </View>
-        {/* </ScrollView> */}
+                                    <Text style = {styles.text4}> Privacy Statement</Text>
+                                </View>
+
+                                <View>
+                                    <Button 
+                                        title = 'Create my account'
+                                        buttonStyle = {styles.button}
+                                        onPress = {props.handleSubmit}
+                                        loading = {props.isSubmitting}
+                                        disabled = {props.isSubmitting}
+                                    />
+                                </View>
+
+                                <View style = {styles.view5}>
+                                    <Text style = {{fontSize:15, fontWeight:'bold',}}>OR</Text>
+                                </View>
+                                </KeyboardAvoidingView>
+                                <View style = {styles.view6}>
+                                    <View>
+                                        <Text>Already have an account with XpressFood?</Text>
+                                    </View>
+                                    <View>
+                                        <Button
+                                            title = 'Sign-In'
+                                            buttonStyle = {{...styles.button, marginTop: 5, height: 45, width: SCREEN_WIDTH/3, alignSelf: 'flex-end'}}
+                                            onPress = {() => {navigation.navigate('SignIn')}}
+                                        />
+                                    </View>
+                                </View>
+                            </View>   
+                        </View> 
+                    )
+                }
+            </Formik>
         </SafeAreaView>
     );
 }
@@ -343,21 +342,15 @@ export default Signupscreen
 
 const styles = StyleSheet.create({
  
-    view1:{
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        marginTop: 10,
-        marginBottom: 10,
-        paddingHorizontal: 15,
-        height: SCREEN_HEIGHT/20
-    },
     title:{
         color: colors.blue2,
         fontSize: 20,
         fontWeight: 'bold',
-        marginLeft: 20
+        marginLeft: 35,
+        marginTop: 10,
+        marginBottom: 10
     },
-    view2:{
+    view1:{
         justifyContent: 'flex-start',
         backgroundColor: 'white',
         paddingHorizontal: 15,
@@ -393,13 +386,10 @@ const styles = StyleSheet.create({
     view5:{
         justifyContent: 'flex-start',
         alignItems: 'center',
-        paddingTop: 5,
-        height: 50
     },
     view6:{
         backgroundColor: 'white',
         paddingHorizontal: 5,   
-        height: 40 
     },
 
 })

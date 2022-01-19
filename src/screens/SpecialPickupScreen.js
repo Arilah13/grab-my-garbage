@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, StyleSheet, Text, Image, Dimensions, TouchableOpacity, Pressable, ScrollView, Linking } from 'react-native'
+import { View, StyleSheet, Text, Image, Dimensions, TouchableOpacity, Pressable, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
 import { MultiselectDropdown } from 'sharingan-rn-modal-dropdown'

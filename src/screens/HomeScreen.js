@@ -1,28 +1,40 @@
 import React, { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { View, StyleSheet, Text, FlatList, Dimensions, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
+import { getUserDetails } from '../redux/actions/userActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Homescreen = ({navigation}) => {
 
+    const dispatch = useDispatch()
+
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
+
+    const userDetail = useSelector((state) => state.userDetail)
+    const { user } = userDetail
+
+    useEffect(() => {
+        if(userInfo !== undefined) {
+            dispatch(getUserDetails(userInfo._id))
+        }
+    }, [userInfo])
 
     return (
         <SafeAreaView>
             <View style={{backgroundColor: colors.blue1}}>
                 <View style = {styles.container}>
                     <View style = {styles.view1}>
-                        <Text style = {styles.text1}>Hi {userInfo.name}</Text>
+                        <Text style = {styles.text1}>Hi {user.name}</Text>
                         <Text style = {styles.text2}>Have you taken out the trash today?</Text>
                         <Image
-                            source = {userInfo.image ? {uri: userInfo.image} : require('../../assets/user.png')}
+                            source = {user.image ? {uri: user.image} : require('../../assets/user.png')}
                             style = {styles.image1}
                         />
                     </View>

@@ -4,14 +4,16 @@ const auth = require('../middleware/auth')
 
 router.post('/register', userController.register)
 
+router.post('/googleregister', userController.google)
+
 router.post('/login', userController.login)
 
 router.get('/logout', userController.logout)
 
 router.post('/refresh_token', auth, userController.refreshtoken)
 
-router.route('/profile').get(auth, userController.getUserProfile).put(auth, userController.updateUserProfile)
+router.route('/profile/:id').get(auth, userController.getUserById).put(auth, userController.updateUserProfile)
 
-router.route('/:id').get(auth, userController.getUserById)
+router.route('/get').post(userController.returnDetails)
 
 module.exports = router

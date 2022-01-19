@@ -1,15 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, ImageBackground, TextInput, Pressable, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, ImageBackground, TextInput, Pressable, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon, Button } from 'react-native-elements'
 import { Formik } from 'formik'
 import * as ImagePicker from 'expo-image-picker'
 import Modal from 'react-native-modal'
+import * as Yup from 'yup'
+import { showMessage } from 'react-native-flash-message'
 
 import { colors } from '../global/styles'
 import Headercomponent from '../components/HeaderComponent'
-import { getUserDetails } from '../redux/actions/userActions'
+import { getUserDetails, updateUserProfile } from '../redux/actions/userActions'
+import { USER_UPDATE_PROFILE_RESET } from '../redux/constants/userConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -19,20 +22,22 @@ const Editprofilescreen = ({navigation}) => {
     const userDetail = useSelector((state) => state.userDetail)
     const { user } = userDetail
 
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
+    const userUpdateProfile = useSelector((state) => state.userUpdateProfile)
+    const { userInfo: info, success } = userUpdateProfile
 
     const [modalVisible, setModalVisible] = useState(false)
-    const [name, setName] = useState('')
-    const [phone_number, setPhone_number] = useState('')
-    const [email, setEmail] = useState('')
-    const [image1, setImage] = useState(null)
+    const [image1, setImage1] = useState(null)
+    const [image2, setImage2] = useState(null)
+    const [imageSet, setImageSet] = useState(false)
 
     const dispatch = useDispatch()
 
-    const formikRef = useRef()
     const mobile1 = useRef('mobile')
     const email1 = useRef('email')
+    const formikRef = useRef()
+
+    const initialValues = {name: user.name ? user.name : '', phone_number: user.phone_number ? user.phone_number : '',
+                             email: user.email ? user.email : '', image : imageSet ? image2 : user.image}
 
     const selectGallery = async() => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -44,9 +49,15 @@ const Editprofilescreen = ({navigation}) => {
                 allowsEditing: true,
                 aspect: [4,5],
                 quality: 0,
+                base64: true
             })
+            if(!image.cancelled) {
+                setImageSet(true)
+                setImage1(image.uri)
+                setImage2(image.base64)
+                formikRef.current.handleChange('image')
+            }
             setModalVisible(false)
-            setImage(image.uri)
         }
     }
     const selectCamera = async() => {
@@ -59,34 +70,55 @@ const Editprofilescreen = ({navigation}) => {
                 allowsEditing: true,
                 aspect: [4,5],
                 quality: 0,
+                base64: true
             })
+            if(!image.cancelled) {
+                setImageSet(true)
+                setImage1(image.uri)
+                setImage2(image.base64)
+                formikRef.current.handleChange('image')
+            }
             setModalVisible(false)
-            setImage(image.uri)
         }
     }
 
-    const initialValues = {name: name ? name : '', phone_number: phone_number ? phone_number : '',
-                             email: email ? email : ''}
+    const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+    const profileSchema = Yup.object().shape({
+        name: Yup.string()
+          .required('Name is required'),
+        phone_number: Yup.string()
+          .matches(phoneRegExp, 'Phone number is not valid')
+          .min(10, 'Phone number should contain only 10 digits')
+          .max(10, 'Phone number should contain only 10 digits'),
+        email: Yup.string().email('Invalid email address').required('Email address is required'),
+    })
 
     useEffect(() => {
-        dispatch(getUserDetails(userInfo._id))
-        setName(user.name)
-        setPhone_number(user.phone)
-        setEmail(user.email)
-        setImage(user.image)
-    }, [navigation])
+        if(success === true) {
+            dispatch(getUserDetails(user._id))
+            dispatch({ type: USER_UPDATE_PROFILE_RESET })
+            showMessage({
+                message: 'Profile updated successfullly',
+                type: 'success',
+                autoHide: true,
+                animated: true,
+                animationDuration: 150,
+                duration: 800,
+            })
+        }
+    }, [info, success])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
             <Headercomponent name = 'Account' />
-
+            <KeyboardAvoidingView behavior = 'position' keyboardVerticalOffset = {-160}>
             <View style = {styles.container}>
                 <View style = {styles.view}>
                     <Text style = {styles.text}>Profile</Text>
                     <Pressable onPress = {() => setModalVisible(true)} >
                         <ImageBackground 
                             style = {styles.image} 
-                            source = {user.image ? {uri: image1} : require('../../assets/user.png')}
+                            source = {imageSet ? {uri: image1} : user.image ? {uri: user.image} : require('../../assets/user.png')}
                         >
                             <Icon
                                 type = 'material'
@@ -98,80 +130,94 @@ const Editprofilescreen = ({navigation}) => {
                     </Pressable>
                 </View>
 
-                <View style = {styles.view2}>
-                    <Formik
-                        initialValues = {initialValues}
-                        enableReinitialize
-                        onSubmit = {(values, {setSubmitting}) => {
-                            validate(values)
-                            if(validated) {
-                                setTimeout(() => {
-                                    setSubmitting(false)
-                                    
-                                }, 400)
-                            } else {
-                                setSubmitting(false)
-                            }
-                        }}
-                        innerRef = {formikRef}
-                    >
-                    {   
-                        (props) => 
-                        <View style = {{padding: 20}}>
-                            <View>
-                                <TextInput 
-                                    placeholder = 'Name'
-                                    style = {styles.textInput}
-                                    autoFocus = {false}
-                                    onChangeText = {props.handleChange('name')}
-                                    value = {props.values.name}
-                                    onSubmitEditing = {() => mobile1.current.focus()}
-                                />
-                                <TextInput 
-                                    placeholder = 'Mobile Number'
-                                    style = {styles.textInput}
-                                    keyboardType = 'number-pad'
-                                    autoFocus = {false}
-                                    onChangeText = {props.handleChange('phone_number')}
-                                    value = {props.values.phone_number}
-                                    ref = {mobile1}
-                                    onSubmitEditing = {() => email1.current.focus()}
-                                />                                     
-                            </View>
-                            <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
-                                <View>
-                                    <Icon
-                                        name = 'email'
-                                        color = {colors.grey1}
-                                        type = 'material'
-                                    />
-                                </View>
+                <Formik
+                    initialValues = {initialValues}
+                    enableReinitialize
+                    validateOnMount = {false}
+                    validateOnBlur = {false}
+                    validateOnChange = {false}
+                    validationSchema = {profileSchema}
+                    onSubmit = {(values, actions) => {
+                        if(actions.validateForm) {
+                            setTimeout(() => {
+                                actions.setSubmitting(false)
+                                dispatch(updateUserProfile(values))
+                            }, 400)
+                        } else {
+                            setSubmitting(false)
+                        }
+                    }}
+                    innerRef = {formikRef}
+                >
+                {   
+                    (props) => 
+                    <>
+                        <View style = {styles.view2}>
+                            <View style = {{padding: 20}}>
                                 <View>
                                     <TextInput 
-                                        placeholder = 'Email'
-                                        keyboardType = 'email-address'
+                                        placeholder = 'Name'
+                                        style = {{...styles.textInput, borderColor: colors.blue2, borderWidth: 1}}
                                         autoFocus = {false}
-                                        style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
-                                        onChangeText = {props.handleChange('email')}
-                                        value = {props.values.email}
+                                        onChangeText = {props.handleChange('name')}
+                                        value = {props.values.name}
+                                        onSubmitEditing = {() => !props.values.phone_number && mobile1.current.focus()}
                                     />
+                                    {props.errors.name && props.touched.name && 
+                                        <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.name}</Text>}
+                                    <TextInput 
+                                        placeholder = 'Mobile Number'
+                                        style = {styles.textInput}
+                                        keyboardType = 'number-pad'
+                                        autoFocus = {false}
+                                        onChangeText = {props.handleChange('phone_number')}
+                                        value = {props.values.phone_number}
+                                        ref = {mobile1}
+                                        onSubmitEditing = {() => !props.values.email && email1.current.focus()}
+                                    />          
+                                    {props.errors.phone_number && props.touched.phone_number && 
+                                        <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.phone_number}</Text>}                           
                                 </View>
+                                <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10, borderColor: colors.blue2, borderWidth: 1}}>
+                                    <View>
+                                        <Icon
+                                            name = 'email'
+                                            color = {colors.grey1}
+                                            type = 'material'
+                                        />
+                                    </View>
+                                    <View>
+                                        <TextInput 
+                                            placeholder = 'Email'
+                                            keyboardType = 'email-address'
+                                            autoFocus = {false}
+                                            style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
+                                            onChangeText = {props.handleChange('email')}
+                                            value = {props.values.email}
+                                            ref = {email1}
+                                        />
+                                    </View>     
+                                </View>
+                                {props.errors.email && props.touched.email && 
+                                    <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.email}</Text>   
+                                }
                             </View>
                         </View>
-                    }
-                    </Formik> 
-                </View>
-                <View style = {{top: SCREEN_HEIGHT/1.35, position: 'absolute', width: SCREEN_WIDTH, padding: 15}}>
-                    <Button 
-                        title = 'Update Account'
-                        buttonStyle = {styles.button}
-                        onPress = {formikRef.handleSubmit}
-                        loading = {formikRef.isSubmitting}
-                        disabled = {formikRef.isSubmitting}
-                    />
-                </View>
+                        
+                        <View style = {{top: SCREEN_HEIGHT/1.35, position: 'absolute', width: SCREEN_WIDTH, padding: 15}}>
+                            <Button 
+                                title = 'Update Account'
+                                buttonStyle = {styles.button}
+                                onPress = {props.handleSubmit}
+                                loading = {props.isSubmitting}
+                                disabled = {props.isSubmitting}
+                            />
+                        </View>
+                    </>
+                }
+                </Formik> 
             </View>
-
+            </KeyboardAvoidingView>
             <Modal 
                 isVisible = {modalVisible}
                 swipeDirection = {'down'}
@@ -234,7 +280,7 @@ const styles = StyleSheet.create({
     },
     view:{
         height: 3*SCREEN_HEIGHT/10,
-        alignItems: 'center'
+        alignItems: 'center',
     },
     view2:{
         height: 6*SCREEN_HEIGHT/10,
