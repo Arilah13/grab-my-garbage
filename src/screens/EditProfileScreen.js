@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, ImageBackground, TextInput, Pressable, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, ImageBackground, TextInput, Pressable, TouchableOpacity, KeyboardAvoidingView, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon, Button } from 'react-native-elements'
 import { Formik } from 'formik'
 import * as ImagePicker from 'expo-image-picker'
 import Modal from 'react-native-modal'
 import * as Yup from 'yup'
-import { showMessage } from 'react-native-flash-message'
 
 import { colors } from '../global/styles'
 import Headercomponent from '../components/HeaderComponent'
@@ -36,7 +35,7 @@ const Editprofilescreen = ({navigation}) => {
     const email1 = useRef('email')
     const formikRef = useRef()
 
-    const initialValues = {name: user.name ? user.name : '', phone_number: user.phone_number ? user.phone_number : '',
+    const initialValues = {name: user.name ? user.name : '', phone_number: user.phone ? user.phone : '',
                              email: user.email ? user.email : '', image : imageSet ? image2 : user.image}
 
     const selectGallery = async() => {
@@ -97,14 +96,16 @@ const Editprofilescreen = ({navigation}) => {
         if(success === true) {
             dispatch(getUserDetails(user._id))
             dispatch({ type: USER_UPDATE_PROFILE_RESET })
-            showMessage({
-                message: 'Profile updated successfullly',
-                type: 'success',
-                autoHide: true,
-                animated: true,
-                animationDuration: 150,
-                duration: 800,
-            })
+            Alert.alert('Profile Update Successful', 'Profile Details have been updated successfully',
+                [
+                    {
+                        text: 'Ok',
+                    }
+                ],
+                {
+                    cancelable: true
+                }
+            )
         }
     }, [info, success])
 

@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, Modal, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { WebView } from 'react-native-webview'
 import { showMessage } from 'react-native-flash-message'
 import { Icon, Button } from 'react-native-elements'
+import { useStripe, initStripe } from '@stripe/stripe-react-native'
 
 import { colors } from '../global/styles'
 import Headercomponent from '../components/HeaderComponent'
@@ -13,22 +15,102 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Paymentscreen = ({route, navigation}) => {
 
+    const dispatch = useDispatch()
+
+    const {initPaymentSheet, presentPaymentSheet, confirmPaymentSheetPayment} = useStripe()
+
     const { creditcard, paypal, cash } = route.params
 
     const [showGateway, setShowGateway] = useState(false)
-    const [prog, setProg] = useState(false);
-    const [progClr, setProgClr] = useState('#000');
+    const [prog, setProg] = useState(false)
+    const [progClr, setProgClr] = useState('#000')
+    const [paymentSheetEnabled, setPaymentSheetEnabled] = useState(false)
+    const [paymentMethod, setPaymentMethod] = useState(false)
+    const [isLoading, setLoading] = useState(false)
 
-    const pay = () => {
-        if(paypal === true)
+    const paymentIntent = useSelector((state) => state.paymentIntent)
+    const {paymentInfo} = paymentIntent
+
+    const paymentSheet = useSelector((state) => state.paymentSheet)
+    const {paymentSheet: sheet} = paymentSheet
+
+    const initializeStripe = async() => {
+        const publishableKey = await paymentInfo.publishable_key
+        
+        if(publishableKey) {
+            await initStripe({
+                publishableKey: publishableKey
+            })
+        }
+    }
+
+    const initialisePaymentSheet = async() => {
+        await initializeStripe()
+
+        try {
+            const {error, paymentOption} = await initPaymentSheet({
+                customerId: sheet.customer,
+                customerEphemeralKeySecret: sheet.ephemeralKey,
+                setupIntentClientSecret:  sheet.paymentIntent,
+                // customFlow: true,
+                merchantDisplayName: 'grab-my-garbage Inc.',
+                // applePay: false,
+                // merchantCountryCode: 'US',
+                // style: 'alwaysDark',
+                // googlePay: false,
+                // testEnv: true,
+            })
+
+            if (!error) {
+                setPaymentSheetEnabled(true)
+            }
+            if(paymentOption) {
+                setPaymentMethod(paymentOption)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const choosePaymentOption = async() => {
+        await initialisePaymentSheet()
+
+        const {error, paymentOption} = await presentPaymentSheet({
+            confirmPayment: false
+        })
+
+        if(error) {
+            console.log(error)
+            setLoading(false)
+        } else if(paymentOption) {
+            setPaymentMethod({
+                label: paymentOption?.label,
+                image: paymentOption?.image
+            })
+            setLoading(false)
+        } else {
+            setPaymentMethod (null)
+            setLoading(false)
+        }
+    }
+
+    const pay = async() => {
+        if(paypal === true) {
+            setLoading(true)
             setShowGateway(true)
-        if(cash === true)
+        } else if(cash === true) {
+            setLoading(true)
             navigation.navigate('')
+        } else if(creditcard === true) {
+            setLoading(true)
+            choosePaymentOption()
+        }
     }
 
     const onMessage = (e) => {
         let data = e.nativeEvent.data;
         setShowGateway(false);
+        setLoading(false)
         let payment = JSON.parse(data);
         if (payment.status === 'COMPLETED') {
             showMessage({
@@ -76,6 +158,8 @@ const Paymentscreen = ({route, navigation}) => {
                     <Button
                         title = 'Confirm'
                         buttonStyle = {styles.button}
+                        loading = {isLoading}
+                        disabled = {isLoading}
                         onPress = {() => pay()}
                     />
                 </View>
@@ -93,7 +177,11 @@ const Paymentscreen = ({route, navigation}) => {
                         <View style={styles.wbHead}>
                             <TouchableOpacity
                                 style={{padding: 13}}
-                                onPress={() => setShowGateway(false)}>
+                                onPress={() => {
+                                    setShowGateway(false)
+                                    setLoading(false)
+                                }}
+                            >
                                 <Icon
                                     type = 'feather'
                                     name = 'x'

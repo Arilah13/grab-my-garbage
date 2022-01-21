@@ -27,7 +27,6 @@ const userController = {
                     email: email,
                     //phone: phone_number,
                     role: registerrole === "user" ? 0 : 1,
-                    //password: passwordHash,
                     image: photoUrl
                 })
 
@@ -140,12 +139,12 @@ const userController = {
     },
     updateUserProfile: async(req, res) => {
         try{
-            let img
             const user = await Users.findById(req.params.id).select('-password')
             if(!user) return res.status(400).json({msg: "User does not exists."})
 
             user.name = req.body.name || user.name
             user.email = req.body.email || user.email
+            user.phone = req.body.phone_number || user.phone
 
             if(req.body.image) {
                 const check = checkURL(req.body.image)

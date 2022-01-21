@@ -2,9 +2,11 @@ require('dotenv').config()
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const socket_io = require('socket.io')
 const connectDB = require('./config/db')
 
 const userRoutes = require('./routes/userRouter')
+const paymentRoutes = require('./routes/paymentRouter')
 
 const app = express()
 app.use(express.urlencoded({extended: false}))
@@ -15,6 +17,7 @@ app.use(cors())
 connectDB()
 
 app.use('/users', userRoutes)
+app.use('/payment', paymentRoutes)
 
 const PORT = process.env.PORT || 5000
 

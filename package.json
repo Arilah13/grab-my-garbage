@@ -52,6 +52,7 @@
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.1",
     "sharingan-rn-modal-dropdown": "^1.4.0",
+    "socket.io-client": "^4.4.1",
     "yup": "^0.32.11"
   },
   "devDependencies": {

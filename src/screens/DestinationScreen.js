@@ -68,7 +68,7 @@ const Destinationscreen = ({route, navigation}) => {
 
     return (
         <SafeAreaView style = {styles.container}>
-            <KeyboardAvoidingView behavior = 'position' keyboardVerticalOffset = {-100}>
+            <KeyboardAvoidingView behavior = 'position' keyboardVerticalOffset = {-50}>
             <View style = {styles.container2}>
                 <Mapcomponent 
                     latlng = {latlng}

@@ -13,13 +13,13 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Accountscreen = ({navigation}) => {
 
+    const dispatch = useDispatch()
+
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
     const userDetail = useSelector((state) => state.userDetail)
     const { user } = userDetail
-
-    const dispatch = useDispatch()
 
     const handleClick = (path, name) => {
         if(path !== 'Logout') {

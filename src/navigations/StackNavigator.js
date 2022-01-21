@@ -8,13 +8,11 @@ import TabNavigator from './TabNavigator'
 import Destinationscreen from '../screens/DestinationScreen'
 import Paymentmethodscreen from '../screens/PaymentMethodScreen'
 import Paymentscreen from '../screens/PaymentScreen'
-import Addcardscreen from '../screens/AddCardScreen'
 import Schedulescreen from '../screens/ScheduleScreen'
 import Welcomescreen from '../screens/authScreens/WelcomeScreen'
 import Signupscreen from '../screens/authScreens/SignUpScreen'
 import Signinscreen from '../screens/authScreens/SignInScreen'
 import Editprofilescreen from '../screens/EditProfileScreen'
-import Paymentoptionsscreen from '../screens/PaymentOptionsScreen'
 import Changepasswordscreen from '../screens/ChangePasswordScreen'
 import { uploadDetails } from '../redux/actions/userActions'
 
@@ -107,14 +105,6 @@ const StackNavigator = () => {
                     />
 
                     <Stack.Screen
-                        name = 'AddCard'
-                        component = {Addcardscreen}
-                        options = {{
-                            headerShown: false
-                        }}
-                    />
-
-                    <Stack.Screen
                         name = 'Schedule'
                         component = {Schedulescreen}
                         options = {{
@@ -125,14 +115,6 @@ const StackNavigator = () => {
                     <Stack.Screen
                         name = 'Editprofile'
                         component = {Editprofilescreen}
-                        options = {{
-                            headerShown: false
-                        }}
-                    />
-
-                    <Stack.Screen
-                        name = 'Paymentoption'
-                        component = {Paymentoptionsscreen}
                         options = {{
                             headerShown: false
                         }}

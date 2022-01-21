@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { View, Text, Image, StyleSheet, Dimensions } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, Text, Image, StyleSheet, Dimensions, FlatList, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Icon, CheckBox, Button } from 'react-native-elements'
-import { showMessage } from 'react-native-flash-message'
+import { CheckBox, Button } from 'react-native-elements'
+import Modal from 'react-native-modal'
 
 import { colors } from '../global/styles'
 import Headercomponent from '../components/HeaderComponent'
@@ -14,9 +14,9 @@ const Paymentmethodscreen = ({route, navigation}) => {
 
     const { name } = route.params
 
-    const [ check1, setCheck1 ] = useState(false)
-    const [ check2, setCheck2 ] = useState(false)
-    const [ check3, setCheck3 ] = useState(false)
+    const [check1, setCheck1] = useState(false)
+    const [check2, setCheck2] = useState(false)
+    const [check3, setCheck3] = useState(false)
 
     const Check1 = () => {
         setCheck1(true)
@@ -36,11 +36,10 @@ const Paymentmethodscreen = ({route, navigation}) => {
 
     const pay = () => {
         if(check1 === true)
-            navigation.navigate('Payment', {
-                creditcard: true, paypal: false, cash: false
-            })
+        navigation.navigate('Payment', {
+            creditcard: true, paypal: false, cash: false
+        })
         if(check2 === true)
-            //setShowGateway(true)
             navigation.navigate('Payment', {
                 creditcard: false, paypal: true, cash: false
             })
@@ -49,15 +48,16 @@ const Paymentmethodscreen = ({route, navigation}) => {
                 creditcard: false, paypal: false, cash: true
             })
         if(check1 === false && check2 === false && check3 === false)
-            showMessage({
-                message: 'Select An Option',
-                type: 'default',
-                backgroundColor: colors.warning,
-                autoHide: true,
-                animated: true,
-                animationDuration: 150,
-                duration: 800,
-            })
+            Alert.alert('Select One Option', 'An option has to be selected to proceed forward',
+                [
+                    {
+                        text: 'Ok',
+                    }
+                ],
+                {
+                    cancelable: true
+                }
+            )
     }
 
     return (
@@ -144,7 +144,8 @@ const Paymentmethodscreen = ({route, navigation}) => {
                         onPress = {() => pay()}
                     />
                 </View>
-            </View>    
+            </View>  
+
         </SafeAreaView>
     );
 }
@@ -186,5 +187,35 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         height: 50,
     },
+    modal:{
+        height: '55%',
+        //width: 500,
+        backgroundColor: colors.white,
+        borderRadius: 20
+    },
+    text4:{
+        margin: 30,
+        marginBottom: 0,
+        fontSize: 15,
+        color: colors.blue2,
+        fontWeight: 'bold'
+    },
+    view2:{
+        height: 2.2*SCREEN_HEIGHT/25,
+        marginLeft: 17,
+        width: '90%',
+        backgroundColor: colors.blue1,
+        borderRadius: 20,
+    },
+    image1:{
+        height: 50
+    },
+    text5:{
+        color: colors.blue2,
+        margin: 20,
+        marginLeft: 60,
+        marginTop: 18,
+        fontSize: 15
+    }
 
 })
