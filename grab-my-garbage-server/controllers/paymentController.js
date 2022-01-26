@@ -25,13 +25,11 @@ const paymentController = {
                 {apiVersion: '2020-08-27'}
             )
 
-            const paymentIntent = await stripe.setupIntents.create({
-                amount: 1000,
-                currency: 'eur',
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: 100000,
+                currency: 'lkr',
                 customer: payment,
-                automatic_payment_methods: {
-                    enabled: true
-                },
+                payment_method_types: ['card']
             })
 
             res.json({

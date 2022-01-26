@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { View, Text, Image, StyleSheet, Dimensions, FlatList, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { CheckBox, Button } from 'react-native-elements'
 import Modal from 'react-native-modal'
 
-import { colors } from '../global/styles'
-import Headercomponent from '../components/HeaderComponent'
+import { colors } from '../../global/styles'
+import Headercomponent from '../../components/HeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -36,9 +36,9 @@ const Paymentmethodscreen = ({route, navigation}) => {
 
     const pay = () => {
         if(check1 === true)
-        navigation.navigate('Payment', {
-            creditcard: true, paypal: false, cash: false
-        })
+            navigation.navigate('Payment', {
+                creditcard: true, paypal: false, cash: false
+            })
         if(check2 === true)
             navigation.navigate('Payment', {
                 creditcard: false, paypal: true, cash: false
@@ -61,14 +61,14 @@ const Paymentmethodscreen = ({route, navigation}) => {
     }
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+        <SafeAreaView style = {{backgroundColor: colors.blue1}}>           
             <Headercomponent name = {name === 'Special' ? 'Special Pickup' : 'Schedule'} />
 
             <View style = {styles.container2}>
                 <Text style = {styles.text2}>Payment Methods</Text>
                 <View style = {styles.view1}>
                     <Image
-                        source = {require('../../assets/visa.png')}
+                        source = {require('../../../assets/visa.png')}
                         resizeMode = 'contain'
                         style = {{
                             position: 'absolute',
@@ -93,7 +93,7 @@ const Paymentmethodscreen = ({route, navigation}) => {
                 <View style = {{...styles.view1, marginTop: 25}}>
                     <Text style = {styles.text3}>Paypal</Text>
                     <Image
-                        source = {require('../../assets/paypal.png')}
+                        source = {require('../../../assets/paypal.png')}
                         resizeMode = 'contain'
                         style = {{
                             position: 'absolute',
@@ -116,7 +116,7 @@ const Paymentmethodscreen = ({route, navigation}) => {
                 <View style = {{...styles.view1, marginTop: 25}}>
                     <Text style = {styles.text3}>Cash On Pickup</Text>
                     <Image
-                        source = {require('../../assets/money.png')}
+                        source = {require('../../../assets/money.png')}
                         resizeMode = 'contain'
                         style = {{
                             position: 'absolute',
@@ -145,7 +145,6 @@ const Paymentmethodscreen = ({route, navigation}) => {
                     />
                 </View>
             </View>  
-
         </SafeAreaView>
     );
 }

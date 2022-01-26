@@ -6,9 +6,11 @@ import { WebView } from 'react-native-webview'
 import { showMessage } from 'react-native-flash-message'
 import { Icon, Button } from 'react-native-elements'
 import { useStripe, initStripe } from '@stripe/stripe-react-native'
+import { StripeProvider } from '@stripe/stripe-react-native'
 
-import { colors } from '../global/styles'
-import Headercomponent from '../components/HeaderComponent'
+import { colors } from '../../global/styles'
+import Headercomponent from '../../components/HeaderComponent'
+import { getPaymentSheet } from '../../redux/actions/paymentActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -25,7 +27,6 @@ const Paymentscreen = ({route, navigation}) => {
     const [prog, setProg] = useState(false)
     const [progClr, setProgClr] = useState('#000')
     const [paymentSheetEnabled, setPaymentSheetEnabled] = useState(false)
-    const [paymentMethod, setPaymentMethod] = useState(false)
     const [isLoading, setLoading] = useState(false)
 
     const paymentIntent = useSelector((state) => state.paymentIntent)
@@ -37,35 +38,34 @@ const Paymentscreen = ({route, navigation}) => {
     const initializeStripe = async() => {
         const publishableKey = await paymentInfo.publishable_key
         
-        if(publishableKey) {
-            await initStripe({
-                publishableKey: publishableKey
-            })
-        }
+        setTimeout(async() => {
+            if(publishableKey) {
+                await initStripe({
+                    publishableKey: publishableKey
+                })
+            }
+        }, 1000)       
     }
 
     const initialisePaymentSheet = async() => {
         await initializeStripe()
 
         try {
-            const {error, paymentOption} = await initPaymentSheet({
+            const {error} = await initPaymentSheet({
                 customerId: sheet.customer,
                 customerEphemeralKeySecret: sheet.ephemeralKey,
-                setupIntentClientSecret:  sheet.paymentIntent,
-                // customFlow: true,
+                paymentIntentClientSecret:  sheet.paymentIntent,
+                //customFlow: true,
                 merchantDisplayName: 'grab-my-garbage Inc.',
-                // applePay: false,
-                // merchantCountryCode: 'US',
-                // style: 'alwaysDark',
-                // googlePay: false,
+                //applePay: false,
+                //merchantCountryCode: 'US',
+                //style: 'alwaysDark',
+                //googlePay: false,
                 // testEnv: true,
             })
 
             if (!error) {
                 setPaymentSheetEnabled(true)
-            }
-            if(paymentOption) {
-                setPaymentMethod(paymentOption)
             }
         } catch (error) {
             console.log(error)
@@ -75,21 +75,15 @@ const Paymentscreen = ({route, navigation}) => {
     const choosePaymentOption = async() => {
         await initialisePaymentSheet()
 
-        const {error, paymentOption} = await presentPaymentSheet({
+        const {error} = await presentPaymentSheet({
             confirmPayment: false
         })
 
         if(error) {
             console.log(error)
             setLoading(false)
-        } else if(paymentOption) {
-            setPaymentMethod({
-                label: paymentOption?.label,
-                image: paymentOption?.image
-            })
-            setLoading(false)
-        } else {
-            setPaymentMethod (null)
+        } else if(!error) {
+            navigation.navigate('Paymentpresuccess')
             setLoading(false)
         }
     }
@@ -137,21 +131,28 @@ const Paymentscreen = ({route, navigation}) => {
         }
     }
 
+    useEffect(() => {
+        if(sheet.paymentIntent === undefined)
+            dispatch(getPaymentSheet())
+    }, [sheet.paymentIntent])
+
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+        <StripeProvider publishableKey = {paymentInfo.publishable_key}>
+
             <Headercomponent name = 'Payment Method' />
 
             <View style = {styles.container2}>
                 <Text style = {styles.text2}>Confirm Payment</Text>
                 <View style = {{padding: 20}}>
                     <Text style = {styles.text3}>Subtotal</Text>
-                    <Text style = {styles.text4}>Rs 20</Text>
+                    <Text style = {styles.text4}>Rs 820</Text>
                     <View style = {styles.border} />
                     <Text style = {styles.text3}>Tax</Text>
-                    <Text style = {styles.text4}>Rs 20</Text>
+                    <Text style = {styles.text4}>Rs 164</Text>
                     <View style = {styles.border} />
                     <Text style = {styles.text3}>Total</Text>
-                    <Text style = {styles.text4}>Rs 20</Text>
+                    <Text style = {styles.text4}>Rs 984</Text>
                 </View>
                 
                 <View style = {{top: SCREEN_HEIGHT/1.36, position: 'absolute', width: SCREEN_WIDTH, padding: 15}}>
@@ -224,6 +225,8 @@ const Paymentscreen = ({route, navigation}) => {
                     </View>
                 </Modal>
             ) : null}
+
+        </StripeProvider>
         </SafeAreaView>
     );
 }

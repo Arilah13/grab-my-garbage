@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
 import { getUserDetails } from '../redux/actions/userActions'
-import { getPaymentIntent, getPaymentSheet } from '../redux/actions/paymentActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -26,11 +25,6 @@ const Homescreen = ({navigation}) => {
             dispatch(getUserDetails(userInfo._id))
         }
     }, [userInfo])
-
-    useEffect(() => {
-        dispatch(getPaymentIntent())
-        dispatch(getPaymentSheet())
-    }, [])
 
     return (
         <SafeAreaView>

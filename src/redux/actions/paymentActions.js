@@ -47,8 +47,6 @@ export const getPaymentSheet = () => async(dispatch, getState) => {
             },
         }
 
-        console.log(config)
-
         const { data } = await axios.get(`http://192.168.13.1:5000/payment/create/${userInfo._id}`, config, 
         )
         
