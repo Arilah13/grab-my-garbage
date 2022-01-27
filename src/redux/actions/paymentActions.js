@@ -32,13 +32,14 @@ export const getPaymentIntent = () => async(dispatch, getState) => {
     }
 }
 
-export const getPaymentSheet = () => async(dispatch, getState) => {
+export const getPaymentSheet = (amount) => async(dispatch, getState) => {
     try {
         dispatch({
             type: actionTypes.PAYMENT_SHEET_REQUEST,
         })
 
         const { userLogin: { userInfo } } = getState()
+        const id = userInfo._id
 
         const config = {
             headers: {
@@ -47,8 +48,7 @@ export const getPaymentSheet = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`http://192.168.13.1:5000/payment/create/${userInfo._id}`, config, 
-        )
+        const { data } = await axios.post('http://192.168.13.1:5000/payment/create', {amount, id}, config)
         
         dispatch({
             type: actionTypes.PAYMENT_SHEET_SUCCESS,

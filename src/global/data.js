@@ -15,7 +15,7 @@ export const menuData = [
     name: 'Requests',
     image: require('../../assets/request.png'),
     id: '2',
-    destination: ''
+    destination: 'Requests'
   },
   {
     name: 'Payments',
@@ -27,22 +27,22 @@ export const menuData = [
 
 export const trashCategoryData = [
   {
-    value: '1',
+    value: '0',
     label: 'Loose Bags & Bulk',
     avatarSource: require('../../assets/garbage-bag.jpeg'),
   },
   {
-    value: '2',
+    value: '1',
     label: 'Appliances',
     avatarSource: require('../../assets/appliances.png'),
   },
   {
-    value: '3',
+    value: '2',
     label: 'Electronics',
     avatarSource: require('../../assets/electronics.png'),
   },
   {
-    value: '4',
+    value: '3',
     label: 'Furniture',
     avatarSource: require('../../assets/furniture.png'),
   },

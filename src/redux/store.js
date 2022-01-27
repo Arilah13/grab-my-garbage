@@ -21,6 +21,10 @@ import {
     paymentSheetReducer
 } from './reducers/paymentReducers'
 
+import {
+    addSpecialPickupReducer
+} from './reducers/pickupReducers'
+
 const reducer = combineReducers({
     map: mapReducer,
 
@@ -31,7 +35,9 @@ const reducer = combineReducers({
     userUpdateProfile: userUpdateProfileReducer,
 
     paymentIntent: paymentIntentReducer,
-    paymentSheet: paymentSheetReducer
+    paymentSheet: paymentSheetReducer,
+
+    specialPickup: addSpecialPickupReducer
 })
 
 const rootReducer = (state, action) => {

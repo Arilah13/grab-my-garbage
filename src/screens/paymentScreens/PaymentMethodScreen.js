@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { View, Text, Image, StyleSheet, Dimensions, FlatList, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { CheckBox, Button } from 'react-native-elements'
@@ -13,6 +14,9 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Paymentmethodscreen = ({route, navigation}) => {
 
     const { name } = route.params
+
+    const specialPickup = useSelector(state => state.specialPickup)
+    const { pickupInfo } = specialPickup
 
     const [check1, setCheck1] = useState(false)
     const [check2, setCheck2] = useState(false)
@@ -34,18 +38,42 @@ const Paymentmethodscreen = ({route, navigation}) => {
         setCheck3(true)
     }
 
+    let price = 0
+    let tax = 0
+    let total = 0
+
+    const Price = () => {
+        price = 0
+        price = price + 200 * pickupInfo.category.length
+        price = price + pickupInfo.solid_weight * 100
+        return price
+    }
+    const Tax = () => {
+        tax = 0
+        tax = price * 0.2
+        return tax
+    }
+    const Total = () => {
+        total = 0
+        total = price + tax 
+        return total
+    }
+
     const pay = () => {
         if(check1 === true)
             navigation.navigate('Payment', {
-                creditcard: true, paypal: false, cash: false
+                creditcard: true, paypal: false, cash: false,
+                price: Price(), tax: Tax(), total: Total()
             })
         if(check2 === true)
             navigation.navigate('Payment', {
-                creditcard: false, paypal: true, cash: false
+                creditcard: false, paypal: true, cash: false,
+                price: Price(), tax: Tax(), total: Total()
             })
         if(check3 === true)
             navigation.navigate('Payment', {
-                creditcard: false, paypal: false, cash: true
+                creditcard: false, paypal: false, cash: true,
+                price: Price(), tax: Tax(), total: Total()
             })
         if(check1 === false && check2 === false && check3 === false)
             Alert.alert('Select One Option', 'An option has to be selected to proceed forward',

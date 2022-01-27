@@ -45,7 +45,7 @@ const Homescreen = ({navigation}) => {
 
                     </View>
 
-                    <View>
+                    <View style = {{justifyContent: 'center'}}>
                         <FlatList
                             numColumns = {2}
                             showsHorizontalScrollIndicator = {false}

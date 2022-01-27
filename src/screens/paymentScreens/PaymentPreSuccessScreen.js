@@ -39,7 +39,7 @@ const Paymentpresuccessscreen = ({navigation}) => {
                     }}
                     loop = {false}
                     autoPlay = {false}
-            />
+                />
             </View>
         </SafeAreaView>
     );
@@ -50,7 +50,7 @@ export default Paymentpresuccessscreen
 const styles = StyleSheet.create({
 
     container: {
-        backgroundColor:colors.blue1,
+        backgroundColor: colors.blue1,
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1

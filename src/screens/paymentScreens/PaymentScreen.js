@@ -11,6 +11,8 @@ import { StripeProvider } from '@stripe/stripe-react-native'
 import { colors } from '../../global/styles'
 import Headercomponent from '../../components/HeaderComponent'
 import { getPaymentSheet } from '../../redux/actions/paymentActions'
+import { getSpecialPickupInfo } from '../../redux/actions/pickupActions'
+import { SPECIAL_PICKUP_RESET } from '../../redux/constants/pickupConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -19,24 +21,29 @@ const Paymentscreen = ({route, navigation}) => {
 
     const dispatch = useDispatch()
 
+    const specialPickup = useSelector(state => state.specialPickup)
+    const { pickupInfo } = specialPickup
+
     const {initPaymentSheet, presentPaymentSheet, confirmPaymentSheetPayment} = useStripe()
 
-    const { creditcard, paypal, cash } = route.params
+    const { creditcard, paypal, cash, price, tax, total } = route.params
 
     const [showGateway, setShowGateway] = useState(false)
     const [prog, setProg] = useState(false)
     const [progClr, setProgClr] = useState('#000')
     const [paymentSheetEnabled, setPaymentSheetEnabled] = useState(false)
     const [isLoading, setLoading] = useState(false)
+    const [paymentStart, setPaymentStart] = useState(false)
 
     const paymentIntent = useSelector((state) => state.paymentIntent)
     const {paymentInfo} = paymentIntent
 
     const paymentSheet = useSelector((state) => state.paymentSheet)
-    const {paymentSheet: sheet} = paymentSheet
+    const { loading, paymentSheet: sheet} = paymentSheet
 
     const initializeStripe = async() => {
         const publishableKey = await paymentInfo.publishable_key
+        setPaymentStart(true)
         
         setTimeout(async() => {
             if(publishableKey) {
@@ -84,7 +91,11 @@ const Paymentscreen = ({route, navigation}) => {
             setLoading(false)
         } else if(!error) {
             navigation.navigate('Paymentpresuccess')
+            dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'creditcard'}))
             setLoading(false)
+            dispatch({
+                type: SPECIAL_PICKUP_RESET
+            })
         }
     }
 
@@ -132,9 +143,9 @@ const Paymentscreen = ({route, navigation}) => {
     }
 
     useEffect(() => {
-        if(sheet.paymentIntent === undefined)
-            dispatch(getPaymentSheet())
-    }, [sheet.paymentIntent])
+        if(paymentStart === false)
+            dispatch(getPaymentSheet(total))
+    }, [paymentStart])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -146,21 +157,21 @@ const Paymentscreen = ({route, navigation}) => {
                 <Text style = {styles.text2}>Confirm Payment</Text>
                 <View style = {{padding: 20}}>
                     <Text style = {styles.text3}>Subtotal</Text>
-                    <Text style = {styles.text4}>Rs 820</Text>
+                    <Text style = {styles.text4}>Rs {price}</Text>
                     <View style = {styles.border} />
                     <Text style = {styles.text3}>Tax</Text>
-                    <Text style = {styles.text4}>Rs 164</Text>
+                    <Text style = {styles.text4}>Rs {tax}</Text>
                     <View style = {styles.border} />
                     <Text style = {styles.text3}>Total</Text>
-                    <Text style = {styles.text4}>Rs 984</Text>
+                    <Text style = {styles.text4}>Rs {total}</Text>
                 </View>
                 
                 <View style = {{top: SCREEN_HEIGHT/1.36, position: 'absolute', width: SCREEN_WIDTH, padding: 15}}>
                     <Button
                         title = 'Confirm'
                         buttonStyle = {styles.button}
-                        loading = {isLoading}
-                        disabled = {isLoading}
+                        loading = {isLoading || loading}
+                        disabled = {isLoading || loading}
                         onPress = {() => pay()}
                     />
                 </View>

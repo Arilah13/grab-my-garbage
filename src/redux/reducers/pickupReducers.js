@@ -1,6 +1,6 @@
 import * as actionTypes from '../constants/pickupConstants'
 
-export const addSpecialPickup = (state = {}, action) => {
+export const addSpecialPickupReducer = (state = {}, action) => {
     switch(action.type) {
         case actionTypes.SPECIAL_PICKUP_ADD_REQUEST:
             return { loading: true }
@@ -8,6 +8,10 @@ export const addSpecialPickup = (state = {}, action) => {
             return { loading: false, pickupInfo: action.payload, success: true }
         case actionTypes.SPECIAL_PICKUP_ADD_FAIL:
             return { loading: false, error: action.payload }
+        case actionTypes.SPECIAL_PICKUP_STORE:
+            return { pickupInfo: action.payload }
+        case actionTypes.SPECIAL_PICKUP_RESET:
+            return {}
         default:
             return state
     }

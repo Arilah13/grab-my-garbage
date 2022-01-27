@@ -145,7 +145,7 @@ const Editprofilescreen = ({navigation}) => {
                                 dispatch(updateUserProfile(values))
                             }, 400)
                         } else {
-                            setSubmitting(false)
+                            actions.setSubmitting(false)
                         }
                     }}
                     innerRef = {formikRef}

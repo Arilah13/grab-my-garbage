@@ -15,7 +15,7 @@ import Headercomponent from '../components/HeaderComponent'
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Schedulescreen = ({navigation}) => {
+const Schedulepickupscreen = ({navigation}) => {
 
     const [date1, setDate1] = useState(new Date())
     const [showDate1, setShowDate1] = useState(false)
@@ -230,7 +230,7 @@ const Schedulescreen = ({navigation}) => {
     );
 }
 
-export default Schedulescreen
+export default Schedulepickupscreen
 
 const styles = StyleSheet.create({
 

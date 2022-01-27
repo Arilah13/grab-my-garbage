@@ -1,41 +1,30 @@
 import React, { useEffect, useRef } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import LottieView from 'lottie-react-native';
+import LottieView from 'lottie-react-native'
+import { Button } from 'react-native-elements'
+import { SafeAreaView } from 'react-native-safe-area-context'
+
+import { colors } from '../../global/styles'
 
 const Paymentsuccessscreen = ({navigation}) => {
-
-    const lottieRef = useRef()
-
-    useEffect(() => {
-        if(lottieRef.current) {
-            setTimeout(() => {
-                lottieRef.current?.reset()
-                lottieRef.current?.play()
-            }, 100)
-        }
-    }, [lottieRef.current])
-
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         navigation.navigate('Home')
-    //     }, 2000)
-    // })
-
     return (
-        <View style = {styles.animationContainer}>
-            <Text>Hi</Text>
+        <SafeAreaView style = {styles.container}>
             <LottieView 
-                ref = {lottieRef}
-                source = {require('../../../assets/animation/creditcard.json')}
+                source = {require('../../../assets/animation/loader.json')}
                 style = {{
-                    width: 400,
-                    height: 400,
-                    //backgroundColor: '#eee'
+                    width: 100,
+                    height: 180,
                 }}
-                loop = {false}
-                autoPlay = {false}
+                loop = {true}
+                autoPlay = {true}
             />
-        </View>
+            <Text style = {styles.text1}>Your pickup is placed successfully!</Text>
+            <Button
+                title = 'Check your order'
+                buttonStyle = {styles.button}
+                onPress = {navigation.navigate('Home')}
+            />
+        </SafeAreaView>
     );
 }
 
@@ -43,11 +32,23 @@ export default Paymentsuccessscreen
 
 const styles = StyleSheet.create({
 
-    animationContainer: {
-        // backgroundColor: '#fff',
-        // alignItems: 'center',
-        // justifyContent: 'center',
-        // flex: 1,
+    container: {
+        backgroundColor: colors.blue1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
     },
+    button:{
+        backgroundColor: colors.buttons,
+        borderRadius: 10,
+        height: 45,
+        width: 250
+    },
+    text1:{
+        fontWeight: 'bold',
+        marginTop: 20,
+        fontSize: 20,
+        marginBottom: 30
+    }
 
 })

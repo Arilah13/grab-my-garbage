@@ -3,7 +3,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Icon } from 'react-native-elements'
 
 import { colors } from '../global/styles'
-import Schedulescreen from '../screens/ScheduleScreen'
 import Accountscreen from '../screens/AccountScreen'
 import Homescreen from '../screens/HomeScreen'
 

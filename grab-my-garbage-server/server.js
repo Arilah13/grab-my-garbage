@@ -7,6 +7,7 @@ const connectDB = require('./config/db')
 
 const userRoutes = require('./routes/userRouter')
 const paymentRoutes = require('./routes/paymentRouter')
+const pickupRoutes = require('./routes/pickupRouter')
 
 const app = express()
 app.use(express.urlencoded({extended: false}))
@@ -18,6 +19,7 @@ connectDB()
 
 app.use('/users', userRoutes)
 app.use('/payment', paymentRoutes)
+app.use('/pickup', pickupRoutes)
 
 const PORT = process.env.PORT || 5000
 

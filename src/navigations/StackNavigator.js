@@ -7,13 +7,14 @@ import TabNavigator from './TabNavigator'
 import Destinationscreen from '../screens/DestinationScreen'
 import Paymentmethodscreen from '../screens/paymentScreens/PaymentMethodScreen'
 import Paymentscreen from '../screens/paymentScreens/PaymentScreen'
-import Schedulescreen from '../screens/ScheduleScreen'
+import Schedulepickupscreen from '../screens/SchedulePickupScreen'
 import Editprofilescreen from '../screens/EditProfileScreen'
 import Changepasswordscreen from '../screens/ChangePasswordScreen'
 import Paymentsuccessscreen from '../screens/paymentScreens/paymentSuccessScreen'
+import Paymentpresuccessscreen from '../screens/paymentScreens/PaymentPreSuccessScreen'
+import Requestsscreen from '../screens/requestsScreen'
 
 import { getPaymentIntent } from '../redux/actions/paymentActions'
-import Paymentpresuccessscreen from '../screens/paymentScreens/PaymentPreSuccessScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -37,6 +38,14 @@ const StackNavigator = () => {
             <Stack.Screen
                 name = 'SpecialPickup'
                 component = {Specialpickupscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
+                name = 'Requests'
+                component = {Requestsscreen}
                 options = {{
                     headerShown: false
                 }}
@@ -68,7 +77,7 @@ const StackNavigator = () => {
 
             <Stack.Screen
                 name = 'Schedule'
-                component = {Schedulescreen}
+                component = {Schedulepickupscreen}
                 options = {{
                     headerShown: false
                 }}

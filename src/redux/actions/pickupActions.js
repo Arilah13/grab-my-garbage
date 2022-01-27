@@ -2,7 +2,7 @@ import axios from 'axios'
 import * as actionTypes from '../constants/pickupConstants'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-export const getSpecialPickupInfo = (info) => async (dispatch, getState) => {
+export const getSpecialPickupInfo = ({pickupInfo, total, method}) => async (dispatch, getState) => {
     try {
         dispatch({
             type: actionTypes.SPECIAL_PICKUP_ADD_REQUEST
@@ -17,7 +17,7 @@ export const getSpecialPickupInfo = (info) => async (dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.post('http://192.168.13.1:5000/users/login',  info, config )
+        const { data } = await axios.post('http://192.168.13.1:5000/pickup/specialpickup', {pickupInfo, total, method}, config)
 
         dispatch({
             type: actionTypes.SPECIAL_PICKUP_ADD_SUCCESS,
@@ -30,4 +30,11 @@ export const getSpecialPickupInfo = (info) => async (dispatch, getState) => {
             payload: err.response.data.msg
         })
     }
+}
+
+export const storeSpecialPickupTemp = (info) => (dispatch) => {
+    dispatch({
+        type: actionTypes.SPECIAL_PICKUP_STORE,
+        payload: info
+    })
 }

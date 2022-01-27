@@ -5,8 +5,9 @@ const paymentController = {
     payment: async(req, res) => {
         try{
             let payment
+            const {amount, id} = req.body
 
-            const user = await Users.findById(req.params.id)
+            const user = await Users.findById(id)
 
             if(user.paymentId !== null && user.paymentId !== undefined) {
                 payment = user.paymentId
@@ -26,7 +27,7 @@ const paymentController = {
             )
 
             const paymentIntent = await stripe.paymentIntents.create({
-                amount: 100000,
+                amount: amount*100,
                 currency: 'lkr',
                 customer: payment,
                 payment_method_types: ['card']

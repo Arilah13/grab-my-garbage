@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, StyleSheet, Text, Image, Dimensions, TouchableOpacity, Pressable, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -8,15 +8,20 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import * as ImagePicker from 'expo-image-picker'
 import Modal from 'react-native-modal'
 import { DefaultTheme } from 'react-native-paper'
+import { Formik } from 'formik'
 
 import { colors } from '../global/styles'
 import { trashCategoryData } from '../global/data'
 import Headercomponent from '../components/HeaderComponent'
+import { storeSpecialPickupTemp } from '../redux/actions/pickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Specialpickupscreen = ({navigation}) => {
+
+    const formikRef = useRef()
+    const dispatch = useDispatch()
 
     const [categories, setCategories] = useState([])
     const [weight, setWeight] = useState(0.0)
@@ -24,19 +29,33 @@ const Specialpickupscreen = ({navigation}) => {
     const [showDateTime, setShowDateTime] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
     const [image1, setImage] = useState(null)
+    const [category1, setCategory1] = useState([])
 
     const map = useSelector((state) => state.map)
-    const { address } = map
+    const { address, latitude, longitude } = map
+
+    const specialPickup = useSelector(state => state.specialPickup)
+    const { pickupInfo } = specialPickup
     
-    var array_address = address.split(',')
-    var address_new = array_address[0] + ', ' + array_address[1]
-    var date1 = new Date()
-    var date2 = new Date()
+    let array_address = address.split(',')
+    let address_new = array_address[0] + ', ' + array_address[1]
+    let date1 = new Date()
+    let date2 = new Date()
     let formattedDate = dateTime.toDateString().split(' ')
     let formattedTime = dateTime.toLocaleTimeString().split(':')
 
+    const initialValues = {location: map ? ({latitude, longitude}) : '', date: (dateTime) ? (dateTime) : '', 
+                            category: category1 ? category1 : '',  solid_weight: weight ? Math.round(weight*10)/10 : '', 
+                            photo: image1 ? image1 :'', categories: categories ? categories : ''}
+
+    let category = []  
+
     const onChangeCategory = (value) => {
         setCategories(value)
+        value.map(i => {
+            category.push(trashCategoryData[i].label)
+        })
+        setCategory1(category)
     } 
     const addWeight = (weight) => {
         setWeight(weight + 0.1)
@@ -65,9 +84,10 @@ const Specialpickupscreen = ({navigation}) => {
                 allowsEditing: true,
                 aspect: [4,5],
                 quality: 0,
+                base64: true
             })
             setModalVisible(false)
-            setImage(image.uri)
+            setImage(image.base64)
         }
     }
     const selectCamera = async() => {
@@ -80,9 +100,10 @@ const Specialpickupscreen = ({navigation}) => {
                 allowsEditing: true,
                 aspect: [4,5],
                 quality: 0,
+                base64: true
             })
             setModalVisible(false)
-            setImage(image.uri)
+            setImage(image.base64)
         }
     }
 
@@ -91,6 +112,16 @@ const Specialpickupscreen = ({navigation}) => {
         formattedTime = dateTime.toLocaleTimeString().split(':')
         changeDate()
     }, [handleConfirmDateTime])
+
+    useEffect(() => {
+        if(pickupInfo !== undefined) {
+            setDateTime(pickupInfo.date)
+            setCategory1(pickupInfo.category)
+            setWeight(pickupInfo.solid_weight)
+            setImage(pickupInfo.photo)
+            setCategories(pickupInfo.categories)
+        }
+    }, [])
  
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -100,179 +131,206 @@ const Specialpickupscreen = ({navigation}) => {
             >
             <Headercomponent name = 'Home' />    
 
-            <View style = {{backgroundColor: colors.grey8, borderTopStartRadius: 30, borderTopEndRadius: 30}}>
-                <View style = {styles.container2}>
-                    <Pressable onPress = {() => navigation.navigate('Destination')}>
-                        <Icon 
-                            type = 'feather'
-                            name = 'map-pin'
-                            color = {colors.blue5}
-                            size = {25}
-                            style = {{
-                                marginTop: 30,
-                                alignSelf: 'flex-start'
-                            }}
-                        />
-                        <Text style = {styles.text2}>Pick Up Location</Text>
-                        <Text style = {styles.text3}>{address === ('Current Location' || 'Home') ? address : address_new}</Text>
-                        <Icon 
-                            type = 'material-community'
-                            name = 'dots-vertical'
-                            color = {colors.blue5}
-                            size = {25}
-                            style = {{
-                                //alignSelf: 'flex-end',
-                                //marginRight: 5,
-                                //bottom: 15,
-                                position: 'absolute'
-                            }}
-                        />
-                    </Pressable>               
-                </View>
-                
-                <View style = {styles.container3} >
-                    <Text style = {styles.text4}>Schedule Pickup</Text>
-                    <View style = {styles.view8}>
-                        <Icon
-                            type = 'material'
-                            name = 'schedule'
-                            color = {colors.blue5}
-                            size = {20}
-                            style = {{
-                                alignSelf: 'flex-start',
-                                marginTop: 15,
-                                marginLeft: 10,
-                                display: 'flex'
-                            }}
-                        />
-                        <Text style = {styles.text6}>Select Time</Text>
-                        <Pressable onPress = {() => setShowDateTime(true)}>
-                            <View style = {styles.view7}>
+            <Formik
+                initialValues = {initialValues}
+                enableReinitialize
+                validateOnMount = {false}
+                validateOnBlur = {false}
+                validateOnChange = {false}
+                onSubmit = {(values, actions) => {
+                    if(actions.validateForm) {
+                        setTimeout(() => {
+                            dispatch(storeSpecialPickupTemp(values))
+                            actions.setSubmitting(false)
+                            navigation.navigate('PaymentMethod', {
+                                name: 'Special',
+                            })
+                        }, 400)
+                    } else {
+                        actions.setSubmitting(false)
+                    }
+                }}
+                innerRef = {formikRef}
+            >
+            { (props) =>
+                <>
+                    <View style = {{backgroundColor: colors.grey8, borderTopStartRadius: 30, borderTopEndRadius: 30}}>
+                        <View style = {styles.container2}>
+                            <Pressable onPress = {() => navigation.navigate('Destination')}>
+                                <Icon 
+                                    type = 'feather'
+                                    name = 'map-pin'
+                                    color = {colors.blue5}
+                                    size = {25}
+                                    style = {{
+                                        marginTop: 30,
+                                        alignSelf: 'flex-start'
+                                    }}
+                                />
+                                <Text style = {styles.text2}>Pick Up Location</Text>
+                                <Text style = {styles.text3}>{address === ('Current Location' || 'Home') ? address : address_new}</Text>
+                                <Icon 
+                                    type = 'material-community'
+                                    name = 'dots-vertical'
+                                    color = {colors.blue5}
+                                    size = {25}
+                                    style = {{
+                                        //alignSelf: 'flex-end',
+                                        //marginRight: 5,
+                                        //bottom: 15,
+                                        position: 'absolute'
+                                    }}
+                                />
+                            </Pressable>               
+                        </View>
+                        
+                        <View style = {styles.container3} >
+                            <Text style = {styles.text4}>Schedule Pickup</Text>
+                            <View style = {styles.view8}>
                                 <Icon
                                     type = 'material'
-                                    name = 'date-range'
+                                    name = 'schedule'
                                     color = {colors.blue5}
                                     size = {20}
                                     style = {{
                                         alignSelf: 'flex-start',
-                                        marginTop: 12,
-                                        marginLeft: 10
+                                        marginTop: 15,
+                                        marginLeft: 10,
+                                        display: 'flex'
                                     }}
                                 />
-                                <Text style = {styles.text11}>{formattedDate[0]} {formattedDate[1]} {formattedDate[2]}  {formattedTime[0]}:{formattedTime[1]} {formattedTime[2].split(' ')[1]}</Text>
-                                <DateTimePickerModal
-                                    isVisible = {showDateTime}
-                                    date = {dateTime}
-                                    mode = 'datetime'
-                                    onConfirm = {(dateTime) => handleConfirmDateTime(dateTime)}
-                                    onCancel = {() => setShowDateTime(false)}
-                                    minimumDate = {date1}
-                                    maximumDate = {date2}
-                                    minuteInterval = {15}
-                                    is24Hour = {false}
-                                />
+                                <Text style = {styles.text6}>Select Time</Text>
+                                <Pressable onPress = {() => setShowDateTime(true)}>
+                                    <View style = {styles.view7}>
+                                        <Icon
+                                            type = 'material'
+                                            name = 'date-range'
+                                            color = {colors.blue5}
+                                            size = {20}
+                                            style = {{
+                                                alignSelf: 'flex-start',
+                                                marginTop: 12,
+                                                marginLeft: 10
+                                            }}
+                                        />
+                                        <Text style = {styles.text11}>{formattedDate[0]} {formattedDate[1]} {formattedDate[2]}  {formattedTime[0]}:{formattedTime[1]} {formattedTime[2].split(' ')[1]}</Text>
+                                        <DateTimePickerModal
+                                            isVisible = {showDateTime}
+                                            date = {dateTime}
+                                            mode = 'datetime'
+                                            onConfirm = {(dateTime) => handleConfirmDateTime(dateTime)}
+                                            onCancel = {() => setShowDateTime(false)}
+                                            minimumDate = {date1}
+                                            maximumDate = {date2}
+                                            minuteInterval = {15}
+                                            is24Hour = {false}
+                                        />
+                                    </View>
+                                </Pressable>
                             </View>
-                        </Pressable>
-                    </View>
 
-                    <Text style = {styles.text5}>Trash Categories</Text>
-                    <View style = {styles.view1}>
-                        <Icon
-                            type = 'material'
-                            name = 'unfold-more'
-                            color = {colors.blue5}
-                            size = {20}
-                            style = {{
-                                alignSelf: 'flex-start',
-                                marginTop: 15,
-                                marginLeft: 10,
-                                display: 'flex'
-                            }}
-                        />
-                        <Text style = {styles.text6}>Select Category</Text>
-                        <View style = {styles.container4}>
-                            <MultiselectDropdown
-                                label = 'Select Category'
-                                data = {trashCategoryData}
-                                enableSearch = {false}
-                                enableAvatar
-                                chipType = "outlined"
-                                value = {categories}
-                                onChange = {onChangeCategory}
-                                floating = {false}
-                                primaryColor = {colors.blue2}
-                                underlineColor = 'transparent'
-                                selectedItemTextStyle = {{ fontWeight: 'bold' }}
-                                textInputStyle = {{ 
-                                    backgroundColor: colors.white,
-                                    borderTopRightRadius: 20,
-                                    borderTopLeftRadius: 20,
-                                    borderRadius: 20,
-                                    height: 55,
-                                    marginLeft: 10,
-                                }}
-                                disabledItemTextStyle = {{
-                                    color: colors.black
-                                }}
-                                chipTextStyle = {{
-                                    color: colors.blue4
-                                }}       
-                                paperTheme = {DefaultTheme}                        
+                            <Text style = {styles.text5}>Trash Categories</Text>
+                            <View style = {styles.view1}>
+                                <Icon
+                                    type = 'material'
+                                    name = 'unfold-more'
+                                    color = {colors.blue5}
+                                    size = {20}
+                                    style = {{
+                                        alignSelf: 'flex-start',
+                                        marginTop: 15,
+                                        marginLeft: 10,
+                                        display: 'flex'
+                                    }}
+                                />
+                                <Text style = {styles.text6}>Select Category</Text>
+                                <View style = {styles.container4}>
+                                    <MultiselectDropdown
+                                        label = 'Select Category'
+                                        data = {trashCategoryData}
+                                        enableSearch = {false}
+                                        enableAvatar
+                                        chipType = "outlined"
+                                        value = {categories}
+                                        onChange = {onChangeCategory}
+                                        floating = {false}
+                                        primaryColor = {colors.blue2}
+                                        underlineColor = 'transparent'
+                                        selectedItemTextStyle = {{ fontWeight: 'bold' }}
+                                        textInputStyle = {{ 
+                                            backgroundColor: colors.white,
+                                            borderTopRightRadius: 20,
+                                            borderTopLeftRadius: 20,
+                                            borderRadius: 20,
+                                            height: 55,
+                                            marginLeft: 10,
+                                        }}
+                                        disabledItemTextStyle = {{
+                                            color: colors.black
+                                        }}
+                                        chipTextStyle = {{
+                                            color: colors.blue4
+                                        }}       
+                                        paperTheme = {DefaultTheme}  
+                                        disableSort = {true}                      
+                                    />
+                                </View>
+                            </View>                  
+
+                            <Text style = {styles.text5}>Weight Estimation</Text>
+                            <View style = {styles.view2}>
+                                <View>
+                                    <Pressable style = {styles.view4} onPress = {() => reduceWeight(weight)}><Text style = {styles.text8}>-</Text></Pressable>
+                                    <View style = {styles.view5}><Text style = {styles.text9}>{weight.toFixed(1)}</Text></View>
+                                    <Pressable style = {styles.view6} onPress = {() => addWeight(weight)}><Text style = {styles.text8}>+</Text></Pressable>
+                                    <Text style = {styles.text10}>kg</Text>
+                                </View>
+                            </View>
+
+                            <Text style = {styles.text5}>Optional</Text>
+                            <View style = {{...styles.view3, height: 120}}>
+                                <Icon
+                                    type = 'material'
+                                    name = 'add-a-photo'
+                                    color = {colors.blue5}
+                                    size = {20}
+                                    style = {{
+                                        alignSelf: 'flex-start',
+                                        marginTop: 15,
+                                        marginLeft: 10,
+                                        display: 'flex'
+                                    }}
+                                />
+                                <Text style = {{...styles.text6, marginLeft: 2}}>Additional Photos</Text>
+                                <TouchableOpacity style = {styles.view9} onPress = {() => setModalVisible(true)}>
+                                    <Icon
+                                        type = 'material-community'
+                                        name = 'file-image-outline'
+                                        color = {colors.blue5}
+                                        size = {20}
+                                        style = {{
+                                            alignSelf: 'flex-start',
+                                            marginTop: 15,
+                                            marginLeft: 10,
+                                            display: 'flex'
+                                        }}
+                                    />
+                                    <Text style = {styles.text12}>{image1 === null ? 'No photo attached' : 'Photo attached'}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            
+                            <Button
+                                title = 'Continue'
+                                buttonStyle = {styles.button}
+                                onPress = {props.handleSubmit}
+                                loading = {props.isSubmitting}
+                                disabled = {props.isSubmitting}
                             />
                         </View>
-                    </View>                  
-
-                    <Text style = {styles.text5}>Weight Estimation</Text>
-                    <View style = {styles.view2}>
-                        <View>
-                            <Pressable style = {styles.view4} onPress = {() => reduceWeight(weight)}><Text style = {styles.text8}>-</Text></Pressable>
-                            <View style = {styles.view5}><Text style = {styles.text9}>{weight.toFixed(1)}</Text></View>
-                            <Pressable style = {styles.view6} onPress = {() => addWeight(weight)}><Text style = {styles.text8}>+</Text></Pressable>
-                            <Text style = {styles.text10}>kg</Text>
-                        </View>
                     </View>
-
-                    <Text style = {styles.text5}>Optional</Text>
-                    <View style = {{...styles.view3, height: 120}}>
-                        <Icon
-                            type = 'material'
-                            name = 'add-a-photo'
-                            color = {colors.blue5}
-                            size = {20}
-                            style = {{
-                                alignSelf: 'flex-start',
-                                marginTop: 15,
-                                marginLeft: 10,
-                                display: 'flex'
-                            }}
-                        />
-                        <Text style = {{...styles.text6, marginLeft: 2}}>Additional Photos</Text>
-                        <TouchableOpacity style = {styles.view9} onPress = {() => setModalVisible(true)}>
-                            <Icon
-                                type = 'material-community'
-                                name = 'file-image-outline'
-                                color = {colors.blue5}
-                                size = {20}
-                                style = {{
-                                    alignSelf: 'flex-start',
-                                    marginTop: 15,
-                                    marginLeft: 10,
-                                    display: 'flex'
-                                }}
-                            />
-                            <Text style = {styles.text12}>{image1 === null ? 'No photo attached' : 'Photo attached'}</Text>
-                        </TouchableOpacity>
-                    </View>
-                    
-                    <Button
-                        title = 'Continue'
-                        buttonStyle = {styles.button}
-                        onPress = {() => navigation.navigate('PaymentMethod', {
-                            name: 'Special'
-                        })}
-                    />
-                </View>
-            </View>
+                </>
+                }
+                </Formik>
             </ScrollView>
 
             <Modal 
@@ -419,7 +477,7 @@ const styles = StyleSheet.create({
     view6: {
         backgroundColor: colors.green1,
         position: 'absolute',
-        marginLeft: SCREEN_WIDTH/2.1,
+        marginLeft: SCREEN_WIDTH/2.17,
         marginTop: SCREEN_HEIGHT/42,
         width: 40,
         height: 60,
