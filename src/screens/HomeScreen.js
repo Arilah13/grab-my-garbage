@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
 import { getUserDetails } from '../redux/actions/userActions'
+import { getAllPickups } from '../redux/actions/pickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -23,6 +24,7 @@ const Homescreen = ({navigation}) => {
     useEffect(() => {
         if(userInfo !== undefined) {
             dispatch(getUserDetails(userInfo._id))
+            dispatch(getAllPickups())
         }
     }, [userInfo])
 

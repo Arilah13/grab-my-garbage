@@ -4,7 +4,7 @@ const cloudinary = require('cloudinary')
 const pickupController = {
     addSpecialPickup: async(req, res) => {
         try{
-            const {pickupInfo, total, method} = req.body
+            const {pickupInfo, total, method, id} = req.body
 
             let photo
 
@@ -28,7 +28,8 @@ const pickupController = {
                 weight: pickupInfo.solid_weight,
                 image: photo,
                 payment: total,
-                paymentMethod: method
+                paymentMethod: method,
+                customerId: id
             })
 
             await newPickup.save()
@@ -41,9 +42,20 @@ const pickupController = {
                 weight: newPickup.weight,
                 image: newPickup.image,
                 payment: newPickup.payment,
-                paymentMethod: newPickup.paymentMethod
+                paymentMethod: newPickup.paymentMethod,
             })
 
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    getAllPickups: async(req, res) => {
+        try{
+            const customerId = req.params.id
+            const pickups = await Pickups.find({ customerId })
+            if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
+
+            res.json(pickups)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

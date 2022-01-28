@@ -28,6 +28,10 @@ const pickupSchema = new mongoose.Schema({
     paymentMethod: {
         type: String,
         required: true
+    },
+    customerId:{
+        type: String,
+        required: true
     }
 }, {
     timestamps: true

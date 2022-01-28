@@ -15,5 +15,17 @@ export const addSpecialPickupReducer = (state = {}, action) => {
         default:
             return state
     }
+}
 
+export const retrieveAllPickupsReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.PICKUP_RETRIEVE_REQUEST:
+            return { loading: true }
+        case actionTypes.PICKUP_RETRIEVE_SUCCESS:
+            return { loading: false, pickupInfo: action.payload, success: true }
+        case actionTypes.PICKUP_RETRIEVE_FAIL:
+            return { loading: false, error: action.payload }
+        default:
+            return state
+    }
 }
