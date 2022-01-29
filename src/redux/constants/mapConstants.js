@@ -1,2 +1,0 @@
-export const ADD_ORIGIN = 'ADD_ORIGIN'
-export const ADD_DESTINATION = 'ADD_DESTINATION'
