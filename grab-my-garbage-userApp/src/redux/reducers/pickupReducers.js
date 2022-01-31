@@ -5,7 +5,7 @@ export const addSpecialPickupReducer = (state = {}, action) => {
         case actionTypes.SPECIAL_PICKUP_ADD_REQUEST:
             return { loading: true }
         case actionTypes.SPECIAL_PICKUP_ADD_SUCCESS:
-            return { loading: false, pickupInfo: action.payload, success: true }
+            return { loading: false, success: true }
         case actionTypes.SPECIAL_PICKUP_ADD_FAIL:
             return { loading: false, error: action.payload }
         case actionTypes.SPECIAL_PICKUP_STORE:

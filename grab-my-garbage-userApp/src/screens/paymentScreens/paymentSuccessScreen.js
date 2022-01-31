@@ -20,9 +20,9 @@ const Paymentsuccessscreen = ({navigation}) => {
             />
             <Text style = {styles.text1}>Your pickup is placed successfully!</Text>
             <Button
-                title = 'Check your order'
+                title = 'Check your pickup'
                 buttonStyle = {styles.button}
-                onPress = {navigation.navigate('Home')}
+                onPress = {() => navigation.navigate('Requests')}
             />
         </SafeAreaView>
     );

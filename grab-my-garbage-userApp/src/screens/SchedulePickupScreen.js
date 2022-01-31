@@ -64,7 +64,7 @@ const Schedulepickupscreen = ({navigation}) => {
             
             <View style = {{backgroundColor: colors.grey8, borderTopRightRadius: 30, borderTopLeftRadius: 30}}>
                 <View style = {styles.container2}>
-                    <Pressable onPress = {() => navigation.navigate('Destination')}>
+                    <Pressable onPress = {() => navigation.navigate('Destination', {destination: 'Schedule Pickup'})}>
                         <Icon 
                             type = 'feather'
                             name = 'map-pin'

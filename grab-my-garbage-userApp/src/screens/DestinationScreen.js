@@ -53,18 +53,14 @@ const Destinationscreen = ({route, navigation}) => {
             } = await Location.getCurrentPositionAsync()
             setLatLng({latitude: latitude, longitude: longitude})    
         } catch(err){
-
+            console.log(err)
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         checkPermission()
         getLocation()
     },[])
-    
-    const Destination = ({latitude, longitude, address, name}) => {
-        dispatch(addDestination(latitude, longitude, name, address))
-    }
 
     return (
         <SafeAreaView style = {styles.container}>
@@ -112,12 +108,12 @@ const Destinationscreen = ({route, navigation}) => {
                     predefinedPlaces = {[currentLocation, homePlace]}
 
                     onPress = {(data, details = null) => {
-                        Destination({
-                            latitude: details.geometry.location.lat,
-                            longitude: details.geometry.location.lng,
-                            address: details.formatted_address,
-                            name: details.name
-                        })
+                        dispatch(addDestination(
+                                details.geometry.location.lat, 
+                                details.geometry.location.lng, 
+                                details.name, 
+                                details.formatted_address
+                            ))
 
                         setLatLng({latitude: details.geometry.location.lat, longitude: details.geometry.location.lng})
                         setTimeout(() => {

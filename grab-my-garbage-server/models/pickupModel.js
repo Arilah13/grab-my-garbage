@@ -30,8 +30,21 @@ const pickupSchema = new mongoose.Schema({
         required: true
     },
     customerId:{
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Users'
+    },
+    accepted:{
+        type: Number,
+        default: 0
+    },
+    cancelled:{
+        type: Number,
+        default: 0
+    },
+    pickerId:{
         type: String,
-        required: true
+        required: false
     }
 }, {
     timestamps: true

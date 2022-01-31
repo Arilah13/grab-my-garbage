@@ -8,18 +8,22 @@ const pickupController = {
 
             let photo
 
-            cloudinary.config({
-                cloud_name: process.env.CLOUD_NAME,
-                api_key: process.env.CLOUD_API_KEY,
-                api_secret: process.env.CLOUD_API_SECRET
-            })
-            
-            await cloudinary.v2.uploader.upload("data:image/gif;base64," + pickupInfo.photo, {folder: "grab-my-garbage"}, (err, result) =>{
-                if(err) 
-                    throw err
-                else
-                    photo = result.secure_url   
-            })
+            if(pickupInfo.photo !== null && pickupInfo.photo !== '') {
+                cloudinary.config({
+                    cloud_name: process.env.CLOUD_NAME,
+                    api_key: process.env.CLOUD_API_KEY,
+                    api_secret: process.env.CLOUD_API_SECRET
+                })
+                
+                await cloudinary.v2.uploader.upload("data:image/gif;base64," + pickupInfo.photo, {folder: "grab-my-garbage"}, (err, result) =>{
+                    if(err) 
+                        throw err
+                    else
+                        photo = result.secure_url   
+                })
+            } else {
+                photo = null
+            }
 
             const newPickup = new Pickups({
                 location: pickupInfo.location,

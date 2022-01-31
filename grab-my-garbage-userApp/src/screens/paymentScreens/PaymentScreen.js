@@ -117,9 +117,9 @@ const Paymentscreen = ({route, navigation}) => {
             setLoading(true)
             navigation.navigate('')
         } else if(creditcard === true) {
-            //setLoading(true)
-            //choosePaymentOption()
-            requestPickup()
+            setLoading(true)
+            choosePaymentOption()
+            //requestPickup()
         }
     }
 

@@ -9,7 +9,6 @@ import { Icon, Button } from 'react-native-elements'
 import { colors } from '../../global/styles'
 
 import { ANDROID_CLIENT_ID } from '@env'
-import Headercomponent from '../../components/HeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

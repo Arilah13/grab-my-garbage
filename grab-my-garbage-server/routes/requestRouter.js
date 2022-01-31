@@ -1,9 +1,9 @@
 const router = require('express').Router()
-const pickupController = require('../controllers/pickupController')
+const requestController = require('../controllers/requestController')
 const auth = require('../middleware/auth')
 
-router.post('/specialpickup', auth, pickupController.addSpecialPickup)
+router.get('/pendingPickup/:lat/:lng', requestController.getPendingPickups)
 
-router.get('/allPickups/:id', auth, pickupController.getAllPickups)
+//router.get('/allPickups/:id', auth, pickupController.getAllPickups)
 
 module.exports = router

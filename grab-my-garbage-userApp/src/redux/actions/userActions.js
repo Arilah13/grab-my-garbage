@@ -54,7 +54,7 @@ export const specialLogin = (info) => async(dispatch) => {
     } catch (err) {
         dispatch({
             type: actionTypes.USER_REGISTER_FAIL,
-            payload: err.response.data.msg || 'Expo broken'
+            payload: err.response.data.msg
         })
     }
 }

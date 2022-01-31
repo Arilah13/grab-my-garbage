@@ -21,6 +21,7 @@
     "expo-dev-client": "~0.8.0",
     "expo-location": "~14.0.1",
     "expo-status-bar": "~1.2.0",
+    "expo-task-manager": "~10.1.0",
     "formik": "^2.2.9",
     "react": "17.0.1",
     "react-dom": "17.0.1",
@@ -39,6 +40,7 @@
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.1",
+    "socket.io-client": "^4.4.1",
     "yup": "^0.32.11"
   },
   "devDependencies": {
