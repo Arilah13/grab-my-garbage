@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, Modal, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, Modal, ActivityIndicator, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { WebView } from 'react-native-webview'
-import { showMessage } from 'react-native-flash-message'
 import { Icon, Button } from 'react-native-elements'
 import { useStripe, initStripe } from '@stripe/stripe-react-native'
 import { StripeProvider } from '@stripe/stripe-react-native'
@@ -14,6 +13,7 @@ import Headercomponent from '../../components/HeaderComponent'
 import { getPaymentSheet } from '../../redux/actions/paymentActions'
 import { getSpecialPickupInfo } from '../../redux/actions/pickupActions'
 import { SPECIAL_PICKUP_RESET } from '../../redux/constants/pickupConstants'
+import { paypalToken } from '../../redux/actions/paymentActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -21,6 +21,8 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Paymentscreen = ({route, navigation}) => {
 
     const dispatch = useDispatch()
+
+    const webView = useRef()
 
     const specialPickup = useSelector(state => state.specialPickup)
     const { pickupInfo } = specialPickup
@@ -40,7 +42,10 @@ const Paymentscreen = ({route, navigation}) => {
     const {paymentInfo} = paymentIntent
 
     const paymentSheet = useSelector((state) => state.paymentSheet)
-    const { loading, paymentSheet: sheet} = paymentSheet
+    const {loading, paymentSheet: sheet} = paymentSheet
+
+    const payPal = useSelector((state) => state.paypal)
+    const {loading: paypalLoading, paypal: PayPal} = payPal
 
     const requestPickup = async() => {
         const socket = socketIO.connect('http://192.168.13.1:5000')
@@ -109,6 +114,14 @@ const Paymentscreen = ({route, navigation}) => {
         }
     }
 
+    // const sendTotal = `(function() {
+    //     document.dispatchEvent( new MessageEvent('message', {
+    //         data: ${JSON.stringify(total)},
+    //         origin: 'react-native'
+    //     })); })();`
+
+    const sendTotal = `window._price = ${total}; true;`
+
     const pay = async() => {
         if(paypal === true) {
             setLoading(true)
@@ -129,32 +142,28 @@ const Paymentscreen = ({route, navigation}) => {
         setLoading(false)
         let payment = JSON.parse(data);
         if (payment.status === 'COMPLETED') {
-            showMessage({
-                message: 'Pickup Will be ON-TIME!!',
-                type: 'success',
-                autoHide: true,
-                animated: true,
-                animationDuration: 150,
-                duration: 1000,
+            navigation.navigate('Paymentpresuccess')
+            dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'paypal'}))
+            setLoading(false)
+            dispatch({
+                type: SPECIAL_PICKUP_RESET
             })
-            setTimeout(() => {
-                navigation.navigate('Home')
-            }, 2000)
         } else {
-            showMessage({
-                message: 'PAYMENT FAILED. PLEASE TRY AGAIN.',
-                type: 'default',
-                backgroundColor: colors.error,
-                autoHide: true,
-                animated: true,
-                animationDuration: 150,
-                duration: 1000,
-            })
+            Alert.alert('Payment Failed', 'Payment has been failed, Please try again',
+                [
+                    {
+                        text: 'Ok',
+                    }
+                ],
+                {
+                    cancelable: true
+                }
+            )
         }
     }
 
     useEffect(() => {
-        if(paymentStart === false)
+        if(paymentStart === false && creditcard === true)
             dispatch(getPaymentSheet(total))
     }, [paymentStart])
 
@@ -181,8 +190,8 @@ const Paymentscreen = ({route, navigation}) => {
                     <Button
                         title = 'Confirm'
                         buttonStyle = {styles.button}
-                        loading = {isLoading || loading}
-                        disabled = {isLoading || loading}
+                        loading = {isLoading || loading || paypalLoading}
+                        disabled = {isLoading || loading || paypalLoading}
                         onPress = {() => pay()}
                     />
                 </View>
@@ -228,9 +237,12 @@ const Paymentscreen = ({route, navigation}) => {
                         <WebView
                             source = {{uri: 'https://my--web-b513d.web.app/'}}
                             style = {{flex: 1}}
+                            ref = {webView}
+                            javaScriptEnabled = {true}
                             onLoadStart = {() => {
                                 setProg(true)
                                 setProgClr('#000')
+                                webView.current.injectJavaScript(sendTotal)
                             }}
                             onLoadProgress = {() => {
                                 setProg(true)

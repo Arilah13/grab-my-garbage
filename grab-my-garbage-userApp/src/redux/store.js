@@ -18,7 +18,8 @@ import {
 
 import {
     paymentIntentReducer,
-    paymentSheetReducer
+    paymentSheetReducer,
+    paypalReducer
 } from './reducers/paymentReducers'
 
 import {
@@ -37,6 +38,7 @@ const reducer = combineReducers({
 
     paymentIntent: paymentIntentReducer,
     paymentSheet: paymentSheetReducer,
+    paypal: paypalReducer,
 
     specialPickup: addSpecialPickupReducer,
     retrieveAllPickups: retrieveAllPickupsReducer

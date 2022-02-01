@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, StyleSheet, Text, Image, Dimensions, TouchableOpacity, Pressable, ScrollView } from 'react-native'
+import { View, StyleSheet, Text, Image, Dimensions, TouchableOpacity, Pressable, ScrollView, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
 import { MultiselectDropdown } from 'sharingan-rn-modal-dropdown'
@@ -107,6 +107,36 @@ const Specialpickupscreen = ({navigation}) => {
         }
     }
 
+    const validateForm = () => {
+        if (dateTime.getTime() >= new Date().getTime() + (1*24*60*60*1000) && categories.length !== 0)
+            return true
+        else
+            return false
+    }
+
+    const alert = () => {
+        if(dateTime.getTime() < new Date().getTime() + (1*24*60*60*1000) && categories.length !== 0) {
+            alertMsg('Date Error', 'Pickup Date should be 24hour from current time')
+        } else if(categories.length === 0 && dateTime.getTime() >= new Date().getTime() + (1*24*60*60*1000)) {
+            alertMsg('Category Not Selected', 'Atleast one category should be selected')
+        } else {
+            alertMsg('Date and Category Error', 'A category should be selected and the date should be more than 24h from current time')
+        }      
+    }
+
+    const alertMsg = (heading, msg) => {
+        Alert.alert(heading, msg,
+                [
+                    {
+                        text: 'Ok',
+                    }
+                ],
+                {
+                    cancelable: true
+                }
+            )
+    }
+
     useEffect(() => {
         formattedDate = dateTime.toDateString().split(' ')
         formattedTime = dateTime.toLocaleTimeString().split(':')
@@ -138,7 +168,7 @@ const Specialpickupscreen = ({navigation}) => {
                 validateOnBlur = {false}
                 validateOnChange = {false}
                 onSubmit = {(values, actions) => {
-                    if(actions.validateForm) {
+                    if(validateForm() === true) {
                         setTimeout(() => {
                             dispatch(storeSpecialPickupTemp(values))
                             actions.setSubmitting(false)
@@ -148,6 +178,7 @@ const Specialpickupscreen = ({navigation}) => {
                         }, 400)
                     } else {
                         actions.setSubmitting(false)
+                        alert()
                     }
                 }}
                 innerRef = {formikRef}
@@ -315,7 +346,7 @@ const Specialpickupscreen = ({navigation}) => {
                                             display: 'flex'
                                         }}
                                     />
-                                    <Text style = {styles.text12}>{image1 === null ? 'No photo attached' : 'Photo attached'}</Text>
+                                    <Text style = {styles.text12}>{image1 === null || image1 === '' ? 'No photo attached' : 'Photo attached'}</Text>
                                 </TouchableOpacity>
                             </View>
                             

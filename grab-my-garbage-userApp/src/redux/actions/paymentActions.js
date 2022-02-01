@@ -62,3 +62,33 @@ export const getPaymentSheet = (amount) => async(dispatch, getState) => {
         })
     }
 }
+
+export const paypalToken = () => async(dispatch, getState) => {
+    try {
+        dispatch({
+            type: actionTypes.PAYPAL_TOKEN_REQUEST,
+        })
+
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        const { data } = await axios.get('http://192.168.13.1:5000/payment/paypal', config)
+        
+        dispatch({
+            type: actionTypes.PAYPAL_TOKEN_SUCCESS,
+            payload: data
+        })
+        
+    } catch (err) {
+        dispatch({
+            type: actionTypes.PAYPAL_TOKEN_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}
