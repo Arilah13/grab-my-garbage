@@ -1,6 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const Users = require('../models/userModel')
-const braintree = require('braintree')
 
 const paymentController = {
     payment: async(req, res) => {
@@ -49,29 +48,6 @@ const paymentController = {
             res.json({
                 publishable_key: process.env.STRIPE_PUBLISHABLE_KEY,
                 secret_key: process.env.STRIPE_SECRET_KEY
-            })
-        } catch(err) {
-            return res.status(500).json({msg: err.message})
-        }
-    },
-    paypal: async(req, res) => {
-
-        let gateway = new braintree.BraintreeGateway({
-            environment: braintree.Environment.Sandbox,
-            merchantId: process.env.BRAINTREE_MERCHANT_ID,
-            publicKey: process.env.BRAINTREE_PUBLIC_KEY,
-            privateKey: process.env.BRAINTREE_PRIVATE_KEY
-        })
-
-        try{
-            gateway.clientToken.generate({}, (err, response) => {
-                if (err) {
-                    res.status(400).json({msg: 'no token'})
-                }
-
-                res.json({
-                    token: response.clientToken
-                })
             })
         } catch(err) {
             return res.status(500).json({msg: err.message})

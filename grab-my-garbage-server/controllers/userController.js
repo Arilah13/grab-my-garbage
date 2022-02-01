@@ -25,7 +25,6 @@ const userController = {
                 const newUser = new Users({
                     name: name,
                     email: email,
-                    //phone: phone_number,
                     role: registerrole === "user" ? 0 : 1,
                     image: photoUrl
                 })
@@ -50,7 +49,7 @@ const userController = {
     },
     register: async(req, res) => {
         try{
-            const {name, email, password, phone_number, registerrole} = req.body
+            const {name, email, password, registerrole} = req.body
 
             const user = await Users.findOne({email}) 
             if(user)
@@ -64,7 +63,6 @@ const userController = {
             const newUser = new Users({
                 name: name,
                 email: email,
-                phone: phone_number,
                 role: registerrole === "user" ? 0 : 1,
                 password: passwordHash,
                 //image: photoUrl
@@ -78,7 +76,6 @@ const userController = {
                 _id: newUser._id,
                 name: newUser.name,
                 email: newUser.email,
-                phone: newUser.phone,
                 role: newUser.role,
                 token: accesstoken
             })
@@ -210,7 +207,26 @@ const userController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
-    }
+    },
+    updateUserPassword: async(req, res) => {
+        try{
+            const user = await Users.findById(req.params.id).select('-password')
+            if(!user) return res.status(400).json({msg: "User does not exists."})
+            
+            const password = req.body.password
+            const passwordHash = await bcrypt.hash(password, 10)
+
+            user.password = passwordHash
+
+            await user.save()
+
+            res.json({
+                message: 'User updated'
+            })  
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    } 
 }
 
 const createAccessToken = (user) => {

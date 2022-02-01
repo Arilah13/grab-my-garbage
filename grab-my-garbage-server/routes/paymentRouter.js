@@ -6,8 +6,6 @@ router.post('/create', auth, paymentController.payment)
 
 router.get('/paymentIntent', auth, paymentController.paymentIntent)
 
-router.get('/paypal', auth, paymentController.paypal)
-
 // router.get('/list/:id', paymentController.listCard)
 
 module.exports = router

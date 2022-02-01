@@ -25,16 +25,3 @@ export const paymentSheetReducer = (state = {}, action) => {
             return state
     }
 }
-
-export const paypalReducer = (state = {}, action) => {
-    switch(action.type) {
-        case actionTypes.PAYPAL_TOKEN_REQUEST:
-            return { loading: true }
-        case actionTypes.PAYPAL_TOKEN_SUCCESS:
-            return { loading: false, paypal: action.payload, success: true }
-        case actionTypes.PAYPAL_TOKEN_FAIL:
-            return { loading: false, error: action.payload }
-        default:
-            return state
-    }
-}

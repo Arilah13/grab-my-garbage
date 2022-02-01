@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Formik } from 'formik'
 import { Icon, Button } from 'react-native-elements'
 import { showMessage } from 'react-native-flash-message'
+import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
 import { register } from '../../redux/actions/userActions'
@@ -13,7 +14,7 @@ import Headercomponent from '../../components/HeaderComponent'
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const initialValues = {name:'', email: '', password: '', phone_number:''}
+const initialValues = {name:'', email: '', password: '', password_1: ''}
 
 const Signupscreen = ({navigation}) => {
 
@@ -21,12 +22,11 @@ const Signupscreen = ({navigation}) => {
 
     const [show, setShow] = useState(false)
     const [status, setStatus] = useState(false)
-    const [validated, setValidated] = useState(false)
 
     const formikRef = useRef()
-    const mobile1 = useRef('mobile')
     const email1 = useRef('email')
     const password1 = useRef('password')
+    const password2 = useRef('password2')
 
     const userRegister = useSelector(state => state.userRegister)
     const {success, error} = userRegister
@@ -35,134 +35,27 @@ const Signupscreen = ({navigation}) => {
         setShow(!show)
     }
 
-    const validate = (values) => {
-        let errors = {}
-        
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i
-        if(!values.email) {
-            errors.email = 'Email address is required'
-        } else if (!regex.test(values.email)) {
-            errors.email = 'Invalid email address provided'
-        } else if (values.email && regex.test(values.email)) {
-            errors.email = null
-        }
-
-        if(!values.password) {
-            errors.password = 'Password is required'
-        } else if (values.password.length < 6) {
-            errors.password = 'Password must be atleast 6 characters'
-        } else if(values.password.length > 50) {
-            errors.password = 'Password must not be more than 50 characters'
-        } else if(values.password && values.password.length > 5 && values.password.length < 51) {
-            errors.password = null
-        }
-
-        if(!values.name) {
-            errors.name = 'Name is required'
-        } else if(values.name) {
-            errors.name = null
-        }
-
-        const isNum = /^\d+$/
-        if(values.phone_number) {
-            if(!isNum.test(values.phone_number)) {
-                errors.phone = 'Phone Number Must be only digits'
-            } else if(isNum.test(values.phone_number)) {
-                errors.phone = null
-            }
-        } else {
-            errors.phone = null
-        }
-
-        console.log(errors)
-
-        if(errors.email !== null && errors.password !== null && errors.name !== null && errors.phone !== null){
-            displayMessage(errors.email, errors.password, errors.name, errors.phone)
-        } else if (errors.password !== null && errors.name === null && errors.email === null && errors.phone === null) {
-            displayMessage(errors.password, null, null, null)
-        } else if (errors.email !== null, errors.password === null && errors.name === null && errors.phone === null) {
-            displayMessage(errors.email, null, null, null)
-        } else if (errors.name !== null, errors.password === null && errors.email === null && errors.phone === null) {
-            displayMessage(errors.name, null, null, null)
-        } else if (errors.name === null, errors.password === null && errors.email === null && errors.phone !== null) {
-            displayMessage(errors.phone, null, null, null)
-        } else if (errors.password !== null && errors.name !== null && errors.email === null && errors.phone === null) {
-            displayMessage(errors.password, errors.name, null, null)
-        } else if (errors.password !== null && errors.name !== null && errors.email !== null && errors.phone === null) {
-            displayMessage(errors.password, errors.name, errors.email, null)
-        } else if (errors.password !== null && errors.name === null && errors.email !== null && errors.phone === null) {
-            displayMessage(errors.password, errors.email, null, null)
-        } else if (errors.password !== null && errors.name === null && errors.email === null && errors.phone !== null) {
-            displayMessage(errors.password, errors.phone, null, null)
-        } else if (errors.password !== null && errors.name !== null && errors.email === null && errors.phone !== null) {
-            displayMessage(errors.password, errors.name, errors.phone, null)
-        } else if (errors.password !== null && errors.name === null && errors.email !== null && errors.phone !== null) {
-            displayMessage(errors.password, errors.email, errors.phone, null)
-        } else if (errors.password === null && errors.name !== null && errors.email !== null && errors.phone === null) {
-            displayMessage(errors.name, errors.email, null, null)
-        } else if (errors.password === null && errors.name !== null && errors.email === null && errors.phone !== null) {
-            displayMessage(errors.name, errors.phone, null, null)
-        } else if (errors.password === null && errors.name !== null && errors.email !== null && errors.phone !== null) {
-            displayMessage(errors.name, errors.phone, errors.email, null)
-        } else if (errors.password === null && errors.name === null && errors.email !== null && errors.phone !== null) {
-            displayMessage(errors.email, errors.phone, null, null)
-        } else if(errors.email === null && errors.password === null && errors.name === null && errors.phone === null)
-            setValidated(true)
-
-    }
-
     const SignUp = (values) => {
         dispatch(register(values))
         setTimeout(() => setStatus(true), 200)
     }
 
-    const displayMessage = (error, error1, error2, error3) => {
-        if(error !== null && error1 === null && error2 === null && error3 === null)
-            showMessage({
-                message: error,
-                type: 'danger',
-                autoHide: true,
-                animated: true,
-                animationDuration: 150,
-                duration: 800,
-            })
-        else if(error !== null && error1 !== null && error2 === null && error3 === null)
-            showMessage({
-                message: error + '\n' + error1,
-                type: 'danger',
-                autoHide: true,
-                animated: true,
-                animationDuration: 150,
-                duration: 1200,
-                style: {
-                    height: 70
-                }
-            })
-        else if(error !== null && error1 !== null && error2 !== null && error3 === null)
-            showMessage({
-                message: error + '\n' + error1 + '\n' + error2,
-                type: 'danger',
-                autoHide: true,
-                animated: true,
-                animationDuration: 150,
-                duration: 1200,
-                style: {
-                    height: 80
-                }
-            })
-        else
-            showMessage({
-                message: error + '\n' + error1 + '\n' + error2 + '\n' + error3,
-                type: 'danger',
-                autoHide: true,
-                animated: true,
-                animationDuration: 150,
-                duration: 1500,
-                style: {
-                    height: 102
-                }
-            })
-    }
+    const SignUpSchema = Yup.object().shape({
+        name: Yup.string()
+            .required('Name is required'),
+        password: Yup.string()
+            .required('Password is required')
+            .min(6, 'Password must be atleast 6 characters')
+            .max(50, 'Password must not be more than 50 characters'),
+        email: Yup.string()
+            .email('Invalid email address')
+            .required('Email address is required'),
+        password_1: Yup.string()
+            .required('Confirm Password is required')
+            .min(6, 'Password must be atleast 6 characters')
+            .max(50, 'Password must not be more than 50 characters')
+            .oneOf([Yup.ref('password'), null], "Passwords don't match")
+    })
 
     useEffect(() => {
         if(status)
@@ -197,25 +90,33 @@ const Signupscreen = ({navigation}) => {
             
             <Formik 
                 initialValues = {initialValues} 
-                onSubmit = {(values, {setSubmitting}) => {
-                    validate(values)
-                    if(validated) {
+                enableReinitialize
+                validationSchema = {SignUpSchema}
+                validateOnMount = {false}
+                validateOnBlur = {false}
+                validateOnChange = {false}
+                onSubmit = {(values, actions) => {
+                    if(actions.validateForm) {
                         setTimeout(() => {
-                            setSubmitting(false)
+                            actions.setSubmitting(false)
                             SignUp(values)
                         }, 400)
                     } else {
-                        setSubmitting(false)
+                        actions.setSubmitting(false)
                     }
                 }}
                 innerRef = {formikRef}
             >
                 {
                     (props) => (       
-                        <View style = {{backgroundColor: colors.white, borderTopLeftRadius: 30, borderTopRightRadius: 30, height: 9*SCREEN_HEIGHT/10}}>
+                        <ScrollView 
+                            contentContainerStyle = {{height: 9.8*SCREEN_HEIGHT/10}}
+                            style = {{backgroundColor: colors.white, borderTopLeftRadius: 30, borderTopRightRadius: 30, height: 9*SCREEN_HEIGHT/10}}
+                            showsVerticalScrollIndicator = {false}
+                        >
                             <Text style = {styles.title}>Sign-Up</Text>
 
-                            <Text style = {{fontSize:15, color:colors.grey1, marginHorizontal: 15}}>New on XpressFood ?</Text>
+                            <Text style = {{fontSize:15, color:colors.grey1, marginHorizontal: 15}}>New on grab-my-trash ?</Text>
  
                             <View style = {styles.view1}>  
                                 <TextInput 
@@ -224,18 +125,10 @@ const Signupscreen = ({navigation}) => {
                                     autoFocus = {false}
                                     onChangeText = {props.handleChange('name')}
                                     value = {props.values.name}
-                                    onSubmitEditing = {() => mobile1.current.focus()}
-                                />
-                                <TextInput 
-                                    placeholder = 'Mobile Number'
-                                    style = {styles.textInput}
-                                    keyboardType = 'number-pad'
-                                    autoFocus = {false}
-                                    onChangeText = {props.handleChange('phone_number')}
-                                    value = {props.values.phone_number}
-                                    ref = {mobile1}
                                     onSubmitEditing = {() => email1.current.focus()}
-                                />                                     
+                                />                                   
+                                {props.errors.name && 
+                                    <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.name}</Text>}
 
                                 <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
                                     <View>
@@ -258,6 +151,9 @@ const Signupscreen = ({navigation}) => {
                                         />
                                     </View>
                                 </View>     
+                                {props.errors.email && 
+                                    <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.email}</Text>}
+
                                 <KeyboardAvoidingView behavior = 'position'> 
                                 <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
                                     <Icon 
@@ -273,6 +169,7 @@ const Signupscreen = ({navigation}) => {
                                         onChangeText = {props.handleChange('password')}
                                         value = {props.values.password}
                                         ref = {password1}
+                                        onSubmitEditing = {() => password2.current.focus()}
                                     />
                                     {
                                         show ? (
@@ -292,6 +189,44 @@ const Signupscreen = ({navigation}) => {
                                         )
                                     } 
                                 </View>
+                                {props.errors.password && 
+                                    <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.password}</Text>}
+
+                                <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
+                                    <Icon 
+                                        name = 'lock'
+                                        color = {colors.grey1}
+                                        type = 'material'
+                                    />
+                                    <TextInput 
+                                        placeholder = 'Confirm Password'
+                                        secureTextEntry = {show ? false : true}
+                                        style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
+                                        autoFocus = {false}
+                                        onChangeText = {props.handleChange('password_1')}
+                                        value = {props.values.password_1}
+                                        ref = {password2}
+                                    />
+                                    {
+                                        show ? (
+                                            <Icon 
+                                            name = 'visibility-off'
+                                            onPress = {handleVisibility}
+                                            color = {colors.grey1}
+                                            type = 'material'
+                                            />
+                                            ) : (
+                                            <Icon 
+                                            name = 'visibility'
+                                            onPress = {handleVisibility}
+                                            color = {colors.grey1}
+                                            type = 'material'
+                                            />
+                                        )
+                                    } 
+                                </View>
+                                {props.errors.password_1 && 
+                                    <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.password_1}</Text>}
                     
                                 <View style = {styles.view3}>
                                     <Text style = {{fontSize:13}}>By Creating or logging into an account you are</Text>
@@ -319,7 +254,7 @@ const Signupscreen = ({navigation}) => {
                                 </KeyboardAvoidingView>
                                 <View style = {styles.view6}>
                                     <View>
-                                        <Text>Already have an account with XpressFood?</Text>
+                                        <Text>Already have an account with grab-my-trash?</Text>
                                     </View>
                                     <View>
                                         <Button
@@ -330,7 +265,7 @@ const Signupscreen = ({navigation}) => {
                                     </View>
                                 </View>
                             </View>   
-                        </View> 
+                        </ScrollView> 
                     )
                 }
             </Formik>

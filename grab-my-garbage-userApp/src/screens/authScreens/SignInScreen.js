@@ -274,7 +274,7 @@ const Signinscreen = ({navigation}) => {
             </View>
 
             <View style = {{marginLeft: 5, height: 2*SCREEN_HEIGHT/20, flexDirection: 'row'}}>
-                <Text style={{...styles.text1, top: 10}}>New on Grab-My-Trash?</Text>
+                <Text style={{...styles.text1, top: 10}}>New on grab-my-trash?</Text>
                 <Button
                     title = 'Create an account'
                     buttonStyle = {styles.createButton}

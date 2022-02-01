@@ -59,7 +59,7 @@ export const specialLogin = (info) => async(dispatch) => {
     }
 }
 
-export const register = ({name, email, password, phone_number, image}) => async(dispatch) => {
+export const register = ({name, email, password, image}) => async(dispatch) => {
     try {
         dispatch({
             type: actionTypes.USER_REGISTER_REQUEST,
@@ -73,7 +73,7 @@ export const register = ({name, email, password, phone_number, image}) => async(
         const registerrole = 'user'
 
         const { data } = await axios.post('http://192.168.13.1:5000/users/register',
-            {name, email, password, phone_number, registerrole, image}, config, 
+            {name, email, password, registerrole, image}, config, 
         ).catch((err) => console.log(err))
 
         dispatch({
@@ -206,12 +206,12 @@ export const deleteUsers = (id) => async (dispatch, getState) => {
     }
 }
 
-export const updateUser = (user) => async (dispatch, getState) => {
+export const updateUserPassword = (password) => async (dispatch, getState) => {
     try {
         dispatch({
-            type: actionTypes.USER_UPDATE_REQUEST,
+            type: actionTypes.USER_UPDATE_PROFILE_REQUEST,
         })
-        console.log(user)
+
         const { userLogin: { userInfo }} = getState()
         
         const config = {
@@ -221,19 +221,15 @@ export const updateUser = (user) => async (dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.put(`/users/${user._id}`, user, config)
+        const { data } = await axios.put(`http://192.168.13.1:5000/users/profile/password/${userInfo._id}`, {password}, config)
 
         dispatch({
-            type: actionTypes.USER_UPDATE_SUCCESS
-        })
-
-        dispatch({
-            type: actionTypes.USER_DETAILS_SUCCESS,
+            type: actionTypes.USER_UPDATE_PROFILE_SUCCESS,
             payload: data
         })
     } catch (err) {
         dispatch({
-            type: actionTypes.USER_UPDATE_FAIL,
+            type: actionTypes.USER_UPDATE_PROFILE_FAIL,
             payload: err.response.data.msg
         })
     }
