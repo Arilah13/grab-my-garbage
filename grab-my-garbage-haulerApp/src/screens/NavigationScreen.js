@@ -67,7 +67,7 @@ const Navigationscreen = () => {
         } 
     } 
 
-    useEffect(() => {
+    useEffect(async() => {
         console.log(online)
         if(online === true) {
             TaskManager.defineTask(TASK_FETCH_LOCATION, async({data: { locations }, err}) => {

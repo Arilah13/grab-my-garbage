@@ -291,4 +291,4 @@ const checkURL = (check) => {
     return url.protocol === 'http:' || url.protocol === 'https:'
 }
 
-module.exports = userController;
+module.exports = userController

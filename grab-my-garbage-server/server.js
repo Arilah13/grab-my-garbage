@@ -10,6 +10,7 @@ const userRoutes = require('./routes/userRouter')
 const paymentRoutes = require('./routes/paymentRouter')
 const pickupRoutes = require('./routes/pickupRouter')
 const requestRoutes = require('./routes/requestRouter')
+const haulerRoutes = require('./routes/haulerRouter')
 
 const app = express()
 app.use(express.urlencoded({extended: false}))
@@ -23,6 +24,7 @@ app.use('/users', userRoutes)
 app.use('/payment', paymentRoutes)
 app.use('/pickup', pickupRoutes)
 app.use('/request', requestRoutes)
+app.use('/haulers', haulerRoutes)
 
 const PORT = process.env.PORT || 5000
 
