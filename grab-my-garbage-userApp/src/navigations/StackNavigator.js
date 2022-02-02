@@ -12,7 +12,7 @@ import Editprofilescreen from '../screens/EditProfileScreen'
 import Changepasswordscreen from '../screens/ChangePasswordScreen'
 import Paymentsuccessscreen from '../screens/paymentScreens/paymentSuccessScreen'
 import Paymentpresuccessscreen from '../screens/paymentScreens/PaymentPreSuccessScreen'
-import Requestsscreen from '../screens/requestsScreen'
+import Topnavigator from './TopNavigator'
 
 import { getPaymentIntent } from '../redux/actions/paymentActions'
 
@@ -45,7 +45,7 @@ const StackNavigator = () => {
 
             <Stack.Screen
                 name = 'Requests'
-                component = {Requestsscreen}
+                component = {Topnavigator}
                 options = {{
                     headerShown: false
                 }}

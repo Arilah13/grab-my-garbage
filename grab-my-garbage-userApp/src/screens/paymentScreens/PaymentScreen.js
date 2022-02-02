@@ -44,9 +44,6 @@ const Paymentscreen = ({route, navigation}) => {
     const paymentSheet = useSelector((state) => state.paymentSheet)
     const {loading, paymentSheet: sheet} = paymentSheet
 
-    const payPal = useSelector((state) => state.paypal)
-    const {loading: paypalLoading, paypal: PayPal} = payPal
-
     const requestPickup = async() => {
         const socket = socketIO.connect('http://192.168.13.1:5000')
 
@@ -190,8 +187,8 @@ const Paymentscreen = ({route, navigation}) => {
                     <Button
                         title = 'Confirm'
                         buttonStyle = {styles.button}
-                        loading = {isLoading || loading || paypalLoading}
-                        disabled = {isLoading || loading || paypalLoading}
+                        loading = {isLoading || loading}
+                        disabled = {isLoading || loading}
                         onPress = {() => pay()}
                     />
                 </View>

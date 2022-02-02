@@ -2,11 +2,10 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Icon } from 'react-native-elements'
 
-import Headercomponent from '../components/HeaderComponent'
-import { colors } from '../global/styles'
-import { getAllPickups } from '../redux/actions/pickupActions'
+import Headercomponent from '../../components/HeaderComponent'
+import { colors } from '../../global/styles'
+import { getAllPickups } from '../../redux/actions/pickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -20,6 +19,13 @@ const Requestsscreen = ({navigation}) => {
     const retrieveAllPickups = useSelector(state => state.retrieveAllPickups)
     const { loading, pickupInfo } = retrieveAllPickups
 
+    const time = (timeC) => {
+        const timeA = (((timeC).split('T')[1]).split('.')[0]).split(':')[0]
+        const timeB = (parseInt(timeA) + 11) % 12 + 1
+        const timeD = timeB + ':' + (((timeC).split('T')[1]).split('.')[0]).split(':')[1] + (parseInt(timeA) >= 12 ? ' PM' : ' AM') 
+        return timeD
+    }
+
     useEffect(() => {
         if(userInfo !== undefined) {
             dispatch(getAllPickups())
@@ -28,29 +34,8 @@ const Requestsscreen = ({navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <View>
-                <TouchableOpacity 
-                    style = {styles.container1}
-                    onPress = {() => navigation.navigate('Home')}
-                >
-                    <Icon
-                        type = 'material'
-                        name = 'arrow-back'
-                        color = {colors.blue5}
-                        size = {25}
-                        style = {{
-                            alignSelf: 'flex-start',
-                            marginTop: 25,
-                            display: 'flex'
-                        }}
-                    />
-                    <Text style = {styles.text}>Home</Text>
-                </TouchableOpacity>
-            </View>
 
-            <View style = {styles.container}>
-                <Text style = {styles.text5}>Requests</Text>
-                
+            <View style = {styles.container}>   
                 <FlatList
                     numColumns = {1}
                     showsHorizontalScrollIndicator = {false}
@@ -62,15 +47,14 @@ const Requestsscreen = ({navigation}) => {
                             onPress = {() => navigation.navigate('')}
                         >
                             <View style = {{...styles.view1, flexDirection: 'row'}}>    
-                                <Text style = {styles.text1}>Date</Text>                 
-                                <Text style = {styles.text2}>Total</Text>         
+                                <Text style = {styles.text1}>Selected Date</Text>                 
+                                <Text style = {styles.text2}>Selected Time</Text>                 
+                                <Text style = {styles.text3}>Total</Text>         
                             </View>
                             <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                <Text style = {styles.text3}>{(item.datetime).split('T')[0]}</Text>
-                                <Text style = {styles.text4}>Rs {item.payment}</Text>
-                            </View>
-                            <View style = {styles.view2}>
-                                <Text style = {{color: colors.blue2}}>Pending</Text>
+                                <Text style = {styles.text4}>{(item.datetime).split('T')[0]}</Text>
+                                <Text style = {styles.text5}>{time(item.datetime)}</Text>
+                                <Text style = {styles.text6}>Rs {item.payment}</Text>
                             </View>
                         </TouchableOpacity>
                     )}
@@ -88,16 +72,16 @@ const styles = StyleSheet.create({
     container:{
         display: 'flex',
         backgroundColor: colors.grey9,
-        height: 9*SCREEN_HEIGHT/10,
-        paddingTop: 30,
-        paddingLeft: 20,
+        height: '100%',
+        paddingLeft: 10,
         borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
+        borderTopRightRadius: 30,
+        paddingTop: 10
     },
     card:{
-        width: SCREEN_WIDTH/1.1,
+        width: SCREEN_WIDTH/1.2,
         height: 80,
-        marginTop: 20,
+        marginBottom: 20,
         backgroundColor: colors.blue1,
         borderRadius: 20,
         shadowColor: '#171717',
@@ -113,55 +97,45 @@ const styles = StyleSheet.create({
         color: colors.blue2,
         fontWeight: 'bold',
         marginTop: 15,
-        marginLeft: 5,
-        marginRight: 10
+        marginLeft: 45,
+        marginRight: 0
     },
     text2:{
         color: colors.blue2,
-        marginRight: 100,
-        marginLeft: 75,
+        marginRight: 0,
+        marginLeft: 35,
         marginTop: 15,
         fontWeight: 'bold'
     },
     text3:{
-        marginTop: 10,
         color: colors.blue2,
-        marginLeft: 5,
-        marginRight: 10
+        marginRight: 40,
+        marginLeft: 35,
+        marginTop: 15,
+        fontWeight: 'bold'
     },
     text4:{
         marginTop: 10,
         color: colors.blue2,
-        marginLeft: 50,
-        marginRight: 115
+        marginLeft: 25,
+        marginRight: 15
+    },
+    text5:{
+        marginTop: 10,
+        color: colors.blue2,
+        marginLeft: 45,
+        marginRight: 0
+    },
+    text6:{
+        marginTop: 10,
+        color: colors.blue2,
+        marginLeft: 45,
+        marginRight: 5
     },
     view2:{
         position: 'absolute',
         marginLeft: 265,
         marginTop: 25
     },
-    text5:{
-        position: 'absolute',
-        color: colors.blue2,
-        fontSize: 17,
-        fontWeight: 'bold',
-        margin: 10,
-        marginLeft: 22
-    },
-    container1:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
-        //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
-        flexDirection: 'row'
-    },
-    text:{
-        display: 'flex',
-        top: 26,
-        left: 15,
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 16
-    }
 
 })

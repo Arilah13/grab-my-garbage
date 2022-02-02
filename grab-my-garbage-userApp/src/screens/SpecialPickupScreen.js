@@ -39,7 +39,6 @@ const Specialpickupscreen = ({navigation}) => {
     
     let array_address = address.split(',')
     let address_new = array_address[0] + ', ' + array_address[1]
-    let date1 = new Date()
     let date2 = new Date()
     let formattedDate = dateTime.toDateString().split(' ')
     let formattedTime = dateTime.toLocaleTimeString().split(':')
@@ -71,7 +70,6 @@ const Specialpickupscreen = ({navigation}) => {
         setDateTime(dateTime)
     }
     const changeDate = () => {
-        date1.setDate(date1.getDate() + 1)
         date2.setDate(date2.getDate() + 30)
     }
     const selectGallery = async() => {
@@ -108,20 +106,22 @@ const Specialpickupscreen = ({navigation}) => {
     }
 
     const validateForm = () => {
-        if (dateTime.getTime() >= new Date().getTime() + (1*24*60*60*1000) && categories.length !== 0)
+        if (categories.length !== 0)
             return true
         else
             return false
     }
 
     const alert = () => {
-        if(dateTime.getTime() < new Date().getTime() + (1*24*60*60*1000) && categories.length !== 0) {
-            alertMsg('Date Error', 'Pickup Date should be 24hour from current time')
-        } else if(categories.length === 0 && dateTime.getTime() >= new Date().getTime() + (1*24*60*60*1000)) {
+        // if(dateTime.getTime() < new Date().getTime() + (1*24*60*60*1000) && categories.length !== 0) {
+        //     alertMsg('Date Error', 'Pickup Date should be 24hour from current time')
+        // } else if(categories.length === 0 && dateTime.getTime() >= new Date().getTime() + (1*24*60*60*1000)) {
+        //     alertMsg('Category Not Selected', 'Atleast one category should be selected')
+        // } else {
+        //     alertMsg('Date and Category Error', 'A category should be selected and the date should be more than 24h from current time')
+        // }  
+        if(categories.length === 0)    
             alertMsg('Category Not Selected', 'Atleast one category should be selected')
-        } else {
-            alertMsg('Date and Category Error', 'A category should be selected and the date should be more than 24h from current time')
-        }      
     }
 
     const alertMsg = (heading, msg) => {
@@ -217,6 +217,7 @@ const Specialpickupscreen = ({navigation}) => {
                         
                         <View style = {styles.container3} >
                             <Text style = {styles.text4}>Schedule Pickup</Text>
+                            <Text style = {{fontSize: 12, color: colors.blue2}}>*Pickup will be completed within 24 hour from selected time</Text>
                             <View style = {styles.view8}>
                                 <Icon
                                     type = 'material'
@@ -251,7 +252,6 @@ const Specialpickupscreen = ({navigation}) => {
                                             mode = 'datetime'
                                             onConfirm = {(dateTime) => handleConfirmDateTime(dateTime)}
                                             onCancel = {() => setShowDateTime(false)}
-                                            minimumDate = {date1}
                                             maximumDate = {date2}
                                             minuteInterval = {15}
                                             is24Hour = {false}
@@ -261,6 +261,7 @@ const Specialpickupscreen = ({navigation}) => {
                             </View>
 
                             <Text style = {styles.text5}>Trash Categories</Text>
+                            <Text style = {{fontSize: 12, color: colors.blue2}}>*Atleast one category should be selected</Text>
                             <View style = {styles.view1}>
                                 <Icon
                                     type = 'material'
