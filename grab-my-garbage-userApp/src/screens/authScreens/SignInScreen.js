@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, TextInput, Dimensions, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Dimensions, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Formik } from 'formik'
 import { Icon, SocialIcon, Button } from 'react-native-elements'
 import * as Google from 'expo-google-app-auth'
-import { showMessage } from 'react-native-flash-message'
+import * as Facebook from 'expo-facebook'
+import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
-import { specialLogin, Login } from '../../redux/actions/userActions'
+import { specialLogin, specialLoginFB ,Login } from '../../redux/actions/userActions'
 import { ANDROID_CLIENT_ID } from '@env'
 import Headercomponent from '../../components/HeaderComponent'
 
@@ -23,8 +24,8 @@ const Signinscreen = ({navigation}) => {
 
     const [show, setShow] = useState(false)
     const [googleSubmitting, setGoogleSubmitting] = useState(false)
+    const [fbSubmitting, setFbSubmitting] = useState(false)
     const [status, setStatus] = useState(false)
-    const [validated, setValidated] = useState(false)
 
     const formikRef = useRef()
     const password1 = useRef('password')
@@ -36,40 +37,15 @@ const Signinscreen = ({navigation}) => {
         setShow(!show)
     }
 
-    const validate = (values) => {
-        let errors = {}
-        
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i
-        if(!values.email) {
-            errors.email = 'Email address is required'
-        } else if (!regex.test(values.email)) {
-            errors.email = 'Invalid email address provided'
-        } else if (values.email && regex.test(values.email)) {
-            errors.email = null
-        }
-
-        if(!values.password) {
-            errors.password = 'Password is required'
-        } else if (values.password.length < 6) {
-            errors.password = 'Password must be atleast 6 characters'
-        } else if(values.password.length > 50) {
-            errors.password = 'Password must not be more than 50 characters'
-        } else if(values.password && values.password.length > 5 && values.password.length < 51) {
-            errors.password = null
-        }
-
-        if(errors.email !== null && errors.password !== null){
-            displayMessage(errors.email, errors.password)
-        } else if (errors.password) {
-            displayMessage(errors.password, null)
-        } else if (errors.email) {
-            displayMessage(errors.email, null)
-        }
-
-        if(errors.email === null && errors.password === null)
-            setValidated(true)
-
-    }
+    const signInSchema = Yup.object().shape({
+        email: Yup.string()
+            .email('Invalid email address')
+            .required('Email address is required'),
+        password: Yup.string()
+            .required('Password is required')
+            .min(6, 'Password must be atleast 6 characters')
+            .max(50, 'Password must not be more than 50 characters'),
+    })
 
     const handleLogin = (values) => {
         dispatch(Login(values.email, values.password))
@@ -97,14 +73,16 @@ const Signinscreen = ({navigation}) => {
                 else
                 {
                     setGoogleSubmitting(false)
-                    showMessage({
-                        message: 'Google SignIn Unsuccessful',
-                        type: 'warning',
-                        autoHide: true,
-                        animated: true,
-                        animationDuration: 150,
-                        duration: 800,
-                    })
+                    Alert.alert('Google SignIn UnSuccessful',
+                    [
+                        {
+                            text: 'Ok',
+                        }
+                    ],
+                    {
+                        cancelable: true
+                    }
+                    )
                 }
             })
             .catch(error => {
@@ -112,28 +90,25 @@ const Signinscreen = ({navigation}) => {
             })
     }
 
-    const displayMessage = (error, error1) => {
-        if(error !== null && error1 === null)
-            showMessage({
-                message: error,
-                type: 'danger',
-                autoHide: true,
-                animated: true,
-                animationDuration: 150,
-                duration: 800,
-            })
-        else
-            showMessage({
-                message: error + '\n' + error1,
-                type: 'danger',
-                autoHide: true,
-                animated: true,
-                animationDuration: 150,
-                duration: 1500,
-                style: {
-                    height: 70
-                }
-            })
+    const handleFacebookSignIn = async() => {
+        setFbSubmitting(true)
+        try {
+            await Facebook.initializeAsync({
+                appId: '619829139115277',
+            });
+            const { type, token } =
+                await Facebook.logInWithReadPermissionsAsync({
+                permissions: ['public_profile', 'email'],
+                });
+            const response = await fetch(`https://graph.facebook.com/me?fields=id,name,picture,email&access_token=${token}`)
+            setFbSubmitting(false)
+            if (type === 'success') {
+                const data = await response.json()
+                dispatch(specialLoginFB(data.email, data.name, data.id, token))
+            }
+        } catch ({ message }) {
+            Alert.alert(`Facebook Login Error: ${message}`);
+        }
     }
 
     useEffect(() => {
@@ -147,7 +122,16 @@ const Signinscreen = ({navigation}) => {
             else
             {
                 setStatus(false)
-                displayMessage(error, null)
+                Alert.alert(error,
+                    [
+                        {
+                            text: 'Ok',
+                        }
+                    ],
+                    {
+                        cancelable: true
+                    }
+                )
             }
         }
     }, [handleLogin])
@@ -159,22 +143,26 @@ const Signinscreen = ({navigation}) => {
             <View style = {{marginLeft: 4, marginTop: 20, height: SCREEN_HEIGHT/20 }}>
                 <Text style = {styles.title}>Sign In</Text>
             </View>
-            <View style = {{alignItems: 'center', marginTop: 20, height: SCREEN_HEIGHT/20}}>
+            <View style = {{alignItems: 'center', marginTop: 0, height: SCREEN_HEIGHT/20}}>
                 <Text style = {styles.text2}>Please enter the name and password</Text>
                 <Text style = {styles.text2}>registered with your account</Text>
             </View>
 
             <Formik
                 initialValues = {initialValues}
-                onSubmit = {(values, {setSubmitting}) => {
-                    validate(values)
-                    if(validated) {
+                enableReinitialize
+                validationSchema = {signInSchema}
+                validateOnMount = {false}
+                validateOnBlur = {false}
+                validateOnChange = {false}
+                onSubmit = {(values, actions) => {
+                    if(actions.validateForm) {
                         setTimeout(() => {
-                            setSubmitting(false)
+                            actions.setSubmitting(false)
                             handleLogin(values)
                         }, 400)
                     } else {
-                        setSubmitting(false)
+                        actions.setSubmitting(false)
                     }
                 }}
                 innerRef = {formikRef}
@@ -203,6 +191,8 @@ const Signinscreen = ({navigation}) => {
                                 />
                             </View>
                         </View>
+                        {props.errors.email && 
+                            <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.email}</Text>}
                         
                         <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
                             <Icon
@@ -237,6 +227,9 @@ const Signinscreen = ({navigation}) => {
                                     /> )
                                 }
                         </View>
+                        {props.errors.password && 
+                            <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.password}</Text>}
+
                         <Button 
                             title = 'SIGN IN'
                             buttonStyle = {styles.button}
@@ -260,7 +253,9 @@ const Signinscreen = ({navigation}) => {
                     button
                     type = 'facebook'
                     style = {styles.SocialIcon}
-                    onPress = {() => {}}
+                    onPress = {handleFacebookSignIn}
+                    loading = {fbSubmitting}
+                    disabled = {fbSubmitting}
                 />
                 <SocialIcon
                     title = 'Sign In With Google'

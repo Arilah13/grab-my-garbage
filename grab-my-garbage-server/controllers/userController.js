@@ -47,6 +47,48 @@ const userController = {
             return res.status(500).json({msg: err.message})
         }
     },
+    facebook: async(req, res) => {
+        try{
+            const {name, email, registerrole, id, token} = req.body
+
+            const user = await Users.findOne({email}) 
+            if(user) {
+                const accesstoken = createAccessToken(user._id)
+
+                res.json({
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    fbid: id,
+                    fbtoken: token,
+                    token: accesstoken
+                })
+            } else {
+                const newUser = new Users({
+                    name: name,
+                    email: email,
+                    role: registerrole === "user" ? 0 : 1,
+                })
+
+                await newUser.save()
+
+                const accesstoken = createAccessToken(newUser._id)
+
+                res.json({
+                    _id: newUser._id,
+                    name: newUser.name,
+                    email: newUser.email,
+                    role: newUser.role,
+                    fbid: id,
+                    fbtoken: token,
+                    token: accesstoken
+                })
+            }
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
     register: async(req, res) => {
         try{
             const {name, email, password, registerrole} = req.body

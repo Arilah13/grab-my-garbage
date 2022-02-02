@@ -6,6 +6,8 @@ router.post('/register', userController.register)
 
 router.post('/googleregister', userController.google)
 
+router.post('/facebookregister', userController.facebook)
+
 router.post('/get', userController.returnDetails)
 
 router.post('/login', userController.login)

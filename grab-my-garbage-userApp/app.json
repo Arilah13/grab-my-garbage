@@ -2,6 +2,11 @@
   "expo": {
     "name": "grab-my-garbage",
     "slug": "grab-my-garbage",
+    "facebookScheme": "fb619829139115277",
+    "facebookAppId": "619829139115277",
+    "facebookDisplayName": "grab-my-garbage",
+    "facebookAutoLogAppEventsEnabled": false,
+    "facebookAdvertiserIDCollectionEnabled": false,
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -34,6 +39,12 @@
         "@stripe/stripe-react-native",
         {
           "enableGooglePay": false
+        }
+      ],
+      [
+        "expo-facebook",
+        {
+          "userTrackingPermission": false
         }
       ]
     ]

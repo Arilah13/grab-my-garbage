@@ -1,6 +1,7 @@
 import axios from 'axios'
 import * as actionTypes from '../constants/userConstants'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as Facebook from 'expo-facebook'
 
 export const Login = (email, password) => async (dispatch) => {
     try {
@@ -32,6 +33,10 @@ export const Login = (email, password) => async (dispatch) => {
 
 export const specialLogin = (info) => async(dispatch) => {
     try{
+        dispatch({
+            type: actionTypes.USER_LOGIN_REQUEST
+        })
+
         const config = {
             headers: {
                 'Content-type': 'application/json'
@@ -43,6 +48,37 @@ export const specialLogin = (info) => async(dispatch) => {
 
         const { data } = await axios.post('http://192.168.13.1:5000/users/googleregister',
             {name, email, registerrole, photoUrl}, config, 
+        ).catch((err) => console.log(err))
+
+        dispatch({
+            type: actionTypes.USER_LOGIN_SUCCESS,
+            payload: data
+        })
+
+        AsyncStorage.setItem('userInfo', JSON.stringify(data))
+    } catch (err) {
+        dispatch({
+            type: actionTypes.USER_REGISTER_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}
+
+export const specialLoginFB = (email, name, id, token) => async(dispatch) => {
+    try{
+        dispatch({
+            type: actionTypes.USER_LOGIN_REQUEST
+        })
+        
+        const config = {
+            headers: {
+                'Content-type': 'application/json'
+            },
+        }
+        const registerrole = 'user'
+
+        const { data } = await axios.post('http://192.168.13.1:5000/users/facebookregister',
+            {name, email, registerrole, id, token}, config, 
         ).catch((err) => console.log(err))
 
         dispatch({
@@ -235,8 +271,17 @@ export const updateUserPassword = (password) => async (dispatch, getState) => {
     }
 }
 
-export const logout = () => async (dispatch) => {
+export const logout = () => async (dispatch, getState) => {
     AsyncStorage.removeItem('userInfo')
+
+    const { userLogin: { userInfo }} = getState()
+    if(userInfo.fbid !== '' && userInfo.fbid !== null) {
+        await Facebook.initializeAsync({
+            appId: '619829139115277',
+        });
+        var IParams = `access_token=${userInfo.fbtoken}`
+        await fetch(`https://graph.facebook.com/${userInfo.fbid}/permissions`,{method: 'DELETE', body: IParams})
+    }
 
     dispatch({ type: actionTypes.USER_LOGOUT })
 }

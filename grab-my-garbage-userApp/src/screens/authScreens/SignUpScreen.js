@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, TextInput, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Dimensions, KeyboardAvoidingView, ScrollView, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Formik } from 'formik'
 import { Icon, Button } from 'react-native-elements'
-import { showMessage } from 'react-native-flash-message'
 import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
@@ -63,21 +62,22 @@ const Signupscreen = ({navigation}) => {
             if(success === true)
             {  
                 setStatus(false)
-                showMessage({
-                    message: 'Account Creation Successful',
-                    type: 'success',
-                    autoHide: true,
-                    animated: true,
-                    animationDuration: 150,
-                    duration: 800,
-                })
                 formikRef.current.resetForm()
                 setTimeout(() => navigation.navigate('Home'), 800) 
             }
             else
             {
                 setStatus(false)
-                displayMessage(error, null, null, null)
+                Alert.alert('Account Creation UnSuccessful', error,
+                    [
+                        {
+                            text: 'Ok',
+                        }
+                    ],
+                    {
+                        cancelable: true
+                    }
+                )
             }
         }
     }, [SignUp])
