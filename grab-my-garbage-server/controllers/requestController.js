@@ -1,4 +1,5 @@
 const Pickups = require('../models/pickupModel')
+const Haulers = require('../models/haulerModel')
 
 const pickupController = {
     getPendingPickups: async(req, res) => {
@@ -8,7 +9,7 @@ const pickupController = {
 
             let pendingPickups = []
 
-            const pickups = await Pickups.find({accepted: 0, cancelled: 0}).populate('customerId')
+            const pickups = await Pickups.find({accepted: 0, cancelled: 0, completed: 0}).populate('customerId')
             if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
 
             pickups.map(pickup => {
@@ -20,7 +21,54 @@ const pickupController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
-    }
+    },
+    getPendingOfflinePickups: async(req, res) => {
+        try{
+            const id = req.params.id
+
+            let pendingPickups = []
+
+            const haulers = await Haulers.findById(id)
+            const lat = haulers.location[0].latitude
+            const lng = haulers.location[0].longitude
+
+            const pickups = await Pickups.find({accepted: 0, cancelled: 0, completed: 0}).populate('customerId')
+            if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
+
+            pickups.map(pickup => {
+                if(getLatngDiffInMeters(lat, lng, pickup.location[0].latitude, pickup.location[0].longitude) <= 25)
+                    pendingPickups.push(pickup)  
+            })
+
+            res.json(pendingPickups)
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    getUpcomingPickups: async(req, res) => {
+        try{
+            const id = req.params.id
+
+            const pickups = await Pickups.find({accepted: 1, cancelled: 0, completed: 0, pickerId: id}).populate('customerId')
+            if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
+
+            res.json(pickups)
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    getCompletedPickups: async(req, res) => {
+        try{
+            const id = req.params.id
+
+            const pickups = await Pickups.find({accepted: 1, cancelled: 0, completed: 1, pickerId: id}).populate('customerId')
+            if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
+
+            res.json(pickups)
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
 }
 
 const getLatngDiffInMeters = (lat1, lng1, lat2, lng2) => {

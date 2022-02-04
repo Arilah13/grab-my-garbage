@@ -42,6 +42,10 @@ const pickupSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    completed:{
+        type: Number,
+        default: 0
+    },
     pickerId:{
         type: String,
         required: false

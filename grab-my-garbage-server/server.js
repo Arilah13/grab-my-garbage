@@ -3,7 +3,7 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const http = require('http')
-const socket = require('socket.io')
+const SOCKET = require('socket.io')
 const connectDB = require('./config/db')
 
 const userRoutes = require('./routes/userRouter')
@@ -11,6 +11,7 @@ const paymentRoutes = require('./routes/paymentRouter')
 const pickupRoutes = require('./routes/pickupRouter')
 const requestRoutes = require('./routes/requestRouter')
 const haulerRoutes = require('./routes/haulerRouter')
+const pickupSocket = require('./socket/pickupSocket')
 
 const app = express()
 app.use(express.urlencoded({extended: false}))
@@ -29,25 +30,25 @@ app.use('/haulers', haulerRoutes)
 const PORT = process.env.PORT || 5000
 
 const server = http.createServer(app)
-const io = socket(server)
-
-let haulerSocket = []
+const io = SOCKET(server)
 
 io.on('connection', socket => {
-
-    // socket.on('pickRequest', response => {
-    //     if(haulerSocket != null) {
-    //         haulerSocket.emit('pickRequest', response)
-    //     }
-    // })
-
-    socket.on('lookingPickup', response => {
-        haulerSocket.push(response)
+    socket.on('online', ({haulerid, latitude, longitude}) => {
+        pickupSocket.haulerJoin({id: socket.id, haulerid, latitude, longitude})
     })
 
-    socket.on('pickupPosted', () => {
-        console.log('Hi')
-        io.emit('pickupposted')
+    socket.on('lookingPickup', async({latitude, longitude}) => {
+        let haulers = []
+        haulers = await pickupSocket.findHaulers({latitude, longitude})
+        if(haulers.length > 0) {
+            haulers.map((hauler) => {
+                socket.to(hauler).emit('newOrder')
+            })
+        } 
+    })
+
+    socket.on('haulerDisconnect', () => {
+        pickupSocket.haulerDisconnect({id: socket.id})
     })
 })
 
