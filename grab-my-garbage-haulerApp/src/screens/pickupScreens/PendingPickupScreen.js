@@ -59,8 +59,12 @@ const PendingPickupscreen = ({navigation}) => {
     }
 
     useEffect(() => {
+        // const unsubscribe = navigation.addListener('focus', () => {
+            
+        // })
+        // return unsubscribe
         dispatch(getPendingPickupsOffline())
-    }, [])
+    }, [navigation])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -83,9 +87,7 @@ const PendingPickupscreen = ({navigation}) => {
                     data = {pickupInfo}
                     keyExtractor = {(item) => item._id}
                     renderItem = {({item}) => (
-                        <TouchableOpacity style = {styles.card}
-                            onPress = {() => navigation.navigate('')}
-                        >
+                        <View style = {styles.card}>
                             <View style = {{flex: 1, flexWrap: 'wrap'}}>
                             <View>
                                 <View style = {{...styles.view1, flexDirection: 'row'}}>  
@@ -131,10 +133,11 @@ const PendingPickupscreen = ({navigation}) => {
                                         marginLeft: 30,
                                         backgroundColor: colors.buttons
                                     }}
+                                    onPress = {() => navigation.navigate('PickupDetail', {item, time: time(item.datetime), date: date(item.datetime)})}
                                 />
                             </View>
                             </View>
-                        </TouchableOpacity>
+                        </View>
                     )}
                 />
                 }

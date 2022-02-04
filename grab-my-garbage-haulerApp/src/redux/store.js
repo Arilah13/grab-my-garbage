@@ -9,7 +9,9 @@ import {
 } from './reducers/userReducer'
 
 import { 
-    retrievePendingPickupReducer
+    retrievePendingPickupReducer,
+    retrieveUpcomingPickupReducer,
+    retrieveCompletedPickupReducer
 } from './reducers/requestReducers'
 
 import {
@@ -21,6 +23,8 @@ const reducer = combineReducers({
     userLogin: userLoginReducer,
 
     pendingPickups: retrievePendingPickupReducer,
+    upcomingPickups: retrieveUpcomingPickupReducer,
+    completedPickups: retrieveCompletedPickupReducer,
 
     map: mapReducer,
     addLocation: addLocationReducer,

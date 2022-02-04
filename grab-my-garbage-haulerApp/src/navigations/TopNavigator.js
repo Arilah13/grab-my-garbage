@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 
-import { colors } from '../global/styles'
-import PendingPickupscreen from '../screens/pickupScreens/PendingPickupScreen'
 import CompletedPickupscreen from '../screens/pickupScreens/CompletedPickupScreen'
 import UpcomingPickupscreen from '../screens/pickupScreens/UpcomingPickupScreen'
+import Pendingstacknavigator from './PendingStackNavigator'
+
+import { colors } from '../global/styles'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -51,7 +52,7 @@ const Topnavigator = () => {
             >
                 <Tab.Screen 
                     name = "pendingPickup" 
-                    component = {PendingPickupscreen} 
+                    component = {Pendingstacknavigator} 
                     options = {{
                         tabBarLabel: 'Pending'
                     }}

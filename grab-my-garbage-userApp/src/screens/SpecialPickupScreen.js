@@ -170,7 +170,6 @@ const Specialpickupscreen = ({navigation}) => {
                 onSubmit = {(values, actions) => {
                     if(validateForm() === true) {
                         setTimeout(() => {
-                            console.log(values)
                             dispatch(storeSpecialPickupTemp(values))
                             actions.setSubmitting(false)
                             navigation.navigate('PaymentMethod', {
