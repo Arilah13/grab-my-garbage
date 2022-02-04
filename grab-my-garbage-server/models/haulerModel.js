@@ -10,6 +10,9 @@ const haulerSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    location: {
+        type: Array
+    },
     password: {
         type: String,
         required: false,

@@ -14,6 +14,7 @@ import {
 
 import {
     mapReducer,
+    addLocationReducer
 } from './reducers/mapReducers'
 
 const reducer = combineReducers({
@@ -22,6 +23,7 @@ const reducer = combineReducers({
     pendingPickups: retrievePendingPickupReducer,
 
     map: mapReducer,
+    addLocation: addLocationReducer,
 })
 
 const rootReducer = (state, action) => {

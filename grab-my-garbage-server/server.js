@@ -31,19 +31,23 @@ const PORT = process.env.PORT || 5000
 const server = http.createServer(app)
 const io = socket(server)
 
-let haulerSocket = null
+let haulerSocket = []
 
 io.on('connection', socket => {
-    console.log('user connected')
-    socket.on('pickRequest', response => {
-        if(haulerSocket != null) {
-            haulerSocket.emit('pickRequest', response)
-        }
+
+    // socket.on('pickRequest', response => {
+    //     if(haulerSocket != null) {
+    //         haulerSocket.emit('pickRequest', response)
+    //     }
+    // })
+
+    socket.on('lookingPickup', response => {
+        haulerSocket.push(response)
     })
 
-    socket.on('lookingPickup', () => {
-        console.log('pickup looking')
-        haulerSocket = socket
+    socket.on('pickupPosted', () => {
+        console.log('Hi')
+        io.emit('pickupposted')
     })
 })
 

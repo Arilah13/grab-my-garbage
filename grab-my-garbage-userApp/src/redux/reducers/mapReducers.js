@@ -14,7 +14,8 @@ export const mapReducer = (state = { origin: {}, destination: {} }, action) => {
                 latitude: action.payload.latitude,
                 longitude: action.payload.longitude,
                 address: action.payload.address,
-                name: action.payload.name
+                name: action.payload.name,
+                city: action.payload.city
             }
         default:
             return state

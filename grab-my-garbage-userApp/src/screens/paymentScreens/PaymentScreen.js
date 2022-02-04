@@ -13,7 +13,6 @@ import Headercomponent from '../../components/HeaderComponent'
 import { getPaymentSheet } from '../../redux/actions/paymentActions'
 import { getSpecialPickupInfo } from '../../redux/actions/pickupActions'
 import { SPECIAL_PICKUP_RESET } from '../../redux/constants/pickupConstants'
-import { paypalToken } from '../../redux/actions/paymentActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -46,11 +45,10 @@ const Paymentscreen = ({route, navigation}) => {
 
     const requestPickup = async() => {
         const socket = socketIO.connect('http://192.168.13.1:5000')
-
-        socket.on('connect', () => {
-            console.log('client connected')
-            socket.emit('pickRequest', pickupInfo)
-        })
+        
+        const latitude = pickupInfo.location.latitude
+        const longitude = pickupInfo.location.longitude
+        socket.emit('lookingPickup', {latitude, longitude})
     }
 
     const initializeStripe = async() => {
@@ -99,9 +97,9 @@ const Paymentscreen = ({route, navigation}) => {
         })
 
         if(error) {
-            console.log(error)
             setLoading(false)
         } else if(!error) {
+            requestPickup()
             navigation.navigate('Paymentpresuccess')
             dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'creditcard'}))
             setLoading(false)
@@ -110,12 +108,6 @@ const Paymentscreen = ({route, navigation}) => {
             })
         }
     }
-
-    // const sendTotal = `(function() {
-    //     document.dispatchEvent( new MessageEvent('message', {
-    //         data: ${JSON.stringify(total)},
-    //         origin: 'react-native'
-    //     })); })();`
 
     const sendTotal = `window._price = ${total}; true;`
 
@@ -139,6 +131,7 @@ const Paymentscreen = ({route, navigation}) => {
         setLoading(false)
         let payment = JSON.parse(data);
         if (payment.status === 'COMPLETED') {
+            requestPickup()
             navigation.navigate('Paymentpresuccess')
             dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'paypal'}))
             setLoading(false)

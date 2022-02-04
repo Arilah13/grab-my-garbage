@@ -24,5 +24,7 @@ export const colors = {
     buttons: '#5e44c2',
     warning: '#faad14',
     error: '#ff4d4f',
-    success: '#52c41a'
+    success: '#52c41a',
+    darkBlue: '#3D6DFE',
+    darkGrey: '#D3D3D3'
 }

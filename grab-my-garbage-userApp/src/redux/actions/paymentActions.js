@@ -16,7 +16,7 @@ export const getPaymentIntent = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get('http://192.168.13.1:5000/payment/paymentIntent', config, 
+        const { data } = await axios.get('https://grab-my-garbage-server.herokuapp.com/payment/paymentIntent', config, 
         )
 
         dispatch({
@@ -48,7 +48,7 @@ export const getPaymentSheet = (amount) => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.post('http://192.168.13.1:5000/payment/create', {amount, id}, config)
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/payment/create', {amount, id}, config)
         
         dispatch({
             type: actionTypes.PAYMENT_SHEET_SUCCESS,

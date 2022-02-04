@@ -32,6 +32,45 @@ const haulerController = {
             return res.status(500).json({msg: err.message})
         }
     },
+    returnDetails: async(req, res) => {
+        try{
+            const {email} = req.body
+
+            const hauler = await Haulers.findOne({email})
+            if(!hauler) return res.status(400).json({msg: "User does not exists."})
+
+            const accesstoken = createAccessToken(hauler._id)
+
+            res.json({
+                _id: hauler._id,
+                name: hauler.name,
+                email: hauler.email,
+                role: hauler.role,
+                image: hauler.image,
+                token: accesstoken
+            })
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    postLocation: async(req, res) => {
+        try{
+            const {location, haulerID} = req.body
+
+            const hauler = await Haulers.findById(haulerID)
+            if(!hauler) return res.status(400).json({msg: "User does not exists."})
+
+            hauler.location = location
+
+            await hauler.save()
+
+            res.json({
+                message: 'Location updated'
+            })
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    }
 }
 
 const createAccessToken = (user) => {

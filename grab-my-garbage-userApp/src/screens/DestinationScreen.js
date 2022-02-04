@@ -18,6 +18,7 @@ const Destinationscreen = ({route, navigation}) => {
     const dispatch = useDispatch()
 
     const [latlng, setLatLng] = useState({latitude: 6.9271, longitude: 79.8612})
+    const [city, setCity] = useState()
 
     const homePlace = {
         description: 'Home',
@@ -26,7 +27,8 @@ const Destinationscreen = ({route, navigation}) => {
     const currentLocation = {
         description: 'Current location',
         geometry: { location: { lat: latlng.latitude, lng: latlng.longitude } },
-        formatted_address: 'Current Location'
+        formatted_address: 'Current Location',
+        vicinity: city
     }
 
     const checkPermission = async() => {
@@ -51,6 +53,12 @@ const Destinationscreen = ({route, navigation}) => {
             const {
                 coords: {latitude, longitude}
             } = await Location.getCurrentPositionAsync()
+            let citycoords = await Location.reverseGeocodeAsync({latitude, longitude})
+            if(citycoords[0].district === null) {
+                setCity(citycoords[0].city)
+            } else {
+                setCity(citycoords[0].district)
+            }
             setLatLng({latitude: latitude, longitude: longitude})    
         } catch(err){
             console.log(err)
@@ -112,9 +120,9 @@ const Destinationscreen = ({route, navigation}) => {
                                 details.geometry.location.lat, 
                                 details.geometry.location.lng, 
                                 details.name, 
-                                details.formatted_address
+                                details.formatted_address,
+                                details.vicinity
                             ))
-
                         setLatLng({latitude: details.geometry.location.lat, longitude: details.geometry.location.lng})
                         setTimeout(() => {
                             if(route.params.destination === 'Special Pickup')

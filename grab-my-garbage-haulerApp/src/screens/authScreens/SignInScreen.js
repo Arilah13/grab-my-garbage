@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, TextInput, Dimensions, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Dimensions, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Formik } from 'formik'
 import { Icon, Button } from 'react-native-elements'
@@ -49,20 +49,20 @@ const Signinscreen = ({navigation}) => {
     }
 
     useEffect(() => {
-        if(status)
+        if(success == false)
         {
-            if(success === true)
-            {  
-                setStatus(false)
-                formikRef.current.resetForm()
-            }
-            else
-            {
-                setStatus(false)
-                displayMessage(error, null)
-            }
+            Alert.alert('Login Failed', error,
+                [
+                    {
+                        text: 'Ok',
+                    }
+                ],
+                {
+                    cancelable: true
+                }
+            )
         }
-    }, [handleLogin])
+    }, [success])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -159,7 +159,7 @@ const Signinscreen = ({navigation}) => {
                         </View>
                         {props.errors.password && 
                             <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.password}</Text>}
-                          
+
                         <Button 
                             title = 'SIGN IN'
                             buttonStyle = {styles.button}

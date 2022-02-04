@@ -4,7 +4,7 @@ import { Icon } from 'react-native-elements'
 
 import { colors } from '../global/styles'
 import Accountscreen from '../screens/AccountScreen'
-import Navigationscreen from '../screens/NavigationScreen'
+import Homescreen from '../screens/HomeScreen'
 import Topnavigator from './TopNavigator'
 
 const Tab = createBottomTabNavigator();
@@ -32,7 +32,7 @@ const TabNavigator = () => {
         >
             <Tab.Screen
                 name = 'Navigation'
-                component = {Navigationscreen}
+                component = {Homescreen}
                 options = {{
                     tabBarLabel: 'Home',
                     tabBarIcon: ({ focused }) => (

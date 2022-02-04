@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, StyleSheet, Text, FlatList, Dimensions, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import LottieView from 'lottie-react-native'
 
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
@@ -18,7 +19,7 @@ const Homescreen = ({navigation}) => {
     const { userInfo } = userLogin
 
     const userDetail = useSelector((state) => state.userDetail)
-    const { user } = userDetail
+    const { loading, user } = userDetail
 
     const specialPickup = useSelector((state) => state.specialPickup)
     const { pickupInfo } = specialPickup
@@ -31,6 +32,17 @@ const Homescreen = ({navigation}) => {
 
     return (
         <SafeAreaView>
+            {loading === true ? 
+                <LottieView 
+                    source = {require('../../assets/animation/truck_loader.json')}
+                    style = {{
+                        width: SCREEN_WIDTH,
+                        height: 500,
+                    }}
+                    loop = {true}
+                    autoPlay = {true}
+                />
+            :
             <View style={{backgroundColor: colors.blue1}}>
                 <View style = {styles.container}>
                     <View style = {styles.view1}>
@@ -77,6 +89,7 @@ const Homescreen = ({navigation}) => {
                     </View> 
                 </View>
             </View>
+            }
         </SafeAreaView>
     );
 }

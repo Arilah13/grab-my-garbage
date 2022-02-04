@@ -12,14 +12,15 @@ export const addOrigin = (latitude, longitude, name, address) => async(dispatch)
     })
 }
 
-export const addDestination = (latitude, longitude, name, address) => async(dispatch) => {
+export const addDestination = (latitude, longitude, name, address, city) => async(dispatch) => {
     dispatch({
         type: actionTypes.ADD_DESTINATION,
         payload: {
             latitude: latitude,
             longitude: longitude,
             address: address,
-            name: name
+            name: name,
+            city: city
         }
     })
 }

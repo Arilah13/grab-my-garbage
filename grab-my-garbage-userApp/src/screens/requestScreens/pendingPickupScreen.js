@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import LottieView from 'lottie-react-native'
 
 import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
@@ -36,6 +37,17 @@ const Requestsscreen = ({navigation}) => {
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
 
             <View style = {styles.container}>   
+                {loading === true ?
+                    <LottieView 
+                        source = {require('../../../assets/animation/truck_loader.json')}
+                        style = {{
+                            width: 300,
+                            height: 400,
+                        }}
+                        loop = {true}
+                        autoPlay = {true}
+                    />
+                :
                 <FlatList
                     numColumns = {1}
                     showsHorizontalScrollIndicator = {false}
@@ -59,6 +71,7 @@ const Requestsscreen = ({navigation}) => {
                         </TouchableOpacity>
                     )}
                 />
+                }
                 
             </View>  
         </SafeAreaView>

@@ -15,7 +15,7 @@ export const Login = (email, password) => async (dispatch) => {
             },
         }
 
-        const { data } = await axios.post('http://192.168.13.1:5000/users/login', { email, password }, config )
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/login', { email, password }, config )
 
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,
@@ -46,7 +46,7 @@ export const specialLogin = (info) => async(dispatch) => {
 
         const { name, email, photoUrl } = info
 
-        const { data } = await axios.post('http://192.168.13.1:5000/users/googleregister',
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/googleregister',
             {name, email, registerrole, photoUrl}, config, 
         ).catch((err) => console.log(err))
 
@@ -77,7 +77,7 @@ export const specialLoginFB = (email, name, id, token) => async(dispatch) => {
         }
         const registerrole = 'user'
 
-        const { data } = await axios.post('http://192.168.13.1:5000/users/facebookregister',
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/facebookregister',
             {name, email, registerrole, id, token}, config, 
         ).catch((err) => console.log(err))
 
@@ -108,7 +108,7 @@ export const register = ({name, email, password, image}) => async(dispatch) => {
         }
         const registerrole = 'user'
 
-        const { data } = await axios.post('http://192.168.13.1:5000/users/register',
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/register',
             {name, email, password, registerrole, image}, config, 
         ).catch((err) => console.log(err))
 
@@ -140,7 +140,7 @@ export const uploadDetails = (info) => async (dispatch) => {
 
         const { email } = info
 
-        const { data } = await axios.post('http://192.168.13.1:5000/users/get',
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/get',
             {email}, config, 
         ).catch((err) => console.log(err))
 
@@ -171,7 +171,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`http://192.168.13.1:5000/users/profile/${id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/users/profile/${id}`, config)
 
         dispatch({
             type: actionTypes.USER_DETAILS_SUCCESS,
@@ -201,7 +201,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
             },
         }
         
-        const { data } = await axios.put(`http://192.168.13.1:5000/users/profile/${userInfo._id}`, user, config)
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/users/profile/${userInfo._id}`, user, config)
 
         dispatch({
             type: actionTypes.USER_UPDATE_PROFILE_SUCCESS,
@@ -257,7 +257,7 @@ export const updateUserPassword = (password) => async (dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.put(`http://192.168.13.1:5000/users/profile/password/${userInfo._id}`, {password}, config)
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/users/profile/password/${userInfo._id}`, {password}, config)
 
         dispatch({
             type: actionTypes.USER_UPDATE_PROFILE_SUCCESS,

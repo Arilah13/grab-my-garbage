@@ -32,7 +32,7 @@ const Specialpickupscreen = ({navigation}) => {
     const [category1, setCategory1] = useState([])
 
     const map = useSelector((state) => state.map)
-    const { address, latitude, longitude } = map
+    const { address, latitude, longitude, city } = map
 
     const specialPickup = useSelector(state => state.specialPickup)
     const { pickupInfo } = specialPickup
@@ -43,7 +43,7 @@ const Specialpickupscreen = ({navigation}) => {
     let formattedDate = dateTime.toDateString().split(' ')
     let formattedTime = dateTime.toLocaleTimeString().split(':')
 
-    const initialValues = {location: map ? ({latitude, longitude}) : '', date: (dateTime) ? (dateTime) : '', 
+    const initialValues = {location: map ? ({latitude, longitude, city}) : '', date: (dateTime) ? (dateTime) : '', 
                             category: category1 ? category1 : '',  solid_weight: weight ? Math.round(weight*10)/10 : '', 
                             photo: image1 ? image1 :'', categories: categories ? categories : ''}
 
@@ -143,7 +143,7 @@ const Specialpickupscreen = ({navigation}) => {
         changeDate()
     }, [handleConfirmDateTime])
 
-    useEffect(() => {
+    useEffect(async() => {
         if(pickupInfo !== undefined) {
             setDateTime(pickupInfo.date)
             setCategory1(pickupInfo.category)
@@ -170,6 +170,7 @@ const Specialpickupscreen = ({navigation}) => {
                 onSubmit = {(values, actions) => {
                     if(validateForm() === true) {
                         setTimeout(() => {
+                            console.log(values)
                             dispatch(storeSpecialPickupTemp(values))
                             actions.setSubmitting(false)
                             navigation.navigate('PaymentMethod', {
@@ -347,7 +348,7 @@ const Specialpickupscreen = ({navigation}) => {
                                             display: 'flex'
                                         }}
                                     />
-                                    <Text style = {styles.text12}>{image1 === null || image1 === '' ? 'No photo attached' : 'Photo attached'}</Text>
+                                    <Text style = {styles.text12}>{image1 === null || image1 === '' || image1 === undefined ? 'No photo attached' : 'Photo attached'}</Text>
                                 </TouchableOpacity>
                             </View>
                             
