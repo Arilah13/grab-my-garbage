@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 
-import CompletedPickupscreen from '../screens/pickupScreens/CompletedPickupScreen'
-import UpcomingPickupscreen from '../screens/pickupScreens/UpcomingPickupScreen'
+import Completedstacknavigator from './CompletedStackNavigator'
 import Pendingstacknavigator from './PendingStackNavigator'
+import Upcomingstacknavigator from './UpcomingStackNavigator'
 
 import { colors } from '../global/styles'
 
@@ -59,14 +59,14 @@ const Topnavigator = () => {
                 />
                 <Tab.Screen 
                     name = "upcomingPickup" 
-                    component = {UpcomingPickupscreen} 
+                    component = {Upcomingstacknavigator} 
                     options = {{
                         tabBarLabel: 'Upcoming'
                     }}
                 />
                 <Tab.Screen 
                     name = "completedPickup" 
-                    component = {CompletedPickupscreen} 
+                    component = {Completedstacknavigator} 
                     options = {{
                         tabBarLabel: 'Completed'
                     }}

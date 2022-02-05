@@ -1,17 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
 
 import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
+import { declinePickup, getPendingPickupsOffline, acceptPickup, getUpcomingPickups } from '../../redux/actions/requestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Pickupdetailscreen = ({route}) => {
+const Pickupdetailscreen = ({route, navigation}) => {
 
-    const { item, time, date } = route.params
+    const { item, time, date, buttons, name } = route.params
+
+    const [loading1, setLoading1] = useState(false)
+    const [loading2, setLoading2] = useState(false)
+
+    const dispatch = useDispatch()
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -21,7 +28,7 @@ const Pickupdetailscreen = ({route}) => {
                 stickyHeaderIndices = {[0]}
                 style = {styles.container}
             >
-                <Headercomponent name = 'Pending Pickups' />    
+                <Headercomponent name = {name} />    
 
                 <View style = {{height: 14*SCREEN_HEIGHT/15, backgroundColor: colors.grey8}}>
                     <View style = {styles.container2}>
@@ -63,7 +70,12 @@ const Pickupdetailscreen = ({route}) => {
                             { item.category.length > 1 ?
                                 <View style = {{marginTop: -8}}> 
                                     {(item.category).slice(1).map(trash =>
-                                        <Text style = {styles.text6}>{trash}</Text>        
+                                        <Text  
+                                            key = {trash} 
+                                            style = {styles.text6}
+                                        >
+                                            {trash}
+                                        </Text>        
                                     )}
                                 </View> : null
                             }
@@ -80,30 +92,52 @@ const Pickupdetailscreen = ({route}) => {
                                 : ''
                             }
                         </View>
-                        <View style = {{...styles.container5, flex: 1, flexWrap: 'wrap'}}>
-                            <Button
-                                title = 'Accept'
-                                buttonStyle = {{
-                                    width: 100,
-                                    height: 40,
-                                    marginTop: 18,
-                                    borderRadius: 15,
-                                    marginLeft: 35,
-                                    backgroundColor: colors.buttons
-                                }}
-                            />
-                            <Button
-                                title = 'Decline'
-                                buttonStyle = {{
-                                    width: 100,
-                                    height: 40,
-                                    marginTop: 18,
-                                    borderRadius: 15,
-                                    marginLeft: 25,
-                                    backgroundColor: colors.buttons
-                                }}
-                            />
-                        </View>
+                        {buttons === true ? 
+                            <View style = {{...styles.container5, flex: 1, flexWrap: 'wrap'}}>
+                                <Button
+                                    title = 'Accept'
+                                    buttonStyle = {{
+                                        width: 100,
+                                        height: 40,
+                                        marginTop: 18,
+                                        borderRadius: 15,
+                                        marginLeft: 35,
+                                        backgroundColor: colors.buttons
+                                    }}
+                                    onPress = {() => {
+                                        dispatch(acceptPickup(item._id))
+                                        setTimeout(() => {
+                                            dispatch(getPendingPickupsOffline())
+                                            dispatch(getUpcomingPickups())
+                                            navigation.navigate('pendingPickupScreen')
+                                        }, 100) 
+                                        setLoading1(true)                                       
+                                    }}
+                                    loading = {loading1}
+                                    disabled = {loading1}
+                                />
+                                <Button
+                                    title = 'Decline'
+                                    buttonStyle = {{
+                                        width: 100,
+                                        height: 40,
+                                        marginTop: 18,
+                                        borderRadius: 15,
+                                        marginLeft: 25,
+                                        backgroundColor: colors.buttons
+                                    }}
+                                    onPress = {() => {
+                                        dispatch(declinePickup(item._id))
+                                        setTimeout(() => {
+                                            dispatch(getPendingPickupsOffline())
+                                            navigation.navigate('pendingPickupScreen')
+                                        }, 100)
+                                        setLoading2(true)
+                                    }}
+                                    loading = {loading2}
+                                    disabled = {loading2}
+                                />
+                            </View> : null }
                     </View>
                 </View>
             </ScrollView>

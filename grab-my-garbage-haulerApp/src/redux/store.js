@@ -11,7 +11,9 @@ import {
 import { 
     retrievePendingPickupReducer,
     retrieveUpcomingPickupReducer,
-    retrieveCompletedPickupReducer
+    retrieveCompletedPickupReducer,
+    declinePickupReducer,
+    acceptPickupReducer
 } from './reducers/requestReducers'
 
 import {
@@ -25,6 +27,8 @@ const reducer = combineReducers({
     pendingPickups: retrievePendingPickupReducer,
     upcomingPickups: retrieveUpcomingPickupReducer,
     completedPickups: retrieveCompletedPickupReducer,
+    declinePickup: declinePickupReducer,
+    acceptPickup: acceptPickupReducer,
 
     map: mapReducer,
     addLocation: addLocationReducer,

@@ -76,7 +76,7 @@ export const getUpcomingPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/request/upcomingPickup/${userInfo._id}`, 
+        const { data } = await axios.get(`http://192.168.13.1:5000/request/upcomingPickup/${userInfo._id}`, 
         config)
 
         dispatch({
@@ -116,6 +116,58 @@ export const getCompletedPickups = () => async(dispatch, getState) => {
     } catch (err) {
         dispatch({
             type: actionTypes.COMPLETED_PICKUP_RETRIEVE_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}
+
+export const declinePickup = (id) => async(dispatch, getState) => {
+    try{
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/request/declinePickup/${id}`, {id: userInfo._id},
+        config)
+
+        dispatch({
+            type: actionTypes.DECLINE_PICKUP_SUCCESS,
+            payload: data
+        })
+    } catch (err) {
+        dispatch({
+            type: actionTypes.DECLINE_PICKUP_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}
+
+export const acceptPickup = (id) => async(dispatch, getState) => {
+    try{
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        const { data } = await axios.put(`http://192.168.13.1:5000/request/acceptPickup/${id}`, {id: userInfo._id},
+        config)
+
+        dispatch({
+            type: actionTypes.ACCEPT_PICKUP_SUCCESS,
+            payload: data
+        })
+    } catch (err) {
+        dispatch({
+            type: actionTypes.ACCEPT_PICKUP_FAIL,
             payload: err.response.data.msg
         })
     }

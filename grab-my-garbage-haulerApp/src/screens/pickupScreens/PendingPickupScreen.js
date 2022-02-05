@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
@@ -133,7 +133,7 @@ const PendingPickupscreen = ({navigation}) => {
                                         marginLeft: 30,
                                         backgroundColor: colors.buttons
                                     }}
-                                    onPress = {() => navigation.navigate('PickupDetail', {item, time: time(item.datetime), date: date(item.datetime)})}
+                                    onPress = {() => navigation.navigate('PickupDetail', {item, time: time(item.datetime), date: date(item.datetime), buttons: true, name: 'Pending Pickups'})}
                                 />
                             </View>
                             </View>
