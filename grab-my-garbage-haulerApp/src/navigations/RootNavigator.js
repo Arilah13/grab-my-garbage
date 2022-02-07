@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import AuthNavigator from './AuthNavigator'
-import TabNavigator from './TabNavigator'
+import Stacknavigator from './StackNavigator'
 
 import { uploadDetails } from '../redux/actions/userActions'
 
@@ -29,7 +29,7 @@ const Rootnavigator = () => {
                 userLogin.userInfo === undefined ? (
                     <AuthNavigator />
                 ) : (
-                    <TabNavigator />
+                    <Stacknavigator />
                 )
             }
         </NavigationContainer>

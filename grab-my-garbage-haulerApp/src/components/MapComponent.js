@@ -12,9 +12,9 @@ const Mapcomponent = ({latlng}) => {
                 provider = {PROVIDER_GOOGLE}
                 style = {styles.map}
                 customMapStyle = {mapStyle}
-                showsUserLocation = {true}
-                followsUserLocation = {true}
-                region={{ latitude: latlng.latitude, longitude: latlng.longitude, latitudeDelta: 0.02, longitudeDelta: 0.01 }}
+                showsUserLocation = {false}
+                followsUserLocation = {false}
+                region = {{ latitude: latlng.latitude, longitude: latlng.longitude, latitudeDelta: 0.004, longitudeDelta: 0.003 }}
             >
                 <Marker coordinate = {latlng} >
                     <Image
@@ -32,7 +32,7 @@ export default Mapcomponent
 const styles = StyleSheet.create({
 
     map: {
-        height:"107%",
+        height:"100%",
         width:"100%",
         zIndex: -1
     },    

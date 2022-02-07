@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
 
@@ -13,7 +13,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Pickupdetailscreen = ({route, navigation}) => {
 
-    const { item, time, date, buttons, name } = route.params
+    const { item, time, date, buttons, name, date1 } = route.params
 
     const [loading1, setLoading1] = useState(false)
     const [loading2, setLoading2] = useState(false)
@@ -31,7 +31,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
                 <Headercomponent name = {name} />    
 
                 <View style = {{height: 14*SCREEN_HEIGHT/15, backgroundColor: colors.grey8}}>
-                    <View style = {styles.container2}>
+                    <Pressable style = {styles.container2} onPress = {() => navigation.navigate('Location', {location: item.location[0]})}>
                         <Icon 
                             type = 'feather'
                             name = 'map-pin'
@@ -56,9 +56,13 @@ const Pickupdetailscreen = ({route, navigation}) => {
                                 position: 'absolute'
                             }}
                         />
-                    </View>
+                    </Pressable>
                     <View style = {{flex: 1, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30}}>
                         <View style = {styles.container3}>
+                            <Text style = {styles.text3}>Pickup Scheduled on:</Text>
+                            <Text style = {styles.text4}>{date1 + ' ' + time}</Text>
+                        </View>
+                        <View style = {{...styles.container5, paddingTop: 0}}>
                             <Text style = {styles.text3}>Collect Pickup Before:</Text>
                             <Text style = {styles.text4}>{date + ' ' + time}</Text>
                         </View>
@@ -84,12 +88,22 @@ const Pickupdetailscreen = ({route, navigation}) => {
                             <Text style = {styles.text3}>Weight:</Text>
                             <Text style = {styles.text4}>{item.weight} kg</Text>
                         </View>
-                        <View style = {styles.container5}>
+                        <View style = {{...styles.container5, paddingBottom: 5, paddingTop: 0}}>
                             <Text style = {styles.text3}>Optional Images:</Text>
                             {
                                 item.image === null ? 
                                 <Text style = {styles.text4}>No Images Attached</Text>
-                                : ''
+                                : null
+                            }
+                        </View>
+                        <View style = {{alignSelf: 'center'}}>
+                            {
+                                item.image !== null ? 
+                                <Image 
+                                    source = {{uri: item.image}}
+                                    resizeMode = 'contain'
+                                    style = {styles.image}
+                                /> : null
                             }
                         </View>
                         {buttons === true ? 
@@ -210,5 +224,11 @@ const styles = StyleSheet.create({
         padding: 25,
         flexDirection: 'row'
     },
+    image:{
+        height: 200,
+        width: 200,
+        //borderRadius: 500,
+        alignContent: 'center'
+    }
 
 })

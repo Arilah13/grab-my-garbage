@@ -133,7 +133,7 @@ const CompletedPickupscreen = ({navigation}) => {
                                         marginLeft: 30,
                                         backgroundColor: colors.buttons
                                     }}
-                                    onPress = {() => navigation.navigate('PickupDetail', {item, time: time(item.datetime), date: date(item.datetime), buttons: false, name: 'Completed Pickups'})}
+                                    onPress = {() => navigation.navigate('PickupDetail3', {item, time: time(item.datetime), date: date(item.datetime), buttons: false, name: 'Completed Pickups'})}
                                 />
                             </View>
                             </View>

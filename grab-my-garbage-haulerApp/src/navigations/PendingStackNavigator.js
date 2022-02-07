@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import Pickupdetailscreen from '../screens/pickupScreens/PickupDetailScreen'
 import PendingPickupscreen from '../screens/pickupScreens/PendingPickupScreen'
+import Locationscreen from '../screens/pickupScreens/LocationScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -20,6 +21,13 @@ const Pendingstacknavigator = () => {
             <Stack.Screen
                 name = 'PickupDetail'
                 component = {Pickupdetailscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />  
+            <Stack.Screen
+                name = 'Location'
+                component = {Locationscreen}
                 options = {{
                     headerShown: false
                 }}

@@ -5,9 +5,8 @@ import { Icon } from 'react-native-elements'
 import { colors } from '../global/styles'
 import Accountscreen from '../screens/AccountScreen'
 import Homescreen from '../screens/HomeScreen'
-import Topnavigator from './TopNavigator'
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator()
 
 const TabNavigator = () => {
     return (
@@ -31,7 +30,7 @@ const TabNavigator = () => {
             initialRouteName = 'Home'
         >
             <Tab.Screen
-                name = 'Navigation'
+                name = 'Home'
                 component = {Homescreen}
                 options = {{
                     tabBarLabel: 'Home',
@@ -46,7 +45,7 @@ const TabNavigator = () => {
                 }}
             />
 
-            <Tab.Screen
+            {/* <Tab.Screen
                 name = 'Pickup'
                 component = {Topnavigator}
                 options = {{
@@ -60,7 +59,7 @@ const TabNavigator = () => {
                         />
                     ),
                 }}
-            />
+            /> */}
 
             <Tab.Screen
                 name = 'Account'
