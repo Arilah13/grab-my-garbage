@@ -25,12 +25,13 @@ const Mapscreen = ({navigation}) => {
     const [end, setEnd] = useState(null)
     const [loading, setLoading] = useState(false)
     const [pickupBtn, setpickupBtn] = useState(true)
+    const [order, setOrder] = useState(null)
+    const [redo, setRedo] = useState(false)
 
     // const boxHeight = useSharedValue(0)
     // const boxMarginTop = useSharedValue(SCREEN_HEIGHT/1.4)
 
     const markerID = ['Marker1']
-    let pickupOrder
 
     const upcomingPickups = useSelector((state) => state.upcomingPickups)
     const { loading: pickupLoading, pickupInfo } = upcomingPickups
@@ -40,15 +41,18 @@ const Mapscreen = ({navigation}) => {
 
     const handlePickup = async() => {
         setLoading(true)
+        setRedo(true)
         setpickupBtn(false)
-        pickupOrder = await pickupInfo.sort((pickup_1, pickup_2) => 
+        const pickupOrder = await pickupInfo.sort((pickup_1, pickup_2) => 
             getLatngDiffInMeters(pickup_1.location[0].latitude, pickup_1.location[0].longitude, origin.latitude, origin.longitude) > 
             getLatngDiffInMeters (pickup_2.location[0].latitude, pickup_2.location[0].longitude, origin.latitude, origin.longitude) ? 1 : -1)
         setEnd({
             latitude: pickupOrder[0].location[0].latitude,
             longitude: pickupOrder[0].location[0].longitude
         })
+        setOrder(pickupOrder[0])
         setLoading(false)
+        setRedo(false)
     }
 
     // const boxAnimation = useAnimatedStyle(() => {
@@ -78,6 +82,15 @@ const Mapscreen = ({navigation}) => {
 
     //     boxMarginTop.value = SCREEN_HEIGHT/1.2
     // }, [])
+
+    useEffect(() => {
+        mapView.current.animateToRegion({
+            latitude: origin.latitude,
+            longitude: origin.longitude,
+            latitudeDelta: 0.0005,
+            longitudeDelta: 0.00025
+        })
+    }, [origin])
 
     return (
         <SafeAreaView>
@@ -110,6 +123,7 @@ const Mapscreen = ({navigation}) => {
                         {latitude: origin.latitude, longitude: origin.longitude, latitudeDelta: 0.04, longitudeDelta: 0.02}
                     }
                     ref = {mapView}
+
                     onMapReady = {() => {
                         setLoading(true)
                         setTimeout(() => {
@@ -154,29 +168,31 @@ const Mapscreen = ({navigation}) => {
                                 strokeWidth = {3}
                                 strokeColor = {colors.blue2}
                                 apikey = {GOOGLE_MAPS_APIKEY}
-                                resetOnChange = {true}
+                                resetOnChange = {false}
                                 
                                 onReady = {(result) => {
-                                    mapView.current.fitToCoordinates(result.coordinates, {
-                                        edgePadding: {
-                                            right: SCREEN_WIDTH/20,
-                                            bottom: SCREEN_HEIGHT/3,
-                                            left: SCREEN_WIDTH/20,
-                                            top: SCREEN_HEIGHT/20
-                                        }
-                                    })
-
-                                    setTimeout(() => {
-                                        mapView.current.fitToSuppliedMarkers(markerID, {
-                                            animated: true,
+                                    if(redo === true){
+                                        mapView.current.fitToCoordinates(result.coordinates, {
                                             edgePadding: {
                                                 right: SCREEN_WIDTH/20,
-                                                bottom: SCREEN_HEIGHT/20,
+                                                bottom: SCREEN_HEIGHT/3,
                                                 left: SCREEN_WIDTH/20,
                                                 top: SCREEN_HEIGHT/20
                                             }
                                         })
-                                    }, 4000)
+
+                                        setTimeout(() => {
+                                            mapView.current.fitToSuppliedMarkers(markerID, {
+                                                animated: true,
+                                                edgePadding: {
+                                                    right: SCREEN_WIDTH/20,
+                                                    bottom: SCREEN_HEIGHT/20,
+                                                    left: SCREEN_WIDTH/20,
+                                                    top: SCREEN_HEIGHT/20
+                                                }
+                                            })
+                                        }, 4000)
+                                    }
                                 }}
                             /> 
                         </>
@@ -231,16 +247,66 @@ const Mapscreen = ({navigation}) => {
                                         marginHorizontal: 30,
                                         backgroundColor: colors.darkBlue
                                     }}
-                                    loading = {loading || pickupLoading}
-                                    disabled = {loading || pickupLoading}
                                     onPress = {() => handlePickup()}
                                 />
                             ) : 
-                                <View>
-                                    <Image
-                                        //source = {{uri: pickupOrder[0].customerId.image}} 
+                            order !== null && pickupBtn === false ?
+                            (
+                                <>
+                                <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row'}}>
+                                    <View>
+                                        <Image
+                                            source = {{uri: order.customerId.image}} 
+                                            style = {styles.image}
+                                        />
+                                    </View>
+                                    <View>
+                                        <Text style = {styles.text2}>{order.customerId.name}</Text>
+                                    </View>
+                                </View>
+                                <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-around'}}>
+                                    <TouchableOpacity 
+                                        style = {{
+                                            flexDirection: 'row', 
+                                        }}
+                                    >
+                                        <Icon
+                                            type = 'material'
+                                            name = 'call'
+                                            color = {colors.darkBlue}
+                                            size = {25}
+                                        />
+                                        <Text style = {styles.text3}>Call</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity 
+                                        style = {{
+                                            flexDirection: 'row', 
+                                        }}
+                                    >
+                                        <Icon
+                                            type = 'material'
+                                            name = 'chat'
+                                            color = {colors.darkBlue}
+                                            size = {25}
+                                        />    
+                                        <Text style = {styles.text3}>Chat</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style = {{flex: 1, marginTop: -40, padding: 25, paddingVertical: 0}}>
+                                    <Button 
+                                        title = 'Arrived'
+                                        buttonStyle = {{
+                                            width: SCREEN_WIDTH/1.2,
+                                            borderRadius: 10,
+                                            height: 45,
+                                            backgroundColor: colors.darkBlue
+                                        }}
+                                        //onPress = {handleArrive}
                                     />
                                 </View>
+                                </>
+                            ) : 
+                            null
                         }
                     </View>
                 </View>
@@ -262,11 +328,11 @@ const styles = StyleSheet.create({
     view1:{
         position: 'absolute',
         padding: 10,
-        marginTop: SCREEN_HEIGHT/1.4,
+        marginTop: SCREEN_HEIGHT/1.5,
     },
     view2:{
         width: SCREEN_WIDTH/1.05,
-        height: 200,
+        height: 220,
         backgroundColor: colors.white,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30
@@ -283,6 +349,28 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16
     },
+    image:{
+        height: 60,
+        width: 60,
+        borderRadius: 50,
+        marginTop: 10,
+        marginLeft: 20,
+        borderColor: colors.darkBlue,
+        borderWidth: 2
+    },
+    text2:{
+        marginLeft: 20,
+        marginTop: 25,
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: colors.darkBlue
+    },
+    text3:{
+        marginLeft: 15,
+        fontWeight: 'bold',
+        color: colors.darkBlue,
+        fontSize: 15
+    },  
     map: {
         height:"100%",
         width:"100%",
