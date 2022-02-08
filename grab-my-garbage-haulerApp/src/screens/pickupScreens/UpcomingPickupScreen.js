@@ -52,7 +52,7 @@ const UpcomingPickupscreen = ({navigation}) => {
                         loop = {true}
                         autoPlay = {true}
                     />
-                :
+                : pickupInfo.length > 0  ?
                 <FlatList
                     numColumns = {1}
                     showsHorizontalScrollIndicator = {false}
@@ -112,7 +112,7 @@ const UpcomingPickupscreen = ({navigation}) => {
                             </View>
                         </View>
                     )}
-                />
+                /> : <Text style = {styles.text8}>No Pickup Available</Text>
                 }
             </View>
         </SafeAreaView>
@@ -187,6 +187,13 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: colors.blue2,
         fontWeight: 'bold'
+    },
+    text8:{
+        alignSelf: 'center',
+        marginTop: '50%',
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: colors.darkBlue
     }
 
 })

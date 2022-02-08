@@ -13,7 +13,6 @@ import { mapStyle } from '../global/mapStyles'
 import { GOOGLE_MAPS_APIKEY } from '@env'
 import { getLatngDiffInMeters, returnDate } from '../helpers/homehelper'
 import { completedPickup } from '../redux/actions/requestActions'
-import { set } from 'react-native-reanimated'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

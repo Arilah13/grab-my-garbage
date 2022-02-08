@@ -1,7 +1,18 @@
 export const timeHelper = (timeC) => {
-    const timeA = (((timeC).split('T')[1]).split('.')[0]).split(':')[0]
+    let timeF
+    let timeA = parseInt((((timeC).split('T')[1]).split('.')[0]).split(':')[0]) + 5
+    const timeE = parseInt((((timeC).split('T')[1]).split('.')[0]).split(':')[1]) + 30
+    if(timeE >= 60) {
+        timeF = timeE - 60
+        if(timeF < 10) {
+            timeF = '0' + timeF
+        }
+        timeA = timeA + 1
+    } else {
+        timeF = timeE
+    }
     const timeB = (parseInt(timeA) + 11) % 12 + 1
-    const timeD = timeB + ':' + (((timeC).split('T')[1]).split('.')[0]).split(':')[1] + (parseInt(timeA) >= 12 ? ' PM' : ' AM') 
+    const timeD = timeB + ':' + timeF + (parseInt(timeA) >= 12 ? ' PM' : ' AM') 
     return timeD
 }
 

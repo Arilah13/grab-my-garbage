@@ -13,7 +13,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Pickupdetailscreen = ({route, navigation}) => {
 
-    const { item, time, date, buttons, name, date1 } = route.params
+    const { item, time, date, buttons, name, date1,completedTime } = route.params
 
     const [loading1, setLoading1] = useState(false)
     const [loading2, setLoading2] = useState(false)
@@ -63,8 +63,8 @@ const Pickupdetailscreen = ({route, navigation}) => {
                             <Text style = {styles.text4}>{date1 + ' ' + time}</Text>
                         </View>
                         <View style = {{...styles.container5, paddingTop: 0}}>
-                            <Text style = {styles.text3}>Collect Pickup Before:</Text>
-                            <Text style = {styles.text4}>{date + ' ' + time}</Text>
+                            <Text style = {styles.text3}>{name === 'Completed Pickups' ? 'Pickup Collected On:' : 'Collect Pickup Before:'}</Text>
+                            <Text style = {styles.text4}>{name === 'Completed Pickups' ? date+' '+completedTime : date+' '+time}</Text>
                         </View>
                         <View style = {styles.container4}>
                             <Text style = {styles.text5}>Trash Categories:</Text>

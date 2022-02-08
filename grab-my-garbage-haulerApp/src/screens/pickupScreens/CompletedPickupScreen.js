@@ -7,7 +7,7 @@ import { Button, Icon } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
 import { getCompletedPickups } from '../../redux/actions/requestActions'
-import { dateHelper, timeHelper } from '../../helpers/pickuphelper'
+import { timeHelper, date1Helper } from '../../helpers/pickuphelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -23,8 +23,8 @@ const CompletedPickupscreen = ({navigation}) => {
         return timeHelper(timeC)
     }
 
-    const date = (dateA) => {
-        return dateHelper(dateA)
+    const date1 = (dateA) => {
+        return date1Helper(dateA)
     }
 
     useEffect(() => {
@@ -48,7 +48,7 @@ const CompletedPickupscreen = ({navigation}) => {
                         loop = {true}
                         autoPlay = {true}
                     />
-                :
+                : pickupInfo.length > 0  ?
                 <FlatList
                     numColumns = {1}
                     showsHorizontalScrollIndicator = {false}
@@ -76,7 +76,7 @@ const CompletedPickupscreen = ({navigation}) => {
                                     <Text style = {styles.text1}>{item.customerId.name}</Text>                        
                                 </View>
                                 <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                    <Text style = {styles.text6}>before: </Text>
+                                    <Text style = {styles.text6}>completed: </Text>
                                     <Icon
                                         type = 'material'
                                         name = 'schedule'
@@ -87,8 +87,8 @@ const CompletedPickupscreen = ({navigation}) => {
                                             marginRight: 5
                                         }}
                                     />
-                                    <Text style = {styles.text4}>{time(item.datetime)}</Text>
-                                    <Text style = {styles.text5}>{date(item.datetime)}</Text>
+                                    <Text style = {styles.text4}>{time(item.completedDate)}</Text>
+                                    <Text style = {styles.text5}>{date1(item.completedDate)}</Text>
                                 </View>
                             </View>
                             <View>
@@ -102,13 +102,13 @@ const CompletedPickupscreen = ({navigation}) => {
                                         marginLeft: 30,
                                         backgroundColor: colors.buttons
                                     }}
-                                    onPress = {() => navigation.navigate('PickupDetail3', {item, time: time(item.datetime), date: date(item.datetime), buttons: false, name: 'Completed Pickups'})}
+                                    onPress = {() => navigation.navigate('PickupDetail3', {item, time: time(item.datetime), completedTime: time(item.completedDate), date: date1(item.completedDate), date1: date1(item.datetime), buttons: false, name: 'Completed Pickups'})}
                                 />
                             </View>
                             </View>
                         </View>
-                    )}
-                />
+                    )} 
+                /> : <Text style = {styles.text8}>No Pickup Available</Text>
                 }
             </View>
         </SafeAreaView>
@@ -119,8 +119,77 @@ export default CompletedPickupscreen
 
 const styles = StyleSheet.create({
 
+    container:{
+        display: 'flex',
+        backgroundColor: colors.grey9,
+        height: 7*SCREEN_HEIGHT/10,
+        paddingLeft: 10,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        paddingTop: 10,
+    },
+    card:{
+        width: SCREEN_WIDTH/1.2,
+        height: 80,
+        marginBottom: 20,
+        backgroundColor: colors.blue1,
+        borderRadius: 20,
+        shadowColor: '#171717',
+        elevation: 5,
+        shadowOpacity: 0.7,
+        shadowRadius: 30
+    },
     view1:{
-        
+        justifyContent: 'flex-start',
+    },
+    text1:{
+        color: colors.blue2,
+        fontWeight: 'bold',
+        marginTop: 8,
+        marginLeft: 7,
+    },
+    text2:{
+        color: colors.blue2,
+        marginLeft: 35,
+        marginTop: 15,
+        fontWeight: 'bold'
+    },
+    text3:{
+        color: colors.blue2,
+        marginRight: 40,
+        marginLeft: 35,
+        marginTop: 15,
+        fontWeight: 'bold'
+    },
+    text4:{
+        color: colors.blue2,
+        fontWeight: 'bold',
+        marginTop: 5,
+        marginRight: 10
+    },
+    text5:{
+        marginTop: 5,
+        color: colors.blue2,
+        marginLeft: 0,
+    },
+    text6:{
+        marginTop: 6,
+        fontSize: 12,
+        color: colors.blue2,
+        marginLeft: 7,
+    },
+    text7:{
+        marginTop: 7,
+        fontSize: 12,
+        color: colors.blue2,
+        fontWeight: 'bold'
+    },
+    text8:{
+        alignSelf: 'center',
+        marginTop: '50%',
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: colors.darkBlue
     }
 
 })

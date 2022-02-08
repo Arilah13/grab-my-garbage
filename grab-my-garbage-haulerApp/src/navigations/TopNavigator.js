@@ -1,7 +1,9 @@
 import React from 'react'
-import { View, Text, StyleSheet, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+import { useNavigation } from '@react-navigation/native'
+import { Icon } from 'react-native-elements'
 
 import Completedstacknavigator from './CompletedStackNavigator'
 import Pendingstacknavigator from './PendingStackNavigator'
@@ -15,9 +17,28 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Tab = createMaterialTopTabNavigator()
 
 const Topnavigator = () => {
+
+    const navigation = useNavigation()
+
     return (
         <>
             <SafeAreaView>
+                <TouchableOpacity style = {styles.container}
+                    onPress = {() => navigation.navigate('Home')}
+                >
+                    <Icon
+                        type = 'material'
+                        name = 'arrow-back'
+                        color = {colors.blue5}
+                        size = {20}
+                        style = {{
+                            alignSelf: 'flex-start',
+                            marginTop: 15,
+                            display: 'flex'
+                        }}
+                    />
+                    <Text style = {styles.text}>Home</Text>
+                </TouchableOpacity>
                 <View style = {styles.view1}>
                     <Text style = {styles.text1}>Pickups</Text>
                 </View>
@@ -93,5 +114,20 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginTop: 15
     },
+    container:{
+        backgroundColor: colors.blue1,
+        paddingLeft: 15, 
+        //marginBottom: 0,
+        height: SCREEN_HEIGHT/15,
+        flexDirection: 'row',
+    },
+    text:{
+        display: 'flex',
+        top: 15,
+        left: 5,
+        color: colors.blue2,
+        fontWeight: 'bold',
+        fontSize: 14
+    }
 
 })

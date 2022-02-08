@@ -184,7 +184,9 @@ export const completedPickup = (id) => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.put(`http://grab-my-garbage-server.herokuapp.com/request/completedPickup/${id}`,
+        const date = new Date()
+
+        const { data } = await axios.put(`http://grab-my-garbage-server.herokuapp.com/request/completedPickup/${id}`, {date},
         config)
 
         dispatch({
