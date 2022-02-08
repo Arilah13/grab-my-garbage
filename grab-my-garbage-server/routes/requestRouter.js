@@ -2,13 +2,21 @@ const router = require('express').Router()
 const requestController = require('../controllers/requestController')
 const auth = require('../middleware/auth')
 
-router.get('/pendingPickup/:lat/:lng', requestController.getPendingPickups)
+router.get('/pendingPickup/:lat/:lng/:id', auth, requestController.getPendingPickups)
 
-router.get('/pendingOfflinePickup/:id', requestController.getPendingOfflinePickups)
+router.get('/pendingOfflinePickup/:id', auth, requestController.getPendingOfflinePickups)
 
-router.get('/upcomingPickup/:id', requestController.getUpcomingPickups)
+router.get('/upcomingPickup/:id', auth, requestController.getUpcomingPickups)
 
-router.get('/completedPickup/:id', requestController.getCompletedPickups)
+router.get('/completedPickup/:id', auth, requestController.getCompletedPickups)
+
+router.put('/declinePickup/:id', auth, requestController.updateDeclinedHauler)
+
+router.put('/acceptPickup/:id', auth, requestController.updateAcceptHauler)
+
+router.put('/completedPickup/:id', auth, requestController.updateCompletedPickup)
+
+router.put('/pickupOnProgress/:id', auth, requestController.updateOnProgressPickup)
 
 //router.get('/allPickups/:id', auth, pickupController.getAllPickups)
 

@@ -47,8 +47,16 @@ io.on('connection', socket => {
         } 
     })
 
+    socket.on('pickupOnProgress', async({haulerid, pickupid, userid}) => {
+        pickupSocket
+    })
+
     socket.on('haulerDisconnect', () => {
         pickupSocket.haulerDisconnect({id: socket.id})
+    })
+
+    socket.on('userJoined', ({userid}) => {
+        pickupSocket.userJoin({id: socket.id, userid})
     })
 })
 

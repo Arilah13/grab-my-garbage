@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { View, StyleSheet, Text, FlatList, Dimensions, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
+import socketIO from 'socket.io-client'
 
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
@@ -14,6 +15,8 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Homescreen = ({navigation}) => {
 
     const dispatch = useDispatch()
+
+    let socket
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
@@ -29,6 +32,11 @@ const Homescreen = ({navigation}) => {
             dispatch(getUserDetails(userInfo._id))
         }
     }, [userInfo])
+
+    useEffect(() => {
+        socket = socketIO.connect('http://192.168.13.1:5000')
+        socket.emit('userJoined', { userid: userInfo._id })
+    }, [])
 
     return (
         <SafeAreaView>

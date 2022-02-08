@@ -87,6 +87,8 @@ const Homescreen = ({navigation}) => {
                     cancelable: true
                 }
             )
+        } else if(item.destination === 'Pickup' && online === true) {
+            navigation.navigate(item.destination, {destination: item.name, socket: socket, haulerid: userid})
         } else {
             navigation.navigate(item.destination, {destination: item.name})
         }

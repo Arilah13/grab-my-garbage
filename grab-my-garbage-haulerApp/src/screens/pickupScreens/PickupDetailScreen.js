@@ -6,7 +6,7 @@ import { Button, Icon } from 'react-native-elements'
 
 import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
-import { declinePickup, getPendingPickupsOffline, acceptPickup, getUpcomingPickups } from '../../redux/actions/requestActions'
+import { declinePickup, acceptPickup } from '../../redux/actions/requestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -121,8 +121,6 @@ const Pickupdetailscreen = ({route, navigation}) => {
                                     onPress = {() => {
                                         dispatch(acceptPickup(item._id))
                                         setTimeout(() => {
-                                            dispatch(getPendingPickupsOffline())
-                                            dispatch(getUpcomingPickups())
                                             navigation.navigate('pendingPickupScreen')
                                         }, 100) 
                                         setLoading1(true)                                       
@@ -143,7 +141,6 @@ const Pickupdetailscreen = ({route, navigation}) => {
                                     onPress = {() => {
                                         dispatch(declinePickup(item._id))
                                         setTimeout(() => {
-                                            dispatch(getPendingPickupsOffline())
                                             navigation.navigate('pendingPickupScreen')
                                         }, 100)
                                         setLoading2(true)

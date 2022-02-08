@@ -1,4 +1,5 @@
 let haulers = []
+let users = []
 
 const pickupSocket = {
     haulerJoin: async({id, haulerid, latitude, longitude}) => {
@@ -22,7 +23,21 @@ const pickupSocket = {
     },
     haulerDisconnect: async({id}) => {
         haulers.splice(haulers.findIndex(hauler => hauler.id === id), 1)
-    }   
+    },
+    pickupOnProgress: async({haulerid, pickupid, userid}) => {
+        const user = users.find((user) => user.userid === userid)
+        if(user) {
+            const hauler = haulers.find((hauler) => hauler.haulerid === haulerid)
+            return ({hauler, pickupid})
+        }
+    },
+    userJoin: async({id, userid}) => {
+        const user = {id, userid}
+        const exist = users.find((user) => user.userid === userid)
+        if(!exist) {
+            users.push(user)
+        }
+    }
 }
 
 const getLatngDiffInMeters = (lat1, lng1, lat2, lng2) => {

@@ -1,15 +1,17 @@
 const Pickups = require('../models/pickupModel')
 const Haulers = require('../models/haulerModel')
+const mongoose = require('mongoose')
 
 const pickupController = {
     getPendingPickups: async(req, res) => {
         try{
             const lat = req.params.lat
             const lng = req.params.lng
+            const id = req.params.id
 
             let pendingPickups = []
 
-            const pickups = await Pickups.find({accepted: 0, cancelled: 0, completed: 0}).populate('customerId')
+            const pickups = await Pickups.find({accepted: 0, cancelled: 0, completed: 0, declinedHaulers: {$nin:{id: id}}}).populate('customerId')
             if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
 
             pickups.map(pickup => {
@@ -32,7 +34,7 @@ const pickupController = {
             const lat = haulers.location[0].latitude
             const lng = haulers.location[0].longitude
 
-            const pickups = await Pickups.find({accepted: 0, cancelled: 0, completed: 0}).populate('customerId')
+            const pickups = await Pickups.find({accepted: 0, cancelled: 0, completed: 0, declinedHaulers: {$nin:{id: id}}}).populate('customerId')
             if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
 
             pickups.map(pickup => {
@@ -69,6 +71,74 @@ const pickupController = {
             return res.status(500).json({msg: err.message})
         }
     },
+    updateDeclinedHauler: async(req, res) => {
+        try{
+            const haulerId = req.body
+
+            const pickup = await Pickups.findById(req.params.id)
+            if(!pickup) return res.status(400).json({msg: "No Pickup is available."})
+
+            pickup.declinedHaulers.push(haulerId)
+            await pickup.save()
+
+            res.json({
+                message: 'pickup declined'
+            })
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    updateAcceptHauler: async(req, res) => {
+        try{
+            const haulerId = req.body
+
+            const pickup = await Pickups.findById(req.params.id)
+            if(!pickup) return res.status(400).json({msg: "No Pickup is available."})
+
+            pickup.pickerId = haulerId.id
+            pickup.accepted = 1
+            await pickup.save()
+
+            res.json({
+                message: 'pickup accepted'
+            })
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    updateCompletedPickup: async(req, res) => {
+        try{
+            const {date} = req.body
+
+            const pickup = await Pickups.findById(req.params.id)
+            if(!pickup) return res.status(400).json({msg: "No Pickup is available."})
+
+            pickup.completed = 1
+            pickup.completedDate = date
+            await pickup.save()
+
+            res.json({
+                message: 'pickup completed'
+            })
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    updateOnProgressPickup: async(req, res) => {
+        try{
+            const pickup = await Pickups.findById(req.params.id)
+            if(!pickup) return res.status(400).json({msg: "No Pickup is available."})
+            
+            pickup.onProgress = 1
+            await pickup.save()
+
+            res.json({
+                message: 'pickup on progress'
+            })
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    }
 }
 
 const getLatngDiffInMeters = (lat1, lng1, lat2, lng2) => {

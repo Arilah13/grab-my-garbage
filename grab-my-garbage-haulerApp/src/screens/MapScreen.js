@@ -12,14 +12,16 @@ import { colors } from '../global/styles'
 import { mapStyle } from '../global/mapStyles'
 import { GOOGLE_MAPS_APIKEY } from '@env'
 import { getLatngDiffInMeters, returnDate } from '../helpers/homehelper'
-import { completedPickup } from '../redux/actions/requestActions'
+import { completedPickup, pickupOnProgress } from '../redux/actions/requestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Mapscreen = ({navigation}) => {
+const Mapscreen = ({route, navigation}) => {
 
     const dispatch = useDispatch()
+
+    const { socket, haulerid } = route.params
 
     const mapView = useRef()
 
@@ -70,6 +72,8 @@ const Mapscreen = ({navigation}) => {
                 longitude: pickupOrder[0].location[0].longitude
             })
             setOrder(pickupOrder[0])
+            dispatch(pickupOnProgress(pickupOrder[0]._id))
+            socket.emit('pickupOnProgress', { haulerid: haulerid, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id })
             //setEnable(false)
         } else {
             setEnd(null)

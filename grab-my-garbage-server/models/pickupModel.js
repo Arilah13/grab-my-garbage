@@ -42,12 +42,25 @@ const pickupSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    onProgress:{
+        type: Number,
+        default: 0
+    },
     completed:{
         type: Number,
         default: 0
     },
-    pickerId:{
+    completedDate:{
         type: String,
+        required: false
+    },
+    pickerId:{
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        ref: 'Haulers'
+    },
+    declinedHaulers:{
+        type: Array,
         required: false
     }
 }, {

@@ -14,7 +14,8 @@ import {
     retrieveCompletedPickupReducer,
     declinePickupReducer,
     acceptPickupReducer,
-    completedPickupReducer
+    completedPickupReducer,
+    pickupOnProgressReducer
 } from './reducers/requestReducers'
 
 import {
@@ -31,6 +32,7 @@ const reducer = combineReducers({
     declinePickup: declinePickupReducer,
     acceptPickup: acceptPickupReducer,
     completedPickup: completedPickupReducer,
+    pickupOnProgress: pickupOnProgressReducer,
 
     map: mapReducer,
     addLocation: addLocationReducer,

@@ -71,3 +71,14 @@ export const completedPickupReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const pickupOnProgressReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.PICKUP_ON_PROGRESS_SUCCESS:
+            return { success: true }
+        case actionTypes.PICKUP_ON_PROGRESS_FAIL:
+            return { success: false, error: action.payload }
+        default:
+            return state
+    }
+}
