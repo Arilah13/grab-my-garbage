@@ -56,3 +56,14 @@ export const getLatngDiffInMeters = (lat1, lng1, lat2, lng2) => {
 const degtorad = (deg) => {
     return deg * (Math.PI/180)
 }
+
+export const returnDate = (pickupDate) => {
+    var date = new Date(pickupDate).getTime()
+    var dateStamp = date/1000
+    var timeStamp = new Date().getTime()
+    var dateTimeStampTomorrow = new Date((dateStamp + (24 * 3600)) * 1000).getTime()
+    if(timeStamp >= date && timeStamp <= dateTimeStampTomorrow)
+        return true
+    else 
+        return false
+} 

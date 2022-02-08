@@ -70,3 +70,16 @@ export const date1Helper = (dateA) => {
     const final = dateC + ' ' + month
     return (final)
 }
+
+export const returnTime = (pickupTime) => {
+    var crntTime = new Date().toLocaleTimeString()
+    const time1 = (crntTime.split(' ')[0]).split(':')[0]
+    const time2 = (crntTime.split(' ')[0]).split(':')[1]
+    const time3 = ((pickupTime.split('T')[1]).split('.')[0]).split(':')[0]
+    const time4 = ((pickupTime.split('T')[1]).split('.')[0]).split(':')[1]
+
+    if(time1 < time3 && time2 < time4) 
+        return true
+    else 
+        return false
+}

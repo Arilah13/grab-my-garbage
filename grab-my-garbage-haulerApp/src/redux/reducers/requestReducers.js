@@ -60,3 +60,14 @@ export const acceptPickupReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const completedPickupReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.PICKUP_COMPLETED_SUCCESS:
+            return { success: true }
+        case actionTypes.PICKUP_COMPLETED_FAIL:
+            return { success: false, error: action.payload }
+        default: 
+            return state
+    }
+}

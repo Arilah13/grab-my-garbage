@@ -11,7 +11,9 @@ import LottieView from 'lottie-react-native'
 import { colors } from '../global/styles'
 import { mapStyle } from '../global/mapStyles'
 import { GOOGLE_MAPS_APIKEY } from '@env'
-import { getLatngDiffInMeters } from '../helpers/homehelper'
+import { getLatngDiffInMeters, returnDate } from '../helpers/homehelper'
+import { completedPickup } from '../redux/actions/requestActions'
+import { set } from 'react-native-reanimated'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -27,6 +29,9 @@ const Mapscreen = ({navigation}) => {
     const [pickupBtn, setpickupBtn] = useState(true)
     const [order, setOrder] = useState(null)
     const [redo, setRedo] = useState(false)
+    const [arrived, setArrived] = useState(false)
+    const [nextPickup, setNextPickup] = useState(false)
+    const [enable, setEnable] = useState(false)
 
     // const boxHeight = useSharedValue(0)
     // const boxMarginTop = useSharedValue(SCREEN_HEIGHT/1.4)
@@ -34,26 +39,68 @@ const Mapscreen = ({navigation}) => {
     const markerID = ['Marker1']
 
     const upcomingPickups = useSelector((state) => state.upcomingPickups)
-    const { loading: pickupLoading, pickupInfo } = upcomingPickups
+    const { loading: pickupLoading, pickupInfo, success } = upcomingPickups
 
     const map = useSelector((state) => state.map)
     const { origin } = map
 
-    const handlePickup = async() => {
-        setLoading(true)
-        setRedo(true)
-        setpickupBtn(false)
-        const pickupOrder = await pickupInfo.sort((pickup_1, pickup_2) => 
+    const timeHandle = async(pickup) => {
+        const filteredPickupOrder = await pickup.filter(pickup => {
+            return returnDate(pickup.datetime)
+        })
+        return filteredPickupOrder
+    }
+
+    const filterPickup = async(pickup) => {
+        const pickupOrder = await pickup.sort((pickup_1, pickup_2) => 
             getLatngDiffInMeters(pickup_1.location[0].latitude, pickup_1.location[0].longitude, origin.latitude, origin.longitude) > 
             getLatngDiffInMeters (pickup_2.location[0].latitude, pickup_2.location[0].longitude, origin.latitude, origin.longitude) ? 1 : -1)
-        setEnd({
-            latitude: pickupOrder[0].location[0].latitude,
-            longitude: pickupOrder[0].location[0].longitude
-        })
-        setOrder(pickupOrder[0])
+        return pickupOrder
+    }
+
+    const pickupHandler = async() => {
+        setLoading(true)
+        setRedo(true)
+        
+        const filteredPickupOrder = await timeHandle(pickupInfo)
+        const pickupOrder = await filterPickup(filteredPickupOrder)
+
+        if(pickupOrder.length > 0) {
+            setEnd({
+                latitude: pickupOrder[0].location[0].latitude,
+                longitude: pickupOrder[0].location[0].longitude
+            })
+            setOrder(pickupOrder[0])
+            //setEnable(false)
+        } else {
+            setEnd(null)
+            setOrder(null)
+        } 
         setLoading(false)
         setRedo(false)
     }
+
+    const handlePickup = async() => {
+        setpickupBtn(false)
+        pickupHandler()
+    }
+
+    const handlePickupComplete = async() => {
+        if(arrived === false) {
+            setArrived(true)
+        } else if(arrived === true) {
+            setLoading(true)
+            dispatch(completedPickup(order._id))
+            setNextPickup(true)
+        }
+    }
+
+    useEffect(async() => {
+        if(success === true && nextPickup === true && pickupLoading === false) {
+            setArrived(false)
+            pickupHandler()
+        }
+    }, [success, pickupLoading])
 
     // const boxAnimation = useAnimatedStyle(() => {
     //     return{
@@ -90,29 +137,19 @@ const Mapscreen = ({navigation}) => {
             latitudeDelta: 0.0005,
             longitudeDelta: 0.00025
         })
+        // if(order !== null) {
+        //     console.log(enable)
+        //     if(getLatngDiffInMeters(origin.latitude, origin.longitude, end.latitude, end.longitude) <= 50/1000){
+        //         setEnable(true)
+        //     } else {
+        //         setEnable(false)
+        //     }
+        // }
     }, [origin])
 
     return (
         <SafeAreaView>
             <View style = {styles.container1}>
-                {/* { 
-                    end === null && start === null ? 
-                    <Homemapcomponent 
-                        latlng = {null}
-                        origin = {null}
-                        destination = {null}
-                    /> : start !== null && end === null ?
-                    <Homemapcomponent
-                        latlng = {start}
-                        origin = {null}
-                        destination = {null}
-                    /> :
-                    <Homemapcomponent 
-                        latlng = {start}
-                        origin = {start}
-                        destination = {end}
-                    />
-                } */}
                 <MapView
                     provider = {PROVIDER_GOOGLE}
                     style = {styles.map}
@@ -168,7 +205,7 @@ const Mapscreen = ({navigation}) => {
                                 strokeWidth = {3}
                                 strokeColor = {colors.blue2}
                                 apikey = {GOOGLE_MAPS_APIKEY}
-                                resetOnChange = {false}
+                                resetOnChange = {true}
                                 
                                 onReady = {(result) => {
                                     if(redo === true){
@@ -235,7 +272,7 @@ const Mapscreen = ({navigation}) => {
                                     />
                                 </View>
                             ) :
-                            pickupBtn === true ?
+                            pickupBtn === true && pickupInfo.length > 0 ?
                             ( 
                                 <Button 
                                     title = 'Start Pickup'
@@ -294,18 +331,56 @@ const Mapscreen = ({navigation}) => {
                                 </View>
                                 <View style = {{flex: 1, marginTop: -40, padding: 25, paddingVertical: 0}}>
                                     <Button 
-                                        title = 'Arrived'
+                                        title = { arrived === false ? 'Arrived' : 'Completed' }
                                         buttonStyle = {{
                                             width: SCREEN_WIDTH/1.2,
                                             borderRadius: 10,
                                             height: 45,
                                             backgroundColor: colors.darkBlue
                                         }}
-                                        //onPress = {handleArrive}
+                                        onPress = {() => handlePickupComplete()}
                                     />
                                 </View>
+                                {/* {
+                                    enable === true ? 
+                                    (
+                                        
+                                    ) :
+                                    (
+                                        <View style = {{flex: 1, marginTop: -40, padding: 25, paddingVertical: 0}}>
+                                            <Button 
+                                                title = { arrived === false ? 'Arrived' : 'Completed' }
+                                                buttonStyle = {{
+                                                    width: SCREEN_WIDTH/1.2,
+                                                    borderRadius: 10,
+                                                    height: 45,
+                                                    backgroundColor: colors.darkBlue
+                                                }}
+                                                disabled = {true}
+                                            />
+                                        </View>
+                                    )
+                                } */}
+                                
                                 </>
-                            ) : 
+                            ) :
+                            order === null ? 
+                            (
+                                <View style = {{alignItems: 'center', padding: 50}}>
+                                    <Text style = {{fontWeight: 'bold', fontSize: 15, color: colors.blue2}}>No Pickups Available For Now</Text>
+                                    <Button 
+                                        title = 'Check Pickups'
+                                        buttonStyle = {{
+                                            width: SCREEN_WIDTH/1.3,
+                                            marginTop: 15,
+                                            borderRadius: 10,
+                                            height: 45,
+                                            backgroundColor: colors.darkBlue
+                                        }}
+                                        onPress = {() => navigation.navigate('History')}
+                                    />
+                                </View>
+                            ) :
                             null
                         }
                     </View>

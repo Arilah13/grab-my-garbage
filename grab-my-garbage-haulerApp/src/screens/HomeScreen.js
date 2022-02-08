@@ -37,6 +37,32 @@ const Homescreen = ({navigation}) => {
     const handleOnline = () => {
         if(online === false) {
             setOnline(true)
+            TaskManager.defineTask(TASK_FETCH_LOCATION, async({data: { locations }, err}) => {
+                if(err) {
+                    console.log(err)
+                    return
+                }
+                const [location] = locations
+                try{
+                    latitude = location.coords.latitude
+                    longitude = location.coords.longitude
+                    dispatch(addOrigin(latitude, longitude))
+                    socket.emit('online', {haulerid: userid, latitude, longitude})
+                } catch (err) {
+                    console.error(err)
+                }
+            })
+
+            Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
+                accuracy: Location.Accuracy.Highest,
+                distanceInterval: 10,
+                deferredUpdatesInterval: 1,
+                showsBackgroundLocationIndicator: true,
+                foregroundService: {
+                    notificationTitle: 'Using your location',
+                    notificationBody: 'As long as you are online, location will be used',
+                }
+            })
         } else {
             setOnline(false)
             socket.emit('haulerDisconnect')
@@ -65,37 +91,6 @@ const Homescreen = ({navigation}) => {
             navigation.navigate(item.destination, {destination: item.name})
         }
     }
-    
-    useEffect(async() => {
-        if(online === true) {
-            TaskManager.defineTask(TASK_FETCH_LOCATION, async({data: { locations }, err}) => {
-                if(err) {
-                    console.log(err)
-                    return
-                }
-                const [location] = locations
-                try{
-                    latitude = location.coords.latitude
-                    longitude = location.coords.longitude
-                    dispatch(addOrigin(latitude, longitude))
-                    socket.emit('online', {haulerid: userid, latitude, longitude})
-                } catch (err) {
-                    console.error(err)
-                }
-            })
-
-            Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-                accuracy: Location.Accuracy.Highest,
-                distanceInterval: 10,
-                deferredUpdatesInterval: 1,
-                showsBackgroundLocationIndicator: true,
-                foregroundService: {
-                    notificationTitle: 'Using your location',
-                    notificationBody: 'As long as you are online, location will be used',
-                }
-            })
-        }
-    }, [online])
  
     useEffect(async() => {
         if(online === true) {
@@ -104,21 +99,17 @@ const Homescreen = ({navigation}) => {
             latitude = latlng.latitude
             longitude = latlng.longitude
             dispatch(addOrigin(latlng.latitude, latlng.longitude))
-            //socket.emit('online', {haulerid: userid, latitude, longitude})
+            socket.emit('online', {haulerid: userid, latitude, longitude})
             
             socket.on('newOrder', () => {
                 dispatch(getPendingPickups(latitude, longitude))
             })
-
+            dispatch(getUpcomingPickups())
             // setTimeout(() => {
                 
             // }, [1000])
         }
     }, [online])
-
-    useEffect(() => {
-        dispatch(getUpcomingPickups())
-    }, [])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.grey8}}>
