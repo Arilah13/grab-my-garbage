@@ -32,8 +32,8 @@ export default Mapcomponent
 const styles = StyleSheet.create({
 
     map: {
-        height:"107%",
-        width:"100%",
+        height: "107%",
+        width: "100%",
         zIndex: -1
     },    
     marker: {

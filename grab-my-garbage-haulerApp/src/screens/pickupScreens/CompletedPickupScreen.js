@@ -19,21 +19,13 @@ const CompletedPickupscreen = ({navigation}) => {
     const completedPickups = useSelector((state) => state.completedPickups)
     const { loading, pickupInfo } = completedPickups
 
-    const time = (timeC) => {
-        return timeHelper(timeC)
-    }
-
-    const date1 = (dateA) => {
-        return date1Helper(dateA)
-    }
-
     useEffect(() => {
         // const unsubscribe = navigation.addListener('focus', () => {
             
         // })
         // return unsubscribe
         dispatch(getCompletedPickups())
-    }, [navigation])
+    }, [])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -48,7 +40,7 @@ const CompletedPickupscreen = ({navigation}) => {
                         loop = {true}
                         autoPlay = {true}
                     />
-                : pickupInfo.length > 0  ?
+                : loading === false && pickupInfo.length > 0  ?
                 <FlatList
                     numColumns = {1}
                     showsHorizontalScrollIndicator = {false}
@@ -87,8 +79,8 @@ const CompletedPickupscreen = ({navigation}) => {
                                             marginRight: 5
                                         }}
                                     />
-                                    <Text style = {styles.text4}>{time(item.completedDate)}</Text>
-                                    <Text style = {styles.text5}>{date1(item.completedDate)}</Text>
+                                    <Text style = {styles.text4}>{timeHelper(item.completedDate)}</Text>
+                                    <Text style = {styles.text5}>{date1Helper(item.completedDate)}</Text>
                                 </View>
                             </View>
                             <View>
@@ -102,7 +94,7 @@ const CompletedPickupscreen = ({navigation}) => {
                                         marginLeft: 30,
                                         backgroundColor: colors.buttons
                                     }}
-                                    onPress = {() => navigation.navigate('PickupDetail3', {item, time: time(item.datetime), completedTime: time(item.completedDate), date: date1(item.completedDate), date1: date1(item.datetime), buttons: false, name: 'Completed Pickups'})}
+                                    onPress = {() => navigation.navigate('PickupDetail3', {item, time: timeHelper(item.datetime), completedTime: timeHelper(item.completedDate), date: date1Helper(item.completedDate), date1: date1Helper(item.datetime), buttons: false, name: 'Completed Pickups'})}
                                 />
                             </View>
                             </View>

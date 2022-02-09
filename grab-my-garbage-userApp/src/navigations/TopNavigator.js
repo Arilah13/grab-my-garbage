@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native'
 import { colors } from '../global/styles'
 import Pendingpickupscreen from '../screens/requestScreens/pendingPickupScreen'
 import Completedpickupscreen from '../screens/requestScreens/completedPickupScreen'
-import Upcomingpickupscreen from '../screens/requestScreens/upcomingPickupScreen'
+import Acceptedstacknavigator from './AcceptedStackNavigator'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -80,10 +80,10 @@ const Topnavigator = () => {
                     }}
                 />
                 <Tab.Screen 
-                    name = "upcomingPickup" 
-                    component = {Upcomingpickupscreen} 
+                    name = "acceptedStack" 
+                    component = {Acceptedstacknavigator} 
                     options = {{
-                        tabBarLabel: 'Upcoming'
+                        tabBarLabel: 'Accepted'
                     }}
                 />
                 <Tab.Screen 

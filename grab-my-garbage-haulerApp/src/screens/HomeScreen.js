@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, Dimensions, Image, Alert, FlatList, TouchableOp
 import { Icon } from 'react-native-elements'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import * as Location from 'expo-location'
-import socketIO from 'socket.io-client'
 import * as TaskManager from 'expo-task-manager'
 import ToggleButton from 'react-native-toggle-element'
 
@@ -30,7 +29,8 @@ const Homescreen = ({navigation}) => {
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
-    const socket = socketIO.connect('http://192.168.13.1:5000')
+    const socketHolder = useSelector((state) => state.socketHolder)
+    const { socket } = socketHolder
 
     const userid = userInfo._id
 
@@ -55,8 +55,8 @@ const Homescreen = ({navigation}) => {
 
             Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
                 accuracy: Location.Accuracy.Highest,
-                distanceInterval: 10,
-                deferredUpdatesInterval: 1,
+                distanceInterval: 100,
+                deferredUpdatesInterval: 0,
                 showsBackgroundLocationIndicator: true,
                 foregroundService: {
                     notificationTitle: 'Using your location',
@@ -88,7 +88,7 @@ const Homescreen = ({navigation}) => {
                 }
             )
         } else if(item.destination === 'Pickup' && online === true) {
-            navigation.navigate(item.destination, {destination: item.name, socket: socket, haulerid: userid})
+            navigation.navigate(item.destination, {destination: item.name, haulerid: userid})
         } else {
             navigation.navigate(item.destination, {destination: item.name})
         }

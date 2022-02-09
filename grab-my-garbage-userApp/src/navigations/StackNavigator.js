@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import socketIO from 'socket.io-client'
 
 import Specialpickupscreen from '../screens/SpecialPickupScreen'
 import TabNavigator from './TabNavigator'
@@ -15,6 +16,7 @@ import Paymentpresuccessscreen from '../screens/paymentScreens/PaymentPreSuccess
 import Topnavigator from './TopNavigator'
 
 import { getPaymentIntent } from '../redux/actions/paymentActions'
+import { addSocket } from  '../redux/actions/pickupActions'
 
 const Stack = createNativeStackNavigator()
 
@@ -23,6 +25,11 @@ const StackNavigator = () => {
 
     useEffect(() => {
         dispatch(getPaymentIntent())
+    }, [])
+
+    useEffect(async() => {
+        const socket = await socketIO.connect('http://192.168.13.1:5000')
+        dispatch(addSocket(socket))
     }, [])
 
     return (

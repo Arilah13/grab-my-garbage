@@ -1,22 +1,18 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Button, Icon } from 'react-native-elements'
+import { Icon } from 'react-native-elements'
 
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/PickupHeaderComponent'
 import { colors } from '../../global/styles'
-import { declinePickup, acceptPickup } from '../../redux/actions/requestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Pickupdetailscreen = ({route, navigation}) => {
 
-    const { item, time, date, buttons, name, date1, completedTime } = route.params
-
-    const [loading1, setLoading1] = useState(false)
-    const [loading2, setLoading2] = useState(false)
+    const { item, time, date, name, date1, completedTime } = route.params
 
     const dispatch = useDispatch()
 
@@ -106,49 +102,14 @@ const Pickupdetailscreen = ({route, navigation}) => {
                                 /> : null
                             }
                         </View>
-                        {buttons === true ? 
-                            <View style = {{...styles.container5, flex: 1, flexWrap: 'wrap'}}>
-                                <Button
-                                    title = 'Accept'
-                                    buttonStyle = {{
-                                        width: 100,
-                                        height: 40,
-                                        marginTop: 18,
-                                        borderRadius: 15,
-                                        marginLeft: 35,
-                                        backgroundColor: colors.buttons
-                                    }}
-                                    onPress = {() => {
-                                        dispatch(acceptPickup(item._id))
-                                        setTimeout(() => {
-                                            navigation.navigate('pendingPickupScreen')
-                                        }, 100) 
-                                        setLoading1(true)                                       
-                                    }}
-                                    loading = {loading1}
-                                    disabled = {loading1}
-                                />
-                                <Button
-                                    title = 'Decline'
-                                    buttonStyle = {{
-                                        width: 100,
-                                        height: 40,
-                                        marginTop: 18,
-                                        borderRadius: 15,
-                                        marginLeft: 25,
-                                        backgroundColor: colors.buttons
-                                    }}
-                                    onPress = {() => {
-                                        dispatch(declinePickup(item._id))
-                                        setTimeout(() => {
-                                            navigation.navigate('pendingPickupScreen')
-                                        }, 100)
-                                        setLoading2(true)
-                                    }}
-                                    loading = {loading2}
-                                    disabled = {loading2}
-                                />
-                            </View> : null }
+                        <View style = {{...styles.container5, paddingBottom: 0}}>
+                            <Text style = {styles.text3}>Payment:</Text>
+                            <Text style = {styles.text4}>Rs. {item.payment}</Text>
+                        </View>
+                        <View style = {styles.container5}>
+                            <Text style = {styles.text3}>Payment Method:</Text>
+                            <Text style = {styles.text4}>{item.paymentMethod}</Text>
+                        </View>
                     </View>
                 </View>
             </ScrollView>

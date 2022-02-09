@@ -1,13 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { useDispatch } from 'react-redux'
+import socketIO from 'socket.io-client'
 
 import Mapscreen from '../screens/MapScreen'
 import Topnavigator from './TopNavigator'
 import TabNavigator from './TabNavigator'
+import { addSocket } from '../redux/actions/requestActions'
 
 const Stack = createNativeStackNavigator()
 
 const Stacknavigator = () => {
+
+    const dispatch = useDispatch()
+
+    useEffect(async() => {   
+        const socket = await socketIO.connect('http://192.168.13.1:5000')
+        dispatch(addSocket(socket))
+    }, [])
+
     return (
         <Stack.Navigator>
 

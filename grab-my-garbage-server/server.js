@@ -33,8 +33,14 @@ const server = http.createServer(app)
 const io = SOCKET(server)
 
 io.on('connection', socket => {
-    socket.on('online', ({haulerid, latitude, longitude}) => {
-        pickupSocket.haulerJoin({id: socket.id, haulerid, latitude, longitude})
+    socket.on('online', async({haulerid, latitude, longitude}) => {
+        const hauler = await pickupSocket.haulerJoin({id: socket.id, haulerid, latitude, longitude})
+        const ongoingPickup = await pickupSocket.findPickupOnProgress({haulerid})
+        if(ongoingPickup !== false) {
+            const userSocketid = await pickupSocket.returnUserSocketid({userid: ongoingPickup.userid})
+            if(userSocketid !== false)
+                socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
+        }
     })
 
     socket.on('lookingPickup', async({latitude, longitude}) => {
@@ -48,15 +54,25 @@ io.on('connection', socket => {
     })
 
     socket.on('pickupOnProgress', async({haulerid, pickupid, userid}) => {
-        pickupSocket
+        const ongoingPickup = await pickupSocket.pickupOnProgress({haulerid, pickupid, userid})
+        const userSocketid = await pickupSocket.returnUserSocketid({userid})
+        const hauler = await pickupSocket.returnHaulerLocation({haulerid})
+        console.log(userSocketid)
+        if(userSocketid !== false)
+            socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
     })
 
     socket.on('haulerDisconnect', () => {
         pickupSocket.haulerDisconnect({id: socket.id})
     })
 
-    socket.on('userJoined', ({userid}) => {
+    socket.on('userJoined', async({userid}) => {
         pickupSocket.userJoin({id: socket.id, userid})
+        // const ongoingPickup = await pickupSocket.checkOngoingPickup({userid})
+        // if( ongoingPickup !== false) {
+        //     const hauler = await pickupSocket.returnHaulerLocation({haulerid: ongoingPickup.haulerid})
+        //     socket.to(socketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
+        // }
     })
 })
 

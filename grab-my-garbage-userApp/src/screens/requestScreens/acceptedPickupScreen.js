@@ -3,28 +3,27 @@ import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
-import { Icon } from 'react-native-elements'
+import { Icon, Button } from 'react-native-elements'
 
-import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
-import { getPendingPickups } from '../../redux/actions/pickupActions'
+import { getAcceptedPickups } from '../../redux/actions/pickupActions'
 import { dateHelper, timeHelper, date1Helper } from '../../helpers/pickupHelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Pendingpickupscreen = ({navigation}) => {
+const Acceptedpickupscreen = ({navigation}) => {
     const dispatch = useDispatch()
     
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
-    const retrievePendingPickups = useSelector(state => state.retrievePendingPickups)
-    const { loading, pickupInfo } = retrievePendingPickups
+    const retrieveAcceptedPickups = useSelector(state => state.retrieveAcceptedPickups)
+    const { loading, pickupInfo } = retrieveAcceptedPickups
 
     useEffect(() => {
         if(userInfo !== undefined) {
-            dispatch(getPendingPickups())
+            dispatch(getAcceptedPickups())
         }
     }, [userInfo])
 
@@ -78,14 +77,24 @@ const Pendingpickupscreen = ({navigation}) => {
                                     </View>
                                 </View>
                                 <View>
-                                    <Text style = {styles.text8}>{item.paymentMethod}</Text>
-                                    <Text style = {styles.text9}>Rs. {item.payment}</Text>
+                                    <Button
+                                        title = 'View'
+                                        buttonStyle = {{
+                                            width: 70,
+                                            height: 40,
+                                            marginTop: 18,
+                                            borderRadius: 15,
+                                            marginLeft: 30,
+                                            backgroundColor: colors.buttons
+                                        }}
+                                        onPress = {() => navigation.navigate('pickupDetail', {item, time: timeHelper(item.datetime), date1: date1Helper(item.datetime), date: dateHelper(item.datetime), name: 'Accepted Pickups'})}
+                                    />
                                 </View>
                                 </View>
                             </View>
                         </View>
                     )}
-                /> : <Text style = {styles.text10}>No Pickup Available</Text>
+                /> : <Text style = {styles.text8}>No Pickup Available</Text>
                 }
                 
             </View>  
@@ -93,7 +102,7 @@ const Pendingpickupscreen = ({navigation}) => {
     );
 }
 
-export default Pendingpickupscreen
+export default Acceptedpickupscreen
 
 const styles = StyleSheet.create({
 
@@ -163,20 +172,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     text8:{
-        marginLeft: 15,
-        marginTop: 15,
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: colors.darkBlue
-    },
-    text9:{
-        marginLeft: 25,
-        marginTop: 5,
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: colors.darkBlue
-    },
-    text10:{
         alignSelf: 'center',
         marginTop: '50%',
         fontSize: 17,

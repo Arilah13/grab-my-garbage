@@ -215,33 +215,6 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
     }
 }
 
-export const deleteUsers = (id) => async (dispatch, getState) => {
-    try{
-        dispatch({
-            type: actionTypes.USER_DELETE_REQUEST
-        })
-
-        const { userLogin: { userInfo }} = getState()
-
-        const config = {
-            headers: {
-                Authorization: `Bearer ${userInfo.token}`
-            }
-        }
-
-        await axios.delete(`/users/${id}`, config)
-
-        dispatch({
-            type: actionTypes.USER_DELETE_SUCCESS
-        })
-    } catch (err) {
-        dispatch({
-            type: actionTypes.USER_DELETE_FAIL,
-            payload: err.response.data.msg
-        })
-    }
-}
-
 export const updateUserPassword = (password) => async (dispatch, getState) => {
     try {
         dispatch({

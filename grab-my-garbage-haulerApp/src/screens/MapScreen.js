@@ -21,7 +21,7 @@ const Mapscreen = ({route, navigation}) => {
 
     const dispatch = useDispatch()
 
-    const { socket, haulerid } = route.params
+    const { haulerid } = route.params
 
     const mapView = useRef()
 
@@ -44,6 +44,9 @@ const Mapscreen = ({route, navigation}) => {
 
     const map = useSelector((state) => state.map)
     const { origin } = map
+
+    const socketHolder = useSelector((state) => state.socketHolder)
+    const { socket } = socketHolder
 
     const timeHandle = async(pickup) => {
         const filteredPickupOrder = await pickup.filter(pickup => {
@@ -275,7 +278,7 @@ const Mapscreen = ({route, navigation}) => {
                                     />
                                 </View>
                             ) :
-                            pickupBtn === true && pickupInfo.length > 0 ?
+                            pickupBtn === true && pickupLoading === false && pickupInfo.length > 0 ?
                             ( 
                                 <Button 
                                     title = 'Start Pickup'

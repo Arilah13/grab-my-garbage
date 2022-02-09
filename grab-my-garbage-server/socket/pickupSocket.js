@@ -1,5 +1,6 @@
 let haulers = []
 let users = []
+let ongoingPickups = []
 
 const pickupSocket = {
     haulerJoin: async({id, haulerid, latitude, longitude}) => {
@@ -25,18 +26,49 @@ const pickupSocket = {
         haulers.splice(haulers.findIndex(hauler => hauler.id === id), 1)
     },
     pickupOnProgress: async({haulerid, pickupid, userid}) => {
-        const user = users.find((user) => user.userid === userid)
-        if(user) {
-            const hauler = haulers.find((hauler) => hauler.haulerid === haulerid)
-            return ({hauler, pickupid})
-        }
+        const ongoingPickup = {userid, haulerid, pickupid}
+        const exist = ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === pickupid)
+        if(!exist)
+            ongoingPickups.push(ongoingPickup)
+        return ongoingPickup
     },
     userJoin: async({id, userid}) => {
         const user = {id, userid}
         const exist = users.find((user) => user.userid === userid)
         if(!exist) {
             users.push(user)
+        } else if(exist) {
+            users.splice(users.findIndex(user => user.userid === userid), 1)
+            users.push(user)
         }
+    },
+    // checkOngoingPickup: async({userid}) => {
+    //     const ongoingPickup = ongoingPickups.find((ongoingPickup) => ongoingPickup.userid === userid)
+    //     if(ongoingPickup)
+    //         return ongoingPickup
+    //     else 
+    //         return false
+    // },
+    returnHaulerLocation: async({haulerid}) => {
+        const hauler = haulers.find((hauler) => hauler.haulerid === haulerid)
+        if(hauler) 
+            return hauler
+        else 
+            return false
+    },
+    findPickupOnProgress: async({haulerid}) => {
+        const ongoingPickup = ongoingPickups.find((ongoingPickup) => ongoingPickup.haulerid === haulerid)
+        if(ongoingPickup)
+            return ongoingPickup
+        else
+            return false
+    },
+    returnUserSocketid: async({userid}) => {
+        const user = users.find((user) => user.userid === userid)
+        if(user)
+            return user.id
+        else 
+            return false
     }
 }
 

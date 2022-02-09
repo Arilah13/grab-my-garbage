@@ -76,7 +76,7 @@ export const getUpcomingPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`http://grab-my-garbage-server.herokuapp.com/request/upcomingPickup/${userInfo._id}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/request/upcomingPickup/${userInfo._id}`, 
         config)
 
         dispatch({
@@ -159,7 +159,7 @@ export const acceptPickup = (id) => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.put(`http://grab-my-garbage-server.herokuapp.com/request/acceptPickup/${id}`, {id: userInfo._id},
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/request/acceptPickup/${id}`, {id: userInfo._id},
         config)
 
         dispatch({
@@ -189,11 +189,12 @@ export const completedPickup = (id) => async(dispatch, getState) => {
 
         const date = new Date()
 
-        await axios.put(`http://grab-my-garbage-server.herokuapp.com/request/completedPickup/${id}`, {date},
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/request/completedPickup/${id}`, {date},
         config)
 
         dispatch({
-            type: actionTypes.PICKUP_COMPLETED_SUCCESS
+            type: actionTypes.PICKUP_COMPLETED_SUCCESS,
+            payload: data
         })
         dispatch(getUpcomingPickups())
     } catch (err) {
@@ -215,15 +216,32 @@ export const pickupOnProgress = (id) => async(dispatch, getState) => {
             },
         }
 
-        await axios.put(`http://192.168.13.1:5000/request/pickupOnProgress/${id}`, {date}, config)
+        const date = new Date()
+
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/request/pickupOnProgress/${id}`, {date}, config)
 
         dispatch({
-            type: actionTypes.PICKUP_ON_PROGRESS_SUCCESS
+            type: actionTypes.PICKUP_ON_PROGRESS_SUCCESS,
+            payload: data
         })
     } catch (err) {
         dispatch({
             type: actionTypes.PICKUP_ON_PROGRESS_FAIL,
             payload: err.response.data.msg
+        })
+    }
+}
+
+export const addSocket = (socket) => async(dispatch) => {
+    try{
+        dispatch({
+            type: actionTypes.ADD_SOCKET_SUCCESS,
+            payload: socket
+        })
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ADD_SOCKET_FAIL,
+            payload: err
         })
     }
 }

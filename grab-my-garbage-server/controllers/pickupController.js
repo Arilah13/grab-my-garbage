@@ -53,10 +53,32 @@ const pickupController = {
             return res.status(500).json({msg: err.message})
         }
     },
-    getAllPickups: async(req, res) => {
+    getPendingPickups: async(req, res) => {
         try{
             const customerId = req.params.id
-            const pickups = await Pickups.find({ customerId })
+            const pickups = await Pickups.find({ customerId, accepted: 0, cancelled: 0, completed: 0 })
+            if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
+
+            res.json(pickups)
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    getAcceptedPickups: async(req, res) => {
+        try{
+            const customerId = req.params.id
+            const pickups = await Pickups.find({ customerId, accepted: 1, cancelled: 0, completed: 0 })
+            if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
+
+            res.json(pickups)
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    getCompletedPickups: async(req, res) => {
+        try{
+            const customerId = req.params.id
+            const pickups = await Pickups.find({ customerId, accepted: 1, cancelled: 0, completed: 1 })
             if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
 
             res.json(pickups)
