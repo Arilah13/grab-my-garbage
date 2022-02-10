@@ -42,7 +42,7 @@ export const uploadDetails = (info) => async (dispatch) => {
 
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/haulers/get',
             {email}, config, 
-        ).catch((err) => console.log(err))
+        )
 
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,
@@ -54,4 +54,10 @@ export const uploadDetails = (info) => async (dispatch) => {
             payload: err.response.data.msg
         })
     }
+}
+
+export const logout = () => async (dispatch) => {
+    AsyncStorage.removeItem('haulerInfo')
+
+    dispatch({ type: actionTypes.USER_LOGOUT })
 }

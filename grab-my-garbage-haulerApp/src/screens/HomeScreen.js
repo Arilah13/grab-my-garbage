@@ -34,7 +34,7 @@ const Homescreen = ({navigation}) => {
 
     const userid = userInfo._id
 
-    const handleOnline = () => {
+    const handleOnline = async() => {
         if(online === false) {
             setOnline(true)
             TaskManager.defineTask(TASK_FETCH_LOCATION, async({data: { locations }, err}) => {
@@ -52,11 +52,11 @@ const Homescreen = ({navigation}) => {
                     console.error(err)
                 }
             })
-
+            
             Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
                 accuracy: Location.Accuracy.Highest,
-                distanceInterval: 100,
-                deferredUpdatesInterval: 0,
+                distanceInterval: 20,
+                deferredUpdatesInterval: 1,
                 showsBackgroundLocationIndicator: true,
                 foregroundService: {
                     notificationTitle: 'Using your location',
@@ -67,11 +67,6 @@ const Homescreen = ({navigation}) => {
             setOnline(false)
             socket.emit('haulerDisconnect')
             dispatch(addLocation({latitude, longitude}))
-            Location.hasStartedLocationUpdatesAsync(TASK_FETCH_LOCATION).then((value) => {
-                if(value) {
-                    Location.stopLocationUpdatesAsync(TASK_FETCH_LOCATION)
-                }
-            })
         }
     }
 
@@ -101,7 +96,7 @@ const Homescreen = ({navigation}) => {
             latitude = latlng.latitude
             longitude = latlng.longitude
             dispatch(addOrigin(latlng.latitude, latlng.longitude))
-            socket.emit('online', {haulerid: userid, latitude, longitude})
+            socket.emit('online', {haulerid: userid, latitude: latlng.latitude, longitude: latlng.longitude})
             
             socket.on('newOrder', () => {
                 dispatch(getPendingPickups(latitude, longitude))
@@ -110,6 +105,12 @@ const Homescreen = ({navigation}) => {
             // setTimeout(() => {
                 
             // }, [1000])
+        } else if(online === false) {
+            Location.hasStartedLocationUpdatesAsync(TASK_FETCH_LOCATION).then((value) => {
+                if(value) {
+                    Location.stopLocationUpdatesAsync(TASK_FETCH_LOCATION)
+                }
+            })
         }
     }, [online])
 

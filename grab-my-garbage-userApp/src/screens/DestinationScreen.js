@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
-import { Icon } from 'react-native-elements'
+import { Icon, Input } from 'react-native-elements'
 import * as Location from 'expo-location'
 
 import Mapcomponent from '../components/MapComponent'
@@ -20,10 +20,10 @@ const Destinationscreen = ({route, navigation}) => {
     const [latlng, setLatLng] = useState({latitude: 6.9271, longitude: 79.8612})
     const [city, setCity] = useState()
 
-    const homePlace = {
-        description: 'Home',
-        geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
-    }
+    // const homePlace = {
+    //     description: 'Home',
+    //     geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
+    // }
     const currentLocation = {
         description: 'Current location',
         geometry: { location: { lat: latlng.latitude, lng: latlng.longitude } },
@@ -113,7 +113,20 @@ const Destinationscreen = ({route, navigation}) => {
                         language: 'en',
                         components: 'country:lk'
                     }}
-                    predefinedPlaces = {[currentLocation, homePlace]}
+                    predefinedPlaces = {[currentLocation]}
+                    renderLeftButton = {() =>
+                        <View style = {{position: 'absolute', zIndex: 1}}>
+                            <Icon 
+                                type = 'material'
+                                name = 'search'
+                                color = {colors.blue2}
+                                style = {{
+                                    marginTop: 12,
+                                    marginLeft: 10
+                                }}
+                            />
+                        </View>
+                    }
 
                     onPress = {(data, details = null) => {
                         dispatch(addDestination(
@@ -168,7 +181,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 25,
         borderTopLeftRadius: 25,
         padding: 25,
-        //bottom: 31,
+        paddingBottom: 5
     },
     Text1: {
         color: colors.blue3,
@@ -186,11 +199,12 @@ const autoComplete = {
         fontSize: 15,
         borderWidth: 1,
         borderColor: colors.grey,
+        paddingLeft: 40
     },
     container: {
-        paddingTop:15,
+        paddingTop: 15,
         flex: 1,
-        backgroundColor:colors.white,
+        backgroundColor: colors.white
     },
     separator: {
         height: 0

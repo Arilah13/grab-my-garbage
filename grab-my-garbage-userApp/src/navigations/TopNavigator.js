@@ -40,7 +40,6 @@ const Topnavigator = () => {
                         />
                         <Text style = {styles.text}>Home</Text>
                     </TouchableOpacity>
-                    <Text style = {styles.text2}>Requests</Text>
                 </View>
 
             </SafeAreaView>

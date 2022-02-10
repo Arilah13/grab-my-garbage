@@ -15,13 +15,13 @@ const Rootnavigator = () => {
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
-    // useEffect(async() => {
-    //     const result = await AsyncStorage.getItem('haulerInfo')
-    //     //console.log(result)
-    //     if(result !== null) {
-    //         dispatch(uploadDetails(JSON.parse(result)))
-    //     }
-    // }, [])
+    useEffect(async() => {
+        const result = await AsyncStorage.getItem('haulerInfo')
+        //console.log(result)
+        if(result !== null) {
+            dispatch(uploadDetails(JSON.parse(result)))
+        }
+    }, [])
 
     return (
         <NavigationContainer>

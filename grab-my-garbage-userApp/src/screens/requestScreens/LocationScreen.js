@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
+import MapViewDirections from 'react-native-maps-directions'
 
 import { colors } from '../../global/styles'
 import { mapStyle } from '../../global/mapStyle'
+import { GOOGLE_MAPS_APIKEY } from '@env'
 import Headercomponent from '../../components/PickupHeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -13,22 +15,27 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Locationscreen = ({route}) => {
 
-    const { location } = route.params
+    const mapView = useRef()
+
+    const { location, item } = route.params
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
-    const [truck, setTruck] = useState(null) 
+    const ongoingPickupLocation = useSelector((state) => state.ongoingPickupLocation)
+    const { ongoingPickups } = ongoingPickupLocation
 
-    socket.on('userPickup', async({pickup, hauler}) => {
-        console.log(pickup)
-        console.log(hauler)
-        setTruck({latitude: hauler.latitude, longitude: hauler.longitude})
-    })
+    const [redo, setRedo] = useState(false)
+    const [pickup, setPickup] = useState(null)
 
     useEffect(() => {
-        //console.log(location)
-    }, []) 
+        if(ongoingPickups !== undefined && ongoingPickups.length > 0) {
+            const ongoingPickup =  ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
+            if(ongoingPickup) {
+                setPickup(ongoingPickup)
+            }
+        }
+    }, [ongoingPickups]) 
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -42,6 +49,7 @@ const Locationscreen = ({route}) => {
                     showsUserLocation = {false}
                     followsUserLocation = {false}
                     region={{ latitude: location.latitude, longitude: location.longitude, latitudeDelta: 0.02, longitudeDelta: 0.01 }}
+                    ref = {mapView}
                 >
                     <Marker coordinate = {{latitude: location.latitude, longitude: location.longitude}} >
                         <Image
@@ -50,13 +58,38 @@ const Locationscreen = ({route}) => {
                         />
                     </Marker>
                     {
-                        truck !== null ? 
-                        <Marker coordinate = {truck}>
-                            <Image
-                                source = {require('../../../assets/garbage_truck.png')}
-                                style = {styles.marker2}
+                        pickup !== null ? 
+                        <>
+                            <Marker coordinate = {{latitude: pickup.latitude, longitude: pickup.longitude}}>
+                                <Image
+                                    source = {require('../../../assets/garbage_truck.png')}
+                                    style = {styles.marker2}
+                                />
+                            </Marker>
+                            <MapViewDirections
+                                origin = {{latitude: pickup.latitude, longitude: pickup.longitude}}
+                                destination = {{latitude: location.latitude, longitude: location.longitude}}
+                                mode = 'DRIVING'
+                                language = 'en'
+                                strokeWidth = {3}
+                                strokeColor = {colors.blue2}
+                                apikey = {GOOGLE_MAPS_APIKEY}
+                                resetOnChange = {true}
+                                timePrecision = 'now'
+                                
+                                onReady = {(result) => {
+                                    mapView.current.fitToCoordinates(result.coordinates, {
+                                        edgePadding: {
+                                            right: SCREEN_WIDTH/20,
+                                            bottom: SCREEN_HEIGHT/3,
+                                            left: SCREEN_WIDTH/20,
+                                            top: SCREEN_HEIGHT/20
+                                        }
+                                    })
+                                }}
                             />
-                        </Marker> : null
+                        </>
+                        : null
                     }
 
                 </MapView>

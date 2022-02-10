@@ -26,7 +26,8 @@ import {
     retrievePendingPickupsReducer,
     retrieveAcceptedPickupsReducer,
     retrieveCompletedPickupsReducer,
-    socketHolderReducer
+    socketHolderReducer,
+    ongoingPickupLocationReducer
 } from './reducers/pickupReducers'
 
 const reducer = combineReducers({
@@ -46,6 +47,7 @@ const reducer = combineReducers({
     retrieveAcceptedPickups: retrieveAcceptedPickupsReducer,
     retrieveCompletedPickups: retrieveCompletedPickupsReducer,
     socketHolder: socketHolderReducer,
+    ongoingPickupLocation: ongoingPickupLocationReducer
 })
 
 const rootReducer = (state, action) => {

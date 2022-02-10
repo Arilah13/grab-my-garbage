@@ -39,6 +39,7 @@
     "react-native-gesture-handler": "~2.1.0",
     "react-native-google-places-autocomplete": "^2.4.1",
     "react-native-maps": "0.29.4",
+    "react-native-maps-directions": "^1.8.0",
     "react-native-masked-text": "^1.13.0",
     "react-native-modal": "^13.0.0",
     "react-native-modal-datetime-picker": "^13.0.0",
@@ -56,11 +57,11 @@
     "redux-thunk": "^2.4.1",
     "sharingan-rn-modal-dropdown": "^1.4.0",
     "socket.io-client": "^4.4.1",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "redux-devtools-extension": "^2.13.9"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9",
-    "redux-devtools-extension": "^2.13.9"
+    "@babel/core": "^7.12.9"
   },
   "private": true
 }

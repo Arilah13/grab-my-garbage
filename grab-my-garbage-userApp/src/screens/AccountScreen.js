@@ -32,14 +32,16 @@ const Accountscreen = ({navigation}) => {
     return (
         <SafeAreaView>
             <View style = {styles.container1}>
-                <Pressable onPress = {() => navigation.navigate('Editprofile')} style = {styles.view1} >
-                        <Text style = {styles.text1}>{user.name}</Text>
-                        <Image
-                            source = {user.image ? {uri: user.image} : require('../../assets/user.png')}
-                            resizeMode = 'contain'
-                            style = {styles.image1}
-                        />
-                </Pressable>
+                <View>
+                    <Pressable onPress = {() => navigation.navigate('Editprofile')} style = {styles.view1} >
+                            <Text style = {styles.text1}>{user.name}</Text>
+                            <Image
+                                source = {user.image ? {uri: user.image} : require('../../assets/user.png')}
+                                resizeMode = 'contain'
+                                style = {styles.image1}
+                            />
+                    </Pressable>
+                </View>
 
                 <View style = {styles.container2}>
                     <View style = {styles.view2}>
@@ -91,7 +93,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         height: SCREEN_HEIGHT/10,
-        //width: -SCREEN_WIDTH/3
+        width: '40%',
+        alignSelf: 'flex-end'
+        //width: -SCREEN_WIDTH/3,
     },
     text1:{
         marginTop: SCREEN_HEIGHT/25,

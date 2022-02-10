@@ -76,7 +76,7 @@ const Acceptedpickupscreen = ({navigation}) => {
                                         <Text style = {styles.text5}>{dateHelper(item.datetime)}</Text>
                                     </View>
                                 </View>
-                                <View>
+                                <View style = {{position: 'absolute'}}>
                                     <Button
                                         title = 'View'
                                         buttonStyle = {{
@@ -84,7 +84,7 @@ const Acceptedpickupscreen = ({navigation}) => {
                                             height: 40,
                                             marginTop: 18,
                                             borderRadius: 15,
-                                            marginLeft: 30,
+                                            marginLeft: SCREEN_WIDTH/1.65,
                                             backgroundColor: colors.buttons
                                         }}
                                         onPress = {() => navigation.navigate('pickupDetail', {item, time: timeHelper(item.datetime), date1: date1Helper(item.datetime), date: dateHelper(item.datetime), name: 'Accepted Pickups'})}

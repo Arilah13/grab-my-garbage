@@ -48,7 +48,7 @@ export const specialLogin = (info) => async(dispatch) => {
 
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/googleregister',
             {name, email, registerrole, photoUrl}, config, 
-        ).catch((err) => console.log(err))
+        )
 
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,
@@ -79,7 +79,7 @@ export const specialLoginFB = (email, name, id, token) => async(dispatch) => {
 
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/facebookregister',
             {name, email, registerrole, id, token}, config, 
-        ).catch((err) => console.log(err))
+        )
 
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,
@@ -110,7 +110,7 @@ export const register = ({name, email, password, image}) => async(dispatch) => {
 
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/register',
             {name, email, password, registerrole, image}, config, 
-        ).catch((err) => console.log(err))
+        )
 
         dispatch({
             type: actionTypes.USER_REGISTER_SUCCESS
@@ -142,7 +142,7 @@ export const uploadDetails = (info) => async (dispatch) => {
 
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/get',
             {email}, config, 
-        ).catch((err) => console.log(err))
+        )
 
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,

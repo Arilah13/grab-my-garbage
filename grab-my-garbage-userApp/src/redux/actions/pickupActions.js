@@ -141,3 +141,11 @@ export const addSocket = (socket) => async(dispatch) => {
         })
     }
 }
+
+export const addOngoingPickupLocation = ({latitude, longitude, haulerid, pickupid}) => async(dispatch) => {
+    const data = {latitude, longitude, haulerid, pickupid}
+    dispatch({
+        type: actionTypes.ADD_ONGOING_PICKUP_LOCATION,
+        payload: data
+    })
+}

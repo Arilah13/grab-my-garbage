@@ -59,9 +59,24 @@ export const retrieveCompletedPickupsReducer = (state = {}, action) => {
 export const socketHolderReducer = (state = {}, action) => {
     switch(action.type) {
         case actionTypes.ADD_SOCKET_SUCCESS:
-            return { socket: action.payload }
+            return { loading: false, socket: action.payload }
         case actionTypes.ADD_SOCKET_FAIL:
             return { error: action.payload }
+        default:
+            return state
+    }
+}
+
+export const ongoingPickupLocationReducer = (state = { ongoingPickups: [] }, action) => {
+    switch(action.type) {
+        case actionTypes.ADD_ONGOING_PICKUP_LOCATION:
+            const ongoingPickup = state.ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === action.payload.pickupid)
+            if(ongoingPickup) {
+                state.ongoingPickups.splice(state.ongoingPickups.findIndex(ongoingPickup => ongoingPickup.pickupid === action.payload.pickupid), 1)
+                return { ...state, ongoingPickups: [...state.ongoingPickups, action.payload] }
+            } else {
+                return { ...state, ongoingPickups: [...state.ongoingPickups, action.payload] }
+            }
         default:
             return state
     }

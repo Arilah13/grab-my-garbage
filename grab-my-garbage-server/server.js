@@ -57,7 +57,6 @@ io.on('connection', socket => {
         const ongoingPickup = await pickupSocket.pickupOnProgress({haulerid, pickupid, userid})
         const userSocketid = await pickupSocket.returnUserSocketid({userid})
         const hauler = await pickupSocket.returnHaulerLocation({haulerid})
-        console.log(userSocketid)
         if(userSocketid !== false)
             socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
     })
@@ -67,12 +66,12 @@ io.on('connection', socket => {
     })
 
     socket.on('userJoined', async({userid}) => {
-        pickupSocket.userJoin({id: socket.id, userid})
-        // const ongoingPickup = await pickupSocket.checkOngoingPickup({userid})
-        // if( ongoingPickup !== false) {
-        //     const hauler = await pickupSocket.returnHaulerLocation({haulerid: ongoingPickup.haulerid})
-        //     socket.to(socketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
-        // }
+        await pickupSocket.userJoin({id: socket.id, userid})
+        const ongoingPickup = await pickupSocket.checkOngoingPickup({userid})
+        if( ongoingPickup !== false) {
+            const hauler = await pickupSocket.returnHaulerLocation({haulerid: ongoingPickup.haulerid})
+            socket.emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
+        }
     })
 })
 

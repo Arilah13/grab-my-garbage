@@ -27,7 +27,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
                 <Headercomponent name = {name} />    
 
                 <View style = {{height: 14*SCREEN_HEIGHT/15, backgroundColor: colors.grey8}}>
-                    <Pressable style = {styles.container2} onPress = {() => navigation.navigate('Location', {location: item.location[0]})}>
+                    <Pressable style = {styles.container2} onPress = {() => navigation.navigate('Location', {location: item.location[0], item})}>
                         <Icon 
                             type = 'feather'
                             name = 'map-pin'

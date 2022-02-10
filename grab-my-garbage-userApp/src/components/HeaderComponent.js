@@ -13,8 +13,8 @@ const Headercomponent = ({name}) => {
     const navigation = useNavigation()
 
     return (
-        <View>
-            <TouchableOpacity style = {styles.container}
+        <View style = {styles.container}>    
+            <TouchableOpacity style = {{width: '35%', flexDirection: 'row'}}
                 onPress = {() => navigation.goBack()}
             >
                 <Icon
@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
         paddingLeft: 25, 
         //marginBottom: 0,
         height: SCREEN_HEIGHT/10,
-        flexDirection: 'row'
     },
     text:{
         display: 'flex',

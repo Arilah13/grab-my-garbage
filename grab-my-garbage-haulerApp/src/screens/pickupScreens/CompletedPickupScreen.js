@@ -83,7 +83,7 @@ const CompletedPickupscreen = ({navigation}) => {
                                     <Text style = {styles.text5}>{date1Helper(item.completedDate)}</Text>
                                 </View>
                             </View>
-                            <View>
+                            <View style = {{position: 'absolute'}}>
                                 <Button
                                     title = 'View'
                                     buttonStyle = {{
@@ -91,7 +91,7 @@ const CompletedPickupscreen = ({navigation}) => {
                                         height: 40,
                                         marginTop: 18,
                                         borderRadius: 15,
-                                        marginLeft: 30,
+                                        marginLeft: SCREEN_WIDTH/1.65,
                                         backgroundColor: colors.buttons
                                     }}
                                     onPress = {() => navigation.navigate('PickupDetail3', {item, time: timeHelper(item.datetime), completedTime: timeHelper(item.completedDate), date: date1Helper(item.completedDate), date1: date1Helper(item.datetime), buttons: false, name: 'Completed Pickups'})}
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     container:{
         display: 'flex',
         backgroundColor: colors.grey9,
-        height: 7*SCREEN_HEIGHT/10,
+        height: 7.8*SCREEN_HEIGHT/10,
         paddingLeft: 10,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,

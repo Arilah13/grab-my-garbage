@@ -4,6 +4,7 @@ import { View, Text, Image, StyleSheet, Dimensions, FlatList, TouchableOpacity, 
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { CheckBox, Button } from 'react-native-elements'
 import Modal from 'react-native-modal'
+import axios from 'axios'
 
 import { colors } from '../../global/styles'
 import Headercomponent from '../../components/HeaderComponent'

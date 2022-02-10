@@ -16,7 +16,7 @@ export const getPendingPickups = (latitude, longitude) => async(dispatch, getSta
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/request/pendingPickup/${latitude}/${longitude}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/request/pendingPickup/${latitude}/${longitude}/${userInfo._id}`, 
         config)
 
         dispatch({

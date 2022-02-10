@@ -7,6 +7,7 @@ import LottieView from 'lottie-react-native'
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
 import { getUserDetails } from '../redux/actions/userActions'
+import { addOngoingPickupLocation } from '../redux/actions/pickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -25,7 +26,7 @@ const Homescreen = ({navigation}) => {
     const { pickupInfo } = specialPickup
 
     const socketHolder = useSelector((state) => state.socketHolder)
-    const { socket } = socketHolder
+    const { loading: socketLoading, socket } = socketHolder
 
     useEffect(() => {
         if(userInfo !== undefined) {
@@ -33,9 +34,16 @@ const Homescreen = ({navigation}) => {
         }
     }, [userInfo])
 
-    useEffect(() => {
-        socket.emit('userJoined', { userid: userInfo._id })
-    }, [userInfo])
+    useEffect(async() => {
+        if(socketLoading === false) {
+            await socket.emit('userJoined', { userid: userInfo._id })
+            socket.on('userPickup', async({pickup, hauler}) => {
+                //console.log(pickup)
+                //console.log(hauler)
+                dispatch(addOngoingPickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, haulerid: pickup.haulerid, pickupid: pickup.pickupid}))
+            })
+        }
+    }, [socket])
 
     return (
         <SafeAreaView>

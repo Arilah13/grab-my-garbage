@@ -42,13 +42,13 @@ const pickupSocket = {
             users.push(user)
         }
     },
-    // checkOngoingPickup: async({userid}) => {
-    //     const ongoingPickup = ongoingPickups.find((ongoingPickup) => ongoingPickup.userid === userid)
-    //     if(ongoingPickup)
-    //         return ongoingPickup
-    //     else 
-    //         return false
-    // },
+    checkOngoingPickup: async({userid}) => {
+        const ongoingPickup = ongoingPickups.find((ongoingPickup) => ongoingPickup.userid === userid)
+        if(ongoingPickup)
+            return ongoingPickup
+        else 
+            return false
+    },
     returnHaulerLocation: async({haulerid}) => {
         const hauler = haulers.find((hauler) => hauler.haulerid === haulerid)
         if(hauler) 

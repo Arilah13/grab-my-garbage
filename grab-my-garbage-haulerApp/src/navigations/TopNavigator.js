@@ -39,9 +39,9 @@ const Topnavigator = () => {
                     />
                     <Text style = {styles.text}>Home</Text>
                 </TouchableOpacity>
-                <View style = {styles.view1}>
+                {/* <View style = {styles.view1}>
                     <Text style = {styles.text1}>Pickups</Text>
-                </View>
+                </View> */}
             </SafeAreaView>
 
             <Tab.Navigator
@@ -117,8 +117,9 @@ const styles = StyleSheet.create({
     container:{
         backgroundColor: colors.blue1,
         paddingLeft: 15, 
-        //marginBottom: 0,
-        height: SCREEN_HEIGHT/15,
+        paddingTop: 10,
+        marginBottom: 0,
+        height: SCREEN_HEIGHT/10,
         flexDirection: 'row',
     },
     text:{

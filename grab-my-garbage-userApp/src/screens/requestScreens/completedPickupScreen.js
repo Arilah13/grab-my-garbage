@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
-import { Icon } from 'react-native-elements'
+import { Icon, Button } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
 import { getCompletedPickups } from '../../redux/actions/pickupActions'
@@ -76,15 +76,25 @@ const Completedpickupscreen = () => {
                                         <Text style = {styles.text5}>{dateHelper(item.completedDate)}</Text>
                                     </View>
                                 </View>
-                                <View>
-                                    <Text style = {styles.text8}>{item.paymentMethod}</Text>
-                                    <Text style = {styles.text9}>Rs. {item.payment}</Text>
+                                <View style = {{position: 'absolute'}}>
+                                    <Button
+                                        title = 'View'
+                                        buttonStyle = {{
+                                            width: 70,
+                                            height: 40,
+                                            marginTop: 18,
+                                            borderRadius: 15,
+                                            marginLeft: SCREEN_WIDTH/1.65,
+                                            backgroundColor: colors.buttons
+                                        }}
+                                        onPress = {() => navigation.navigate('pickupDetail', {item, time: timeHelper(item.datetime), date1: date1Helper(item.datetime), date: dateHelper(item.datetime), name: 'Completed Pickups'})}
+                                    />
                                 </View>
                                 </View>
                             </View>
                         </View>
                     )}
-                /> : <Text style = {styles.text10}>No Pickup Available</Text>
+                /> : <Text style = {styles.text8}>No Pickup Available</Text>
                 }
                 
             </View>  
@@ -162,20 +172,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     text8:{
-        marginLeft: 15,
-        marginTop: 15,
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: colors.darkBlue
-    },
-    text9:{
-        marginLeft: 25,
-        marginTop: 5,
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: colors.darkBlue
-    },
-    text10:{
         alignSelf: 'center',
         marginTop: '50%',
         fontSize: 17,
