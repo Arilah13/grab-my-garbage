@@ -123,21 +123,6 @@ const pickupController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
-    },
-    updateOnProgressPickup: async(req, res) => {
-        try{
-            const pickup = await Pickups.findById(req.params.id)
-            if(!pickup) return res.status(400).json({msg: "No Pickup is available."})
-            
-            pickup.onProgress = 1
-            await pickup.save()
-
-            res.json({
-                message: 'pickup on progress'
-            })
-        } catch(err) {
-            return res.status(500).json({msg: err.message})
-        }
     }
 }
 

@@ -42,10 +42,6 @@ const pickupSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    onProgress:{
-        type: Number,
-        default: 0
-    },
     completed:{
         type: Number,
         default: 0

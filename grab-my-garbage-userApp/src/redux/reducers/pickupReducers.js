@@ -77,6 +77,9 @@ export const ongoingPickupLocationReducer = (state = { ongoingPickups: [] }, act
             } else {
                 return { ...state, ongoingPickups: [...state.ongoingPickups, action.payload] }
             }
+        case actionTypes.REMOVE_ONGOING_PICKUP_LOCATION:
+            state.ongoingPickups.splice(state.ongoingPickups.findIndex(ongoingPickup => ongoingPickup.pickupid === action.payload.pickupid), 1)
+            return { ...state, ongoingPickups: [...state.ongoingPickups]}
         default:
             return state
     }

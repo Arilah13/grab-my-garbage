@@ -61,6 +61,11 @@ io.on('connection', socket => {
             socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
     })
 
+    socket.on('pickupCompleted', async({pickupid}) => {
+        const userSocketid = await pickupSocket.completePickup({pickupid})
+        socket.to(userSocketid.id).emit('pickupDone', {pickupid: pickupid})
+    })
+
     socket.on('haulerDisconnect', () => {
         pickupSocket.haulerDisconnect({id: socket.id})
     })

@@ -52,21 +52,28 @@ const Homescreen = ({navigation}) => {
                     console.error(err)
                 }
             })
-            
-            Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-                accuracy: Location.Accuracy.Highest,
-                distanceInterval: 20,
-                deferredUpdatesInterval: 1,
-                showsBackgroundLocationIndicator: true,
-                foregroundService: {
-                    notificationTitle: 'Using your location',
-                    notificationBody: 'As long as you are online, location will be used',
-                }
-            })
+
+            setTimeout(() => {
+                Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
+                    accuracy: Location.Accuracy.Highest,
+                    distanceInterval: 20,
+                    deferredUpdatesInterval: 1,
+                    showsBackgroundLocationIndicator: true,
+                    foregroundService: {
+                        notificationTitle: 'Using your location',
+                        notificationBody: 'As long as you are online, location will be used',
+                    }
+                })
+            }, 100)
         } else {
             setOnline(false)
             socket.emit('haulerDisconnect')
             dispatch(addLocation({latitude, longitude}))
+            Location.hasStartedLocationUpdatesAsync(TASK_FETCH_LOCATION).then((value) => {
+                if(value) {
+                    Location.stopLocationUpdatesAsync(TASK_FETCH_LOCATION)
+                }
+            })
         }
     }
 
@@ -102,15 +109,6 @@ const Homescreen = ({navigation}) => {
                 dispatch(getPendingPickups(latitude, longitude))
             })
             dispatch(getUpcomingPickups())
-            // setTimeout(() => {
-                
-            // }, [1000])
-        } else if(online === false) {
-            Location.hasStartedLocationUpdatesAsync(TASK_FETCH_LOCATION).then((value) => {
-                if(value) {
-                    Location.stopLocationUpdatesAsync(TASK_FETCH_LOCATION)
-                }
-            })
         }
     }, [online])
 

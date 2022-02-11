@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -110,6 +110,14 @@ const Pickupdetailscreen = ({route, navigation}) => {
                             <Text style = {styles.text3}>Payment Method:</Text>
                             <Text style = {styles.text4}>{item.paymentMethod}</Text>
                         </View>
+                        {
+                            name === 'Accepted Pickups' ? 
+                            <View style = {{...styles.container5, paddingTop: 0}}>
+                                <Text style = {styles.text3}>Hauler Name:</Text>
+                                <Text style = {styles.text4}>{item.pickerId.name}</Text>
+                            </View> 
+                            : null
+                        }
                     </View>
                 </View>
             </ScrollView>

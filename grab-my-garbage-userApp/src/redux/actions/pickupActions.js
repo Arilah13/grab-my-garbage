@@ -149,3 +149,10 @@ export const addOngoingPickupLocation = ({latitude, longitude, haulerid, pickupi
         payload: data
     })
 }
+
+export const removeOngoingPickup = (pickupid) => async(dispatch) => {
+    dispatch({
+        type: actionTypes.REMOVE_ONGOING_PICKUP_LOCATION,
+        payload: pickupid
+    })
+}

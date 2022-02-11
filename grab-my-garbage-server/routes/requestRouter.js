@@ -16,8 +16,6 @@ router.put('/acceptPickup/:id', auth, requestController.updateAcceptHauler)
 
 router.put('/completedPickup/:id', auth, requestController.updateCompletedPickup)
 
-router.put('/pickupOnProgress/:id', auth, requestController.updateOnProgressPickup)
-
 //router.get('/allPickups/:id', auth, pickupController.getAllPickups)
 
 module.exports = router

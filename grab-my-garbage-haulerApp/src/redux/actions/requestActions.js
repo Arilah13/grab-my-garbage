@@ -205,33 +205,6 @@ export const completedPickup = (id) => async(dispatch, getState) => {
     }
 }
 
-export const pickupOnProgress = (id) => async(dispatch, getState) => {
-    try{
-        const { userLogin: { userInfo } } = getState()
-
-        const config = {
-            headers: {
-                'Content-type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`
-            },
-        }
-
-        const date = new Date()
-
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/request/pickupOnProgress/${id}`, {date}, config)
-
-        dispatch({
-            type: actionTypes.PICKUP_ON_PROGRESS_SUCCESS,
-            payload: data
-        })
-    } catch (err) {
-        dispatch({
-            type: actionTypes.PICKUP_ON_PROGRESS_FAIL,
-            payload: err.response.data.msg
-        })
-    }
-}
-
 export const addSocket = (socket) => async(dispatch) => {
     try{
         dispatch({

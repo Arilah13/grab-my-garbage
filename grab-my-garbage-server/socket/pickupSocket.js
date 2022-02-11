@@ -69,6 +69,13 @@ const pickupSocket = {
             return user.id
         else 
             return false
+    },
+    completePickup: async({pickupid}) => {
+        const ongoingPickup = await ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === pickupid)
+        const userid = await ongoingPickup.userid
+        const userSocketid = await users.find((user) => user.userid === userid)
+        ongoingPickups.splice(ongoingPickups.findIndex(ongoingPickup => ongoingPickup.pickupid === pickupid), 1)
+        return userSocketid
     }
 }
 
