@@ -58,7 +58,7 @@ export const specialLogin = (info) => async(dispatch) => {
         AsyncStorage.setItem('userInfo', JSON.stringify(data))
     } catch (err) {
         dispatch({
-            type: actionTypes.USER_REGISTER_FAIL,
+            type: actionTypes.USER_LOGIN_FAIL,
             payload: err.response.data.msg
         })
     }
@@ -89,7 +89,7 @@ export const specialLoginFB = (email, name, id, token) => async(dispatch) => {
         AsyncStorage.setItem('userInfo', JSON.stringify(data))
     } catch (err) {
         dispatch({
-            type: actionTypes.USER_REGISTER_FAIL,
+            type: actionTypes.USER_LOGIN_FAIL,
             payload: err.response.data.msg
         })
     }
@@ -140,7 +140,7 @@ export const uploadDetails = (info) => async (dispatch) => {
 
         const { email } = info
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/get',
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/',
             {email}, config, 
         )
 
@@ -171,7 +171,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/users/profile/${id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/users/${id}`, config)
 
         dispatch({
             type: actionTypes.USER_DETAILS_SUCCESS,
@@ -201,7 +201,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
             },
         }
         
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/users/profile/${userInfo._id}`, user, config)
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/users/${userInfo._id}`, user, config)
 
         dispatch({
             type: actionTypes.USER_UPDATE_PROFILE_SUCCESS,
@@ -230,7 +230,7 @@ export const updateUserPassword = (password) => async (dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/users/profile/password/${userInfo._id}`, {password}, config)
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/users/password/${userInfo._id}`, {password}, config)
 
         dispatch({
             type: actionTypes.USER_UPDATE_PROFILE_SUCCESS,

@@ -23,6 +23,12 @@ import {
     addLocationReducer
 } from './reducers/mapReducers'
 
+import {
+    getConversationReducer,
+    getMessageReducer,
+    sendMessageReducer
+} from './reducers/conversationReducer'
+
 const reducer = combineReducers({
     userLogin: userLoginReducer,
 
@@ -36,6 +42,10 @@ const reducer = combineReducers({
 
     map: mapReducer,
     addLocation: addLocationReducer,
+
+    getConversation: getConversationReducer,
+    sendMessage: sendMessageReducer,
+    getMessage: getMessageReducer,
 })
 
 const rootReducer = (state, action) => {

@@ -30,6 +30,12 @@ import {
     ongoingPickupLocationReducer
 } from './reducers/pickupReducers'
 
+import {
+    getConversationReducer,
+    sendMessageReducer,
+    getMessageReducer
+} from './reducers/conversationReducer'
+
 const reducer = combineReducers({
     map: mapReducer,
 
@@ -47,7 +53,11 @@ const reducer = combineReducers({
     retrieveAcceptedPickups: retrieveAcceptedPickupsReducer,
     retrieveCompletedPickups: retrieveCompletedPickupsReducer,
     socketHolder: socketHolderReducer,
-    ongoingPickupLocation: ongoingPickupLocationReducer
+    ongoingPickupLocation: ongoingPickupLocationReducer,
+
+    getConversation: getConversationReducer,
+    sendMessage: sendMessageReducer,
+    getMessage: getMessageReducer
 })
 
 const rootReducer = (state, action) => {

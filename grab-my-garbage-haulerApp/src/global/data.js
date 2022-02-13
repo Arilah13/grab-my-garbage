@@ -6,23 +6,23 @@ export const menuData = [
     destination: 'Pickup'
   },
   {
-    name: 'Pickup History',
+    name: 'Pickups',
     image: require('../../assets/request.png'),
     id: '1', 
     destination: 'History'
   },
-  {
-    name: '',
-    image: require('../../assets/request.png'),
-    id: '2',
-    destination: ''
-  },
-  {
-    name: '',
-    image: require('../../assets/payments.png'),
-    id: '3',
-    destination: ''
-  }                  
+  // {
+  //   name: '',
+  //   image: require('../../assets/request.png'),
+  //   id: '2',
+  //   destination: ''
+  // },
+  // {
+  //   name: '',
+  //   image: require('../../assets/payments.png'),
+  //   id: '3',
+  //   destination: ''
+  // }                  
 ]
 
 export const accountData = [

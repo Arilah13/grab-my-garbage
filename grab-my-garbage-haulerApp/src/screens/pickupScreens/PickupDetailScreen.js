@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
 
@@ -148,7 +148,22 @@ const Pickupdetailscreen = ({route, navigation}) => {
                                     loading = {loading2}
                                     disabled = {loading2}
                                 />
-                            </View> : null }
+                            </View> : 
+                                name === 'Upcoming Pickups' ? 
+                                <TouchableOpacity 
+                                    style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
+                                    onPress = {() => navigation.navigate('Chat', {userid: item.customerId, name: 'Pickup Detail'})}
+                                >
+                                    <Icon
+                                        type = 'material'
+                                        name = 'chat'
+                                        color = {colors.darkBlue}
+                                        size = {27}
+                                    />    
+                                    <Text style = {styles.text7}>Chat With Customer</Text>
+                                </TouchableOpacity>
+                                : null                           
+                            }
                     </View>
                 </View>
             </ScrollView>
@@ -226,6 +241,12 @@ const styles = StyleSheet.create({
         width: 200,
         //borderRadius: 500,
         alignContent: 'center'
+    },
+    text7:{
+        marginLeft: 5,
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: colors.darkBlue
     }
 
 })

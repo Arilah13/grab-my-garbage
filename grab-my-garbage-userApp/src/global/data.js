@@ -28,7 +28,7 @@ export const menuData = [
 export const trashCategoryData = [
   {
     value: '0',
-    label: 'Loose Bags & Bulk',
+    label: 'Loose Bags',
     avatarSource: require('../../assets/garbage-bag.jpeg'),
   },
   {

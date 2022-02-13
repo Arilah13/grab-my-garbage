@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import Acceptedpickupscreen from '../screens/requestScreens/acceptedPickupScreen'
 import Pickupdetailscreen from '../screens/requestScreens/pickupDetailScreen'
 import Locationscreen from '../screens/requestScreens/LocationScreen'
+import Pickupchatscreen from '../screens/requestScreens/pickupChatScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -28,6 +29,13 @@ const Acceptedstacknavigator = () => {
             <Stack.Screen
                 name = 'Location'
                 component = {Locationscreen}
+                options = {{
+                    headerShown: false
+                }}
+            /> 
+            <Stack.Screen
+                name = 'Chat'
+                component = {Pickupchatscreen}
                 options = {{
                     headerShown: false
                 }}

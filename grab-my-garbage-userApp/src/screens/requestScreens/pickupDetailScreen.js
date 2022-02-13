@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon } from 'react-native-elements'
 
@@ -80,7 +80,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
                                 </View> : null
                             }
                         </View>
-                        <View style = {styles.container5}>
+                        <View style = {{...styles.container5, paddingTop: 20}}>
                             <Text style = {styles.text3}>Weight:</Text>
                             <Text style = {styles.text4}>{item.weight} kg</Text>
                         </View>
@@ -112,10 +112,24 @@ const Pickupdetailscreen = ({route, navigation}) => {
                         </View>
                         {
                             name === 'Accepted Pickups' ? 
+                            <>
                             <View style = {{...styles.container5, paddingTop: 0}}>
                                 <Text style = {styles.text3}>Hauler Name:</Text>
                                 <Text style = {styles.text4}>{item.pickerId.name}</Text>
                             </View> 
+                            <TouchableOpacity 
+                                style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
+                                onPress = {() => navigation.navigate('Chat', {haulerid: item.pickerId, name: 'Pickup Detail'})}
+                            >
+                                <Icon
+                                    type = 'material'
+                                    name = 'chat'
+                                    color = {colors.darkBlue}
+                                    size = {27}
+                                />    
+                                <Text style = {styles.text7}>Chat With Hauler</Text>
+                            </TouchableOpacity>
+                            </>
                             : null
                         }
                     </View>
@@ -195,6 +209,12 @@ const styles = StyleSheet.create({
         width: 200,
         //borderRadius: 500,
         alignContent: 'center'
+    },
+    text7:{
+        marginLeft: 5,
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: colors.darkBlue
     }
 
 })

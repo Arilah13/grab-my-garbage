@@ -40,7 +40,7 @@ export const uploadDetails = (info) => async (dispatch) => {
 
         const { email } = info
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/haulers/get',
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/haulers/',
             {email}, config, 
         )
 
