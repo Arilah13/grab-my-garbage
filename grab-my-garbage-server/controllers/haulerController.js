@@ -19,7 +19,7 @@ const haulerController = {
             const accesstoken = createAccessToken(hauler._id)
             const refreshtoken = createRefreshToken(hauler._id)
 
-            res.json({
+            res.status(200).json({
                 _id: hauler._id,
                 name: hauler.name,
                 email: hauler.email,
@@ -41,7 +41,7 @@ const haulerController = {
 
             const accesstoken = createAccessToken(hauler._id)
 
-            res.json({
+            res.status(200).json({
                 _id: hauler._id,
                 name: hauler.name,
                 email: hauler.email,
@@ -64,7 +64,7 @@ const haulerController = {
 
             await hauler.save()
 
-            res.json({
+            res.status(200).json({
                 message: 'Location updated'
             })
         } catch (err) {

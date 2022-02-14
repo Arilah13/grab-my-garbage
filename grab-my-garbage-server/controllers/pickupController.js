@@ -38,7 +38,7 @@ const pickupController = {
 
             await newPickup.save()
 
-            res.json({
+            res.status(200).json({
                 _id: newPickup._id,
                 location: newPickup.location,
                 datetime: newPickup.datetime,
@@ -59,7 +59,7 @@ const pickupController = {
             const pickups = await Pickups.find({ customerId, accepted: 0, cancelled: 0, completed: 0 })
             if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
 
-            res.json(pickups)
+            res.status(200).json(pickups)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -70,7 +70,7 @@ const pickupController = {
             const pickups = await Pickups.find({ customerId, accepted: 1, cancelled: 0, completed: 0 }).populate('pickerId')
             if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
 
-            res.json(pickups)
+            res.status(200).json(pickups)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -81,7 +81,7 @@ const pickupController = {
             const pickups = await Pickups.find({ customerId, accepted: 1, cancelled: 0, completed: 1 })
             if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
 
-            res.json(pickups)
+            res.status(200).json(pickups)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

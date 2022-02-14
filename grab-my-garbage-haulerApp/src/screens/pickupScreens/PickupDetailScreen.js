@@ -151,7 +151,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
                                 name === 'Upcoming Pickups' ? 
                                 <TouchableOpacity 
                                     style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
-                                    onPress = {() => navigation.navigate('Chat', {userid: item.customerId, name: 'Pickup Detail'})}
+                                    onPress = {() => navigation.navigate('Chat', {userid: item.customerId, name: 'Pickup Detail', pickupid: item._id})}
                                 >
                                     <Icon
                                         type = 'material'

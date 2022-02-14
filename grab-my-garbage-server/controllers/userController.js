@@ -2,7 +2,6 @@ const Users = require('../models/userModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary')
-const fs = require('fs')
 
 const userController = {
     google: async(req, res) => {
@@ -33,7 +32,7 @@ const userController = {
 
                 const accesstoken = createAccessToken(newUser._id)
 
-                res.json({
+                res.status(200).json({
                     _id: newUser._id,
                     name: newUser.name,
                     email: newUser.email,
@@ -75,7 +74,7 @@ const userController = {
 
                 const accesstoken = createAccessToken(newUser._id)
 
-                res.json({
+                res.status(200).json({
                     _id: newUser._id,
                     name: newUser.name,
                     email: newUser.email,
@@ -114,7 +113,7 @@ const userController = {
 
             const accesstoken = createAccessToken(newUser._id)
 
-            res.json({
+            res.status(200).json({
                 _id: newUser._id,
                 name: newUser.name,
                 email: newUser.email,
@@ -140,7 +139,7 @@ const userController = {
             const accesstoken = createAccessToken(user._id)
             const refreshtoken = createRefreshToken(user._id)
 
-            res.json({
+            res.status(200).json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
@@ -154,7 +153,7 @@ const userController = {
     logout: async(req, res) => {
         try{
             res.clearCookie('refreshtoken', {path: '/user/refresh_token'})
-            return res.json({msg: "Logged out"})
+            return res.status(200).json({msg: "Logged out"})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -168,10 +167,10 @@ const userController = {
                 if(err) return res.status(400).json({msg: "Please Login or Register"})
 
                 const accesstoken = createAccessToken({id: user._id})
-                res.json({accesstoken})
+                res.status(200).json({accesstoken})
             })
 
-            res.json({rf_token})
+            res.status(200).json({rf_token})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -212,7 +211,7 @@ const userController = {
 
             await user.save()
 
-            res.json({
+            res.status(200).json({
                 message: 'User updated'
             })                   
         } catch (err) {
@@ -224,7 +223,7 @@ const userController = {
             const user = await Users.findById(req.params.id)
             if(!user) return res.status(400).json({msg: "User does not exists."})
 
-            res.json(user)         
+            res.status(200).json(user)         
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -238,7 +237,7 @@ const userController = {
 
             const accesstoken = createAccessToken(user._id)
 
-            res.json({
+            res.status(200).json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
@@ -262,7 +261,7 @@ const userController = {
 
             await user.save()
 
-            res.json({
+            res.status(200).json({
                 message: 'User updated'
             })  
         } catch (err) {

@@ -76,6 +76,15 @@ const pickupSocket = {
         const userSocketid = await users.find((user) => user.userid === userid)
         ongoingPickups.splice(ongoingPickups.findIndex(ongoingPickup => ongoingPickup.pickupid === pickupid), 1)
         return userSocketid
+    },
+    removeUser: async({id}) => {
+        const usersList = await users.find((user) => user.id === id)
+        const haulerList = await haulers.find((hauler) => hauler.id === id)
+        if(usersList) {
+            users = users.filter(user => user.id !== id)
+        } else if(haulerList) {
+            haulers = haulers.filter(hauler => hauler.id !== id)
+        }
     }
 }
 

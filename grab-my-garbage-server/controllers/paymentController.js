@@ -33,7 +33,7 @@ const paymentController = {
                 payment_method_types: ['card']
             })
 
-            res.json({
+            res.status(200).json({
                 paymentIntent: paymentIntent.client_secret,
                 ephemeralKey: ephemeralKey.secret,
                 customer: payment,
@@ -45,7 +45,7 @@ const paymentController = {
     },
     paymentIntent: async(req, res) => {
         try{
-            res.json({
+            res.status(200).json({
                 publishable_key: process.env.STRIPE_PUBLISHABLE_KEY,
                 secret_key: process.env.STRIPE_SECRET_KEY
             })

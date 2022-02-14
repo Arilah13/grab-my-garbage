@@ -14,7 +14,7 @@ router.put('/declinePickup/:id', auth, requestController.updateDeclinedHauler)
 
 router.put('/acceptPickup/:id', auth, requestController.updateAcceptHauler)
 
-router.put('/completedPickup/:id', auth, requestController.updateCompletedPickup)
+router.put('/updateCompletedPickup/:id', auth, requestController.updateCompletedPickup)
 
 //router.get('/allPickups/:id', auth, pickupController.getAllPickups)
 

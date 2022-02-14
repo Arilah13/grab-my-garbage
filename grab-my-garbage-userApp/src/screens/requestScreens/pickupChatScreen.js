@@ -16,7 +16,7 @@ const Pickupchatscreen = ({route, navigation}) => {
 
     const dispatch = useDispatch()
 
-    const { name, haulerid } = route.params
+    const { name, haulerid, pickupid } = route.params
 
     const [messages, setMessages] = useState([])
 
@@ -126,7 +126,8 @@ const Pickupchatscreen = ({route, navigation}) => {
             sender: message[0].user,
             receiverid: haulerid._id,
             text: message[0].text,
-            createdAt: message[0].createdAt
+            createdAt: message[0].createdAt,
+            pickupid: pickupid
         }))
     }
 
@@ -141,9 +142,9 @@ const Pickupchatscreen = ({route, navigation}) => {
     }, [conversation])
 
     useEffect(() => {
-        socket.on('getMessage', ({senderid, text, sender, createdAt}) => {
+        socket.on('getMessage', ({senderid, text, sender, createdAt, Pickupid}) => {
             const message = [{text, user: sender, createdAt, _id: Date.now()}]
-            if(senderid === haulerid._id)
+            if(senderid === haulerid._id && pickupid === Pickupid)
                 onSend(message)
         })
     }, [socket])

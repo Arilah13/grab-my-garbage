@@ -1,6 +1,5 @@
 const Pickups = require('../models/pickupModel')
 const Haulers = require('../models/haulerModel')
-const mongoose = require('mongoose')
 
 const pickupController = {
     getPendingPickups: async(req, res) => {
@@ -19,7 +18,7 @@ const pickupController = {
                     pendingPickups.push(pickup)  
             })
 
-            res.json(pendingPickups)
+            res.status(200).json(pendingPickups)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -42,7 +41,7 @@ const pickupController = {
                     pendingPickups.push(pickup)  
             })
 
-            res.json(pendingPickups)
+            res.status(200).json(pendingPickups)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -54,7 +53,7 @@ const pickupController = {
             const pickups = await Pickups.find({accepted: 1, cancelled: 0, completed: 0, pickerId: id}).populate('customerId')
             if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
 
-            res.json(pickups)
+            res.status(200).json(pickups)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -66,7 +65,7 @@ const pickupController = {
             const pickups = await Pickups.find({accepted: 1, cancelled: 0, completed: 1, pickerId: id}).populate('customerId')
             if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
 
-            res.json(pickups)
+            res.status(200).json(pickups)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -81,7 +80,7 @@ const pickupController = {
             pickup.declinedHaulers.push(haulerId)
             await pickup.save()
 
-            res.json({
+            res.status(200).json({
                 message: 'pickup declined'
             })
         } catch(err) {
@@ -99,7 +98,7 @@ const pickupController = {
             pickup.accepted = 1
             await pickup.save()
 
-            res.json({
+            res.status(200).json({
                 message: 'pickup accepted'
             })
         } catch(err) {
@@ -117,7 +116,7 @@ const pickupController = {
             pickup.completedDate = date
             await pickup.save()
 
-            res.json({
+            res.status(200).json({
                 message: 'pickup completed'
             })
         } catch(err) {

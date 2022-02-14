@@ -12,6 +12,9 @@ const pickupRoutes = require('./routes/pickupRouter')
 const requestRoutes = require('./routes/requestRouter')
 const haulerRoutes = require('./routes/haulerRouter')
 const pickupSocket = require('./socket/pickupSocket')
+const conversationRoutes = require('./routes/conversationRouter')
+const messageRoutes = require('./routes/messageRouter')
+const chatSocket = require('./socket/chatSocket')
 
 const app = express()
 app.use(express.urlencoded({extended: false}))
@@ -26,6 +29,8 @@ app.use('/payment', paymentRoutes)
 app.use('/pickup', pickupRoutes)
 app.use('/request', requestRoutes)
 app.use('/haulers', haulerRoutes)
+app.use('/conversation', conversationRoutes)
+app.use('/message', messageRoutes)
 
 const PORT = process.env.PORT || 5000
 
@@ -77,6 +82,26 @@ io.on('connection', socket => {
             const hauler = await pickupSocket.returnHaulerLocation({haulerid: ongoingPickup.haulerid})
             socket.emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
         }
+        await chatSocket.userJoin({id: socket.id, userid})
+    })
+
+    socket.on('haulerJoined', async({haulerid}) => {
+        await chatSocket.haulerJoin({id: socket.id, haulerid})
+    })
+
+    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid}) => {
+        const hauler = await chatSocket.returnHaulerSocketid({haulerid: receiverid})
+        const user = await chatSocket.returnUserSocketid({userid: receiverid})
+        if(user !== false) {
+            socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
+        } else if(hauler !== false) {
+            socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
+        }
+    })
+
+    socket.on('disconnect', () => {
+        pickupSocket.removeUser({id: socket.id})
+        chatSocket.removeUser({id: socket.id})
     })
 })
 
