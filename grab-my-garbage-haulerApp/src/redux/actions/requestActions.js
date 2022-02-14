@@ -218,3 +218,14 @@ export const addSocket = (socket) => async(dispatch) => {
         })
     }
 }
+
+export const hideComponent = (value) => async(dispatch) => {
+    if(value === true)
+        dispatch({
+            type: actionTypes.HIDE_COMPONENT_ADD
+        })
+    else if(value === false)
+        dispatch({
+            type: actionTypes.HIDE_COMPONENT_REMOVE
+        })
+}

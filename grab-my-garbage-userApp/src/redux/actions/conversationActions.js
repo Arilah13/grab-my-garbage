@@ -52,7 +52,7 @@ export const sendMessage = ({conversationId, sender, text, createdAt}) => async(
             },
         }
 
-        await axios.post('http://192.168.13.1:5000/message/', 
+        await axios.post('https://grab-my-garbage-server.herokuapp.com/message/', 
         { conversationId: conversationId, text, createdAt, sender_id: sender._id, sender_name: sender.name, sender_avatar: sender.image },
         config)
 
@@ -82,7 +82,7 @@ export const getMessage = ({conversationId}) => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`http://192.168.13.1:5000/message/${conversationId}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/message/${conversationId}`, config)
 
         dispatch({
             type: actionTypes.GET_MESSAGE_SUCCESS,

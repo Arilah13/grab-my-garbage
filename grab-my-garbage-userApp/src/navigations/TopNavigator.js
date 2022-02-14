@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
@@ -6,6 +7,8 @@ import { Icon } from 'react-native-elements'
 import { useNavigation } from '@react-navigation/native'
 
 import { colors } from '../global/styles'
+import { hideComponent } from '../redux/actions/pickupActions'
+
 import Pendingpickupscreen from '../screens/requestScreens/pendingPickupScreen'
 import Completedpickupscreen from '../screens/requestScreens/completedPickupScreen'
 import Acceptedstacknavigator from './AcceptedStackNavigator'
@@ -18,31 +21,42 @@ const Tab = createMaterialTopTabNavigator()
 const Topnavigator = () => {
 
     const navigation = useNavigation()
+    const dispatch = useDispatch()
+
+    const hideComp = useSelector((state) => state.hideComponent)
+    const { hide } = hideComp
+
+    useEffect(() => {
+        dispatch(hideComponent(false))
+    }, [])
 
     return (
-        <>
-            <SafeAreaView>
-                <View style = {{backgroundColor: colors.blue1}}>
-                    <TouchableOpacity 
-                        style = {styles.container}
-                        onPress = {() => navigation.navigate('Home')}
-                    >
-                        <Icon
-                            type = 'material'
-                            name = 'arrow-back'
-                            color = {colors.blue5}
-                            size = {25}
-                            style = {{
-                                alignSelf: 'flex-start',
-                                marginTop: 25,
-                                display: 'flex'
-                            }}
-                        />
-                        <Text style = {styles.text}>Home</Text>
-                    </TouchableOpacity>
-                </View>
-
-            </SafeAreaView>
+        <> 
+            {
+                hide !== undefined && hide === false ?
+                <SafeAreaView>
+                    <View style = {{backgroundColor: colors.blue1}}>
+                        <TouchableOpacity 
+                            style = {styles.container}
+                            onPress = {() => navigation.navigate('Home')}
+                        >
+                            <Icon
+                                type = 'material'
+                                name = 'arrow-back'
+                                color = {colors.blue5}
+                                size = {25}
+                                style = {{
+                                    alignSelf: 'flex-start',
+                                    marginTop: 25,
+                                    display: 'flex'
+                                }}
+                            />
+                            <Text style = {styles.text}>Home</Text>
+                        </TouchableOpacity>
+                    </View>
+                </SafeAreaView>
+                : null
+            }
 
             <Tab.Navigator
                 screenOptions = {{
@@ -51,7 +65,7 @@ const Topnavigator = () => {
                     tabBarStyle: {
                         elevation: 0,
                         backgroundColor: colors.white,
-                        borderRadius: 15
+                        borderRadius: 15,
                     },
                     tabBarLabelStyle: {
                         fontSize: 13,
@@ -65,11 +79,16 @@ const Topnavigator = () => {
                     },
                     tabBarPressColor: colors.white
                 }}
-                style = {{
-                    paddingLeft: 20,
-                    paddingRight: 20,
-                    backgroundColor: colors.blue1,
-                }}
+                style = { 
+                    hide !== undefined && hide === false ? 
+                    {
+                        paddingLeft: 20,
+                        paddingRight: 20,
+                        backgroundColor: colors.blue1,
+                    } : {
+                        backgroundColor: colors.blue1
+                    }
+                }
             >
                 <Tab.Screen 
                     name = "pendingPickup" 

@@ -82,3 +82,14 @@ export const socketHolderReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const hideComponentReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.HIDE_COMPONENT_ADD:
+            return { hide: true }
+        case actionTypes.HIDE_COMPONENT_REMOVE:
+            return { hide: false }
+        default: 
+            return state
+    }
+}

@@ -1,14 +1,43 @@
-import React from 'react'
+import React, { useLayoutEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 
 import Pickupdetailscreen from '../screens/pickupScreens/PickupDetailScreen'
 import UpcomingPickupscreen from '../screens/pickupScreens/UpcomingPickupScreen'
 import Locationscreen from '../screens/pickupScreens/LocationScreen'
 import Pickupchatscreen from '../screens/pickupScreens/pickupChatScreen'
 
+import { colors } from '../global/styles'
+import { hideComponent } from '../redux/actions/requestActions'
+
 const Stack = createNativeStackNavigator()
 
-const Upcomingstacknavigator = () => {
+const Upcomingstacknavigator = ({navigation, route}) => {
+
+    const dispatch = useDispatch()
+
+    const tabHiddenRoutes = ['Location', 'PickupDetail2', 'Chat']
+
+    const routeName = getFocusedRouteNameFromRoute(route)
+
+    useLayoutEffect(() => {
+        if(tabHiddenRoutes.includes(routeName)) {
+            navigation.setOptions({tabBarStyle: {display: 'none'}, swipeEnabled: false})
+            dispatch(hideComponent(true))
+        } else {
+            dispatch(hideComponent(false))
+            navigation.setOptions({tabBarStyle: {
+                display: 'flex',
+                elevation: 0,
+                backgroundColor: colors.white,
+                borderRadius: 15
+            },
+            swipeEnabled: true
+        })
+        }
+    })
+
     return (
         <Stack.Navigator>
 

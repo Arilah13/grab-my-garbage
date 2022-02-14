@@ -13,18 +13,18 @@ const Headercomponent = ({name}) => {
     const navigation = useNavigation()
 
     return (
-        <View style = {styles.container}>    
-            <TouchableOpacity style = {{width: '35%', flexDirection: 'row'}}
+        <View>
+            <TouchableOpacity style = {styles.container}
                 onPress = {() => navigation.goBack()}
             >
                 <Icon
                     type = 'material'
                     name = 'arrow-back'
                     color = {colors.blue5}
-                    size = {25}
+                    size = {20}
                     style = {{
                         alignSelf: 'flex-start',
-                        marginTop: 25,
+                        marginTop: 15,
                         display: 'flex'
                     }}
                 />
@@ -39,18 +39,21 @@ export default Headercomponent
 const styles = StyleSheet.create({
 
     container:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
+        backgroundColor: colors.grey10,
+        paddingLeft: 15, 
         //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
+        height: SCREEN_HEIGHT/15,
+        flexDirection: 'row',
+        borderTopRightRadius: 30,
+        borderTopLeftRadius: 30
     },
     text:{
         display: 'flex',
-        top: 26,
-        left: 15,
+        top: 15,
+        left: 5,
         color: colors.blue2,
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 14
     }
 
 })

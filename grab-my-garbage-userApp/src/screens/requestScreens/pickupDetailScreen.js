@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image, Touch
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon } from 'react-native-elements'
 
-import Headercomponent from '../../components/PickupHeaderComponent'
+import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -17,8 +17,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
     const dispatch = useDispatch()
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <View style = {{overflow: 'hidden', borderTopLeftRadius: 30, borderTopRightRadius: 30}}>
+        <SafeAreaView>
             <ScrollView 
                 showsVerticalScrollIndicator = {false}
                 stickyHeaderIndices = {[0]}
@@ -26,7 +25,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
             >
                 <Headercomponent name = {name} />    
 
-                <View style = {{height: 14*SCREEN_HEIGHT/15, backgroundColor: colors.grey8}}>
+                <View style = {{height: 9*SCREEN_HEIGHT/10, backgroundColor: colors.grey8, borderTopLeftRadius: 30, borderTopRightRadius: 30}}>
                     <Pressable style = {styles.container2} onPress = {() => navigation.navigate('Location', {location: item.location[0], item})}>
                         <Icon 
                             type = 'feather'
@@ -53,7 +52,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
                             }}
                         />
                     </Pressable>
-                    <View style = {{flex: 1, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30}}>
+                    <View style = {{flex: 1, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30, padding: 15}}>
                         <View style = {styles.container3}>
                             <Text style = {styles.text3}>Pickup Scheduled on:</Text>
                             <Text style = {styles.text4}>{date1 + ' ' + time}</Text>
@@ -135,7 +134,6 @@ const Pickupdetailscreen = ({route, navigation}) => {
                     </View>
                 </View>
             </ScrollView>
-            </View>
         </SafeAreaView>
     );
 }
@@ -146,16 +144,17 @@ const styles = StyleSheet.create({
 
     container:{
         display: 'flex',
-        backgroundColor: colors.grey9,
+        backgroundColor: colors.blue1,
         //paddingLeft: 10,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
         //paddingTop: 10,
     },
     container2:{
         backgroundColor: colors.grey8,
         paddingLeft: 25, 
+        marginBottom: 10,
         height: SCREEN_HEIGHT/9,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30
     },
     text1:{
         color: colors.blue7,

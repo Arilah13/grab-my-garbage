@@ -9,7 +9,7 @@ import MapViewDirections from 'react-native-maps-directions'
 import { colors } from '../../global/styles'
 import { mapStyle } from '../../global/mapStyle'
 import { GOOGLE_MAPS_APIKEY } from '@env'
-import Headercomponent from '../../components/PickupHeaderComponent'
+import Headercomponent from '../../components/HeaderComponent'
 import { removeOngoingPickup, getAcceptedPickups, getCompletedPickups } from '../../redux/actions/pickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -75,125 +75,126 @@ const Locationscreen = ({route, navigation}) => {
     }, [socket])
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <View style  = {styles.container}>
-                <Headercomponent name = 'Pickup Detail' />
-
-                <MapView
-                    provider = {PROVIDER_GOOGLE}
-                    style = {styles.map}
-                    customMapStyle = {mapStyle}
-                    showsUserLocation = {false}
-                    followsUserLocation = {false}
-                    region={{ latitude: location.latitude, longitude: location.longitude, latitudeDelta: 0.02, longitudeDelta: 0.01 }}
-                    ref = {mapView}
-                >
-                    <Marker coordinate = {{latitude: location.latitude, longitude: location.longitude}} >
-                        <Image
-                            source = {require('../../../assets/marker.png')}
-                            style = {styles.marker}
-                        />
-                    </Marker>
-                    {
-                        pickup !== null && complete === false ? 
-                        <>
-                            <Marker coordinate = {{latitude: pickup.latitude, longitude: pickup.longitude}}>
-                                <Image
-                                    source = {require('../../../assets/garbage_truck.png')}
-                                    style = {styles.marker2}
-                                />
-                            </Marker>
-                            <MapViewDirections
-                                origin = {{latitude: pickup.latitude, longitude: pickup.longitude}}
-                                destination = {{latitude: location.latitude, longitude: location.longitude}}
-                                mode = 'DRIVING'
-                                language = 'en'
-                                strokeWidth = {3}
-                                strokeColor = {colors.blue2}
-                                apikey = {GOOGLE_MAPS_APIKEY}
-                                resetOnChange = {false}
-                                timePrecision = 'now'
-                                
-                                onReady = {(result) => {
-                                    timeChanger(Math.round(result.duration * 10) / 10)
-                                    setTimeout(() => {
-                                        redo === true ?
-                                        mapView.current.fitToCoordinates(result.coordinates, {
-                                            edgePadding: {
-                                                right: SCREEN_WIDTH/20,
-                                                bottom: SCREEN_HEIGHT/2.5,
-                                                left: SCREEN_WIDTH/20,
-                                                top: SCREEN_HEIGHT/20
-                                            }
-                                        })
-                                    : null
-                                    }, 100)
-                                }}
+        <SafeAreaView style = {{backgroundColor: colors.blue1, height: SCREEN_HEIGHT}}>
+            <Headercomponent name = 'Pickup Detail' />
+            <View style = {{padding: 10}}>
+                <View style  = {styles.container}>     
+                    <MapView
+                        provider = {PROVIDER_GOOGLE}
+                        style = {styles.map}
+                        customMapStyle = {mapStyle}
+                        showsUserLocation = {false}
+                        followsUserLocation = {false}
+                        region={{ latitude: location.latitude, longitude: location.longitude, latitudeDelta: 0.02, longitudeDelta: 0.01 }}
+                        ref = {mapView}
+                    >
+                        <Marker coordinate = {{latitude: location.latitude, longitude: location.longitude}} >
+                            <Image
+                                source = {require('../../../assets/marker.png')}
+                                style = {styles.marker}
                             />
-                        </>
-                        : null
-                    }
-                </MapView>
-                {
-                    pickup !== null && complete === false ?
-                    (
+                        </Marker>
+                        {
+                            pickup !== null && complete === false ? 
+                            <>
+                                <Marker coordinate = {{latitude: pickup.latitude, longitude: pickup.longitude}}>
+                                    <Image
+                                        source = {require('../../../assets/garbage_truck.png')}
+                                        style = {styles.marker2}
+                                    />
+                                </Marker>
+                                <MapViewDirections
+                                    origin = {{latitude: pickup.latitude, longitude: pickup.longitude}}
+                                    destination = {{latitude: location.latitude, longitude: location.longitude}}
+                                    mode = 'DRIVING'
+                                    language = 'en'
+                                    strokeWidth = {3}
+                                    strokeColor = {colors.blue2}
+                                    apikey = {GOOGLE_MAPS_APIKEY}
+                                    resetOnChange = {false}
+                                    timePrecision = 'now'
+                                    
+                                    onReady = {(result) => {
+                                        timeChanger(Math.round(result.duration * 10) / 10)
+                                        setTimeout(() => {
+                                            redo === true ?
+                                            mapView.current.fitToCoordinates(result.coordinates, {
+                                                edgePadding: {
+                                                    right: SCREEN_WIDTH/20,
+                                                    bottom: SCREEN_HEIGHT/2.5,
+                                                    left: SCREEN_WIDTH/20,
+                                                    top: SCREEN_HEIGHT/20
+                                                }
+                                            })
+                                        : null
+                                        }, 100)
+                                    }}
+                                />
+                            </>
+                            : null
+                        }
+                    </MapView>
+                    {
+                        pickup !== null && complete === false ?
+                        (
+                            <View style = {styles.view1}>
+                                <View style = {styles.view2}>
+                                    <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row'}}>
+                                        <View>
+                                            <Image
+                                                source = {{uri: item.pickerId.image}} 
+                                                style = {styles.image}
+                                            />
+                                        </View>
+                                        <View>
+                                            <Text style = {styles.text1}>{item.pickerId.name}</Text>
+                                        </View>
+                                    </View>
+                                    <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row'}}>
+                                        <Text style = {{...styles.text2, marginTop: 35, fontSize: 14, marginLeft: 70}}>Est. Arrival Time:</Text>
+                                        <Text style = {{...styles.text2, marginTop: 35, position: 'absolute', marginLeft: 190, fontSize: 14}}>{ time !== null ? time : null}</Text>
+                                    </View>
+                                    <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-around', marginTop: 25}}>
+                                        <TouchableOpacity 
+                                            style = {{
+                                                flexDirection: 'row', 
+                                            }}
+                                        >
+                                            <Icon
+                                                type = 'material'
+                                                name = 'call'
+                                                color = {colors.darkBlue}
+                                                size = {25}
+                                            />
+                                            <Text style = {styles.text2}>Call</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity 
+                                            style = {{
+                                                flexDirection: 'row', 
+                                            }}
+                                        >
+                                            <Icon
+                                                type = 'material'
+                                                name = 'chat'
+                                                color = {colors.darkBlue}
+                                                size = {25}
+                                            />    
+                                            <Text style = {styles.text2}>Chat</Text>
+                                        </TouchableOpacity>
+                                    </View>                           
+                                </View>
+                            </View>
+                        ) :
+                        complete === true && pickup === null ? 
                         <View style = {styles.view1}>
                             <View style = {styles.view2}>
-                                <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row'}}>
-                                    <View>
-                                        <Image
-                                            source = {{uri: item.pickerId.image}} 
-                                            style = {styles.image}
-                                        />
-                                    </View>
-                                    <View>
-                                        <Text style = {styles.text1}>{item.pickerId.name}</Text>
-                                    </View>
-                                </View>
-                                <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row'}}>
-                                    <Text style = {{...styles.text2, marginTop: 35, fontSize: 14, marginLeft: 70}}>Est. Arrival Time:</Text>
-                                    <Text style = {{...styles.text2, marginTop: 35, position: 'absolute', marginLeft: 190, fontSize: 14}}>{ time !== null ? time : null}</Text>
-                                </View>
-                                <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-around', marginTop: 25}}>
-                                    <TouchableOpacity 
-                                        style = {{
-                                            flexDirection: 'row', 
-                                        }}
-                                    >
-                                        <Icon
-                                            type = 'material'
-                                            name = 'call'
-                                            color = {colors.darkBlue}
-                                            size = {25}
-                                        />
-                                        <Text style = {styles.text2}>Call</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity 
-                                        style = {{
-                                            flexDirection: 'row', 
-                                        }}
-                                    >
-                                        <Icon
-                                            type = 'material'
-                                            name = 'chat'
-                                            color = {colors.darkBlue}
-                                            size = {25}
-                                        />    
-                                        <Text style = {styles.text2}>Chat</Text>
-                                    </TouchableOpacity>
-                                </View>                           
+                                <Text>Pickup Completed</Text>                        
                             </View>
                         </View>
-                    ) :
-                    complete === true && pickup === null ? 
-                    <View style = {styles.view1}>
-                        <View style = {styles.view2}>
-                            <Text>Pickup Completed</Text>                        
-                        </View>
-                    </View>
-                    :
-                    null
-                }
+                        :
+                        null
+                    }
+                </View>
             </View>
         </SafeAreaView>
     );
@@ -206,10 +207,10 @@ const styles = StyleSheet.create({
     container:{
         display: 'flex',
         backgroundColor: colors.grey9,
-        //paddingLeft: 10,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         //paddingTop: 10,
+        overflow: 'hidden'
     },
     map: {
         height: "100%",

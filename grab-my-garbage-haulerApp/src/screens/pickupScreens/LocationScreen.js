@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -13,16 +13,13 @@ const Locationscreen = ({route}) => {
 
     const { location } = route.params
 
-    useEffect(() => {
-        console.log(location)
-    }, []) 
-
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <View style  = {styles.container}>
-                <Headercomponent name = 'Pickup Detail' />
-
-                <Mapcomponent latlng = {location}/>
+            <Headercomponent name = 'Pickup Detail' />
+            <View style = {{padding: 10}}>
+                <View style  = {styles.container}>
+                    <Mapcomponent latlng = {location}/>
+                </View>
             </View>
         </SafeAreaView>
     );
@@ -39,6 +36,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         //paddingTop: 10,
+        overflow: 'hidden'
     },
 
 })
