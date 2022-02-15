@@ -30,9 +30,7 @@ const Homescreen = ({navigation}) => {
     const { userInfo } = userLogin
 
     const socketHolder = useSelector((state) => state.socketHolder)
-    const { socket } = socketHolder
-
-    const userid = userInfo._id
+    const { loading, socket } = socketHolder
 
     const handleOnline = async() => {
         if(online === false) {
@@ -47,7 +45,7 @@ const Homescreen = ({navigation}) => {
                     latitude = location.coords.latitude
                     longitude = location.coords.longitude
                     dispatch(addOrigin(latitude, longitude))
-                    socket.emit('online', {haulerid: userid, latitude, longitude})
+                    socket.emit('online', {haulerid: userInfo._id, latitude, longitude})
                 } catch (err) {
                     console.error(err)
                 }
@@ -90,7 +88,7 @@ const Homescreen = ({navigation}) => {
                 }
             )
         } else if(item.destination === 'Pickup' && online === true) {
-            navigation.navigate(item.destination, {destination: item.name, haulerid: userid})
+            navigation.navigate(item.destination, {destination: item.name, haulerid: userInfo._id})
         } else {
             navigation.navigate(item.destination, {destination: item.name})
         }
@@ -103,7 +101,7 @@ const Homescreen = ({navigation}) => {
             latitude = latlng.latitude
             longitude = latlng.longitude
             dispatch(addOrigin(latlng.latitude, latlng.longitude))
-            socket.emit('online', {haulerid: userid, latitude: latlng.latitude, longitude: latlng.longitude})
+            socket.emit('online', {haulerid: userInfo._id, latitude: latlng.latitude, longitude: latlng.longitude})
             
             socket.on('newOrder', () => {
                 dispatch(getPendingPickups(latitude, longitude))
@@ -111,6 +109,11 @@ const Homescreen = ({navigation}) => {
             dispatch(getUpcomingPickups())
         }
     }, [online])
+
+    useEffect(() => {
+        if(loading === false)
+            socket.emit('haulerJoined', { haulerid: userInfo._id })
+    }, [socket])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.grey8}}>

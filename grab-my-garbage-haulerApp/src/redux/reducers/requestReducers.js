@@ -72,17 +72,6 @@ export const completedPickupReducer = (state = {}, action) => {
     }
 }
 
-export const socketHolderReducer = (state = {}, action) => {
-    switch(action.type) {
-        case actionTypes.ADD_SOCKET_SUCCESS:
-            return { socket: action.payload }
-        case actionTypes.ADD_SOCKET_FAIL:
-            return { error: action.payload }
-        default:
-            return state
-    }
-}
-
 export const hideComponentReducer = (state = {}, action) => {
     switch(action.type) {
         case actionTypes.HIDE_COMPONENT_ADD:
@@ -90,6 +79,28 @@ export const hideComponentReducer = (state = {}, action) => {
         case actionTypes.HIDE_COMPONENT_REMOVE:
             return { hide: false }
         default: 
+            return state
+    }
+}
+
+export const sendSMSReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.SEND_MESSAGE_SUCCESS:
+            return { success: true }
+        case actionTypes.SEND_MESSAGE_FAIL:
+            return { success: false, error: action.payload }
+        default:
+            return state
+    }
+}
+
+export const ongoingPickupReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.ONGOING_PICKUP_ADD:
+            return { pickup: action.payload }
+        case actionTypes.ONGOING_PICKUP_REMOVE:
+            return { pickup: null }
+        default:
             return state
     }
 }

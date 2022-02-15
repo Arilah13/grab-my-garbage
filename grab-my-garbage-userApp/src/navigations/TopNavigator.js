@@ -9,9 +9,9 @@ import { useNavigation } from '@react-navigation/native'
 import { colors } from '../global/styles'
 import { hideComponent } from '../redux/actions/pickupActions'
 
-import Pendingpickupscreen from '../screens/requestScreens/pendingPickupScreen'
-import Completedpickupscreen from '../screens/requestScreens/completedPickupScreen'
 import Acceptedstacknavigator from './AcceptedStackNavigator'
+import Pendingstacknavigator from './PendingStackNavigator'
+import Completedstacknavigator from './CompletedStackNavigator'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -91,8 +91,8 @@ const Topnavigator = () => {
                 }
             >
                 <Tab.Screen 
-                    name = "pendingPickup" 
-                    component = {Pendingpickupscreen} 
+                    name = "pendingStack" 
+                    component = {Pendingstacknavigator} 
                     options = {{
                         tabBarLabel: 'Pending'
                     }}
@@ -105,8 +105,8 @@ const Topnavigator = () => {
                     }}
                 />
                 <Tab.Screen 
-                    name = "completedPickup" 
-                    component = {Completedpickupscreen} 
+                    name = "completedStack" 
+                    component = {Completedstacknavigator} 
                     options = {{
                         tabBarLabel: 'Completed'
                     }}

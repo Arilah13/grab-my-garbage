@@ -50,11 +50,11 @@ export const trashCategoryData = [
 
 export const timeIntervalData = [
   {
-    value: '1',
+    value: '0',
     label: '8.00 A.M - 12.00 P.M'
   },
   {
-    value: '2',
+    value: '1',
     label: '2.00 P.M - 6.00 P.M'
   },
 ]
@@ -77,5 +77,36 @@ export const accountData = [
     image: require('../../assets/logout.png'), 
     id: '2', 
     destination: 'Logout'
+  },
+]
+
+export const dayData = [
+  {
+    value: '0',
+    label: 'Monday'
+  },
+  {
+    value: '1',
+    label: 'Tuesday'
+  },
+  {
+    value: '2',
+    label: 'Wednesday'
+  },
+  {
+    value: '3',
+    label: 'Thursday'
+  },
+  {
+    value: '4',
+    label: 'Friday'
+  },
+  {
+    value: '5',
+    label: 'Saturday'
+  },
+  {
+    value: '6',
+    label: 'Sunday'
   },
 ]

@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon } from 'react-native-elements'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
+import * as Linking from 'expo-linking'
 
 import { colors } from '../../global/styles'
 import { mapStyle } from '../../global/mapStyle'
@@ -159,6 +160,7 @@ const Locationscreen = ({route, navigation}) => {
                                             style = {{
                                                 flexDirection: 'row', 
                                             }}
+                                            onPress = {() => Linking.openURL(`tel:${item.pickerId.phone}`)}
                                         >
                                             <Icon
                                                 type = 'material'
@@ -172,6 +174,9 @@ const Locationscreen = ({route, navigation}) => {
                                             style = {{
                                                 flexDirection: 'row', 
                                             }}
+                                            onPress = {() => navigation.navigate('Chat', {
+                                                haulerid: item.pickerId, name: 'Location', pickupid: item._id
+                                            })}
                                         >
                                             <Icon
                                                 type = 'material'
@@ -228,7 +233,8 @@ const styles = StyleSheet.create({
     view1:{
         position: 'absolute',
         padding: 10,
-        marginTop: SCREEN_HEIGHT/1.85,
+        marginTop: SCREEN_HEIGHT/1.7,
+        alignSelf: 'center'
     },
     view2:{
         width: SCREEN_WIDTH/1.2,

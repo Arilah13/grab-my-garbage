@@ -49,9 +49,9 @@ const Specialpickupscreen = ({navigation}) => {
 
     let category = []  
 
-    const onChangeCategory = (value) => {
+    const onChangeCategory = async(value) => {
         setCategories(value)
-        value.map(i => {
+        await value.map(i => {
             category.push(trashCategoryData[i].label)
         })
         setCategory1(category)

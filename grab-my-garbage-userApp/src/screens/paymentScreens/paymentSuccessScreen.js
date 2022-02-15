@@ -6,7 +6,10 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { colors } from '../../global/styles'
 
-const Paymentsuccessscreen = ({navigation}) => {
+const Paymentsuccessscreen = ({navigation, route}) => {
+
+    const { name } = route.params
+
     return (
         <SafeAreaView style = {styles.container}>
             <LottieView 

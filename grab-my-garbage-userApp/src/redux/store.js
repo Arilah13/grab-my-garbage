@@ -23,13 +23,17 @@ import {
 
 import {
     addSpecialPickupReducer,
+    addScheduledPickupReducer,
     retrievePendingPickupsReducer,
     retrieveAcceptedPickupsReducer,
     retrieveCompletedPickupsReducer,
-    socketHolderReducer,
     ongoingPickupLocationReducer,
-    hideComponentReducer
+    hideComponentReducer,
 } from './reducers/pickupReducers'
+
+import {
+    socketHolderReducer
+} from './reducers/socketReducer'
 
 import {
     getConversationReducer,
@@ -50,12 +54,14 @@ const reducer = combineReducers({
     paymentSheet: paymentSheetReducer,
 
     specialPickup: addSpecialPickupReducer,
+    scheduledPickup: addScheduledPickupReducer,
     retrievePendingPickups: retrievePendingPickupsReducer,
     retrieveAcceptedPickups: retrieveAcceptedPickupsReducer,
     retrieveCompletedPickups: retrieveCompletedPickupsReducer,
-    socketHolder: socketHolderReducer,
     ongoingPickupLocation: ongoingPickupLocationReducer,
     hideComponent: hideComponentReducer,
+
+    socketHolder: socketHolderReducer,
 
     getConversation: getConversationReducer,
     sendMessage: sendMessageReducer,

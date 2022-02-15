@@ -95,7 +95,7 @@ const Pendingpickupscreen = ({navigation}) => {
                             </View>
                         </View>
                     )}
-                /> : <Text style = {styles.text10}>No Pickup Available</Text>
+                /> : <Text style = {styles.text8}>No Pickup Available</Text>
                 }
                 
             </View>  

@@ -16,7 +16,7 @@ import Paymentpresuccessscreen from '../screens/paymentScreens/PaymentPreSuccess
 import Topnavigator from './TopNavigator'
 
 import { getPaymentIntent } from '../redux/actions/paymentActions'
-import { addSocket } from  '../redux/actions/pickupActions'
+import { addSocket } from  '../redux/actions/socketActions'
 
 const Stack = createNativeStackNavigator()
 
@@ -28,7 +28,7 @@ const StackNavigator = () => {
     }, [])
 
     useEffect(async() => {
-        const socket = await socketIO.connect('https://grab-my-garbage-server.herokuapp.com')
+        const socket = await socketIO.connect('http://192.168.13.1:5000')
         dispatch(addSocket(socket))
     }, [])
 

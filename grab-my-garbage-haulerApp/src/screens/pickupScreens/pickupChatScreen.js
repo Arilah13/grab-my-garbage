@@ -12,7 +12,7 @@ import { getConversation, sendMessage, getMessage } from '../../redux/actions/co
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Pickupchatscreen = ({route, navigation}) => {
+const Pickupchatscreen = ({route}) => {
     const dispatch = useDispatch()
 
     const { name, userid, pickupid } = route.params
@@ -141,11 +141,8 @@ const Pickupchatscreen = ({route, navigation}) => {
     }, [conversation])
 
     useEffect(() => {
-        socket.emit('haulerJoined', { haulerid: userInfo._id })
-    }, [])
-
-    useEffect(() => {
         socket.on('getMessage', ({senderid, text, sender, createdAt, Pickupid}) => {
+            console.log(senderid)
             const message = [{text, user: sender, createdAt, _id: Date.now()}]
             if(senderid === userid._id && pickupid === Pickupid)
                 onSend(message)

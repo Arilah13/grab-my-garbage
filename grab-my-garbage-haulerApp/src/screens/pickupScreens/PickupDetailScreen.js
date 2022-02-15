@@ -106,7 +106,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
                             }
                         </View>
                         {buttons === true ? 
-                            <View style = {{...styles.container5, flex: 1, flexWrap: 'wrap'}}>
+                            <View style = {{...styles.container5, flex: 1, flexWrap: 'wrap', alignSelf: 'center'}}>
                                 <Button
                                     title = 'Accept'
                                     buttonStyle = {{
@@ -114,7 +114,6 @@ const Pickupdetailscreen = ({route, navigation}) => {
                                         height: 40,
                                         marginTop: 18,
                                         borderRadius: 15,
-                                        marginLeft: 35,
                                         backgroundColor: colors.buttons
                                     }}
                                     onPress = {() => {
@@ -134,7 +133,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
                                         height: 40,
                                         marginTop: 18,
                                         borderRadius: 15,
-                                        marginLeft: 25,
+                                        marginLeft: 30,
                                         backgroundColor: colors.buttons
                                     }}
                                     onPress = {() => {

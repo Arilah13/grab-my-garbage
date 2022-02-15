@@ -6,7 +6,9 @@ import socketIO from 'socket.io-client'
 import Mapscreen from '../screens/MapScreen'
 import Topnavigator from './TopNavigator'
 import TabNavigator from './TabNavigator'
-import { addSocket } from '../redux/actions/requestActions'
+import Chatscreen from '../screens/ChatScreen'
+
+import { addSocket } from '../redux/actions/socketActions'
 
 const Stack = createNativeStackNavigator()
 
@@ -15,7 +17,7 @@ const Stacknavigator = () => {
     const dispatch = useDispatch()
 
     useEffect(async() => {   
-        const socket = await socketIO.connect('https://grab-my-garbage-server.herokuapp.com')
+        const socket = await socketIO.connect('http://192.168.13.1:5000')
         dispatch(addSocket(socket))
     }, [])
 
@@ -43,6 +45,13 @@ const Stacknavigator = () => {
                     headerShown: false
                 }}
             />  
+            <Stack.Screen
+                name = 'Chat'
+                component = {Chatscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
 
         </Stack.Navigator>
     );

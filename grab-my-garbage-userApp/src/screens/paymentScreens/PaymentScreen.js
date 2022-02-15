@@ -11,8 +11,7 @@ import socketIO from 'socket.io-client'
 import { colors } from '../../global/styles'
 import Headercomponent from '../../components/HeaderComponent'
 import { getPaymentSheet } from '../../redux/actions/paymentActions'
-import { getSpecialPickupInfo } from '../../redux/actions/pickupActions'
-import { SPECIAL_PICKUP_RESET } from '../../redux/constants/pickupConstants'
+import { getSpecialPickupInfo, getScheduledPickupInfo } from '../../redux/actions/pickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -26,9 +25,12 @@ const Paymentscreen = ({route, navigation}) => {
     const specialPickup = useSelector(state => state.specialPickup)
     const { pickupInfo } = specialPickup
 
+    const scheduledPickup = useSelector(state => state.scheduledPickup)
+    const { pickupInfo: scheduledPickupInfo } = scheduledPickup
+
     const {initPaymentSheet, presentPaymentSheet, confirmPaymentSheetPayment} = useStripe()
 
-    const { creditcard, paypal, cash, price, tax, total } = route.params
+    const { creditcard, paypal, cash, price, tax, total, name } = route.params
 
     const [showGateway, setShowGateway] = useState(false)
     const [prog, setProg] = useState(false)
@@ -100,12 +102,13 @@ const Paymentscreen = ({route, navigation}) => {
             setLoading(false)
         } else if(!error) {
             requestPickup()
-            navigation.navigate('Paymentpresuccess')
-            dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'creditcard'}))
+            navigation.navigate('Paymentpresuccess', { name: name })
+            if(name === 'Special') {
+                dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'Creditcard'}))
+            } else if (name === 'Schedule') { 
+                dispatch(getScheduledPickupInfo({pickupInfo, total, method: 'Creditcard'}))
+            }
             setLoading(false)
-            dispatch({
-                type: SPECIAL_PICKUP_RESET
-            })
         }
     }
 
@@ -126,18 +129,19 @@ const Paymentscreen = ({route, navigation}) => {
     }
 
     const onMessage = (e) => {
-        let data = e.nativeEvent.data;
+        let data = e.nativeEvent.data
         setShowGateway(false);
         setLoading(false)
         let payment = JSON.parse(data);
         if (payment.status === 'COMPLETED') {
             requestPickup()
-            navigation.navigate('Paymentpresuccess')
-            dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'paypal'}))
+            navigation.navigate('Paymentpresuccess', { name: name })
+            if(name === 'Special') {
+                dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'PayPal'}))
+            } else if (name === 'Schedule') {
+                dispatch(getScheduledPickupInfo({pickupInfo, total, method: 'PayPal'}))
+            }
             setLoading(false)
-            dispatch({
-                type: SPECIAL_PICKUP_RESET
-            })
         } else {
             Alert.alert('Payment Failed', 'Payment has been failed, Please try again',
                 [

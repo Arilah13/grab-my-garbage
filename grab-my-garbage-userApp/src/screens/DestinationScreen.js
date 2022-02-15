@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
-import { Icon, Input } from 'react-native-elements'
+import { Icon } from 'react-native-elements'
 import * as Location from 'expo-location'
 
 import Mapcomponent from '../components/MapComponent'
@@ -16,9 +16,11 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 
 const Destinationscreen = ({route, navigation}) => {
     const dispatch = useDispatch()
+    const mapView = useRef()
 
     const [latlng, setLatLng] = useState({latitude: 6.9271, longitude: 79.8612})
     const [city, setCity] = useState()
+    const [latlngDelta, setLatlngDelta] = useState({latitudeDelta: 0.8, longitudeDelta: 0.7})
 
     // const homePlace = {
     //     description: 'Home',
@@ -76,6 +78,8 @@ const Destinationscreen = ({route, navigation}) => {
             <View style = {styles.container2}>
                 <Mapcomponent 
                     latlng = {latlng}
+                    mapView = {mapView}
+                    latlngDelta = {latlngDelta}
                 />
 
                 <TouchableOpacity style = {styles.view}
@@ -137,12 +141,27 @@ const Destinationscreen = ({route, navigation}) => {
                                 details.vicinity
                             ))
                         setLatLng({latitude: details.geometry.location.lat, longitude: details.geometry.location.lng})
+                        if(details.formatted_address !== 'Current Location') {
+                            setTimeout(() => {
+                                mapView.current.fitToSuppliedMarkers(['mk1'], {
+                                    animated: true,
+                                    edgePadding: {
+                                        top: 50,
+                                        bottom: 50,
+                                        left: 50,
+                                        right: 50
+                                    }
+                                })
+                            }, 800)
+                        } else if(details.formatted_address === 'Current Location') {
+                            setLatlngDelta({latitudeDelta: 0.00025, longitudeDelta: 0.000125})
+                        }
                         setTimeout(() => {
                             if(route.params.destination === 'Special Pickup')
                                 navigation.navigate('SpecialPickup')
                             if(route.params.destination === 'Schedule Pickup')
                                 navigation.navigate('Schedule')
-                        }, 2000)                       
+                        }, 4500)                       
                     }}
                 />
             </View>

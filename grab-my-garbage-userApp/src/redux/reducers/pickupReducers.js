@@ -17,6 +17,23 @@ export const addSpecialPickupReducer = (state = {}, action) => {
     }
 }
 
+export const addScheduledPickupReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.SCHEDULED_PICKUP_ADD_REQUEST:
+            return { loading: true }
+        case actionTypes.SCHEDULED_PICKUP_ADD_SUCCESS:
+            return { loading: false, success: true }
+        case actionTypes.SCHEDULED_PICKUP_ADD_FAIL:
+            return { loading: false, error: action.payload }
+        case actionTypes.SCHEDULED_PICKUP_STORE:
+            return { pickupInfo: action.payload }
+        case actionTypes.SCHEDULED_PICKUP_RESET:
+            return {}
+        default:
+            return state
+    }
+}
+
 export const retrievePendingPickupsReducer = (state = {}, action) => {
     switch(action.type) {
         case actionTypes.PENDING_PICKUP_RETRIEVE_REQUEST:
@@ -51,17 +68,6 @@ export const retrieveCompletedPickupsReducer = (state = {}, action) => {
             return { loading: false, pickupInfo: action.payload, success: true }
         case actionTypes.COMPLETED_PICKUP_RETRIEVE_FAIL:
             return { loading: false, error: action.payload }
-        default:
-            return state
-    }
-}
-
-export const socketHolderReducer = (state = {}, action) => {
-    switch(action.type) {
-        case actionTypes.ADD_SOCKET_SUCCESS:
-            return { loading: false, socket: action.payload }
-        case actionTypes.ADD_SOCKET_FAIL:
-            return { error: action.payload }
         default:
             return state
     }

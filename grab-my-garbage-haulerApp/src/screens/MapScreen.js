@@ -7,12 +7,13 @@ import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 //import Animated, { SlideInDown, SlideOutDown, useAnimatedStyle, withTiming, useSharedValue } from 'react-native-reanimated'
 import LottieView from 'lottie-react-native'
+import * as Linking from 'expo-linking'
 
 import { colors } from '../global/styles'
 import { mapStyle } from '../global/mapStyles'
 import { GOOGLE_MAPS_APIKEY } from '@env'
 import { getLatngDiffInMeters, returnDate } from '../helpers/homehelper'
-import { completedPickup } from '../redux/actions/requestActions'
+import { completedPickup, sendSMS } from '../redux/actions/requestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -32,6 +33,7 @@ const Mapscreen = ({route, navigation}) => {
     const [redo, setRedo] = useState(false)
     const [arrived, setArrived] = useState(false)
     const [nextPickup, setNextPickup] = useState(false)
+    const [distance, setDistance] = useState(null)
     const [enable, setEnable] = useState(false)
 
     // const boxHeight = useSharedValue(0)
@@ -76,7 +78,6 @@ const Mapscreen = ({route, navigation}) => {
             })
             setOrder(pickupOrder[0])
             socket.emit('pickupOnProgress', { haulerid: haulerid, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id })
-            //setEnable(false)
         } else {
             setEnd(null)
             setOrder(null)
@@ -93,6 +94,11 @@ const Mapscreen = ({route, navigation}) => {
     const handlePickupComplete = async() => {
         if(arrived === false) {
             setArrived(true)
+            let num
+            num = String(order.customerId.phone).substring(1)
+            let receiver = '+94'.concat(num)
+            const message = 'Your Hauler is at your doorstep, make sure garbage is collected'
+            dispatch(sendSMS({receiver: receiver, message: message}))
         } else if(arrived === true) {
             setLoading(true)
             dispatch(completedPickup(order._id))
@@ -143,15 +149,14 @@ const Mapscreen = ({route, navigation}) => {
             latitudeDelta: 0.0005,
             longitudeDelta: 0.00025
         })
-        // if(order !== null) {
-        //     console.log(enable)
-        //     if(getLatngDiffInMeters(origin.latitude, origin.longitude, end.latitude, end.longitude) <= 50/1000){
-        //         setEnable(true)
-        //     } else {
-        //         setEnable(false)
-        //     }
-        // }
     }, [origin])
+
+    useEffect(() => {
+        if(distance <= 100/1000) 
+            setEnable(true)
+        else 
+            setEnable(false)
+    }, [distance])
 
     return (
         <SafeAreaView>
@@ -214,6 +219,7 @@ const Mapscreen = ({route, navigation}) => {
                                 resetOnChange = {true}
                                 
                                 onReady = {(result) => {
+                                    setDistance(result.distance)
                                     if(redo === true){
                                         mapView.current.fitToCoordinates(result.coordinates, {
                                             edgePadding: {
@@ -312,6 +318,7 @@ const Mapscreen = ({route, navigation}) => {
                                         style = {{
                                             flexDirection: 'row', 
                                         }}
+                                        onPress = {() => Linking.openURL(`tel:${order.customerId.phone}`)}
                                     >
                                         <Icon
                                             type = 'material'
@@ -325,6 +332,9 @@ const Mapscreen = ({route, navigation}) => {
                                         style = {{
                                             flexDirection: 'row', 
                                         }}
+                                        onPress = {() => navigation.navigate('Chat', {
+                                            userid: order.customerId, name: 'Pickup', pickupid: order._id
+                                        })}
                                     >
                                         <Icon
                                             type = 'material'
@@ -335,22 +345,21 @@ const Mapscreen = ({route, navigation}) => {
                                         <Text style = {styles.text3}>Chat</Text>
                                     </TouchableOpacity>
                                 </View>
-                                <View style = {{flex: 1, marginTop: -40, padding: 25, paddingVertical: 0}}>
-                                    <Button 
-                                        title = { arrived === false ? 'Arrived' : 'Completed' }
-                                        buttonStyle = {{
-                                            width: SCREEN_WIDTH/1.2,
-                                            borderRadius: 10,
-                                            height: 45,
-                                            backgroundColor: colors.darkBlue
-                                        }}
-                                        onPress = {() => handlePickupComplete()}
-                                    />
-                                </View>
-                                {/* {
+                                {
                                     enable === true ? 
                                     (
-                                        
+                                        <View style = {{flex: 1, marginTop: -40, padding: 25, paddingVertical: 0}}>
+                                            <Button 
+                                                title = { arrived === false ? 'Arrived' : 'Completed' }
+                                                buttonStyle = {{
+                                                    width: SCREEN_WIDTH/1.2,
+                                                    borderRadius: 10,
+                                                    height: 45,
+                                                    backgroundColor: colors.darkBlue
+                                                }}
+                                                onPress = {() => handlePickupComplete()}
+                                            />
+                                        </View>
                                     ) :
                                     (
                                         <View style = {{flex: 1, marginTop: -40, padding: 25, paddingVertical: 0}}>
@@ -366,7 +375,7 @@ const Mapscreen = ({route, navigation}) => {
                                             />
                                         </View>
                                     )
-                                } */}
+                                }
                                 
                                 </>
                             ) :

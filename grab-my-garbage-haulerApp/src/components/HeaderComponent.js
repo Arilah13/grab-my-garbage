@@ -14,7 +14,7 @@ const Headercomponent = ({name}) => {
 
     return (
         <View style = {styles.container}>    
-            <TouchableOpacity style = {{width: '35%', flexDirection: 'row'}}
+            <TouchableOpacity style = {{width: '40%', flexDirection: 'row'}}
                 onPress = {() => navigation.goBack()}
             >
                 <Icon

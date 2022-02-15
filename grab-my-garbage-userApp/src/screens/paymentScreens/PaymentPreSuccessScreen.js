@@ -5,7 +5,9 @@ import LottieView from 'lottie-react-native'
 
 import { colors } from '../../global/styles'
 
-const Paymentpresuccessscreen = ({navigation}) => {
+const Paymentpresuccessscreen = ({navigation, route}) => {
+
+    const { name } = route.params
 
     const lottieRef = useRef()
 
@@ -20,7 +22,7 @@ const Paymentpresuccessscreen = ({navigation}) => {
 
     useEffect(() => {
         setTimeout(() => {
-            navigation.navigate('Paymentsuccess')
+            navigation.navigate('Paymentsuccess', { name: name })
         }, 3500)
     }, [])
 

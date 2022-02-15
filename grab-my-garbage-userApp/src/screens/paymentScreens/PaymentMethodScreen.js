@@ -19,6 +19,9 @@ const Paymentmethodscreen = ({route, navigation}) => {
     const specialPickup = useSelector(state => state.specialPickup)
     const { pickupInfo } = specialPickup
 
+    const scheduledPickup = useSelector(state => state.scheduledPickup)
+    const { pickupInfo: scheduledPickupInfo } = scheduledPickup
+
     const [check1, setCheck1] = useState(false)
     const [check2, setCheck2] = useState(false)
     const [check3, setCheck3] = useState(false)
@@ -44,10 +47,18 @@ const Paymentmethodscreen = ({route, navigation}) => {
     let total = 0
 
     const Price = () => {
-        price = 0
-        price = price + 200 * pickupInfo.category.length
-        price = price + pickupInfo.solid_weight * 100
-        return price
+        if(name === 'Special') {
+            price = 0
+            price = price + 200 * pickupInfo.category.length
+            price = price + pickupInfo.solid_weight * 100
+            return price
+        } else if(name === 'Schedule') {
+            const date1 = new Date(scheduledPickupInfo.from).getTime()
+            const date2 = new Date(scheduledPickupInfo.to).getTime()
+            const days = (date2 - date1) / (1000*60*60*24)
+            price = scheduledPickupInfo.days.length * 50 * (days / 7)
+            return price
+        }
     }
     const Tax = () => {
         tax = 0
@@ -63,17 +74,17 @@ const Paymentmethodscreen = ({route, navigation}) => {
     const pay = () => {
         if(check1 === true)
             navigation.navigate('Payment', {
-                creditcard: true, paypal: false, cash: false,
+                creditcard: true, paypal: false, cash: false, name: name,
                 price: Price(), tax: Tax(), total: Total()
             })
         if(check2 === true)
             navigation.navigate('Payment', {
-                creditcard: false, paypal: true, cash: false,
+                creditcard: false, paypal: true, cash: false, name: name,
                 price: Price(), tax: Tax(), total: Total()
             })
         if(check3 === true)
             navigation.navigate('Payment', {
-                creditcard: false, paypal: false, cash: true,
+                creditcard: false, paypal: false, cash: true, name: name,
                 price: Price(), tax: Tax(), total: Total()
             })
         if(check1 === false && check2 === false && check3 === false)

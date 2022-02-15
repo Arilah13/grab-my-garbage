@@ -5,23 +5,23 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { GiftedChat, Bubble, Send, InputToolbar, Composer, Message } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
 
-import Headercomponent from '../../components/HeaderComponent'
-import { colors } from '../../global/styles'
-import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
+import Headercomponent from '../components/HeaderComponent'
+import { colors } from '../global/styles'
+import { getConversation, sendMessage, getMessage } from '../redux/actions/conversationActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Pickupchatscreen = ({route, navigation}) => {
+const Chatscreen = ({route}) => {
 
     const dispatch = useDispatch()
 
-    const { name, haulerid, pickupid } = route.params
+    const { name, userid, pickupid } = route.params
 
     const [messages, setMessages] = useState([])
 
-    const userDetail = useSelector((state) => state.userDetail)
-    const { user } = userDetail
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
 
     const conversations = useSelector((state) => state.getConversation)
     const { loading, conversation } = conversations
@@ -41,7 +41,7 @@ const Pickupchatscreen = ({route, navigation}) => {
                         backgroundColor: colors.darkBlue
                     },
                     left: {
-                        backgroundColor: colors.white,
+                        backgroundColor: colors.blue1,
                     }
                 }}
                 textStyle = {{
@@ -121,12 +121,10 @@ const Pickupchatscreen = ({route, navigation}) => {
             sender: message[0].user,
             conversationId: conversation[0]._id
         }))
-        console.log(pickupid)
-        console.log(haulerid._id)
         socket.emit('sendMessage', ({
-            senderid: user._id,
+            senderid: userInfo._id,
             sender: message[0].user,
-            receiverid: haulerid._id,
+            receiverid: userid._id,
             text: message[0].text,
             createdAt: message[0].createdAt,
             pickupid: pickupid
@@ -134,7 +132,7 @@ const Pickupchatscreen = ({route, navigation}) => {
     }
 
     useEffect(() => {
-        dispatch(getConversation({receiverid: haulerid._id, senderid: user._id}))
+        dispatch(getConversation({receiverid: userid._id, senderid: userInfo._id}))
     }, [])
 
     useEffect(() => {
@@ -146,7 +144,7 @@ const Pickupchatscreen = ({route, navigation}) => {
     useEffect(() => {
         socket.on('getMessage', ({senderid, text, sender, createdAt, Pickupid}) => {
             const message = [{text, user: sender, createdAt, _id: Date.now()}]
-            if(senderid === haulerid._id && pickupid === Pickupid)
+            if(senderid === userid._id && pickupid === Pickupid)
                 onSend(message)
         })
     }, [socket])
@@ -179,15 +177,15 @@ const Pickupchatscreen = ({route, navigation}) => {
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1, height: SCREEN_HEIGHT}}>
             <Headercomponent name = {name} />
-
+        
             <View style = {{height: 9*SCREEN_HEIGHT/10, paddingHorizontal: 15, paddingTop: 5}}>
                 <View style = {{backgroundColor: colors.white, borderTopRightRadius: 15, borderTopLeftRadius: 15, overflow: 'hidden'}}>
                     <View style = {{height: 1*SCREEN_HEIGHT/10, flexDirection: 'row', backgroundColor: colors.grey10}}>
                         <Image 
-                            source = {{uri: haulerid.image}}
+                            source = {{uri: userid.image}}
                             style = {styles.image}
                         />
-                        <Text style = {styles.text}>{haulerid.name}</Text>
+                        <Text style = {styles.text}>{userid.name}</Text>
                     </View>
                     <View style = {{backgroundColor: colors.white, height: 8*SCREEN_HEIGHT/10, paddingBottom: 35}}>
                         <GiftedChat
@@ -197,9 +195,9 @@ const Pickupchatscreen = ({route, navigation}) => {
                                 sendMsg(messages)
                             }}
                             user={{
-                                _id: user._id,
-                                name: user.name,
-                                avatar: user.image
+                                _id: userInfo._id,
+                                name: userInfo.name,
+                                avatar: userInfo.image
                             }}
                             renderBubble = {renderBubble}
                             alwaysShowSend = {true}
@@ -209,7 +207,6 @@ const Pickupchatscreen = ({route, navigation}) => {
                             renderInputToolbar = {renderInputToolbar}
                             renderComposer = {renderComposer}
                             renderMessage = {renderMessage}
-                            isLoadingEarlier = {messageLoading === true ? true : false}
                         />
                         {
                             Platform.OS === 'android' && <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {2.5*SCREEN_HEIGHT/10} />
@@ -221,7 +218,7 @@ const Pickupchatscreen = ({route, navigation}) => {
     );
 }
 
-export default Pickupchatscreen
+export default Chatscreen
 
 const styles = StyleSheet.create({
 
