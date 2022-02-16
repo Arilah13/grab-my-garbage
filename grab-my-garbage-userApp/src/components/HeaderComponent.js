@@ -8,14 +8,16 @@ import { colors } from '../global/styles'
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Headercomponent = ({name}) => {
+const Headercomponent = ({name, destination}) => {
 
     const navigation = useNavigation()
 
     return (
         <View style = {styles.container}>    
             <TouchableOpacity style = {{width: '40%', flexDirection: 'row'}}
-                onPress = {() => navigation.goBack()}
+                onPress = {() => {
+                    destination ? navigation.navigate(destination) : navigation.goBack()
+                }}
             >
                 <Icon
                     type = 'material'

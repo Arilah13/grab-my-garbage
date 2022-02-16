@@ -14,6 +14,11 @@ import Changepasswordscreen from '../screens/ChangePasswordScreen'
 import Paymentsuccessscreen from '../screens/paymentScreens/paymentSuccessScreen'
 import Paymentpresuccessscreen from '../screens/paymentScreens/PaymentPreSuccessScreen'
 import Topnavigator from './TopNavigator'
+import Prerequestscreen from '../screens/preRequestScreen'
+import Schedulepickuprequestscreen from '../screens/scheduledPickupScreens/schedulePickupRequestScreen'
+import Scheduledpickupdetail from '../screens/scheduledPickupScreens/scheduledPickupDetail'
+import Scheduledpickupchatscreen from '../screens/scheduledPickupScreens/scheduledPickupChatScreen'
+import scheduledPickupLocationscreen from '../screens/scheduledPickupScreens/scheduledPickupLocationScreen'
 
 import { getPaymentIntent } from '../redux/actions/paymentActions'
 import { addSocket } from  '../redux/actions/socketActions'
@@ -51,8 +56,24 @@ const StackNavigator = () => {
             />
 
             <Stack.Screen
+                name = 'PreRequest'
+                component = {Prerequestscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
                 name = 'Requests'
                 component = {Topnavigator}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
+                name = 'ScheduleRequest'
+                component = {Schedulepickuprequestscreen}
                 options = {{
                     headerShown: false
                 }}
@@ -91,6 +112,14 @@ const StackNavigator = () => {
             />
 
             <Stack.Screen
+                name = 'PickupScheduleDetail'
+                component = {Scheduledpickupdetail}
+                options = {{
+                    headerShown: false
+                }}
+            />      
+
+            <Stack.Screen
                 name = 'Editprofile'
                 component = {Editprofilescreen}
                 options = {{
@@ -117,6 +146,22 @@ const StackNavigator = () => {
             <Stack.Screen
                 name = 'Paymentsuccess'
                 component = {Paymentsuccessscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
+                name = 'Chat'
+                component = {Scheduledpickupchatscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
+                name = 'Location'
+                component = {scheduledPickupLocationscreen}
                 options = {{
                     headerShown: false
                 }}

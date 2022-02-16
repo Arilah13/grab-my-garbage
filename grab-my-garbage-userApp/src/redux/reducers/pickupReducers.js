@@ -73,6 +73,19 @@ export const retrieveCompletedPickupsReducer = (state = {}, action) => {
     }
 }
 
+export const retrieveScheduledPickupReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.SCHEDULED_PICKUP_RETRIEVE_REQUEST:
+            return { loading: true }
+        case actionTypes.SCHEDULED_PICKUP_RETRIEVE_SUCCESS:
+            return { loading: false, pickupInfo: action.payload, success: true }
+        case actionTypes.SCHEDULED_PICKUP_RETRIEVE_FAIL:
+            return { loading: false, error: action.payload }
+        default:
+            return state
+    }
+}
+
 export const ongoingPickupLocationReducer = (state = { ongoingPickups: [] }, action) => {
     switch(action.type) {
         case actionTypes.ADD_ONGOING_PICKUP_LOCATION:

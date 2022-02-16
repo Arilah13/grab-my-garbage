@@ -12,6 +12,7 @@ import { colors } from '../../global/styles'
 import Headercomponent from '../../components/HeaderComponent'
 import { getPaymentSheet } from '../../redux/actions/paymentActions'
 import { getSpecialPickupInfo, getScheduledPickupInfo } from '../../redux/actions/pickupActions'
+import { PAYMENT_SHEET_RESET } from '../../redux/constants/paymentConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -28,7 +29,7 @@ const Paymentscreen = ({route, navigation}) => {
     const scheduledPickup = useSelector(state => state.scheduledPickup)
     const { pickupInfo: scheduledPickupInfo } = scheduledPickup
 
-    const {initPaymentSheet, presentPaymentSheet, confirmPaymentSheetPayment} = useStripe()
+    const {initPaymentSheet, presentPaymentSheet} = useStripe()
 
     const { creditcard, paypal, cash, price, tax, total, name } = route.params
 
@@ -101,12 +102,15 @@ const Paymentscreen = ({route, navigation}) => {
         if(error) {
             setLoading(false)
         } else if(!error) {
-            requestPickup()
+            dispatch({
+                type: PAYMENT_SHEET_RESET
+            })
             navigation.navigate('Paymentpresuccess', { name: name })
             if(name === 'Special') {
+                requestPickup()
                 dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'Creditcard'}))
             } else if (name === 'Schedule') { 
-                dispatch(getScheduledPickupInfo({pickupInfo, total, method: 'Creditcard'}))
+                dispatch(getScheduledPickupInfo({pickupInfo: scheduledPickupInfo, total, method: 'Creditcard'}))
             }
             setLoading(false)
         }
@@ -124,7 +128,6 @@ const Paymentscreen = ({route, navigation}) => {
         } else if(creditcard === true) {
             setLoading(true)
             choosePaymentOption()
-            //requestPickup()
         }
     }
 
@@ -134,12 +137,12 @@ const Paymentscreen = ({route, navigation}) => {
         setLoading(false)
         let payment = JSON.parse(data);
         if (payment.status === 'COMPLETED') {
-            requestPickup()
             navigation.navigate('Paymentpresuccess', { name: name })
             if(name === 'Special') {
+                requestPickup()
                 dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'PayPal'}))
             } else if (name === 'Schedule') {
-                dispatch(getScheduledPickupInfo({pickupInfo, total, method: 'PayPal'}))
+                dispatch(getScheduledPickupInfo({pickupInfo: scheduledPickupInfo, total, method: 'PayPal'}))
             }
             setLoading(false)
         } else {

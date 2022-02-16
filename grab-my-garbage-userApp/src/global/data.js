@@ -15,7 +15,7 @@ export const menuData = [
     name: 'Requests',
     image: require('../../assets/request.png'),
     id: '2',
-    destination: 'Requests'
+    destination: 'PreRequest'
   },
   {
     name: 'Payments',

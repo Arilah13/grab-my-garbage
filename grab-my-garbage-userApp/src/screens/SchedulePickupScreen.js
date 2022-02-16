@@ -89,7 +89,7 @@ const Schedulepickupscreen = ({navigation}) => {
                 stickyHeaderIndices = {[0]}
                 showsVerticalScrollIndicator = {false}
             >
-                <Headercomponent name = 'Home' />
+                <Headercomponent name = 'Home' destination = 'Home'/>
 
                 <Formik
                     initialValues = {initialValues}

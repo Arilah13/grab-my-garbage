@@ -2,12 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, KeyboardAvoidingView, Dimensions, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { GiftedChat, Bubble, Send, InputToolbar, Composer, Message } from 'react-native-gifted-chat'
-import { Icon } from 'react-native-elements'
+import { GiftedChat } from 'react-native-gifted-chat'
 
 import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
 import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
+import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend } from '../../helpers/chatScreenHelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -32,88 +32,6 @@ const Pickupchatscreen = ({route, navigation}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
-    const renderBubble = (props) => {
-        return (
-            <Bubble
-                {...props}
-                wrapperStyle = {{
-                    right: {
-                        backgroundColor: colors.darkBlue
-                    },
-                    left: {
-                        backgroundColor: colors.white,
-                    }
-                }}
-                textStyle = {{
-                    right: {
-                        color: colors.white
-                    }
-                }}
-            />
-        );
-    }
-
-    const renderSend = (props) => {
-        return(
-            <Send {...props}>
-                <View>
-                    <Icon 
-                        type = 'material-community'
-                        name = 'send-circle'
-                        size = {32}
-                        color = {colors.darkBlue}
-                        style = {{
-                            marginRight: 5,
-                            marginBottom: 7
-                        }}
-                    />
-                </View>
-            </Send>
-        );
-    }
-
-    const scrollToBottomComponent = () => {
-        return(
-            <Icon
-                type = 'font-awesome'
-                name = 'angle-double-down'
-                size = {22}
-                color = {colors.darkBlue}
-            />
-        )
-    }
-
-    const renderInputToolbar = (props) => {
-        return(
-            <InputToolbar
-                {...props}
-                containerStyle = {{
-                    borderRadius: 15,
-                    height: 45,
-                    backgroundColor: colors.blue1
-                }}
-            />
-        )
-    }
-
-    const renderComposer = (props) => {
-        return(
-            <Composer 
-                {...props}
-                placeholderTextColor = {colors.blue2}
-            />
-        )
-    }
-
-    const renderMessage = (props) => {
-        return(
-            <Message 
-                {...props}
-                renderAvatar = {null}
-            />
-        )
-    }
-
     const sendMsg = (message) => {
         dispatch(sendMessage({
             text: message[0].text,
@@ -121,8 +39,6 @@ const Pickupchatscreen = ({route, navigation}) => {
             sender: message[0].user,
             conversationId: conversation[0]._id
         }))
-        console.log(pickupid)
-        console.log(haulerid._id)
         socket.emit('sendMessage', ({
             senderid: user._id,
             sender: message[0].user,

@@ -19,7 +19,7 @@ export const getSpecialPickupInfo = ({pickupInfo, total, method}) => async (disp
 
         const id = userInfo._id
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/pickup/specialpickup', {pickupInfo, total, method, id}, config)
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/Specialpickup/', {pickupInfo, total, method, id}, config)
 
         dispatch({
             type: actionTypes.SPECIAL_PICKUP_ADD_SUCCESS,
@@ -27,7 +27,7 @@ export const getSpecialPickupInfo = ({pickupInfo, total, method}) => async (disp
         })
 
         dispatch({
-            type: actionTypes.SCHEDULED_PICKUP_RESET
+            type: actionTypes.SPECIAL_PICKUP_RESET
         })
     } catch (err) {
         dispatch({
@@ -61,7 +61,7 @@ export const getScheduledPickupInfo = ({pickupInfo, total, method}) => async (di
 
         const id = userInfo._id
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/pickup/specialpickup', {pickupInfo, total, method, id}, config)
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/Schedulepickup/', {pickupInfo, total, method, id}, config)
 
         dispatch({
             type: actionTypes.SCHEDULED_PICKUP_ADD_SUCCESS,
@@ -101,7 +101,7 @@ export const getPendingPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/pickup/pendingPickups/${userInfo._id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/Specialpickup/pendingPickups/${userInfo._id}`, config)
 
         dispatch({
             type: actionTypes.PENDING_PICKUP_RETRIEVE_SUCCESS,
@@ -130,7 +130,7 @@ export const getCompletedPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/pickup/completedPickups/${userInfo._id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/Specialpickup/completedPickups/${userInfo._id}`, config)
 
         dispatch({
             type: actionTypes.COMPLETED_PICKUP_RETRIEVE_SUCCESS,
@@ -159,7 +159,7 @@ export const getAcceptedPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/pickup/acceptedPickups/${userInfo._id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/Specialpickup/acceptedPickups/${userInfo._id}`, config)
 
         dispatch({
             type: actionTypes.ACCEPTED_PICKUP_RETRIEVE_SUCCESS,
@@ -168,6 +168,35 @@ export const getAcceptedPickups = () => async(dispatch, getState) => {
     } catch (err) {
         dispatch({
             type: actionTypes.ACCEPTED_PICKUP_RETRIEVE_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}
+
+export const getScheduledPickups = () => async(dispatch, getState) => {
+    try{
+        dispatch({
+            type: actionTypes.SCHEDULED_PICKUP_RETRIEVE_REQUEST
+        })
+
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/Schedulepickup/getPickup/${userInfo._id}`, config)
+
+        dispatch({
+            type: actionTypes.SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
+            payload: data
+        })
+    } catch (err) {
+        dispatch({
+            type: actionTypes.SCHEDULED_PICKUP_RETRIEVE_FAIL,
             payload: err.response.data.msg
         })
     }

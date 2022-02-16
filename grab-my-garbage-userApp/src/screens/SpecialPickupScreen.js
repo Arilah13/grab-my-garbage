@@ -159,7 +159,7 @@ const Specialpickupscreen = ({navigation}) => {
                 showsVerticalScrollIndicator = {false}
                 stickyHeaderIndices = {[0]}
             >
-            <Headercomponent name = 'Home' />    
+            <Headercomponent name = 'Home' destination = 'Home'/>    
 
             <Formik
                 initialValues = {initialValues}
