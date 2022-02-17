@@ -1,3 +1,5 @@
+import * as actionTypes from '../constants/socketConstants'
+
 export const addSocket = (socket) => async(dispatch) => {
     try{
         dispatch({

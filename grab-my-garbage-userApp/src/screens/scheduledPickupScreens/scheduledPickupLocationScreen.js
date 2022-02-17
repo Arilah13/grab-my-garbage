@@ -11,7 +11,7 @@ import { colors } from '../../global/styles'
 import { mapStyle } from '../../global/mapStyle'
 import { GOOGLE_MAPS_APIKEY } from '@env'
 import Headercomponent from '../../components/HeaderComponent'
-import { removeOngoingPickup, getAcceptedPickups, getCompletedPickups } from '../../redux/actions/pickupActions'
+import { removeOngoingPickup, getAcceptedPickups, getCompletedPickups } from '../../redux/actions/schedulePickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

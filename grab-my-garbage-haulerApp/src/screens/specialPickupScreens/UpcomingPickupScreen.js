@@ -6,8 +6,8 @@ import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
-import { getUpcomingPickups } from '../../redux/actions/requestActions'
-import { dateHelper, date1Helper, timeHelper } from '../../helpers/pickuphelper'
+import { getUpcomingPickups } from '../../redux/actions/specialRequestActions'
+import { dateHelper, date1Helper, timeHelper } from '../../helpers/specialPickuphelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

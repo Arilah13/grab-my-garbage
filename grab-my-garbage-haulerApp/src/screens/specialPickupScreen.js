@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, Image, Alert, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from 'react-native'
 import { Icon, Button } from 'react-native-elements'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
@@ -13,12 +13,12 @@ import { colors } from '../global/styles'
 import { mapStyle } from '../global/mapStyles'
 import { GOOGLE_MAPS_APIKEY } from '@env'
 import { getLatngDiffInMeters, returnDate } from '../helpers/homehelper'
-import { completedPickup, sendSMS } from '../redux/actions/requestActions'
+import { completedPickup, sendSMS } from '../redux/actions/specialRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Mapscreen = ({route, navigation}) => {
+const specialpickupscreen = ({route, navigation}) => {
 
     const dispatch = useDispatch()
 
@@ -402,12 +402,11 @@ const Mapscreen = ({route, navigation}) => {
                 </View>
             </View>
 
-
         </SafeAreaView>
     );
 }
 
-export default Mapscreen
+export default specialpickupscreen
 
 const styles = StyleSheet.create({
 

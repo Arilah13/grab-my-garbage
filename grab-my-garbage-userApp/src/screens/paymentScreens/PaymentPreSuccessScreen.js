@@ -29,7 +29,6 @@ const Paymentpresuccessscreen = ({navigation, route}) => {
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1, flex: 1}}>
             <View style = {styles.container}>
-                <Text style = {styles.text1}>Congratulations!</Text>
                 <Text style = {styles.text2}>Payment successfully done!</Text>
                 <Text style = {styles.text3}>Creating your pickup, please wait...</Text>
                 <LottieView 

@@ -21,11 +21,19 @@ const Paymentsuccessscreen = ({navigation, route}) => {
                 loop = {true}
                 autoPlay = {true}
             />
-            <Text style = {styles.text1}>Your pickup is placed successfully!</Text>
+            {
+                name === 'Special' ?
+                    <>
+                        <Text style = {styles.text1}>Your pickup is placed successfully!</Text>
+                        <Text style = {styles.text2}>Pickup will be collected within 24hour</Text>
+                    </>
+                : 
+                    <Text style = {{...styles.text1, marginBottom: 30}}>Your pickup is placed successfully!</Text>
+            }
             <Button
                 title = 'Check your pickup'
                 buttonStyle = {styles.button}
-                onPress = {() => navigation.navigate('Requests')}
+                onPress = {() => name === 'Special' ? navigation.navigate('Requests') : navigation.navigate('ScheduleRequest')}
             />
         </SafeAreaView>
     );
@@ -51,7 +59,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 20,
         fontSize: 20,
-        marginBottom: 30
+        marginBottom: 5,
+        color: colors.darkBlue
+    },
+    text2: {
+        fontSize: 15,
+        marginBottom: 30,
+        color: colors.grey
     }
 
 })

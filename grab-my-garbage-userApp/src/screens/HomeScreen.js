@@ -7,7 +7,7 @@ import LottieView from 'lottie-react-native'
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
 import { getUserDetails } from '../redux/actions/userActions'
-import { addOngoingPickupLocation } from '../redux/actions/pickupActions'
+import { addOngoingPickupLocation } from '../redux/actions/specialPickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

@@ -3,13 +3,13 @@ export const menuData = [
     name: 'Start Pickup',
     image: require('../../assets/truck.png'), 
     id: '0', 
-    destination: 'Pickup'
+    destination: 'PrePickup'
   },
   {
     name: 'Pickups',
     image: require('../../assets/request.png'),
     id: '1', 
-    destination: 'History'
+    destination: 'Request'
   },
   // {
   //   name: '',

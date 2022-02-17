@@ -1,42 +1,42 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
-import { Icon, Button } from 'react-native-elements'
+import { Button, Icon } from 'react-native-elements'
 
+import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
-import { getAcceptedPickups } from '../../redux/actions/specialPickupActions'
-import { dateHelper, timeHelper, date1Helper } from '../../helpers/pickupHelper'
+import { getScheduledPickups } from '../../redux/actions/scheduleRequestActions'
+import { fromDate, dayConverter } from '../../helpers/schedulePickuphelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Acceptedpickupscreen = ({navigation}) => {
+const Schedulepickuprequestscreen = ({navigation}) => {
     const dispatch = useDispatch()
-    
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
 
-    const retrieveAcceptedPickups = useSelector(state => state.retrieveAcceptedPickups)
-    const { loading, pickupInfo } = retrieveAcceptedPickups
+    const scheduledPickups = useSelector((state) => state.retrieveSchedulePickup)
+    const { loading, pickupInfo } = scheduledPickups
 
     useEffect(() => {
-        if(userInfo !== undefined) {
-            dispatch(getAcceptedPickups())
-        }
-    }, [userInfo])
-
+        dispatch(getScheduledPickups())
+    }, [])
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+        <SafeAreaView>
+            <Headercomponent name = 'Home' />
 
-            <View style = {styles.container}>   
+            <View style = {styles.container}>
+                <View style = {styles.view2}>
+                    <Text style = {styles.text9}>Today's Scheduled Pickup List</Text>
+                </View>
                 {loading === true ?
                     <LottieView 
                         source = {require('../../../assets/animation/truck_loader.json')}
                         style = {{
                             width: 300,
                             height: 400,
+                            alignSelf: 'center'
                         }}
                         loop = {true}
                         autoPlay = {true}
@@ -53,18 +53,30 @@ const Acceptedpickupscreen = ({navigation}) => {
                             <View style = {styles.card}>
                                 <View style = {{flex: 1, flexWrap: 'wrap'}}>
                                 <View>
-                                    <View style = {{...styles.view1, flexDirection: 'row', marginLeft: 10}}>  
-                                        <Text style = {styles.text7}>{item.category}</Text>                        
-                                    </View>
-                                    <View style = {{...styles.view1, flexDirection: 'row'}}> 
-                                        <Text style = {styles.text1}>Weight:</Text>   
-                                        <Text style = {styles.text1}>{item.weight}kg</Text>                        
-                                    </View>
-                                    <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                        <Text style = {styles.text6}>before: </Text>
+                                    <View style = {{...styles.view1, flexDirection: 'row', marginLeft: 10}}> 
                                         <Icon
                                             type = 'material'
-                                            name = 'schedule'
+                                            name = 'place'
+                                            size = {18}
+                                            color = {colors.blue2}
+                                            style = {{
+                                                marginTop: 5,
+                                                marginRight: 5
+                                            }}
+                                        /> 
+                                        <Text style = {styles.text7}>
+                                            {item.location[0].city}
+                                        </Text>                                         
+                                    </View>
+                                    <View style = {{...styles.view1, flexDirection: 'row'}}> 
+                                        <Text style = {{...styles.text1, fontWeight: '600'}}>TimeSlot:</Text>   
+                                        <Text style = {{...styles.text1, fontSize: 14}}>{item.timeslot}</Text>                        
+                                    </View>
+                                    <View style = {{...styles.view1, flexDirection: 'row'}}>
+                                        <Text style = {styles.text6}>Duration:</Text>
+                                        <Icon
+                                            type = 'material'
+                                            name = 'hourglass-empty'
                                             size = {18}
                                             color = {colors.blue2}
                                             style = {{
@@ -72,8 +84,8 @@ const Acceptedpickupscreen = ({navigation}) => {
                                                 marginRight: 5
                                             }}
                                         />
-                                        <Text style = {styles.text4}>{timeHelper(item.datetime)}</Text>
-                                        <Text style = {styles.text5}>{dateHelper(item.datetime)}</Text>
+                                        <Text style = {styles.text4}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
+                                        <Text style = {styles.text5}></Text>
                                     </View>
                                 </View>
                                 <View style = {{position: 'absolute'}}>
@@ -87,36 +99,33 @@ const Acceptedpickupscreen = ({navigation}) => {
                                             marginLeft: SCREEN_WIDTH/1.65,
                                             backgroundColor: colors.buttons
                                         }}
-                                        onPress = {() => navigation.navigate('pickupDetail', {item, time: timeHelper(item.datetime), date1: date1Helper(item.datetime), date: dateHelper(item.datetime), name: 'Accepted Pickups'})}
+                                        onPress = {() => navigation.navigate('ScheduleDetail', {item, from: fromDate(item.from), to: fromDate(item.to)})}
                                     />
                                 </View>
                                 </View>
                             </View>
                         </View>
                     )}
-                /> : <Text style = {styles.text8}>No Pickup Available</Text>
+                />
+                : <Text style = {styles.text8}>No Pickup Available</Text>
                 }
-                
-            </View>  
+            </View>
         </SafeAreaView>
     );
 }
 
-export default Acceptedpickupscreen
+export default Schedulepickuprequestscreen
 
 const styles = StyleSheet.create({
 
     container:{
-        display: 'flex',
-        backgroundColor: colors.grey9,
-        height: '100%',
-        paddingLeft: 10,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        paddingTop: 10
+        height: 9*SCREEN_HEIGHT/10,
+        backgroundColor: colors.white,
+        padding: 20,
+        borderRadius: 30
     },
     card:{
-        width: SCREEN_WIDTH/1.2,
+        width: SCREEN_WIDTH/1.15,
         height: 80,
         marginBottom: 20,
         backgroundColor: colors.blue1,
@@ -124,7 +133,7 @@ const styles = StyleSheet.create({
         shadowColor: '#171717',
         elevation: 5,
         shadowOpacity: 0.7,
-        shadowRadius: 30
+        shadowRadius: 30,
     },
     view1:{
         justifyContent: 'flex-start',
@@ -177,6 +186,14 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontWeight: 'bold',
         color: colors.darkBlue
+    },
+    view2:{
+        marginBottom: 20
+    },
+    text9:{
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: colors.blue2,
     }
 
 })

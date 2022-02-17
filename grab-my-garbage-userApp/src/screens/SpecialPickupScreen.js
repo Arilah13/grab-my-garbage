@@ -13,7 +13,7 @@ import { Formik } from 'formik'
 import { colors } from '../global/styles'
 import { trashCategoryData } from '../global/data'
 import Headercomponent from '../components/HeaderComponent'
-import { storeSpecialPickupTemp } from '../redux/actions/pickupActions'
+import { storeSpecialPickupTemp } from '../redux/actions/specialPickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

@@ -7,7 +7,7 @@ import { Button, Icon } from 'react-native-elements'
 
 import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
-import { getScheduledPickups } from '../../redux/actions/pickupActions'
+import { getScheduledPickups } from '../../redux/actions/schedulePickupActions'
 import { dayConverter, fromDate } from '../../helpers/schedulepickupHelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width

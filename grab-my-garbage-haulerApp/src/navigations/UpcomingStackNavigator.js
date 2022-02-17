@@ -3,13 +3,13 @@ import { useDispatch } from 'react-redux'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 
-import Pickupdetailscreen from '../screens/pickupScreens/PickupDetailScreen'
-import UpcomingPickupscreen from '../screens/pickupScreens/UpcomingPickupScreen'
-import Locationscreen from '../screens/pickupScreens/LocationScreen'
-import Pickupchatscreen from '../screens/pickupScreens/pickupChatScreen'
+import Pickupdetailscreen from '../screens/specialPickupScreens/PickupDetailScreen'
+import UpcomingPickupscreen from '../screens/specialPickupScreens/UpcomingPickupScreen'
+import Locationscreen from '../screens/specialPickupScreens/LocationScreen'
+import Pickupchatscreen from '../screens/specialPickupScreens/pickupChatScreen'
 
 import { colors } from '../global/styles'
-import { hideComponent } from '../redux/actions/requestActions'
+import { hideComponent } from '../redux/actions/specialRequestActions'
 
 const Stack = createNativeStackNavigator()
 

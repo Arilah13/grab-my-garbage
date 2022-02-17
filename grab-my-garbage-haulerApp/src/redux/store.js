@@ -17,7 +17,11 @@ import {
     completedPickupReducer,
     hideComponentReducer,
     sendSMSReducer
-} from './reducers/requestReducers'
+} from './reducers/specialRequestReducers'
+
+import {
+    retrieveSchedulePickupReducer
+} from './reducers/scheduleRequestReducer'
 
 import {
     socketHolderReducer,
@@ -45,6 +49,8 @@ const reducer = combineReducers({
     completedPickup: completedPickupReducer,
     hideComponent: hideComponentReducer,
     sendSMS: sendSMSReducer,
+
+    retrieveSchedulePickup: retrieveSchedulePickupReducer,
 
     socketHolder: socketHolderReducer,
 

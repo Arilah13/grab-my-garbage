@@ -11,7 +11,7 @@ import { Formik } from 'formik'
  
 import { colors } from '../global/styles'
 import { timeIntervalData, dayData } from '../global/data'
-import { storeScheduledPickupTemp } from '../redux/actions/pickupActions'
+import { storeScheduledPickupTemp } from '../redux/actions/schedulePickupActions'
 import Headercomponent from '../components/HeaderComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width

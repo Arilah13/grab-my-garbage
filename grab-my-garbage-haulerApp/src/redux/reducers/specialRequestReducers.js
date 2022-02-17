@@ -1,4 +1,4 @@
-import * as actionTypes from '../constants/requestConstants'
+import * as actionTypes from '../constants/specialRequestConstants'
 
 export const retrievePendingPickupReducer = (state = {}, action) => {
     switch(action.type) {

@@ -11,7 +11,8 @@ import socketIO from 'socket.io-client'
 import { colors } from '../../global/styles'
 import Headercomponent from '../../components/HeaderComponent'
 import { getPaymentSheet } from '../../redux/actions/paymentActions'
-import { getSpecialPickupInfo, getScheduledPickupInfo } from '../../redux/actions/pickupActions'
+import { getSpecialPickupInfo } from '../../redux/actions/specialPickupActions'
+import { getScheduledPickupInfo } from '../../redux/actions/schedulePickupActions'
 import { PAYMENT_SHEET_RESET } from '../../redux/constants/paymentConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -75,13 +76,7 @@ const Paymentscreen = ({route, navigation}) => {
                 customerId: sheet.customer,
                 customerEphemeralKeySecret: sheet.ephemeralKey,
                 paymentIntentClientSecret:  sheet.paymentIntent,
-                //customFlow: true,
                 merchantDisplayName: 'grab-my-garbage Inc.',
-                //applePay: false,
-                //merchantCountryCode: 'US',
-                //style: 'alwaysDark',
-                //googlePay: false,
-                // testEnv: true,
             })
 
             if (!error) {
@@ -133,7 +128,7 @@ const Paymentscreen = ({route, navigation}) => {
 
     const onMessage = (e) => {
         let data = e.nativeEvent.data
-        setShowGateway(false);
+        setShowGateway(false)
         setLoading(false)
         let payment = JSON.parse(data);
         if (payment.status === 'COMPLETED') {

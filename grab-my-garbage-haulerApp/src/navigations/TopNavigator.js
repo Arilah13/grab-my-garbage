@@ -11,7 +11,7 @@ import Pendingstacknavigator from './PendingStackNavigator'
 import Upcomingstacknavigator from './UpcomingStackNavigator'
 
 import { colors } from '../global/styles'
-import { hideComponent } from '../redux/actions/requestActions'
+import { hideComponent } from '../redux/actions/specialRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

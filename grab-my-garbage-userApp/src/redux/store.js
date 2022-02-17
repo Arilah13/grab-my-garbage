@@ -22,15 +22,18 @@ import {
 } from './reducers/paymentReducers'
 
 import {
-    addSpecialPickupReducer,
-    addScheduledPickupReducer,
+    addSpecialPickupReducer, 
     retrievePendingPickupsReducer,
     retrieveAcceptedPickupsReducer,
     retrieveCompletedPickupsReducer,
-    retrieveScheduledPickupReducer,
     ongoingPickupLocationReducer,
     hideComponentReducer,
-} from './reducers/pickupReducers'
+} from './reducers/specialPickupReducers'
+
+import {
+    retrieveScheduledPickupReducer,
+    addScheduledPickupReducer,
+} from './reducers/scheduledPickupReducer'
 
 import {
     socketHolderReducer

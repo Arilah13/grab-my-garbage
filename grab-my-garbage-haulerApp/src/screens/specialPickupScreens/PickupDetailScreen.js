@@ -6,7 +6,7 @@ import { Button, Icon } from 'react-native-elements'
 
 import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
-import { declinePickup, acceptPickup } from '../../redux/actions/requestActions'
+import { declinePickup, acceptPickup } from '../../redux/actions/specialRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

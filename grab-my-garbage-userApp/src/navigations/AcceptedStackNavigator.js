@@ -9,7 +9,7 @@ import Locationscreen from '../screens/pickupScreens/LocationScreen'
 import Pickupchatscreen from '../screens/pickupScreens/pickupChatScreen'
 
 import { colors } from '../global/styles'
-import { hideComponent } from '../redux/actions/pickupActions'
+import { hideComponent } from '../redux/actions/specialPickupActions'
 
 const Stack = createNativeStackNavigator()
 

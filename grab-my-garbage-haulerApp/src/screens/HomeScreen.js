@@ -10,7 +10,7 @@ import ToggleButton from 'react-native-toggle-element'
 import { colors } from '../global/styles'
 import { addLocation, addOrigin } from '../redux/actions/mapActions'
 import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
-import { getPendingPickups, getUpcomingPickups } from '../redux/actions/requestActions'
+import { getPendingPickups, getUpcomingPickups } from '../redux/actions/specialRequestActions'
 import { getLocation } from '../helpers/homehelper'
 import { menuData } from '../global/data'
 

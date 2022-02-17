@@ -6,25 +6,25 @@ import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
-import { getPendingPickupsOffline } from '../../redux/actions/requestActions'
-import { dateHelper, date1Helper, timeHelper } from '../../helpers/pickuphelper'
+import { getCompletedPickups } from '../../redux/actions/specialRequestActions'
+import { timeHelper, date1Helper } from '../../helpers/specialPickuphelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const PendingPickupscreen = ({navigation}) => {
+const CompletedPickupscreen = ({navigation}) => {
 
     const dispatch = useDispatch()
 
-    const pendingPickups = useSelector((state) => state.pendingPickups)
-    const { loading, pickupInfo } = pendingPickups
+    const completedPickups = useSelector((state) => state.completedPickups)
+    const { loading, pickupInfo } = completedPickups
 
     useEffect(() => {
         // const unsubscribe = navigation.addListener('focus', () => {
             
         // })
         // return unsubscribe
-        dispatch(getPendingPickupsOffline())
+        dispatch(getCompletedPickups())
     }, [])
 
     return (
@@ -68,7 +68,7 @@ const PendingPickupscreen = ({navigation}) => {
                                     <Text style = {styles.text1}>{item.customerId.name}</Text>                        
                                 </View>
                                 <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                    <Text style = {styles.text6}>before: </Text>
+                                    <Text style = {styles.text6}>completed: </Text>
                                     <Icon
                                         type = 'material'
                                         name = 'schedule'
@@ -79,8 +79,8 @@ const PendingPickupscreen = ({navigation}) => {
                                             marginRight: 5
                                         }}
                                     />
-                                    <Text style = {styles.text4}>{timeHelper(item.datetime)}</Text>
-                                    <Text style = {styles.text5}>{dateHelper(item.datetime)}</Text>
+                                    <Text style = {styles.text4}>{timeHelper(item.completedDate)}</Text>
+                                    <Text style = {styles.text5}>{date1Helper(item.completedDate)}</Text>
                                 </View>
                             </View>
                             <View style = {{position: 'absolute'}}>
@@ -94,12 +94,12 @@ const PendingPickupscreen = ({navigation}) => {
                                         marginLeft: SCREEN_WIDTH/1.65,
                                         backgroundColor: colors.buttons
                                     }}
-                                    onPress = {() => navigation.navigate('PickupDetail', {item, time: timeHelper(item.datetime), date: dateHelper(item.datetime), date1: date1Helper(item.datetime), buttons: true, name: 'Pending Pickups'})}
+                                    onPress = {() => navigation.navigate('PickupDetail3', {item, time: timeHelper(item.datetime), completedTime: timeHelper(item.completedDate), date: date1Helper(item.completedDate), date1: date1Helper(item.datetime), buttons: false, name: 'Completed Pickups'})}
                                 />
                             </View>
                             </View>
                         </View>
-                    )}
+                    )} 
                 /> : <Text style = {styles.text8}>No Pickup Available</Text>
                 }
             </View>
@@ -107,7 +107,7 @@ const PendingPickupscreen = ({navigation}) => {
     );
 }
 
-export default PendingPickupscreen
+export default CompletedPickupscreen
 
 const styles = StyleSheet.create({
 

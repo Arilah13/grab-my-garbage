@@ -7,7 +7,7 @@ import { Icon, Button } from 'react-native-elements'
 
 import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
-import { getPendingPickups } from '../../redux/actions/pickupActions'
+import { getPendingPickups } from '../../redux/actions/specialPickupActions'
 import { dateHelper, timeHelper, date1Helper } from '../../helpers/pickupHelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width

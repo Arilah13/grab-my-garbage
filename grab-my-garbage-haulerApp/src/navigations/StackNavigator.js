@@ -3,10 +3,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useDispatch } from 'react-redux'
 import socketIO from 'socket.io-client'
 
-import Mapscreen from '../screens/MapScreen'
+import specialpickupscreen from '../screens/specialPickupScreen'
 import Topnavigator from './TopNavigator'
 import TabNavigator from './TabNavigator'
 import Chatscreen from '../screens/ChatScreen'
+import Prerequestscreen from '../screens/preRequestScreen'
+import Schedulepickuprequestscreen from '../screens/schedulePickupScreens/schedulePickupRequestScreen'
+import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePickupDetailScreen'
+import Locationscreen from '../screens/schedulePickupScreens/LocationScreen'
+import Scheduledpickupscreen from '../screens/scheduledPickupScreen'
+import Prepickupscreen from '../screens/prePickupScreen'
 
 import { addSocket } from '../redux/actions/socketActions'
 
@@ -32,8 +38,22 @@ const Stacknavigator = () => {
                 }}
             />
             <Stack.Screen 
-                name = 'Pickup' 
-                component = {Mapscreen} 
+                name = 'PrePickup' 
+                component = {Prepickupscreen} 
+                options = {{
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen 
+                name = 'SpecialPickup' 
+                component = {specialpickupscreen} 
+                options = {{
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen 
+                name = 'SchedulePickup' 
+                component = {Scheduledpickupscreen} 
                 options = {{
                     headerShown: false
                 }}
@@ -48,6 +68,34 @@ const Stacknavigator = () => {
             <Stack.Screen
                 name = 'Chat'
                 component = {Chatscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name = 'Request'
+                component = {Prerequestscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name = 'Schedule'
+                component = {Schedulepickuprequestscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name = 'ScheduleDetail'
+                component = {Scheduledpickupdetail}
+                options = {{
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name = 'Location'
+                component = {Locationscreen}
                 options = {{
                     headerShown: false
                 }}

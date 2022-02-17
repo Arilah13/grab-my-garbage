@@ -1,5 +1,5 @@
 import axios from 'axios'
-import * as actionTypes from '../constants/requestConstants'
+import * as actionTypes from '../constants/specialRequestConstants'
 
 export const getPendingPickups = (latitude, longitude) => async(dispatch, getState) => {
     try{

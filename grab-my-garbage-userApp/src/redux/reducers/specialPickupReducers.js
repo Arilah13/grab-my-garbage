@@ -1,4 +1,4 @@
-import * as actionTypes from '../constants/pickupConstants'
+import * as actionTypes from '../constants/specialPickupConstants'
 
 export const addSpecialPickupReducer = (state = {}, action) => {
     switch(action.type) {
@@ -17,22 +17,6 @@ export const addSpecialPickupReducer = (state = {}, action) => {
     }
 }
 
-export const addScheduledPickupReducer = (state = {}, action) => {
-    switch(action.type) {
-        case actionTypes.SCHEDULED_PICKUP_ADD_REQUEST:
-            return { loading: true }
-        case actionTypes.SCHEDULED_PICKUP_ADD_SUCCESS:
-            return { loading: false, success: true }
-        case actionTypes.SCHEDULED_PICKUP_ADD_FAIL:
-            return { loading: false, error: action.payload }
-        case actionTypes.SCHEDULED_PICKUP_STORE:
-            return { pickupInfo: action.payload }
-        case actionTypes.SCHEDULED_PICKUP_RESET:
-            return {}
-        default:
-            return state
-    }
-}
 
 export const retrievePendingPickupsReducer = (state = {}, action) => {
     switch(action.type) {
@@ -67,19 +51,6 @@ export const retrieveCompletedPickupsReducer = (state = {}, action) => {
         case actionTypes.COMPLETED_PICKUP_RETRIEVE_SUCCESS:
             return { loading: false, pickupInfo: action.payload, success: true }
         case actionTypes.COMPLETED_PICKUP_RETRIEVE_FAIL:
-            return { loading: false, error: action.payload }
-        default:
-            return state
-    }
-}
-
-export const retrieveScheduledPickupReducer = (state = {}, action) => {
-    switch(action.type) {
-        case actionTypes.SCHEDULED_PICKUP_RETRIEVE_REQUEST:
-            return { loading: true }
-        case actionTypes.SCHEDULED_PICKUP_RETRIEVE_SUCCESS:
-            return { loading: false, pickupInfo: action.payload, success: true }
-        case actionTypes.SCHEDULED_PICKUP_RETRIEVE_FAIL:
             return { loading: false, error: action.payload }
         default:
             return state

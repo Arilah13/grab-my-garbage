@@ -7,7 +7,7 @@ import { Icon } from 'react-native-elements'
 import { useNavigation } from '@react-navigation/native'
 
 import { colors } from '../global/styles'
-import { hideComponent } from '../redux/actions/pickupActions'
+import { hideComponent } from '../redux/actions/specialPickupActions'
 
 import Acceptedstacknavigator from './AcceptedStackNavigator'
 import Pendingstacknavigator from './PendingStackNavigator'
