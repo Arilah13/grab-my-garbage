@@ -67,3 +67,10 @@ export const returnDate = (pickupDate) => {
     else 
         return false
 } 
+
+export const timeHandle = async(pickup) => {
+    const filteredPickupOrder = await pickup.filter(pickup => {
+        return returnDate(pickup.datetime)
+    })
+    return filteredPickupOrder
+}

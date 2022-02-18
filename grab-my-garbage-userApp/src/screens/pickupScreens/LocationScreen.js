@@ -6,6 +6,7 @@ import { Icon } from 'react-native-elements'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import * as Linking from 'expo-linking'
+import LottieView from 'lottie-react-native'
 
 import { colors } from '../../global/styles'
 import { mapStyle } from '../../global/mapStyle'
@@ -39,7 +40,9 @@ const Locationscreen = ({route, navigation}) => {
         const date = new Date().getTime() 
         const time = date + (duration * 60000) + (330 * 60000)
         const hour = Math.floor((time / (1000*60*60)) % 24)
-        const minutes = Math.floor((time / (1000 * 60)) % 60)
+        let minutes = Math.floor((time / (1000 * 60)) % 60)
+        if(minutes < 10)
+            minutes = '0' + String(minutes)
         const hour_12 = (hour + 11) % 12 + 1 
 
         const final = hour_12 + ':' + minutes + (hour >= 12 ? ' PM' : ' AM')  
@@ -193,7 +196,16 @@ const Locationscreen = ({route, navigation}) => {
                         complete === true && pickup === null ? 
                         <View style = {styles.view1}>
                             <View style = {styles.view2}>
-                                <Text>Pickup Completed</Text>                        
+                            <LottieView 
+                                    source = {require('../../../assets/animation/finish.json')}
+                                    style = {{
+                                        width: SCREEN_WIDTH,
+                                        height: 160,
+                                        alignSelf: 'center',
+                                    }}
+                                    loop = {true}
+                                    autoPlay = {true}
+                                />                       
                             </View>
                         </View>
                         :

@@ -16,7 +16,7 @@ export const getPendingPickups = (latitude, longitude) => async(dispatch, getSta
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/request/pendingPickup/${latitude}/${longitude}/${userInfo._id}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialrequest/pendingPickup/${latitude}/${longitude}/${userInfo._id}`, 
         config)
 
         dispatch({
@@ -46,7 +46,7 @@ export const getPendingPickupsOffline = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/request/pendingOfflinePickup/${userInfo._id}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialrequest/pendingOfflinePickup/${userInfo._id}`, 
         config)
 
         dispatch({
@@ -76,7 +76,7 @@ export const getUpcomingPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/request/upcomingPickup/${userInfo._id}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialrequest/upcomingPickup/${userInfo._id}`, 
         config)
 
         dispatch({
@@ -106,7 +106,7 @@ export const getCompletedPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/request/completedPickup/${userInfo._id}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialrequest/completedPickup/${userInfo._id}`, 
         config)
 
         dispatch({
@@ -132,7 +132,7 @@ export const declinePickup = (id) => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/request/declinePickup/${id}`, {id: userInfo._id},
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/declinePickup/${id}`, {id: userInfo._id},
         config)
 
         dispatch({
@@ -159,7 +159,7 @@ export const acceptPickup = (id) => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/request/acceptPickup/${id}`, {id: userInfo._id},
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/acceptPickup/${id}`, {id: userInfo._id},
         config)
 
         dispatch({
@@ -189,7 +189,7 @@ export const completedPickup = (id) => async(dispatch, getState) => {
 
         const date = new Date()
 
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/request/updateCompletedPickup/${id}`, {date},
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/updateCompletedPickup/${id}`, {date},
         config)
 
         dispatch({

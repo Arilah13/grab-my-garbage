@@ -52,24 +52,6 @@ const haulerController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
-    },
-    postLocation: async(req, res) => {
-        try{
-            const {location, haulerID} = req.body
-
-            const hauler = await Haulers.findById(haulerID)
-            if(!hauler) return res.status(400).json({msg: "User does not exists."})
-
-            hauler.location = location
-
-            await hauler.save()
-
-            res.status(200).json({
-                message: 'Location updated'
-            })
-        } catch (err) {
-            return res.status(500).json({msg: err.message})
-        }
     }
 }
 

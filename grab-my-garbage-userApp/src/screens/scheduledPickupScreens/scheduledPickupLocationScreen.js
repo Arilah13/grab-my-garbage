@@ -6,12 +6,13 @@ import { Icon } from 'react-native-elements'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import * as Linking from 'expo-linking'
+import LottieView from 'lottie-react-native'
 
 import { colors } from '../../global/styles'
 import { mapStyle } from '../../global/mapStyle'
 import { GOOGLE_MAPS_APIKEY } from '@env'
 import Headercomponent from '../../components/HeaderComponent'
-import { removeOngoingPickup, getAcceptedPickups, getCompletedPickups } from '../../redux/actions/schedulePickupActions'
+import { removeOngoingPickup } from '../../redux/actions/specialPickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -67,8 +68,6 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
             setPickup(null)
             dispatch(removeOngoingPickup(pickupid))
             setComplete(true)
-            dispatch(getAcceptedPickups())
-            dispatch(getCompletedPickups())
             setTimeout(() => {
                 navigation.navigate('acceptedPickup')
             }, 1500)
@@ -193,7 +192,16 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
                         complete === true && pickup === null ? 
                         <View style = {styles.view1}>
                             <View style = {styles.view2}>
-                                <Text>Pickup Completed</Text>                        
+                                <LottieView 
+                                    source = {require('../../../assets/animation/finish.json')}
+                                    style = {{
+                                        width: SCREEN_WIDTH,
+                                        height: 160,
+                                        alignSelf: 'center',
+                                    }}
+                                    loop = {true}
+                                    autoPlay = {true}
+                                />                        
                             </View>
                         </View>
                         :
@@ -233,7 +241,7 @@ const styles = StyleSheet.create({
     view1:{
         position: 'absolute',
         padding: 10,
-        marginTop: SCREEN_HEIGHT/1.7,
+        marginTop: SCREEN_HEIGHT/1.6,
         alignSelf: 'center'
     },
     view2:{

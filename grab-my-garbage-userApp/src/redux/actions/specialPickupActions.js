@@ -19,7 +19,7 @@ export const getSpecialPickupInfo = ({pickupInfo, total, method}) => async (disp
 
         const id = userInfo._id
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/Specialpickup/', {pickupInfo, total, method, id}, config)
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/specialpickup/', {pickupInfo, total, method, id}, config)
 
         dispatch({
             type: actionTypes.SPECIAL_PICKUP_ADD_SUCCESS,
@@ -59,7 +59,7 @@ export const getPendingPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/Specialpickup/pendingPickups/${userInfo._id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialpickup/pendingPickups/${userInfo._id}`, config)
 
         dispatch({
             type: actionTypes.PENDING_PICKUP_RETRIEVE_SUCCESS,
@@ -88,7 +88,7 @@ export const getCompletedPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/Specialpickup/completedPickups/${userInfo._id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialpickup/completedPickups/${userInfo._id}`, config)
 
         dispatch({
             type: actionTypes.COMPLETED_PICKUP_RETRIEVE_SUCCESS,
@@ -117,7 +117,7 @@ export const getAcceptedPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/Specialpickup/acceptedPickups/${userInfo._id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialpickup/acceptedPickups/${userInfo._id}`, config)
 
         dispatch({
             type: actionTypes.ACCEPTED_PICKUP_RETRIEVE_SUCCESS,

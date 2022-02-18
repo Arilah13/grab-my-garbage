@@ -18,7 +18,7 @@ export const getScheduledPickupInfo = ({pickupInfo, total, method}) => async (di
 
         const id = userInfo._id
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/Schedulepickup/', {pickupInfo, total, method, id}, config)
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/schedulepickup/', {pickupInfo, total, method, id}, config)
 
         dispatch({
             type: actionTypes.SCHEDULED_PICKUP_ADD_SUCCESS,
@@ -58,7 +58,7 @@ export const getScheduledPickups = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/Schedulepickup/getPickup/${userInfo._id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/schedulepickup/getPickup/${userInfo._id}`, config)
 
         dispatch({
             type: actionTypes.SCHEDULED_PICKUP_RETRIEVE_SUCCESS,

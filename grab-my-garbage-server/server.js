@@ -7,14 +7,20 @@ const SOCKET = require('socket.io')
 const connectDB = require('./config/db')
 
 const userRoutes = require('./routes/userRouter')
-const paymentRoutes = require('./routes/paymentRouter')
-const pickupRoutes = require('./routes/pickupRouter')
-const requestRoutes = require('./routes/requestRouter')
 const haulerRoutes = require('./routes/haulerRouter')
-const pickupSocket = require('./socket/pickupSocket')
+const paymentRoutes = require('./routes/paymentRouter')
+
+const specialPickupRoutes = require('./routes/specialPickupRouter')
+const specialRequestRoutes = require('./routes/specialRequestRouter')
+const schedulePickupRoutes = require('./routes/scheduledPickupRouter')
+const scheduleRequestRoutes = require('./routes/scheduleRequestRouter')
+
 const conversationRoutes = require('./routes/conversationRouter')
 const messageRoutes = require('./routes/messageRouter')
+
+const pickupSocket = require('./socket/pickupSocket')
 const chatSocket = require('./socket/chatSocket')
+
 
 const app = express()
 app.use(express.urlencoded({extended: false}))
@@ -26,8 +32,10 @@ connectDB()
 
 app.use('/users', userRoutes)
 app.use('/payment', paymentRoutes)
-app.use('/pickup', pickupRoutes)
-app.use('/request', requestRoutes)
+app.use('/specialpickup', specialPickupRoutes)
+app.use('/schedulepickup', schedulePickupRoutes)
+app.use('/specialrequest', specialRequestRoutes)
+app.use('/schedulerequest', scheduleRequestRoutes)
 app.use('/haulers', haulerRoutes)
 app.use('/conversation', conversationRoutes)
 app.use('/message', messageRoutes)
@@ -68,7 +76,8 @@ io.on('connection', socket => {
 
     socket.on('pickupCompleted', async({pickupid}) => {
         const userSocketid = await pickupSocket.completePickup({pickupid})
-        socket.to(userSocketid.id).emit('pickupDone', {pickupid: pickupid})
+        if(userSocketid !== false)
+            socket.to(userSocketid.id).emit('pickupDone', {pickupid: pickupid})
     })
 
     socket.on('haulerDisconnect', () => {

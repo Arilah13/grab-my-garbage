@@ -11,14 +11,15 @@ import * as Linking from 'expo-linking'
 import { colors } from '../global/styles'
 import { mapStyle } from '../global/mapStyles'
 import { GOOGLE_MAPS_APIKEY } from '@env'
+import { getLatngDiffInMeters } from '../helpers/homehelper'
+import { sendSMS } from '../redux/actions/specialRequestActions'
+import { getScheduledPickupsToCollect, completeScheduledPickup } from '../redux/actions/scheduleRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Scheduledpickupscreen = ({route, navigation}) => {
+const Scheduledpickupscreen = ({navigation}) => {
     const dispatch = useDispatch()
-
-    const { haulerid } = route.params
 
     const mapView = useRef()
 
@@ -34,21 +35,17 @@ const Scheduledpickupscreen = ({route, navigation}) => {
 
     const markerID = ['Marker1']
 
-    const upcomingPickups = useSelector((state) => state.upcomingPickups)
-    const { loading: pickupLoading, pickupInfo, success } = upcomingPickups
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
+    const retrieveCollectSchedulePickup = useSelector((state) => state.retrieveCollectSchedulePickup)
+    const { loading: pickupLoading, pickupInfo, success } = retrieveCollectSchedulePickup
 
     const map = useSelector((state) => state.map)
     const { origin } = map
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
-
-    const timeHandle = async(pickup) => {
-        const filteredPickupOrder = await pickup.filter(pickup => {
-            return returnDate(pickup.datetime)
-        })
-        return filteredPickupOrder
-    }
 
     const filterPickup = async(pickup) => {
         const pickupOrder = await pickup.sort((pickup_1, pickup_2) => 
@@ -61,8 +58,7 @@ const Scheduledpickupscreen = ({route, navigation}) => {
         setLoading(true)
         setRedo(true)
         
-        const filteredPickupOrder = await timeHandle(pickupInfo)
-        const pickupOrder = await filterPickup(filteredPickupOrder)
+        const pickupOrder = await filterPickup(pickupInfo)
 
         if(pickupOrder.length > 0) {
             setEnd({
@@ -70,7 +66,7 @@ const Scheduledpickupscreen = ({route, navigation}) => {
                 longitude: pickupOrder[0].location[0].longitude
             })
             setOrder(pickupOrder[0])
-            socket.emit('pickupOnProgress', { haulerid: haulerid, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id })
+            socket.emit('pickupOnProgress', { haulerid: userInfo._id, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id })
         } else {
             setEnd(null)
             setOrder(null)
@@ -94,7 +90,7 @@ const Scheduledpickupscreen = ({route, navigation}) => {
             dispatch(sendSMS({receiver: receiver, message: message}))
         } else if(arrived === true) {
             setLoading(true)
-            dispatch(completedPickup(order._id))
+            dispatch(completeScheduledPickup({id: order._id, completedDate: new Date(), completedHauler: userInfo}))
             socket.emit('pickupCompleted', {pickupid: order._id})
             setNextPickup(true)
         }
@@ -122,6 +118,10 @@ const Scheduledpickupscreen = ({route, navigation}) => {
         else 
             setEnable(false)
     }, [distance])
+
+    useEffect(() => {
+        dispatch(getScheduledPickupsToCollect())
+    }, [])
 
     return (
         <SafeAreaView>

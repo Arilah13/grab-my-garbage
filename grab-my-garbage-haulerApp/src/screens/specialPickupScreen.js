@@ -12,17 +12,15 @@ import * as Linking from 'expo-linking'
 import { colors } from '../global/styles'
 import { mapStyle } from '../global/mapStyles'
 import { GOOGLE_MAPS_APIKEY } from '@env'
-import { getLatngDiffInMeters, returnDate } from '../helpers/homehelper'
-import { completedPickup, sendSMS } from '../redux/actions/specialRequestActions'
+import { timeHandle, getLatngDiffInMeters } from '../helpers/homehelper'
+import { completedPickup, sendSMS, getUpcomingPickups } from '../redux/actions/specialRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const specialpickupscreen = ({route, navigation}) => {
+const specialpickupscreen = ({navigation}) => {
 
     const dispatch = useDispatch()
-
-    const { haulerid } = route.params
 
     const mapView = useRef()
 
@@ -50,12 +48,8 @@ const specialpickupscreen = ({route, navigation}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
-    const timeHandle = async(pickup) => {
-        const filteredPickupOrder = await pickup.filter(pickup => {
-            return returnDate(pickup.datetime)
-        })
-        return filteredPickupOrder
-    }
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
 
     const filterPickup = async(pickup) => {
         const pickupOrder = await pickup.sort((pickup_1, pickup_2) => 
@@ -77,7 +71,7 @@ const specialpickupscreen = ({route, navigation}) => {
                 longitude: pickupOrder[0].location[0].longitude
             })
             setOrder(pickupOrder[0])
-            socket.emit('pickupOnProgress', { haulerid: haulerid, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id })
+            socket.emit('pickupOnProgress', { haulerid: userInfo._id, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id })
         } else {
             setEnd(null)
             setOrder(null)
@@ -157,6 +151,10 @@ const specialpickupscreen = ({route, navigation}) => {
         else 
             setEnable(false)
     }, [distance])
+
+    useEffect(() => {
+        dispatch(getUpcomingPickups())
+    }, [])
 
     return (
         <SafeAreaView>

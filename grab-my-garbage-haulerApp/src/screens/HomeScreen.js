@@ -8,9 +8,9 @@ import * as TaskManager from 'expo-task-manager'
 import ToggleButton from 'react-native-toggle-element'
 
 import { colors } from '../global/styles'
-import { addLocation, addOrigin } from '../redux/actions/mapActions'
+import { addOrigin } from '../redux/actions/mapActions'
 import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
-import { getPendingPickups, getUpcomingPickups } from '../redux/actions/specialRequestActions'
+import { getPendingPickups } from '../redux/actions/specialRequestActions'
 import { getLocation } from '../helpers/homehelper'
 import { menuData } from '../global/data'
 
@@ -66,7 +66,6 @@ const Homescreen = ({navigation}) => {
         } else {
             setOnline(false)
             socket.emit('haulerDisconnect')
-            dispatch(addLocation({latitude, longitude}))
             Location.hasStartedLocationUpdatesAsync(TASK_FETCH_LOCATION).then((value) => {
                 if(value) {
                     Location.stopLocationUpdatesAsync(TASK_FETCH_LOCATION)
@@ -76,7 +75,7 @@ const Homescreen = ({navigation}) => {
     }
 
     const handleNavigation = async(item) => {
-        if(item.destination === 'Pickup' && online === false) {
+        if(item.destination === 'PrePickup' && online === false) {
             Alert.alert('Have to be online', 'Currently offline need to be online',
                 [
                     {
@@ -87,8 +86,8 @@ const Homescreen = ({navigation}) => {
                     cancelable: true
                 }
             )
-        } else if(item.destination === 'Pickup' && online === true) {
-            navigation.navigate(item.destination, {destination: item.name, haulerid: userInfo._id})
+        } else if(item.destination === 'PrePickup' && online === true) {
+            navigation.navigate(item.destination, {destination: item.name})
         } else {
             navigation.navigate(item.destination, {destination: item.name})
         }
@@ -97,22 +96,20 @@ const Homescreen = ({navigation}) => {
     useEffect(async() => {
         if(online === true) {
             const latlng = await getLocation()
-            dispatch(addLocation({latitude: latlng.latitude, longitude: latlng.longitude}))
             latitude = latlng.latitude
             longitude = latlng.longitude
             dispatch(addOrigin(latlng.latitude, latlng.longitude))
             socket.emit('online', {haulerid: userInfo._id, latitude: latlng.latitude, longitude: latlng.longitude})
-            
-            socket.on('newOrder', () => {
-                dispatch(getPendingPickups(latitude, longitude))
-            })
-            dispatch(getUpcomingPickups())
         }
     }, [online])
 
     useEffect(() => {
-        if(loading === false)
+        if(loading === false) {
             socket.emit('haulerJoined', { haulerid: userInfo._id })
+            socket.on('newOrder', () => {
+                dispatch(getPendingPickups(latitude, longitude))
+            })
+        }
     }, [socket])
 
     return (

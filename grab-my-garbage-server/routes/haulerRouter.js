@@ -6,6 +6,4 @@ router.post('/login', haulerController.login)
 
 router.post('/', haulerController.returnDetails)
 
-router.post('/location', haulerController.postLocation)
-
 module.exports = router
