@@ -10,7 +10,7 @@ import { colors } from '../../global/styles'
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Pickupdetailscreen = ({route, navigation}) => {
+const Specialpickupdetailscreen = ({route, navigation}) => {
 
     const { item, time, date, name, date1, completedTime } = route.params
 
@@ -138,7 +138,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
     );
 }
 
-export default Pickupdetailscreen
+export default Specialpickupdetailscreen
 
 const styles = StyleSheet.create({
 

@@ -3,14 +3,14 @@ import { useDispatch } from 'react-redux'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import socketIO from 'socket.io-client'
 
-import Specialpickupscreen from '../screens/SpecialPickupScreen'
+import Specialpickupscreen from '../screens/specialPickupScreens/specialPickupScreen'
 import TabNavigator from './TabNavigator'
 import Destinationscreen from '../screens/DestinationScreen'
 import Paymentmethodscreen from '../screens/paymentScreens/PaymentMethodScreen'
 import Paymentscreen from '../screens/paymentScreens/PaymentScreen'
-import Schedulepickupscreen from '../screens/SchedulePickupScreen'
-import Editprofilescreen from '../screens/EditProfileScreen'
-import Changepasswordscreen from '../screens/ChangePasswordScreen'
+import Schedulepickupscreen from '../screens/scheduledPickupScreens/schedulePickupScreen'
+import Editprofilescreen from '../screens/accountScreens/EditProfileScreen'
+import Changepasswordscreen from '../screens/accountScreens/ChangePasswordScreen'
 import Paymentsuccessscreen from '../screens/paymentScreens/paymentSuccessScreen'
 import Paymentpresuccessscreen from '../screens/paymentScreens/PaymentPreSuccessScreen'
 import Topnavigator from './TopNavigator'
@@ -33,7 +33,7 @@ const StackNavigator = () => {
     }, [])
 
     useEffect(async() => {
-        const socket = await socketIO.connect('http://192.168.13.1:5000')
+        const socket = await socketIO.connect('https://grab-my-garbage-server.herokuapp.com')
         dispatch(addSocket(socket))
     }, [])
 

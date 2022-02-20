@@ -158,10 +158,10 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
                                         </View>
                                     </View>
                                     <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row'}}>
-                                        <Text style = {{...styles.text2, marginTop: 35, fontSize: 14, marginLeft: 70}}>Est. Arrival Time:</Text>
-                                        <Text style = {{...styles.text2, marginTop: 35, position: 'absolute', marginLeft: 190, fontSize: 14}}>{ time !== null ? time : null}</Text>
+                                        <Text style = {{...styles.text2, marginTop: 15, fontSize: 14, marginLeft: 70}}>Est. Arrival Time:</Text>
+                                        <Text style = {{...styles.text2, marginTop: 15, position: 'absolute', marginLeft: 190, fontSize: 14}}>{ time !== null ? time : null}</Text>
                                     </View>
-                                    <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-around', marginTop: 25}}>
+                                    <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-around', marginTop: -10}}>
                                         <TouchableOpacity 
                                             style = {{
                                                 flexDirection: 'row', 

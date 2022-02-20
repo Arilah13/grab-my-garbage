@@ -3,10 +3,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-import { colors } from '../global/styles'
-import { accountData } from '../global/data'
-import { logout } from '../redux/actions/userActions'
-
+import { colors } from '../../global/styles'
+import { accountData } from '../../global/data'
+import { logout } from '../../redux/actions/userActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -17,9 +16,6 @@ const Accountscreen = ({navigation}) => {
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
-
-    const userDetail = useSelector((state) => state.userDetail)
-    const { user } = userDetail
 
     const handleClick = (path, name) => {
         if(path !== 'Logout') {
@@ -34,9 +30,9 @@ const Accountscreen = ({navigation}) => {
             <View style = {styles.container1}>
                 <View>
                     <Pressable onPress = {() => navigation.navigate('Editprofile')} style = {styles.view1} >
-                            <Text style = {styles.text1}>{user.name}</Text>
+                            <Text style = {styles.text1}>{userInfo.name}</Text>
                             <Image
-                                source = {user.image ? {uri: user.image} : require('../../assets/user.png')}
+                                source = {userInfo.image ? {uri: userInfo.image} : require('../../../assets/user.png')}
                                 resizeMode = 'contain'
                                 style = {styles.image1}
                             />

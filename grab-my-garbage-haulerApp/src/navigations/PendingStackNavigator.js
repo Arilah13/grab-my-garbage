@@ -3,9 +3,9 @@ import { useDispatch } from 'react-redux'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 
-import Pickupdetailscreen from '../screens/specialPickupScreens/PickupDetailScreen'
-import PendingPickupscreen from '../screens/specialPickupScreens/PendingPickupScreen'
-import Locationscreen from '../screens/specialPickupScreens/LocationScreen'
+import Pickupdetailscreen from '../screens/specialPickupScreens/specialPickupDetailScreen'
+import PendingPickupscreen from '../screens/specialPickupScreens/pendingspecialPickupScreen'
+import Locationscreen from '../screens/specialPickupScreens/specialPickupLocationScreen'
 
 import { colors } from '../global/styles'
 import { hideComponent } from '../redux/actions/specialRequestActions'

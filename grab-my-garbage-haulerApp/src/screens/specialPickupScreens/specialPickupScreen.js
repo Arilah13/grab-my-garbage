@@ -1,24 +1,25 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from 'react-native'
 import { Icon, Button } from 'react-native-elements'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
+//import Animated, { SlideInDown, SlideOutDown, useAnimatedStyle, withTiming, useSharedValue } from 'react-native-reanimated'
 import LottieView from 'lottie-react-native'
 import * as Linking from 'expo-linking'
 
-import { colors } from '../global/styles'
-import { mapStyle } from '../global/mapStyles'
+import { colors } from '../../global/styles'
+import { mapStyle } from '../../global/mapStyles'
 import { GOOGLE_MAPS_APIKEY } from '@env'
-import { getLatngDiffInMeters } from '../helpers/homehelper'
-import { sendSMS } from '../redux/actions/specialRequestActions'
-import { getScheduledPickupsToCollect, completeScheduledPickup } from '../redux/actions/scheduleRequestActions'
+import { timeHandle, getLatngDiffInMeters } from '../../helpers/homehelper'
+import { completedPickup, sendSMS, getUpcomingPickups } from '../../redux/actions/specialRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Scheduledpickupscreen = ({navigation}) => {
+const specialpickupscreen = ({navigation}) => {
+
     const dispatch = useDispatch()
 
     const mapView = useRef()
@@ -33,19 +34,22 @@ const Scheduledpickupscreen = ({navigation}) => {
     const [distance, setDistance] = useState(null)
     const [enable, setEnable] = useState(false)
 
+    // const boxHeight = useSharedValue(0)
+    // const boxMarginTop = useSharedValue(SCREEN_HEIGHT/1.4)
+
     const markerID = ['Marker1']
 
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
-
-    const retrieveCollectSchedulePickup = useSelector((state) => state.retrieveCollectSchedulePickup)
-    const { loading: pickupLoading, pickupInfo, success } = retrieveCollectSchedulePickup
+    const upcomingPickups = useSelector((state) => state.upcomingPickups)
+    const { loading: pickupLoading, pickupInfo, success } = upcomingPickups
 
     const map = useSelector((state) => state.map)
     const { origin } = map
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
 
     const filterPickup = async(pickup) => {
         const pickupOrder = await pickup.sort((pickup_1, pickup_2) => 
@@ -58,7 +62,8 @@ const Scheduledpickupscreen = ({navigation}) => {
         setLoading(true)
         setRedo(true)
         
-        const pickupOrder = await filterPickup(pickupInfo)
+        const filteredPickupOrder = await timeHandle(pickupInfo)
+        const pickupOrder = await filterPickup(filteredPickupOrder)
 
         if(pickupOrder.length > 0) {
             setEnd({
@@ -66,8 +71,7 @@ const Scheduledpickupscreen = ({navigation}) => {
                 longitude: pickupOrder[0].location[0].longitude
             })
             setOrder(pickupOrder[0])
-
-            socket.emit('scheduledPickupOnProgress', { haulerid: userInfo._id, ongoingPickup: pickupOrder[0], pickup: pickupOrder })
+            socket.emit('pickupOnProgress', { haulerid: userInfo._id, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id })
         } else {
             setEnd(null)
             setOrder(null)
@@ -91,7 +95,7 @@ const Scheduledpickupscreen = ({navigation}) => {
             dispatch(sendSMS({receiver: receiver, message: message}))
         } else if(arrived === true) {
             setLoading(true)
-            dispatch(completeScheduledPickup({id: order._id, completedDate: new Date(), completedHauler: userInfo}))
+            dispatch(completedPickup(order._id))
             socket.emit('pickupCompleted', {pickupid: order._id})
             setNextPickup(true)
         }
@@ -103,6 +107,34 @@ const Scheduledpickupscreen = ({navigation}) => {
             pickupHandler()
         }
     }, [success, pickupLoading])
+
+    // const boxAnimation = useAnimatedStyle(() => {
+    //     return{
+    //         height: withTiming(boxHeight.value, {duration: 750})
+    //     }
+    // })
+
+    // const heightAnimation = useAnimatedStyle(() => {
+    //     return{
+    //         marginTop: withTiming(boxMarginTop.value, {duration: 750})
+    //     }
+    // })
+
+    // const toggleHeight = () => {
+    //     boxHeight.value === 130 ? 
+    //     boxHeight.value = 0 : 
+    //     boxHeight.value = 130
+
+    //     boxMarginTop.value === SCREEN_HEIGHT/1.2 ?
+    //     boxMarginTop.value = SCREEN_HEIGHT/1.4 :
+    //     boxMarginTop.value = SCREEN_HEIGHT/1.2
+    // }
+
+    // useEffect(() => {
+    //     boxHeight.value = 130
+
+    //     boxMarginTop.value = SCREEN_HEIGHT/1.2
+    // }, [])
 
     useEffect(() => {
         mapView.current.animateToRegion({
@@ -121,7 +153,7 @@ const Scheduledpickupscreen = ({navigation}) => {
     }, [distance])
 
     useEffect(() => {
-        dispatch(getScheduledPickupsToCollect())
+        dispatch(getUpcomingPickups())
     }, [])
 
     return (
@@ -161,7 +193,7 @@ const Scheduledpickupscreen = ({navigation}) => {
                         identifier = 'Marker1'
                     >
                         <Image
-                            source = {require('../../assets/garbage_truck.png')}
+                            source = {require('../../../assets/garbage_truck.png')}
                             style = {styles.marker2}
                         />
                     </Marker>
@@ -170,7 +202,7 @@ const Scheduledpickupscreen = ({navigation}) => {
                         <>
                             <Marker coordinate = {end} >
                                 <Image
-                                    source = {require('../../assets/garbage.png')}
+                                    source = {require('../../../assets/garbage.png')}
                                     style = {styles.marker}
                                 />
                             </Marker>
@@ -240,7 +272,7 @@ const Scheduledpickupscreen = ({navigation}) => {
                             (
                                 <View style = {{alignItems: 'center', padding: 50}}>
                                     <LottieView 
-                                        source = {require('../../assets/animation/truck_loader.json')}
+                                        source = {require('../../../assets/animation/truck_loader.json')}
                                         style = {{
                                             width: SCREEN_WIDTH,
                                             height: 75,
@@ -372,7 +404,7 @@ const Scheduledpickupscreen = ({navigation}) => {
     );
 }
 
-export default Scheduledpickupscreen
+export default specialpickupscreen
 
 const styles = StyleSheet.create({
 
@@ -439,5 +471,5 @@ const styles = StyleSheet.create({
         width: 28,
         height: 40,
     }
-
+    
 })

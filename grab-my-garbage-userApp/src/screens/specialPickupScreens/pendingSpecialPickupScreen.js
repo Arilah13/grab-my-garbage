@@ -13,7 +13,7 @@ import { dateHelper, timeHelper, date1Helper } from '../../helpers/pickupHelper'
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Pendingpickupscreen = ({navigation}) => {
+const Pendingspecialpickupscreen = ({navigation}) => {
     const dispatch = useDispatch()
     
     const userLogin = useSelector((state) => state.userLogin)
@@ -103,7 +103,7 @@ const Pendingpickupscreen = ({navigation}) => {
     );
 }
 
-export default Pendingpickupscreen
+export default Pendingspecialpickupscreen
 
 const styles = StyleSheet.create({
 

@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useDispatch } from 'react-redux'
 import socketIO from 'socket.io-client'
 
-import specialpickupscreen from '../screens/specialPickupScreen'
+import specialpickupscreen from '../screens/specialPickupScreens/specialPickupScreen'
 import Topnavigator from './TopNavigator'
 import TabNavigator from './TabNavigator'
 import Chatscreen from '../screens/ChatScreen'
@@ -11,7 +11,7 @@ import Prerequestscreen from '../screens/preRequestScreen'
 import Schedulepickuprequestscreen from '../screens/schedulePickupScreens/schedulePickupRequestScreen'
 import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePickupDetailScreen'
 import Locationscreen from '../screens/schedulePickupScreens/LocationScreen'
-import Scheduledpickupscreen from '../screens/scheduledPickupScreen'
+import Scheduledpickupscreen from '../screens/schedulePickupScreens/scheduledPickupScreen'
 import Prepickupscreen from '../screens/prePickupScreen'
 
 import { addSocket } from '../redux/actions/socketActions'
@@ -23,7 +23,7 @@ const Stacknavigator = () => {
     const dispatch = useDispatch()
 
     useEffect(async() => {   
-        const socket = await socketIO.connect('http://192.168.13.1:5000')
+        const socket = await socketIO.connect('https://grab-my-garbage-server.herokuapp.com')
         dispatch(addSocket(socket))
     }, [])
 

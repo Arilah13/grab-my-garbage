@@ -17,7 +17,7 @@ import { removeOngoingPickup, getAcceptedPickups, getCompletedPickups } from '..
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Locationscreen = ({route, navigation}) => {
+const Specialpickuplocationscreen = ({route, navigation}) => {
 
     const dispatch = useDispatch()
 
@@ -217,7 +217,7 @@ const Locationscreen = ({route, navigation}) => {
     );
 }
 
-export default Locationscreen
+export default Specialpickuplocationscreen
 
 const styles = StyleSheet.create({
 

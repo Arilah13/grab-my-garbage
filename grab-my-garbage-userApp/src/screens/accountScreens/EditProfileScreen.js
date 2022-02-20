@@ -8,10 +8,10 @@ import * as ImagePicker from 'expo-image-picker'
 import Modal from 'react-native-modal'
 import * as Yup from 'yup'
 
-import { colors } from '../global/styles'
-import Headercomponent from '../components/HeaderComponent'
-import { getUserDetails, updateUserProfile } from '../redux/actions/userActions'
-import { USER_UPDATE_PROFILE_RESET } from '../redux/constants/userConstants'
+import { colors } from '../../global/styles'
+import Headercomponent from '../../components/HeaderComponent'
+import { getUserDetails, updateUserProfile } from '../../redux/actions/userActions'
+import { USER_UPDATE_PROFILE_RESET } from '../../redux/constants/userConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -119,7 +119,7 @@ const Editprofilescreen = ({navigation}) => {
                     <Pressable onPress = {() => setModalVisible(true)} >
                         <ImageBackground 
                             style = {styles.image} 
-                            source = {imageSet ? {uri: image1} : user.image ? {uri: user.image} : require('../../assets/user.png')}
+                            source = {imageSet ? {uri: image1} : user.image ? {uri: user.image} : require('../../../assets/user.png')}
                         >
                             <Icon
                                 type = 'material'
