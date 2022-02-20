@@ -66,7 +66,8 @@ const Scheduledpickupscreen = ({navigation}) => {
                 longitude: pickupOrder[0].location[0].longitude
             })
             setOrder(pickupOrder[0])
-            socket.emit('pickupOnProgress', { haulerid: userInfo._id, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id })
+
+            socket.emit('scheduledPickupOnProgress', { haulerid: userInfo._id, ongoingPickup: pickupOrder[0], pickup: pickupOrder })
         } else {
             setEnd(null)
             setOrder(null)

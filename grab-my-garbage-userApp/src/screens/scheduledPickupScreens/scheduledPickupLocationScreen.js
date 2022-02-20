@@ -28,19 +28,23 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
-    const ongoingPickupLocation = useSelector((state) => state.ongoingPickupLocation)
-    const { ongoingPickups } = ongoingPickupLocation
+    const ongoingScheduledPickupLocation = useSelector((state) => state.ongoingScheduledPickupLocation)
+    const { ongoingPickups } = ongoingScheduledPickupLocation
 
     const [redo, setRedo] = useState(true)
     const [pickup, setPickup] = useState(null)
     const [complete, setComplete] = useState(false)
     const [time, setTime] = useState(null)
+    const [show, setShow] = useState(false)
 
     const timeChanger = (duration) => {
         const date = new Date().getTime() 
-        const time = date + (duration * 60000) + (330 * 60000)
+        const time = date + (duration * 1000) + (330 * 60000)
         const hour = Math.floor((time / (1000*60*60)) % 24)
-        const minutes = Math.floor((time / (1000 * 60)) % 60)
+        let minutes = Math.floor((time / (1000 * 60)) % 60)
+        if(minutes < 10){
+            minutes = '0' + String(minutes)
+        }
         const hour_12 = (hour + 11) % 12 + 1 
 
         const final = hour_12 + ':' + minutes + (hour >= 12 ? ' PM' : ' AM')  
@@ -52,6 +56,9 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
             const ongoingPickup =  ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
             if(ongoingPickup) {
                 setPickup(ongoingPickup)
+                timeChanger(ongoingPickup.time)
+                if(ongoingPickup.pickupid === ongoingPickup.ongoingPickupid)
+                    setShow(true)
             }
         }
     }, [ongoingPickups]) 
@@ -108,14 +115,14 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
                                     destination = {{latitude: location.latitude, longitude: location.longitude}}
                                     mode = 'DRIVING'
                                     language = 'en'
-                                    strokeWidth = {3}
+                                    strokeWidth = {show === true ? 3 : 0}
                                     strokeColor = {colors.blue2}
                                     apikey = {GOOGLE_MAPS_APIKEY}
                                     resetOnChange = {false}
                                     timePrecision = 'now'
                                     
                                     onReady = {(result) => {
-                                        timeChanger(Math.round(result.duration * 10) / 10)
+                                        //timeChanger(Math.round(result.duration * 10) / 10)
                                         setTimeout(() => {
                                             redo === true ?
                                             mapView.current.fitToCoordinates(result.coordinates, {
@@ -174,7 +181,7 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
                                                 flexDirection: 'row', 
                                             }}
                                             onPress = {() => navigation.navigate('Chat', {
-                                                haulerid: item.pickerId, name: 'Location', pickupid: item._id
+                                                haulerid: pickup.haulerid, name: 'Location', pickupid: pickup.pickupid
                                             })}
                                         >
                                             <Icon

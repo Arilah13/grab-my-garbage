@@ -132,7 +132,6 @@ export const getAcceptedPickups = () => async(dispatch, getState) => {
 }
 
 
-
 export const addOngoingPickupLocation = ({latitude, longitude, haulerid, pickupid}) => async(dispatch) => {
     const data = {latitude, longitude, haulerid, pickupid}
     dispatch({

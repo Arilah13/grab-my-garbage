@@ -1,3 +1,6 @@
+import axios from "axios"
+import { GOOGLE_MAPS_APIKEY } from '@env'
+
 export const dayConverter = (day) => {
     if(day === 'Monday')
         return 'Mon'
@@ -47,5 +50,4 @@ export const fromDate = (date) => {
     const dateA = ((date).split('T')[0]).split('-')[0].substring(2, 4)
     const final = dateC + ' ' + month + ' ' + dateA
     return final
-
 }

@@ -33,6 +33,7 @@ import {
 import {
     retrieveScheduledPickupReducer,
     addScheduledPickupReducer,
+    ongoingScheduledPickupLocationReducer,
 } from './reducers/scheduledPickupReducer'
 
 import {
@@ -65,6 +66,7 @@ const reducer = combineReducers({
     retrieveScheduledPickup: retrieveScheduledPickupReducer,
     ongoingPickupLocation: ongoingPickupLocationReducer,
     hideComponent: hideComponentReducer,
+    ongoingScheduledPickupLocation: ongoingScheduledPickupLocationReducer,
 
     socketHolder: socketHolderReducer,
 

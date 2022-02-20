@@ -8,6 +8,7 @@ import { colors } from '../global/styles'
 import { menuData } from '../global/data'
 import { getUserDetails } from '../redux/actions/userActions'
 import { addOngoingPickupLocation } from '../redux/actions/specialPickupActions'
+import { addOngoingSchedulePickupLocation } from '../redux/actions/schedulePickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -37,11 +38,14 @@ const Homescreen = ({navigation}) => {
     useEffect(async() => {
         if(socketLoading === false) {
             await socket.emit('userJoined', { userid: userInfo._id })
+
             socket.on('userPickup', async({pickup, hauler}) => {
-                //console.log(pickup)
-                //console.log(hauler)
                 dispatch(addOngoingPickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, haulerid: pickup.haulerid, pickupid: pickup.pickupid}))
             })
+            socket.on('userSchedulePickup', async({hauler, time, ongoingPickup, pickupid}) => {
+                dispatch(addOngoingSchedulePickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, haulerid: time.haulerid, ongoingPickupid: ongoingPickup, pickupid: pickupid, time: time.time}))
+            })
+
         }
     }, [socket])
 

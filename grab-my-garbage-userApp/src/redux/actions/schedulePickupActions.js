@@ -71,3 +71,11 @@ export const getScheduledPickups = () => async(dispatch, getState) => {
         })
     }
 }
+
+export const addOngoingSchedulePickupLocation = ({latitude, longitude, haulerid, pickupid, ongoingPickupid, time}) => async(dispatch) => {
+    const data = {latitude, longitude, haulerid, pickupid, ongoingPickupid, time}
+    dispatch({
+        type: actionTypes.ADD_ONGOING_SCHEDULED_PICKUP_LOCATION,
+        payload: data
+    })
+}

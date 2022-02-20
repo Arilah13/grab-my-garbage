@@ -29,3 +29,21 @@ export const retrieveScheduledPickupReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const ongoingScheduledPickupLocationReducer = (state = { ongoingPickups: [] }, action) => {
+    switch(action.type) {
+        case actionTypes.ADD_ONGOING_SCHEDULED_PICKUP_LOCATION:
+            const ongoingPickup = state.ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === action.payload.pickupid)
+            if(ongoingPickup) {
+                state.ongoingPickups.splice(state.ongoingPickups.findIndex(ongoingPickup => ongoingPickup.pickupid === action.payload.pickupid), 1)
+                return { ...state, ongoingPickups: [...state.ongoingPickups, action.payload] }
+            } else {
+                return { ...state, ongoingPickups: [...state.ongoingPickups, action.payload] }
+            }
+        case actionTypes.REMOVE_ONGOING_SCHEDULED_PICKUP_LOCATION:
+            state.ongoingPickups.splice(state.ongoingPickups.findIndex(ongoingPickup => ongoingPickup.pickupid === action.payload.pickupid), 1)
+            return { ...state, ongoingPickups: [...state.ongoingPickups]}
+        default:
+            return state
+    }
+}
