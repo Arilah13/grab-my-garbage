@@ -38,7 +38,7 @@ const pickupController = {
 
             await newPickup.save()
 
-            res.status(200).json({
+            res.status(201).json({
                 _id: newPickup._id,
                 location: newPickup.location,
                 datetime: newPickup.datetime,

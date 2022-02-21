@@ -19,7 +19,7 @@ const haulerController = {
             const accesstoken = createAccessToken(hauler._id)
             const refreshtoken = createRefreshToken(hauler._id)
 
-            res.status(200).json({
+            res.status(201).json({
                 _id: hauler._id,
                 name: hauler.name,
                 email: hauler.email,

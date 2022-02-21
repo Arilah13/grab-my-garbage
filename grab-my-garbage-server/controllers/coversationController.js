@@ -12,7 +12,7 @@ const conversationController = {
 
             const savedConversation = await newConversation.save()
             
-            res.status(200).json(savedConversation)
+            res.status(201).json(savedConversation)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -23,7 +23,7 @@ const conversationController = {
             const receiverid = req.params.id2
 
             const conversation = await Conversations.find({
-                members: { $in: [userid] }
+                members: { $in: [userid, receiverid] }
             })
             if(!conversation) {return res.status(400).json({msg: "Conversation does not exists."})}
 

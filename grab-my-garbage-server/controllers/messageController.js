@@ -18,7 +18,7 @@ const messageController = {
 
             const savedMessage = await newMessage.save()
             
-            res.status(200).json(savedMessage)
+            res.status(201).json(savedMessage)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

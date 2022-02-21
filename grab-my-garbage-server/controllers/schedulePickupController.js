@@ -20,7 +20,7 @@ const scheduledPickupController = {
 
             await newPickup.save()
 
-            res.status(200).json({
+            res.status(201).json({
                 _id: newPickup._id,
                 location: newPickup.location,
                 from: newPickup.from,
@@ -35,7 +35,7 @@ const scheduledPickupController = {
             return res.status(500).json({msg: err.message})
         }
     },
-    getSpecialPickup: async(req, res) => {
+    getSchedulePickup: async(req, res) => {
         try{
             const customerId = req.params.id
             const pickups = await scheduledPickups.find({ customerId, completed: 0 })
