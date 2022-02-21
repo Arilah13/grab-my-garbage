@@ -35,6 +35,8 @@ const Specialpickuplocationscreen = ({route, navigation}) => {
     const [pickup, setPickup] = useState(null)
     const [complete, setComplete] = useState(false)
     const [time, setTime] = useState(null)
+    const [timeout1, setTimeoutValue1] = useState(null)
+    const [timeout2, setTimeoutValue2] = useState(null)
 
     const timeChanger = (duration) => {
         const date = new Date().getTime() 
@@ -72,15 +74,20 @@ const Specialpickuplocationscreen = ({route, navigation}) => {
             setComplete(true)
             dispatch(getAcceptedPickups())
             dispatch(getCompletedPickups())
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 navigation.navigate('acceptedPickup')
             }, 1500)
+            setTimeoutValue2(timeout)
         })
     }, [socket])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1, height: SCREEN_HEIGHT}}>
-            <Headercomponent name = 'Pickup Detail' />
+            <Headercomponent 
+                name = 'Pickup Detail' 
+                timeout1 = {timeout1}
+                timeout2 = {timeout2}
+            />
             <View style = {{padding: 10}}>
                 <View style  = {styles.container}>     
                     <MapView
@@ -120,7 +127,7 @@ const Specialpickuplocationscreen = ({route, navigation}) => {
                                     
                                     onReady = {(result) => {
                                         timeChanger(Math.round(result.duration * 10) / 10)
-                                        setTimeout(() => {
+                                        const timeout = setTimeout(() => {
                                             redo === true ?
                                             mapView.current.fitToCoordinates(result.coordinates, {
                                                 edgePadding: {
@@ -132,6 +139,7 @@ const Specialpickuplocationscreen = ({route, navigation}) => {
                                             })
                                         : null
                                         }, 100)
+                                        setTimeoutValue1(timeout)
                                     }}
                                 />
                             </>

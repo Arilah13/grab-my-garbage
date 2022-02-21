@@ -1,13 +1,10 @@
-import React from 'react'
-import { View, StyleSheet, Image, Dimensions } from 'react-native'
+import React, { useEffect } from 'react'
+import { View, StyleSheet, Image } from 'react-native'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 
 import { mapStyle } from '../global/mapStyle'
 
-const SCREEN_WIDTH = Dimensions.get('window').width
-const SCREEN_HEIGHT = Dimensions.get('window').height
-
-const Mapcomponent = ({latlng, mapView, latlngDelta}) => {  
+const Mapcomponent = ({latlng, mapView, latlngDelta, timeoutValue}) => {  
 
     return (
         <View>
@@ -19,19 +16,20 @@ const Mapcomponent = ({latlng, mapView, latlngDelta}) => {
                 followsUserLocation = {true}
                 region = {{latitude: latlng.latitude, longitude: latlng.longitude, latitudeDelta: latlngDelta.latitudeDelta, longitudeDelta: latlngDelta.longitudeDelta}}
                 ref = {mapView}
-                onMapReady = {() => 
-                    setTimeout(() => {
-                        mapView.current.fitToSuppliedMarkers(['mk1'], {
-                            animated: true,
-                            edgePadding: {
-                                top: 50,
-                                bottom: 50,
-                                left: 50,
-                                right: 50
-                            }
-                        })
-                    }, 1000)
-                }
+                onMapReady = {() => {
+                    const timeout = setTimeout(() => {
+                                mapView.current.fitToSuppliedMarkers(['mk1'], {
+                                    animated: true,
+                                    edgePadding: {
+                                        top: 50,
+                                        bottom: 50,
+                                        left: 50,
+                                        right: 50
+                                    }
+                                })
+                            }, 1000)
+                    timeoutValue(timeout)
+                }}
             >
                 <Marker 
                     coordinate = {latlng} 

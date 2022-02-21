@@ -22,6 +22,8 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
     const dispatch = useDispatch()
 
     const mapView = useRef()
+    const marker = useRef()
+    const first = useRef(true)
 
     const { location, item } = route.params
 
@@ -36,6 +38,8 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
     const [complete, setComplete] = useState(false)
     const [time, setTime] = useState(null)
     const [show, setShow] = useState(false)
+    const [timeout1, setTimeoutValue1] = useState(null)
+    const [timeout2, setTimeoutValue2] = useState(null)
 
     const timeChanger = (duration) => {
         const date = new Date().getTime() 
@@ -57,8 +61,18 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
             if(ongoingPickup) {
                 setPickup(ongoingPickup)
                 timeChanger(ongoingPickup.time)
-                if(ongoingPickup.pickupid === ongoingPickup.ongoingPickupid)
+                if(ongoingPickup.pickupid === ongoingPickup.ongoingPickupid){
                     setShow(true)
+                    mapView.current.animateToRegion({
+                        latitude: ongoingPickup.latitude,
+                        longitude: ongoingPickup.longitude,
+                        latitudeDelta: 0.0005,
+                        longitudeDelta: 0.00025
+                    }, 5000)
+                    if(first.current === false)
+                        marker.current.animateMarkerToCoordinate({latitude: ongoingPickup.latitude, longitude: ongoingPickup.longitude}, 7000)
+                    first.current = false
+                }
             }
         }
     }, [ongoingPickups]) 
@@ -75,15 +89,20 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
             setPickup(null)
             dispatch(removeOngoingPickup(pickupid))
             setComplete(true)
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 navigation.navigate('acceptedPickup')
             }, 1500)
+            setTimeoutValue2(timeout)
         })
     }, [socket])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1, height: SCREEN_HEIGHT}}>
-            <Headercomponent name = 'Pickup Detail' />
+            <Headercomponent 
+                name = 'Pickup Detail' 
+                timeout1 = {timeout1}
+                timeout2 = {timeout2}
+            />
             <View style = {{padding: 10}}>
                 <View style  = {styles.container}>     
                     <MapView
@@ -92,7 +111,7 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
                         customMapStyle = {mapStyle}
                         showsUserLocation = {false}
                         followsUserLocation = {false}
-                        region={{ latitude: location.latitude, longitude: location.longitude, latitudeDelta: 0.02, longitudeDelta: 0.01 }}
+                        initialRegion = {{ latitude: location.latitude, longitude: location.longitude, latitudeDelta: 0.02, longitudeDelta: 0.01 }}
                         ref = {mapView}
                     >
                         <Marker coordinate = {{latitude: location.latitude, longitude: location.longitude}} >
@@ -104,12 +123,15 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
                         {
                             pickup !== null && complete === false ? 
                             <>
-                                <Marker coordinate = {{latitude: pickup.latitude, longitude: pickup.longitude}}>
+                                <Marker.Animated
+                                    ref = {marker}
+                                    coordinate = {{latitude: pickup.latitude, longitude: pickup.longitude}}
+                                >
                                     <Image
                                         source = {require('../../../assets/garbage_truck.png')}
                                         style = {styles.marker2}
                                     />
-                                </Marker>
+                                </Marker.Animated>
                                 <MapViewDirections
                                     origin = {{latitude: pickup.latitude, longitude: pickup.longitude}}
                                     destination = {{latitude: location.latitude, longitude: location.longitude}}
@@ -122,8 +144,7 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
                                     timePrecision = 'now'
                                     
                                     onReady = {(result) => {
-                                        //timeChanger(Math.round(result.duration * 10) / 10)
-                                        setTimeout(() => {
+                                        const timeout = setTimeout(() => {
                                             redo === true ?
                                             mapView.current.fitToCoordinates(result.coordinates, {
                                                 edgePadding: {
@@ -135,6 +156,7 @@ const scheduledPickupLocationscreen = ({route, navigation}) => {
                                             })
                                         : null
                                         }, 100)
+                                        setTimeoutValue1(timeout)
                                     }}
                                 />
                             </>

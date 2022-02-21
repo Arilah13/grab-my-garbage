@@ -1,5 +1,8 @@
+import { View } from 'react-native'
 import { Bubble, Send, InputToolbar, Composer, Message } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
+
+import { colors } from '../global/styles';
 
 export const renderBubble = (props) => {
     return (

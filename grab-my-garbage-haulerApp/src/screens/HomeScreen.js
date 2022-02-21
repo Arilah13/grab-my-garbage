@@ -54,7 +54,7 @@ const Homescreen = ({navigation}) => {
             setTimeout(() => {
                 Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
                     accuracy: Location.Accuracy.Highest,
-                    distanceInterval: 20,
+                    distanceInterval: 1,
                     deferredUpdatesInterval: 1,
                     showsBackgroundLocationIndicator: true,
                     foregroundService: {

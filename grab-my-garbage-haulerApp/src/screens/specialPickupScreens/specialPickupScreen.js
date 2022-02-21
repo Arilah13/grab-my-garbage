@@ -23,6 +23,8 @@ const specialpickupscreen = ({navigation}) => {
     const dispatch = useDispatch()
 
     const mapView = useRef()
+    const marker = useRef()
+    const first = useRef(true)
 
     const [end, setEnd] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -33,6 +35,9 @@ const specialpickupscreen = ({navigation}) => {
     const [nextPickup, setNextPickup] = useState(false)
     const [distance, setDistance] = useState(null)
     const [enable, setEnable] = useState(false)
+    const [timeout1, setTimeoutValue1] = useState(null)
+    const [timeout2, setTimeoutValue2] = useState(null)
+    const [timeout3, setTimeoutValue3] = useState(null)
 
     // const boxHeight = useSharedValue(0)
     // const boxMarginTop = useSharedValue(SCREEN_HEIGHT/1.4)
@@ -143,6 +148,9 @@ const specialpickupscreen = ({navigation}) => {
             latitudeDelta: 0.0005,
             longitudeDelta: 0.00025
         })
+        if(first.current === false)
+            marker.current.animateMarkerToCoordinate({latitude: origin.latitude, longitude: origin.longitude}, 10)
+        first.current = false
     }, [origin])
 
     useEffect(() => {
@@ -172,7 +180,7 @@ const specialpickupscreen = ({navigation}) => {
 
                     onMapReady = {() => {
                         setLoading(true)
-                        setTimeout(() => {
+                        const timeout1 = setTimeout(() => {
                             mapView.current.fitToSuppliedMarkers(markerID, {
                                 animated: true,
                                 edgePadding: {
@@ -183,20 +191,23 @@ const specialpickupscreen = ({navigation}) => {
                                 }
                             })
                         }, 1000)
-                        setTimeout(() => {
+                        const timeout2 = setTimeout(() => {
                             setLoading(false)
                         }, 2000)
+                        setTimeoutValue1(timeout1)
+                        setTimeoutValue2(timeout2)
                     }}
                 >
-                    <Marker 
+                    <Marker.Animated
                         coordinate = {origin}
                         identifier = 'Marker1'
+                        ref = {marker}
                     >
                         <Image
                             source = {require('../../../assets/garbage_truck.png')}
                             style = {styles.marker2}
                         />
-                    </Marker>
+                    </Marker.Animated>
                     {
                         end !== null ?
                         <>
@@ -228,7 +239,7 @@ const specialpickupscreen = ({navigation}) => {
                                             }
                                         })
 
-                                        setTimeout(() => {
+                                        const timeout = setTimeout(() => {
                                             mapView.current.fitToSuppliedMarkers(markerID, {
                                                 animated: true,
                                                 edgePadding: {
@@ -239,6 +250,7 @@ const specialpickupscreen = ({navigation}) => {
                                                 }
                                             })
                                         }, 4000)
+                                        setTimeoutValue3(timeout)
                                     }
                                 }}
                             /> 
@@ -249,7 +261,12 @@ const specialpickupscreen = ({navigation}) => {
                 </MapView>
                 
                 <TouchableOpacity style = {styles.view3}
-                        onPress = {() => navigation.navigate('Home')}
+                        onPress = {() => {
+                            timeout1 ? clearTimeout(timeout1) : null
+                            timeout2 ? clearTimeout(timeout2) : null
+                            timeout3 ? clearTimeout(timeout3) : null
+                            navigation.navigate('Home')
+                        }}
                     >
                         <Icon
                             type = 'material'

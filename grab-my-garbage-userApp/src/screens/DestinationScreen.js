@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { Icon } from 'react-native-elements'
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 import * as Location from 'expo-location'
 
 import Mapcomponent from '../components/MapComponent'
@@ -21,11 +22,8 @@ const Destinationscreen = ({route, navigation}) => {
     const [latlng, setLatLng] = useState({latitude: 6.9271, longitude: 79.8612})
     const [city, setCity] = useState()
     const [latlngDelta, setLatlngDelta] = useState({latitudeDelta: 0.8, longitudeDelta: 0.7})
+    const [timeout, setTimeoutValue] = useState(null)
 
-    // const homePlace = {
-    //     description: 'Home',
-    //     geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
-    // }
     const currentLocation = {
         description: 'Current location',
         geometry: { location: { lat: latlng.latitude, lng: latlng.longitude } },
@@ -67,6 +65,10 @@ const Destinationscreen = ({route, navigation}) => {
         }
     }
 
+    const timeoutValue = (value) => {
+        setTimeoutValue(value)
+    }
+
     useEffect(() => {
         checkPermission()
         getLocation()
@@ -80,10 +82,14 @@ const Destinationscreen = ({route, navigation}) => {
                     latlng = {latlng}
                     mapView = {mapView}
                     latlngDelta = {latlngDelta}
+                    timeoutValue = {timeoutValue}
                 />
 
                 <TouchableOpacity style = {styles.view}
-                        onPress = {() => navigation.navigate('Home')}
+                        onPress = {() => {
+                            clearTimeout(timeout)
+                            navigation.navigate('Home')
+                        }}
                     >
                         <Icon
                             type = 'material'

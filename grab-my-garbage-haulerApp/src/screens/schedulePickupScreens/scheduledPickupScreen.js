@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from 'react-native'
 import { Icon, Button } from 'react-native-elements'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
+import MapView, { PROVIDER_GOOGLE, Marker, Polyline } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import LottieView from 'lottie-react-native'
 import * as Linking from 'expo-linking'
@@ -22,6 +22,8 @@ const Scheduledpickupscreen = ({navigation}) => {
     const dispatch = useDispatch()
 
     const mapView = useRef()
+    const marker = useRef()
+    const first = useRef(true)
 
     const [end, setEnd] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -32,6 +34,11 @@ const Scheduledpickupscreen = ({navigation}) => {
     const [nextPickup, setNextPickup] = useState(false)
     const [distance, setDistance] = useState(null)
     const [enable, setEnable] = useState(false)
+    // const [polylinePath, setPolylinePath] = useState([])
+    // const [directionRoutes, setDirectionRoutes] = useState([])
+    const [timeout1, setTimeoutValue1] = useState(null)
+    const [timeout2, setTimeoutValue2] = useState(null)
+    const [timeout3, setTimeoutValue3] = useState(null)
 
     const markerID = ['Marker1']
 
@@ -97,6 +104,16 @@ const Scheduledpickupscreen = ({navigation}) => {
         }
     }
 
+    // const animatePolylineStart = () => {     
+    //     if(polylinePath.length < directionRoutes.length) {
+    //         const Direction = directionRoutes
+    //         const polylinePath = [...Direction.slice(0, polylinePath.length - 1)]
+    //         setPolylinePath(polylinePath)
+    //     } else {
+    //         setPolylinePath([])
+    //     }
+    // }
+
     useEffect(async() => {
         if(success === true && nextPickup === true && pickupLoading === false) {
             setArrived(false)
@@ -111,6 +128,9 @@ const Scheduledpickupscreen = ({navigation}) => {
             latitudeDelta: 0.0005,
             longitudeDelta: 0.00025
         })
+        if(first.current === false)
+            marker.current.animateMarkerToCoordinate({latitude: origin.latitude, longitude: origin.longitude}, 10)
+        first.current = false
     }, [origin])
 
     useEffect(() => {
@@ -123,6 +143,11 @@ const Scheduledpickupscreen = ({navigation}) => {
     useEffect(() => {
         dispatch(getScheduledPickupsToCollect())
     }, [])
+
+    // useEffect(() => {
+    //     if(polylinePath.length > 0 && directionRoutes.length > 0)
+    //         setInterval(() => animatePolylineStart(), 70)
+    // }, [polylinePath, directionRoutes])
 
     return (
         <SafeAreaView>
@@ -140,7 +165,7 @@ const Scheduledpickupscreen = ({navigation}) => {
 
                     onMapReady = {() => {
                         setLoading(true)
-                        setTimeout(() => {
+                        const timeout1 = setTimeout(() => {
                             mapView.current.fitToSuppliedMarkers(markerID, {
                                 animated: true,
                                 edgePadding: {
@@ -151,9 +176,11 @@ const Scheduledpickupscreen = ({navigation}) => {
                                 }
                             })
                         }, 1000)
-                        setTimeout(() => {
+                        const timeout2 = setTimeout(() => {
                             setLoading(false)
                         }, 2000)
+                        setTimeoutValue1(timeout1)
+                        setTimeoutValue2(timeout2)
                     }}
                 >
                     <Marker 
@@ -185,6 +212,8 @@ const Scheduledpickupscreen = ({navigation}) => {
                                 resetOnChange = {true}
                                 
                                 onReady = {(result) => {
+                                    // setDirectionRoutes([...result.coordinates].reverse())
+                                    // setPolylinePath([...result.coordinates].reverse())
                                     setDistance(result.distance)
                                     if(redo === true){
                                         mapView.current.fitToCoordinates(result.coordinates, {
@@ -196,7 +225,7 @@ const Scheduledpickupscreen = ({navigation}) => {
                                             }
                                         })
 
-                                        setTimeout(() => {
+                                        const timeout = setTimeout(() => {
                                             mapView.current.fitToSuppliedMarkers(markerID, {
                                                 animated: true,
                                                 edgePadding: {
@@ -207,9 +236,17 @@ const Scheduledpickupscreen = ({navigation}) => {
                                                 }
                                             })
                                         }, 4000)
+                                        setTimeoutValue3(timeout)
                                     }
                                 }}
                             /> 
+                            {/* {
+                                polylinePath.length > 0 && <Polyline
+                                    coordinates = {polylinePath}
+                                    strokeColor = {colors.black}
+                                    strokeWidth = {3}
+                                />
+                            } */}
                         </>
                         : null
                     }
@@ -217,7 +254,12 @@ const Scheduledpickupscreen = ({navigation}) => {
                 </MapView>
                 
                 <TouchableOpacity style = {styles.view3}
-                        onPress = {() => navigation.navigate('Home')}
+                        onPress = {() => {
+                            timeout1 ? clearTimeout(timeout1) : null
+                            timeout2 ? clearTimeout(timeout2) : null
+                            timeout3 ? clearTimeout(timeout3) : null
+                            navigation.navigate('Home')
+                        }}
                     >
                         <Icon
                             type = 'material'
