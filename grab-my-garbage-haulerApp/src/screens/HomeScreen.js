@@ -1,208 +1,281 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, Image, Alert, FlatList, TouchableOpacity } from 'react-native'
-import { Icon } from 'react-native-elements'
+import { View, StyleSheet, Dimensions, Animated } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import * as Location from 'expo-location'
-import * as TaskManager from 'expo-task-manager'
-import ToggleButton from 'react-native-toggle-element'
+import LottieView from 'lottie-react-native'
+import { Button } from 'react-native-elements'
 
 import { colors } from '../global/styles'
-import { addOrigin } from '../redux/actions/mapActions'
-import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
-import { getPendingPickups } from '../redux/actions/specialRequestActions'
-import { getLocation } from '../helpers/homehelper'
-import { menuData } from '../global/data'
+import Onlinecomponent from '../components/HomeScreen/OnlineComponent'
+
+import { getLatngDiffInMeters } from '../helpers/homehelper'
+import { sendSMS } from '../redux/actions/specialRequestActions'
+import { getScheduledPickupsToCollect, completeScheduledPickup } from '../redux/actions/scheduleRequestActions'
+import { getUpcomingPickups, completedPickup } from '../redux/actions/specialRequestActions'
+import Mapcomponent from '../components/HomeScreen/MapComponent'
+import Onpickupcomponent from '../components/HomeScreen/onPickupComponent'
+import Pickupcompletecomponent from '../components/HomeScreen/pickupCompleteComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Homescreen = ({navigation}) => {
-    
     const dispatch = useDispatch()
 
-    let latitude = null
-    let longitude = null
+    const translation = useRef(new Animated.Value(220)).current
+    const choice = useRef(null)
 
+    const [end, setEnd] = useState(null)
     const [online, setOnline] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [pickupBtn, setpickupBtn] = useState(true)
+    const [order, setOrder] = useState(null)
+    const [redo, setRedo] = useState(false)
+    const [arrived, setArrived] = useState(false)
+    const [nextPickup, setNextPickup] = useState(false)
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
+    const retrieveCollectSchedulePickup = useSelector((state) => state.retrieveCollectSchedulePickup)
+    const { loading: pickupLoading, pickupInfo, success } = retrieveCollectSchedulePickup
+
+    const upcomingPickups = useSelector((state) => state.upcomingPickups)
+    const { loading: specialPickupLoading, pickupInfo: specialPickupInfo, success: specialPickupSuccess } = upcomingPickups
+
     const socketHolder = useSelector((state) => state.socketHolder)
-    const { loading, socket } = socketHolder
+    const { loading: socketLoading, socket } = socketHolder
 
-    const handleOnline = async() => {
-        if(online === false) {
-            setOnline(true)
-            TaskManager.defineTask(TASK_FETCH_LOCATION, async({data: { locations }, err}) => {
-                if(err) {
-                    console.log(err)
-                    return
-                }
-                const [location] = locations
-                try{
-                    latitude = location.coords.latitude
-                    longitude = location.coords.longitude
-                    dispatch(addOrigin(latitude, longitude))
-                    socket.emit('online', {haulerid: userInfo._id, latitude, longitude})
-                } catch (err) {
-                    console.error(err)
-                }
+    const animation = (value, value1, delay) => {
+        Animated.timing(translation, {
+            toValue: value,
+            useNativeDriver: true,
+            duration: 500,
+            delay: delay ? delay : 0
+        }).start()
+        setTimeout(() => {
+            Animated.timing(translation, {
+                toValue: value1,
+                useNativeDriver: true,
+                duration: 500,
+                delay: delay ? delay + 500 : 0
+            }).start()
+        }, 1000)
+    }
+
+    const filterPickup = async(pickup) => {
+        const pickupOrder = await pickup.sort((pickup_1, pickup_2) => 
+            getLatngDiffInMeters(pickup_1.location[0].latitude, pickup_1.location[0].longitude, origin.latitude, origin.longitude) > 
+            getLatngDiffInMeters (pickup_2.location[0].latitude, pickup_2.location[0].longitude, origin.latitude, origin.longitude) ? 1 : -1)
+        return pickupOrder
+    }
+
+    const setPickups = (pickupOrder) => {
+        if(pickupOrder.length > 0) {
+            setEnd({
+                latitude: pickupOrder[0].location[0].latitude,
+                longitude: pickupOrder[0].location[0].longitude
             })
-
-            setTimeout(() => {
-                Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-                    accuracy: Location.Accuracy.Highest,
-                    distanceInterval: 1,
-                    deferredUpdatesInterval: 1,
-                    showsBackgroundLocationIndicator: true,
-                    foregroundService: {
-                        notificationTitle: 'Using your location',
-                        notificationBody: 'As long as you are online, location will be used',
-                    }
-                })
-            }, 100)
+            setOrder(pickupOrder[0])
+            
+            if (choice.current === 'schedule') {
+                socket.emit('scheduledPickupOnProgress', { haulerid: userInfo._id, ongoingPickup: pickupOrder[0], pickup: pickupOrder })
+            } else if (choice.current === 'special') {
+                socket.emit('pickupOnProgress', { haulerid: userInfo._id, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id })
+            }
         } else {
-            setOnline(false)
-            socket.emit('haulerDisconnect')
-            Location.hasStartedLocationUpdatesAsync(TASK_FETCH_LOCATION).then((value) => {
-                if(value) {
-                    Location.stopLocationUpdatesAsync(TASK_FETCH_LOCATION)
-                }
-            })
+            setEnd(null)
+            setOrder(null)
+        } 
+    }
+
+    const pickupHandler = async() => {
+            setLoading(true)
+            setRedo(true)
+            
+            if (choice.current === 'schedule') {
+                const pickupOrder = await filterPickup(pickupInfo)
+                setPickups(pickupOrder)
+            } else if (choice.current === 'special') {
+                const pickupOrder = await filterPickup(specialPickupInfo)
+                setPickups(pickupOrder)
+            }
+            
+            setLoading(false)
+            setRedo(false)
+    }
+
+    const handlePickupComplete = async() => {
+        if(arrived === false) {
+            setArrived(true)
+
+            let num
+            num = String(order.customerId.phone).substring(1)
+
+            let receiver = '+94'.concat(num)
+            const message = 'Your Hauler is at your doorstep, make sure garbage is collected'
+
+            dispatch(sendSMS({receiver: receiver, message: message}))
+
+        } else if(arrived === true) {
+            setLoading(true)
+
+            if (choice.current === 'schedule') {
+                dispatch(completeScheduledPickup({id: order._id, completedDate: new Date(), completedHauler: userInfo}))
+                socket.emit('schedulePickupCompleted', {pickupid: order._id, userid: order.customerId._id})
+            } else if(choice.current === 'special') {
+                dispatch(completedPickup(order._id))
+                socket.emit('pickupCompleted', {pickupid: order._id})
+            }
+
+            setNextPickup(true)
+
         }
     }
 
-    const handleNavigation = async(item) => {
-        if(item.destination === 'PrePickup' && online === false) {
-            Alert.alert('Have to be online', 'Currently offline need to be online',
-                [
-                    {
-                        text: 'Ok',
-                    }
-                ],
-                {
-                    cancelable: true
-                }
-            )
-        } else if(item.destination === 'PrePickup' && online === true) {
-            navigation.navigate(item.destination, {destination: item.name})
-        } else {
-            navigation.navigate(item.destination, {destination: item.name})
-        }
-    }
- 
+    // const animatePolylineStart = () => {     
+    //     if(polylinePath.length < directionRoutes.length) {
+    //         const Direction = directionRoutes
+    //         const polylinePath = [...Direction.slice(0, polylinePath.length - 1)]
+    //         setPolylinePath(polylinePath)
+    //     } else {
+    //         setPolylinePath([])
+    //     }
+    // }
+
     useEffect(async() => {
+        if(nextPickup === true && specialPickupSuccess === true && specialPickupLoading === false && success === true && pickupLoading === false) {
+            setArrived(false)
+            pickupHandler()
+            setNextPickup(false)
+        }
+    }, [specialPickupInfo, pickupInfo])
+
+    useEffect(() => {
+        if(socketLoading === false) {
+            socket.emit('haulerJoined', { haulerid: userInfo._id })
+            socket.on('newOrder', () => {
+                //dispatch(getPendingPickups(latitude, longitude))
+            })
+        }
+    }, [socket])
+
+    useEffect(() => {
         if(online === true) {
-            const latlng = await getLocation()
-            latitude = latlng.latitude
-            longitude = latlng.longitude
-            dispatch(addOrigin(latlng.latitude, latlng.longitude))
-            socket.emit('online', {haulerid: userInfo._id, latitude: latlng.latitude, longitude: latlng.longitude})
+            dispatch(getScheduledPickupsToCollect())
+            dispatch(getUpcomingPickups())
         }
     }, [online])
 
     useEffect(() => {
-        if(loading === false) {
-            socket.emit('haulerJoined', { haulerid: userInfo._id })
-            socket.on('newOrder', () => {
-                dispatch(getPendingPickups(latitude, longitude))
-            })
-        }
-    }, [socket])
+        if(pickupBtn === true)
+            choice.current = null
+    }, [pickupBtn])
+
+    // useEffect(() => {
+    //     if(polylinePath.length > 0 && directionRoutes.length > 0)
+    //         setInterval(() => animatePolylineStart(), 70)
+    // }, [polylinePath, directionRoutes])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.grey8}}>
             <View style = {styles.container1}>
                 <View style = {{flexDirection: 'row'}}>
-                    <ToggleButton
-                        value = {online}
-                        onPress = {handleOnline}
-                        leftComponent = {
-                        <Text style = {{color: colors.white, fontWeight: 'bold', marginLeft: 8}}>
-                            {online === true ? 'Online' : ''}
-                        </Text>                          
-                        }
-                        rightComponent = {
-                            <Text style = {{color: colors.blue2, fontWeight: 'bold', marginRight: 7}}>
-                                {online === false ? 'Offline' : ''}
-                            </Text>
-                        }
-                        thumbActiveComponent = {
-                            <Icon
-                                type = 'font-awesome'
-                                name = 'truck'
-                                color = {colors.darkBlue}
-                                style = {{
-                                    margin: 6
-                                }}
-                            />
-                        }
-                        thumbInActiveComponent = {
-                            <Icon
-                                type = 'font-awesome'
-                                name = 'truck'
-                                color = {colors.darkBlue}
-                                style = {{
-                                    margin: 6
-                                }}
-                            />
-                        }
-                        trackBar = {{
-                            activeBackgroundColor: colors.darkBlue,
-                            inActiveBackgroundColor: colors.white,
-                            borderActiveColor: colors.darkBlue,
-                            borderInActiveColor: colors.white,
-                            borderWidth: 5,
-                            width: 140,
-                        }}
-                        thumbStyle = { online === true ? {
-                            backgroundColor: colors.white
-                        } : {
-                            backgroundColor: colors.grey10,
-                        }}
-                        thumbButton = {{
-                            height: 50,
-                            width: 60
-                        }}
+                    <Onlinecomponent 
+                        animation = {animation} 
+                        online = {online} 
+                        setOnline = {setOnline} 
+                        pickupBtn = {pickupBtn}
+                        choice = {choice.current}
+                        order = {order}
                     />
                 </View>
             </View>
+
             <View style = {styles.container2}>
-                    <View style = {styles.view1}>
-                        <Text style = {styles.text2}>Hi {userInfo.name}</Text>
-                        <Text style = {styles.text3}>Have you taken out the trash today?</Text>
-                        <Image
-                            source = {userInfo.image ? {uri: userInfo.image} : require('../../assets/user.png')}
-                            style = {styles.image1}
-                        />
-                    </View>
-
-                <View style = {styles.container3}>
-                    <View style = {styles.container4}>
-
-                    </View>
-
-                    <View style = {{justifyContent: 'center', marginTop: '5%', flexDirection: 'column'}}>
-                        <FlatList
-                            numColumns = {2}
-                            showsHorizontalScrollIndicator = {false}
-                            data = {menuData}
-                            keyExtractor = {(item) => item.id}
-                            renderItem = {({item}) => (
-                                <TouchableOpacity style = {styles.card}
-                                    onPress = {() => handleNavigation(item)}
-                                >
-                                    <View style = {styles.view2}>
-                                        <Image style = {styles.image2} source = {item.image}/>     
-                                        <Text style = {styles.title}>{item.name}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                        />
-                    </View> 
-                </View>
+                <Mapcomponent end = {end} redo = {redo} setLoading = {setLoading}/>        
+                <Animated.View style = {{...styles.view1, transform: [{translateY: translation}]}}>
+                    <Animated.View style = {{...styles.view2, transform: [{translateY: translation}]}}>
+                        {
+                            (loading === true || pickupLoading === true || specialPickupLoading === true) ? 
+                            (
+                                <View style = {{alignItems: 'center', padding: 50, paddingTop: 30}}>
+                                    <LottieView 
+                                        source = {require('../../assets/animation/truck_loader.json')}
+                                        style = {{
+                                            width: SCREEN_WIDTH,
+                                            height: 75,
+                                        }}
+                                        loop = {true}
+                                        autoPlay = {true}
+                                    />
+                                </View>
+                            ) :
+                            pickupBtn === true ?
+                            ( 
+                                <Button 
+                                    title = 'Start Pickup'
+                                    buttonStyle = {styles.button}
+                                    onPress = {() => {
+                                        setTimeout(() => {
+                                            setpickupBtn(false)
+                                        }, 500) 
+                                        animation(220, 20)
+                                    }}
+                                />
+                            ) : 
+                            pickupBtn === false && choice.current === null ? (
+                                <>
+                                    <Button 
+                                        title = 'Scheduled Pickup'
+                                        buttonStyle = {{...styles.button, height: 40}}
+                                        onPress = {() => {                       
+                                            choice.current = 'schedule'
+                                            animation(0, 0)
+                                            setTimeout(() => {
+                                                pickupHandler()
+                                            }, 500)
+                                        }}
+                                    />
+                                    <Button 
+                                        title = 'Special Pickup'
+                                        buttonStyle = {{...styles.button, marginTop: 10, height: 40}}
+                                        onPress = {() => {
+                                            choice.current = 'special'
+                                            animation(0, 0)
+                                            setTimeout(() => {
+                                                pickupHandler()
+                                            }, 500)
+                                        }}
+                                    />
+                                </>
+                            ) :
+                            order !== null && pickupBtn === false && choice.current === 'schedule' ?
+                            (
+                                <Onpickupcomponent 
+                                    navigation = {navigation} 
+                                    handlePickupComplete = {handlePickupComplete} 
+                                    order = {order} 
+                                    arrived = {arrived}
+                                />
+                            ) :
+                            order !== null && pickupBtn === false && choice.current === 'special' ?
+                            (
+                                <Onpickupcomponent 
+                                    navigation = {navigation} 
+                                    handlePickupComplete = {handlePickupComplete} 
+                                    order = {order} 
+                                    arrived = {arrived}
+                                />
+                            ) :
+                            order === null && choice.current !== null && pickupLoading === false && success === true || specialPickupLoading === false && specialPickupSuccess === true ? 
+                            (
+                                <Pickupcompletecomponent navigation = {navigation} choice = {choice.current} setpickupBtn = {setpickupBtn} animate = {animation} />
+                            ) :
+                            null
+                        }
+                    </Animated.View>
+                </Animated.View>
             </View>
         </SafeAreaView>
     );
@@ -213,89 +286,36 @@ export default Homescreen
 const styles = StyleSheet.create({
 
     container1:{
-        backgroundColor: colors.grey8,
+        backgroundColor: colors.white,
         //paddingLeft: 25, 
         marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
+        height: 60,
         flexDirection: 'row',
         justifyContent: 'space-around'
     },
-    text1:{
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 18,
-        marginTop: 15
-    },
     container2:{
-        backgroundColor: colors.blue1,
-        height: (9*SCREEN_HEIGHT/10) - 60,
-        borderTopLeftRadius: 25,
-        borderTopRightRadius: 25
+        height: 9*SCREEN_HEIGHT/10 - 50,
+        width: SCREEN_WIDTH,
     },
     view1:{
-        display: 'flex',
-        //borderTopLeftRadius: 25,
-        //borderTopRightRadius: 25,
-        paddingLeft: 25, 
-        height: SCREEN_HEIGHT/5,
-        //flex: 1,
-        //justifyContent: 'space-around',
-    },
-    text2:{
-        color: colors.blue2,
-        fontSize: 21,
-        //paddingBottom:5,
-        paddingTop: 55,
-        fontWeight: 'bold'
-    },
-    text3:{
-        color: colors.blue2,
-        fontSize: 14
-    },
-    image1:{
-        height: 70,
-        width: 70,
-        left: "75%",
-        bottom: 65,
-        borderRadius: 50,
-    },
-    container3:{
-        backgroundColor: colors.white,
-        borderRadius: 30,
-        height: "75%",
-        padding: 15
-    },
-    container4:{
-        backgroundColor: colors.blue2,
-        height: SCREEN_HEIGHT/6.5,
+        position: 'absolute',
         padding: 10,
-        borderRadius: 25,
-    },
-    card:{
-        margin: SCREEN_WIDTH/22,
-        marginTop: 0,
-        flex: 1,
-        paddingLeft: 2,
-        marginLeft: 8,
-        marginRight: 8,
+        marginTop: SCREEN_HEIGHT/1.75,
     },
     view2:{
-        paddingBottom: 10,
-        paddingTop: 25,
+        width: SCREEN_WIDTH/1.05,
+        height: 220,
+        backgroundColor: colors.white,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20
+    },
+    button:{
+        width: SCREEN_WIDTH/1.3,
+        height: 50,
+        marginTop: 30,
         borderRadius: 15,
-        backgroundColor: colors.blue1,
-        alignItems: 'center',
-    },
-    image2:{
-        height: 60,
-        width: 60,
-        alignItems: 'center'
-    },
-    title:{
-        color: colors.blue2,
-        fontSize: 14,
-        marginTop: 5,
-        textAlign: 'center'
+        marginHorizontal: 30,
+        backgroundColor: colors.darkBlue
     }
-
+    
 })

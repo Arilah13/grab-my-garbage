@@ -12,8 +12,6 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Prerequestscreen = ({navigation}) => {
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <Headercomponent name = {'Home'} />
-
             <View style = {styles.container}>
                 <Button
                     title = 'Scheduled Pickup Requests'
@@ -38,10 +36,11 @@ const styles = StyleSheet.create({
         height: 9*SCREEN_HEIGHT/10,
         backgroundColor: colors.white,
         padding: 30,
-        borderRadius: 30
+        borderTopEndRadius: 30,
+        borderTopStartRadius: 30
     },
     button:{
-        backgroundColor: colors.buttons,
+        backgroundColor: colors.darkBlue,
         borderRadius: 20,
         height: 50,
         width: 300,

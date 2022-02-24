@@ -72,17 +72,6 @@ export const completedPickupReducer = (state = {}, action) => {
     }
 }
 
-export const hideComponentReducer = (state = {}, action) => {
-    switch(action.type) {
-        case actionTypes.HIDE_COMPONENT_ADD:
-            return { hide: true }
-        case actionTypes.HIDE_COMPONENT_REMOVE:
-            return { hide: false }
-        default: 
-            return state
-    }
-}
-
 export const sendSMSReducer = (state = {}, action) => {
     switch(action.type) {
         case actionTypes.SEND_MESSAGE_SUCCESS:

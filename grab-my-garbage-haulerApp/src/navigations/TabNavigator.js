@@ -5,6 +5,7 @@ import { Icon } from 'react-native-elements'
 import { colors } from '../global/styles'
 import Accountscreen from '../screens/accountScreens/AccountScreen'
 import Homescreen from '../screens/HomeScreen'
+import Prerequestscreen from '../screens/preRequestScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -12,20 +13,20 @@ const TabNavigator = () => {
     return (
         <Tab.Navigator
             screenOptions={{
-                tabBarActiveTintColor: colors.blue5,
-                tabBarInactiveTintColor: colors.blue6,
+                tabBarActiveTintColor: colors.darkBlue,
+                tabBarInactiveTintColor: colors.darkBlue,
                 tabBarStyle: {
                     position: 'absolute',
                     elevation: 0,
-                    backgroundColor: '#f9f9fc',
-                    height: 60
+                    backgroundColor: colors.grey8,
+                    height: 50
                 },
                 tabBarLabelStyle: {
                     fontSize: 11,
                     bottom: 4
                 },
-                tabBarShowLabel: true,
-                headerShown: false
+                tabBarShowLabel: false,
+                headerShown: false,
             }}
             initialRouteName = 'Home'
         >
@@ -33,33 +34,31 @@ const TabNavigator = () => {
                 name = 'Home'
                 component = {Homescreen}
                 options = {{
-                    tabBarLabel: 'Home',
                     tabBarIcon: ({ focused }) => (
                         <Icon
                             type = 'material'
                             name = 'explore'
-                            color = {focused ? colors.blue5 : colors.blue4 }
+                            color = {focused ? colors.darkBlue : colors.darkGrey }
                             size = {30}
                         />
                     ),
                 }}
             />
 
-            {/* <Tab.Screen
+            <Tab.Screen
                 name = 'Pickup'
-                component = {Topnavigator}
+                component = {Prerequestscreen}
                 options = {{
-                    tabBarLabel: 'Pickups',
                     tabBarIcon: ({ focused }) => (
                         <Icon
                             type = 'material'
                             name = 'local-shipping'
-                            color = {focused ? colors.blue5 : colors.blue4 }
+                            color = {focused ? colors.darkBlue : colors.darkGrey }
                             size = {30}
                         />
                     ),
                 }}
-            /> */}
+            />
 
             <Tab.Screen
                 name = 'Account'
@@ -69,7 +68,7 @@ const TabNavigator = () => {
                         <Icon
                             type = 'material-icons'
                             name = 'account-circle'
-                            color = {focused ? colors.blue5 : colors.blue4 }
+                            color = {focused ? colors.darkBlue : colors.darkGrey }
                             size = {30}
                         />
                     )

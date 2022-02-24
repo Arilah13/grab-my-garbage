@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, StyleSheet, Dimensions, ScrollView, Pressable, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Icon, Button } from 'react-native-elements'
+import { Icon } from 'react-native-elements'
+import Modal from 'react-native-modal'
 
 import Headercomponent from '../../components/HeaderComponent'
+import Mapcomponent from '../../components/MapComponent'
+import Chatcomponent from '../../components/ChatComponent'
+
 import { colors } from '../../global/styles'
 import { dayConverter } from '../../helpers/schedulePickuphelper'
 
@@ -13,6 +17,9 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Scheduledpickupdetail = ({navigation, route}) => {
 
     const { item, from, to } = route.params
+
+    const [modalVisible, setModalVisible] = useState(false)
+    const [modalVisible1, setModalVisible1] = useState(false)
 
     return (
         <SafeAreaView>
@@ -24,7 +31,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                 <Headercomponent name = 'Scheduled Pickups' />
 
                 <View style = {{height: 9*SCREEN_HEIGHT/10, backgroundColor: colors.grey8, borderTopLeftRadius: 30, borderTopRightRadius: 30}}>
-                    <Pressable style = {styles.container2} onPress = {() => navigation.navigate('Location', {location: item.location[0]})}>
+                    <Pressable style = {styles.container2} onPress = {() => setModalVisible(true)}>
                         <Icon 
                             type = 'feather'
                             name = 'map-pin'
@@ -86,7 +93,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         </View> 
                         <TouchableOpacity 
                             style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
-                            onPress = {() => navigation.navigate('Chat', {userid: item.customerId, name: 'Pickup Detail', pickupid: item._id})}
+                            onPress = {() => setModalVisible1(true)}
                         >
                             <Icon
                                 type = 'material'
@@ -100,6 +107,45 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                     </View>
                 </View>
             </ScrollView>
+
+            <Modal 
+                isVisible = {modalVisible}
+                swipeDirection = {'down'}
+                style = {{ justifyContent: 'flex-end', margin: 0 }}
+                onBackButtonPress = {() => setModalVisible(false)}
+                onBackdropPress = {() => setModalVisible(false)}
+                animationInTiming = {500}
+                animationOutTiming = {500}
+                useNativeDriver = {true}
+                useNativeDriverForBackdrop = {true}
+                deviceHeight = {SCREEN_HEIGHT}
+                deviceWidth = {SCREEN_WIDTH}
+            >
+                <View style = {styles.view1}>
+                    <Mapcomponent latlng = {item.location[0]}/>
+                </View>                
+            </Modal>
+
+            <Modal 
+                isVisible = {modalVisible1}
+                swipeDirection = {'down'}
+                style = {{ justifyContent: 'center', margin: 10 }}
+                onBackButtonPress = {() => setModalVisible1(false)}
+                onBackdropPress = {() => setModalVisible1(false)}
+                animationIn = 'zoomIn'
+                animationOut = 'zoomOut'
+                animationInTiming = {500}
+                animationOutTiming = {500}
+                useNativeDriver = {true}
+                useNativeDriverForBackdrop = {true}
+                deviceHeight = {SCREEN_HEIGHT}
+                deviceWidth = {SCREEN_WIDTH}
+            >
+                <View style = {styles.view2}>
+                    <Chatcomponent userid = {item.customerId} pickupid = {item._id} setModalVisible = {setModalVisible1}/>
+                </View>                
+            </Modal>
+
         </SafeAreaView>
     );
 }
@@ -180,6 +226,21 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: colors.darkBlue
-    }
+    },
+    view1:{
+        backgroundColor: colors.white,
+        height: '30%',
+        width: '100%',
+        borderTopEndRadius: 15,
+        borderTopStartRadius: 15,
+        overflow: 'hidden',
+    },
+    view2:{
+        backgroundColor: colors.white,
+        height: '95%',
+        width: '100%',
+        borderRadius: 15,
+        overflow: 'hidden',
+    },
 
 })

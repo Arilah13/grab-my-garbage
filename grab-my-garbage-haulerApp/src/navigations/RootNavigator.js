@@ -9,6 +9,7 @@ import Stacknavigator from './StackNavigator'
 
 import { uploadDetails } from '../redux/actions/userActions'
 import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
+import { addOrigin } from '../redux/actions/mapActions'
 
 const Rootnavigator = () => {
 
@@ -19,9 +20,14 @@ const Rootnavigator = () => {
 
     useEffect(async() => {
         const result = await AsyncStorage.getItem('haulerInfo')
-        //console.log(result)
+        const location = await AsyncStorage.getItem('userLocation')
+        
         if(result !== null) {
             dispatch(uploadDetails(JSON.parse(result)))
+        }
+        if(location === null && location.length > 0) {
+            const parse = await JSON.parse(location)
+            dispatch(addOrigin(parse.latitude, parse.longitude, parse.heading))
         }
 
         Location.hasStartedLocationUpdatesAsync(TASK_FETCH_LOCATION).then((value) => {

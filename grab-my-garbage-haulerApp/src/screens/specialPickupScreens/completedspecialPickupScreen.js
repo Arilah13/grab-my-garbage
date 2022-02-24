@@ -6,6 +6,8 @@ import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
+import Headercomponent from '../../components/HeaderComponent'
+
 import { getCompletedPickups } from '../../redux/actions/specialRequestActions'
 import { timeHelper, date1Helper } from '../../helpers/specialPickuphelper'
 
@@ -20,15 +22,12 @@ const CompletedPickupscreen = ({navigation}) => {
     const { loading, pickupInfo } = completedPickups
 
     useEffect(() => {
-        // const unsubscribe = navigation.addListener('focus', () => {
-            
-        // })
-        // return unsubscribe
         dispatch(getCompletedPickups())
     }, [])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+            <Headercomponent name = 'Pickup' destination = 'Pickup'/>
             <View style = {styles.container}>
                 {loading === true ?
                     <LottieView 
@@ -94,7 +93,7 @@ const CompletedPickupscreen = ({navigation}) => {
                                         marginLeft: SCREEN_WIDTH/1.65,
                                         backgroundColor: colors.buttons
                                     }}
-                                    onPress = {() => navigation.navigate('PickupDetail3', {item, time: timeHelper(item.datetime), completedTime: timeHelper(item.completedDate), date: date1Helper(item.completedDate), date1: date1Helper(item.datetime), buttons: false, name: 'Completed Pickups'})}
+                                    onPress = {() => navigation.navigate('PickupDetail', {item, time: timeHelper(item.datetime), completedTime: timeHelper(item.completedDate), date: date1Helper(item.completedDate), date1: date1Helper(item.datetime), buttons: false, name: 'Completed Pickups'})}
                                 />
                             </View>
                             </View>
@@ -115,7 +114,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         backgroundColor: colors.grey9,
         height: 7.8*SCREEN_HEIGHT/10,
-        paddingLeft: 10,
+        paddingLeft: 30,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         paddingTop: 10,

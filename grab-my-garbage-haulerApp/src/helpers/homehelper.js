@@ -31,10 +31,6 @@ export const getLocation = async() => {
         checkPermission()
         const {granted} = await Location.requestForegroundPermissionsAsync()
         if(!granted) return
-        const {coords} = await Location.getCurrentPositionAsync()
-        return coords
-        //latitude = coords.latitude
-        //longitude = coords.longitude
     } catch(err){
         console.log(err)
     }

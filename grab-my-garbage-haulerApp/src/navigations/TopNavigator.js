@@ -1,17 +1,12 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React from 'react'
+import { StyleSheet, Dimensions } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import { useNavigation, useRoute } from '@react-navigation/native'
-import { Icon } from 'react-native-elements'
 
 import Completedstacknavigator from './CompletedStackNavigator'
 import Pendingstacknavigator from './PendingStackNavigator'
 import Upcomingstacknavigator from './UpcomingStackNavigator'
 
 import { colors } from '../global/styles'
-import { hideComponent } from '../redux/actions/specialRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -20,53 +15,19 @@ const Tab = createMaterialTopTabNavigator()
 
 const Topnavigator = () => {
 
-    const navigation = useNavigation()
-    const dispatch = useDispatch()
-    const route = useRoute()
-
-    const hideComp = useSelector((state) => state.hideComponent)
-    const { hide } = hideComp
-
-    useEffect(() => {
-        dispatch(hideComponent(false))
-    }, [])
-
     return (
         <>
-            {
-                hide !== undefined && hide === false ?
-                <SafeAreaView>
-                    <TouchableOpacity style = {styles.container}
-                        onPress = {() => navigation.navigate('Home')}
-                    >
-                        <Icon
-                            type = 'material'
-                            name = 'arrow-back'
-                            color = {colors.blue5}
-                            size = {20}
-                            style = {{
-                                alignSelf: 'flex-start',
-                                marginTop: 15,
-                                display: 'flex'
-                            }}
-                        />
-                        <Text style = {styles.text}>Home</Text>
-                    </TouchableOpacity>
-                    {/* <View style = {styles.view1}>
-                        <Text style = {styles.text1}>Pickups</Text>
-                    </View> */}
-                </SafeAreaView>
-                : null
-            }
-
             <Tab.Navigator
                 screenOptions = {{
                     tabBarActiveTintColor: colors.white,
                     tabBarInactiveTintColor: colors.blue6,
                     tabBarStyle: {
                         elevation: 0,
-                        backgroundColor: colors.white,
-                        borderRadius: 15
+                        backgroundColor: colors.blue1,
+                        borderRadius: 15,
+                        marginLeft: 20,
+                        marginRight: 20,
+                        height: 45,
                     },
                     tabBarLabelStyle: {
                         fontSize: 13,
@@ -75,21 +36,17 @@ const Topnavigator = () => {
                     tabBarShowLabel: true,
                     headerShown: false,
                     tabBarIndicatorStyle: {
-                        height: 48,
+                        height: 40,
                         borderRadius: 15,
                     },
-                    tabBarPressColor: colors.white
+                    tabBarPressColor: colors.white,
+                    swipeEnabled: false,
                 }}
-                style = {
-                    hide !== undefined && hide === false ? 
-                    {
-                        paddingLeft: 20,
-                        paddingRight: 20,
-                        backgroundColor: colors.blue1,
-                    } : {
-                        backgroundColor: colors.blue1
-                    }
-                }
+                style = {{
+                    paddingBottom: 30,
+                    backgroundColor: colors.white,
+                }}
+                tabBarPosition = 'bottom'
             >
                 <Tab.Screen 
                     name = "pendingPickup" 

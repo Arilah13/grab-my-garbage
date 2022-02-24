@@ -6,6 +6,8 @@ import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
+import Headercomponent from '../../components/HeaderComponent'
+
 import { getPendingPickupsOffline } from '../../redux/actions/specialRequestActions'
 import { dateHelper, date1Helper, timeHelper } from '../../helpers/specialPickuphelper'
 
@@ -29,6 +31,7 @@ const PendingPickupscreen = ({navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+            <Headercomponent name = 'Pickup' destination = 'Pickup' />
             <View style = {styles.container}>
                 {loading === true ?
                     <LottieView 
@@ -114,8 +117,8 @@ const styles = StyleSheet.create({
     container:{
         display: 'flex',
         backgroundColor: colors.grey9,
-        height: 7.8*SCREEN_HEIGHT/10,
-        paddingLeft: 10,
+        height: 9*SCREEN_HEIGHT/10 - 100,
+        paddingLeft: 30,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         paddingTop: 10,

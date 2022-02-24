@@ -132,12 +132,11 @@ export const declinePickup = (id) => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/declinePickup/${id}`, {id: userInfo._id},
+        await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/declinePickup/${id}`, {id: userInfo._id},
         config)
 
         dispatch({
-            type: actionTypes.DECLINE_PICKUP_SUCCESS,
-            payload: data
+            type: actionTypes.DECLINE_PICKUP_SUCCESS
         })
         dispatch(getPendingPickupsOffline())
     } catch (err) {
@@ -159,12 +158,11 @@ export const acceptPickup = (id) => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/acceptPickup/${id}`, {id: userInfo._id},
+        await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/acceptPickup/${id}`, {id: userInfo._id},
         config)
 
         dispatch({
             type: actionTypes.ACCEPT_PICKUP_SUCCESS,
-            payload: data
         })
         dispatch(getPendingPickupsOffline())
         dispatch(getUpcomingPickups())
@@ -189,12 +187,11 @@ export const completedPickup = (id) => async(dispatch, getState) => {
 
         const date = new Date()
 
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/updateCompletedPickup/${id}`, {date},
+        await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/updateCompletedPickup/${id}`, {date},
         config)
 
         dispatch({
             type: actionTypes.PICKUP_COMPLETED_SUCCESS,
-            payload: data
         })
         dispatch(getUpcomingPickups())
     } catch (err) {
@@ -202,18 +199,8 @@ export const completedPickup = (id) => async(dispatch, getState) => {
             type: actionTypes.PICKUP_COMPLETED_FAIL,
             payload: err.response.data.msg
         })
+        console.log(err)
     }
-}
-
-export const hideComponent = (value) => async(dispatch) => {
-    if(value === true)
-        dispatch({
-            type: actionTypes.HIDE_COMPONENT_ADD
-        })
-    else if(value === false)
-        dispatch({
-            type: actionTypes.HIDE_COMPONENT_REMOVE
-        })
 }
 
 export const sendSMS = ({receiver, message}) => async(dispatch, getState) => {

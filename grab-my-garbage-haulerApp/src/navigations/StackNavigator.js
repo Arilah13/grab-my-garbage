@@ -1,26 +1,48 @@
 import React, { useEffect } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import socketIO from 'socket.io-client'
+import * as TaskManager from 'expo-task-manager'
 
-import specialpickupscreen from '../screens/specialPickupScreens/specialPickupScreen'
 import Topnavigator from './TopNavigator'
 import TabNavigator from './TabNavigator'
-import Chatscreen from '../screens/ChatScreen'
-import Prerequestscreen from '../screens/preRequestScreen'
 import Schedulepickuprequestscreen from '../screens/schedulePickupScreens/schedulePickupRequestScreen'
 import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePickupDetailScreen'
 import Locationscreen from '../screens/schedulePickupScreens/LocationScreen'
-import Scheduledpickupscreen from '../screens/schedulePickupScreens/scheduledPickupScreen'
 import Prepickupscreen from '../screens/prePickupScreen'
 
 import { addSocket } from '../redux/actions/socketActions'
+import { addOrigin } from '../redux/actions/mapActions'
+import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
 
 const Stack = createNativeStackNavigator()
 
 const Stacknavigator = () => {
 
     const dispatch = useDispatch()
+
+    const socketHolder = useSelector((state) => state.socketHolder)
+    const { socket: skt } = socketHolder
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
+    TaskManager.defineTask(TASK_FETCH_LOCATION, async({data, err}) => {
+        if(err) {
+            console.log(err)
+            return
+        }
+        if(data) {
+            const { locations } = data
+            const [location] = locations
+            //console.log(location)
+            dispatch(addOrigin(location.coords.latitude, location.coords.longitude, location.coords.heading))
+            skt.emit('online', {haulerid: userInfo._id, 
+                latitude: location.coords.latitude, longitude: location.coords.longitude,
+                heading: location.coords.heading
+            })
+        }
+    })
 
     useEffect(async() => {   
         const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/')
@@ -44,20 +66,6 @@ const Stacknavigator = () => {
                     headerShown: false
                 }}
             />
-            <Stack.Screen 
-                name = 'SpecialPickup' 
-                component = {specialpickupscreen} 
-                options = {{
-                    headerShown: false
-                }}
-            />
-            <Stack.Screen 
-                name = 'SchedulePickup' 
-                component = {Scheduledpickupscreen} 
-                options = {{
-                    headerShown: false
-                }}
-            />
             <Stack.Screen
                 name = 'History'
                 component = {Topnavigator}
@@ -65,20 +73,6 @@ const Stacknavigator = () => {
                     headerShown: false
                 }}
             />  
-            <Stack.Screen
-                name = 'Chat'
-                component = {Chatscreen}
-                options = {{
-                    headerShown: false
-                }}
-            />
-            <Stack.Screen
-                name = 'Request'
-                component = {Prerequestscreen}
-                options = {{
-                    headerShown: false
-                }}
-            />
             <Stack.Screen
                 name = 'Schedule'
                 component = {Schedulepickuprequestscreen}

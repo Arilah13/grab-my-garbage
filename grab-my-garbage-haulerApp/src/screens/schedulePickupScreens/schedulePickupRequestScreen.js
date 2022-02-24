@@ -7,8 +7,9 @@ import { Button, Icon } from 'react-native-elements'
 
 import Headercomponent from '../../components/HeaderComponent'
 import { colors } from '../../global/styles'
+
 import { getScheduledPickups } from '../../redux/actions/scheduleRequestActions'
-import { fromDate, dayConverter } from '../../helpers/schedulePickuphelper'
+import { fromDate } from '../../helpers/schedulePickuphelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -23,13 +24,10 @@ const Schedulepickuprequestscreen = ({navigation}) => {
         dispatch(getScheduledPickups())
     }, [])
     return (
-        <SafeAreaView>
-            <Headercomponent name = 'Home' />
+        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+            <Headercomponent name = 'Pickup' />
 
             <View style = {styles.container}>
-                <View style = {styles.view2}>
-                    <Text style = {styles.text9}>Today's Scheduled Pickup List</Text>
-                </View>
                 {loading === true ?
                     <LottieView 
                         source = {require('../../../assets/animation/truck_loader.json')}
@@ -110,6 +108,7 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                 : <Text style = {styles.text8}>No Pickup Available</Text>
                 }
             </View>
+
         </SafeAreaView>
     );
 }

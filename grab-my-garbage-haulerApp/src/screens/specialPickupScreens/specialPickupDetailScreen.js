@@ -3,22 +3,27 @@ import { useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
+import Modal from 'react-native-modal'
 
 import Headercomponent from '../../components/HeaderComponent'
+import Mapcomponent from '../../components/MapComponent'
+import Chatcomponent from '../../components/ChatComponent'
+
 import { colors } from '../../global/styles'
 import { declinePickup, acceptPickup } from '../../redux/actions/specialRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Pickupdetailscreen = ({route, navigation}) => {
+const Pickupdetailscreen = ({navigation, route}) => {
+    const dispatch = useDispatch()
 
     const { item, time, date, buttons, name, date1, completedTime } = route.params
 
     const [loading1, setLoading1] = useState(false)
     const [loading2, setLoading2] = useState(false)
-
-    const dispatch = useDispatch()
+    const [modalVisible, setModalVisible] = useState(false)
+    const [modalVisible1, setModalVisible1] = useState(false)
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -30,7 +35,9 @@ const Pickupdetailscreen = ({route, navigation}) => {
                 <Headercomponent name = {name} />    
 
                 <View style = {{height: 9*SCREEN_HEIGHT/10, backgroundColor: colors.grey8, borderTopLeftRadius: 30, borderTopRightRadius: 30}}>
-                    <Pressable style = {styles.container2} onPress = {() => navigation.navigate('Location', {location: item.location[0]})}>
+                    <Pressable style = {styles.container2} onPress = {() => {
+                        setModalVisible(true)
+                    }}>
                         <Icon 
                             type = 'feather'
                             name = 'map-pin'
@@ -150,7 +157,7 @@ const Pickupdetailscreen = ({route, navigation}) => {
                                 name === 'Upcoming Pickups' ? 
                                 <TouchableOpacity 
                                     style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
-                                    onPress = {() => navigation.navigate('Chat', {userid: item.customerId, name: 'Pickup Detail', pickupid: item._id})}
+                                    onPress = {() => setModalVisible1(true)}
                                 >
                                     <Icon
                                         type = 'material'
@@ -165,6 +172,42 @@ const Pickupdetailscreen = ({route, navigation}) => {
                     </View>
                 </View>
             </ScrollView>
+
+            <Modal 
+                isVisible = {modalVisible}
+                swipeDirection = {'down'}
+                style = {{ justifyContent: 'flex-end', margin: 0 }}
+                onBackButtonPress = {() => setModalVisible(false)}
+                onBackdropPress = {() => setModalVisible(false)}
+                animationInTiming = {500}
+                animationOutTiming = {500}
+                useNativeDriver = {true}
+                useNativeDriverForBackdrop = {true}
+            >
+                <View style = {styles.view}>
+                    <Mapcomponent latlng = {item.location[0]}/>
+                </View>                
+            </Modal>
+
+            <Modal 
+                isVisible = {modalVisible1}
+                style = {{ justifyContent: 'center', margin: 10 }}
+                onBackButtonPress = {() => setModalVisible1(false)}
+                onBackdropPress = {() => setModalVisible1(false)}
+                animationIn = 'zoomIn'
+                animationOut = 'zoomOut'
+                animationInTiming = {500}
+                animationOutTiming = {500}
+                useNativeDriver = {true}
+                useNativeDriverForBackdrop = {true}
+                deviceHeight = {SCREEN_HEIGHT}
+                deviceWidth = {SCREEN_WIDTH}
+            >
+                <View style = {styles.view1}>
+                    <Chatcomponent userid = {item.customerId} pickupid = {item._id} setModalVisible = {setModalVisible1}/>
+                </View>                
+            </Modal>
+
         </SafeAreaView>
     );
 }
@@ -245,6 +288,20 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: colors.darkBlue
-    }
+    },
+    view:{
+        backgroundColor: colors.white,
+        height: '30%',
+        borderTopRightRadius: 15,
+        borderTopLeftRadius: 15,
+        overflow: 'hidden'
+    },
+    view1:{
+        backgroundColor: colors.white,
+        height: '95%',
+        width: '100%',
+        borderRadius: 15,
+        overflow: 'hidden',
+    },
 
 })

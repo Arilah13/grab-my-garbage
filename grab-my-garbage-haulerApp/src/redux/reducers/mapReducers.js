@@ -1,16 +1,9 @@
 import * as actionTypes from '../constants/mapConstants'
 
-export const mapReducer = (state = { origin: {}, destination: {} }, action) => {
+export const mapReducer = (state = {}, action) => {
     switch(action.type){
         case actionTypes.ADD_ORIGIN:
-            return {origin: action.payload}
-        case actionTypes.ADD_DESTINATION:
-            return{
-                latitude: action.payload.latitude,
-                longitude: action.payload.longitude,
-                address: action.payload.address,
-                name: action.payload.name
-            }
+            return { origin: action.payload }
         default:
             return state
     }

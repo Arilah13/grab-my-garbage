@@ -6,8 +6,11 @@ import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
+import Headercomponent from '../../components/HeaderComponent'
+
 import { getUpcomingPickups } from '../../redux/actions/specialRequestActions'
 import { dateHelper, date1Helper, timeHelper } from '../../helpers/specialPickuphelper'
+
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -29,6 +32,7 @@ const UpcomingPickupscreen = ({navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+            <Headercomponent name = 'Pickup' destination = 'Pickup' />
             <View style = {styles.container}>
                 {loading === true ?
                     <LottieView 
@@ -94,7 +98,9 @@ const UpcomingPickupscreen = ({navigation}) => {
                                         marginLeft: SCREEN_WIDTH/1.65,
                                         backgroundColor: colors.buttons
                                     }}
-                                    onPress = {() => navigation.navigate('PickupDetail2', {item, time: timeHelper(item.datetime), date: dateHelper(item.datetime), date1: date1Helper(item.datetime), buttons: false, name: 'Upcoming Pickups'})}
+                                    onPress = {() => {
+                                        navigation.navigate('PickupDetail', {item, time: timeHelper(item.datetime), date: dateHelper(item.datetime), date1: date1Helper(item.datetime), buttons: false, name: 'Upcoming Pickups'}
+                                    )}}
                                 />
                             </View>
                             </View>
@@ -115,7 +121,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         backgroundColor: colors.grey9,
         height: 7.8*SCREEN_HEIGHT/10,
-        paddingLeft: 10,
+        paddingLeft: 30,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         paddingTop: 10,
