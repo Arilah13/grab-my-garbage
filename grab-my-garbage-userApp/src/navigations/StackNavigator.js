@@ -17,8 +17,6 @@ import Topnavigator from './TopNavigator'
 import Prerequestscreen from '../screens/preRequestScreen'
 import Schedulepickuprequestscreen from '../screens/scheduledPickupScreens/schedulePickupRequestScreen'
 import Scheduledpickupdetail from '../screens/scheduledPickupScreens/scheduledPickupDetail'
-import Scheduledpickupchatscreen from '../screens/scheduledPickupScreens/scheduledPickupChatScreen'
-import scheduledPickupLocationscreen from '../screens/scheduledPickupScreens/scheduledPickupLocationScreen'
 
 import { getPaymentIntent } from '../redux/actions/paymentActions'
 import { addSocket } from  '../redux/actions/socketActions'
@@ -33,7 +31,7 @@ const StackNavigator = () => {
     }, [])
 
     useEffect(async() => {
-        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/')
+        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com')
         dispatch(addSocket(socket))
     }, [])
 
@@ -151,21 +149,6 @@ const StackNavigator = () => {
                 }}
             />
 
-            <Stack.Screen
-                name = 'Chat'
-                component = {Scheduledpickupchatscreen}
-                options = {{
-                    headerShown: false
-                }}
-            />
-
-            <Stack.Screen
-                name = 'Location'
-                component = {scheduledPickupLocationscreen}
-                options = {{
-                    headerShown: false
-                }}
-            />
         </Stack.Navigator>
     );
 }

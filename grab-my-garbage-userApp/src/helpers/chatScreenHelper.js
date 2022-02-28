@@ -2,7 +2,7 @@ import { View } from 'react-native'
 import { Bubble, Send, InputToolbar, Composer, Message } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
 
-import { colors } from '../global/styles';
+import { colors } from '../global/styles'
 
 export const renderBubble = (props) => {
     return (
@@ -36,7 +36,7 @@ export const renderSend = (props) => {
                     color = {colors.darkBlue}
                     style = {{
                         marginRight: 5,
-                        marginBottom: 7
+                        marginBottom: 7,
                     }}
                 />
             </View>
@@ -60,9 +60,10 @@ export const renderInputToolbar = (props) => {
         <InputToolbar
             {...props}
             containerStyle = {{
-                borderRadius: 15,
                 height: 45,
-                backgroundColor: colors.blue1
+                backgroundColor: colors.white,
+                marginBottom: 0,
+                paddingBottom: 0
             }}
         />
     )
@@ -72,7 +73,7 @@ export const renderComposer = (props) => {
     return(
         <Composer 
             {...props}
-            placeholderTextColor = {colors.blue2}
+            placeholderTextColor = {colors.grey10}
         />
     )
 }

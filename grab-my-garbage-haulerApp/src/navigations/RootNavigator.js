@@ -25,7 +25,7 @@ const Rootnavigator = () => {
         if(result !== null) {
             dispatch(uploadDetails(JSON.parse(result)))
         }
-        if(location === null && location.length > 0) {
+        if(location === true) {
             const parse = await JSON.parse(location)
             dispatch(addOrigin(parse.latitude, parse.longitude, parse.heading))
         }

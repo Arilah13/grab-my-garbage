@@ -1,14 +1,15 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
+import React, { useEffect, useState, useRef } from 'react'
+import { useDispatch } from 'react-redux'
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, KeyboardAvoidingView, Animated } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { Icon } from 'react-native-elements'
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 import * as Location from 'expo-location'
 
 import Mapcomponent from '../components/MapComponent'
+
 import { addDestination } from '../redux/actions/mapActions'
+import { checkPermission } from '../helpers/destinationHelper'
 import { colors } from '../global/styles'
 import { GOOGLE_MAPS_APIKEY } from '@env'
 
@@ -18,6 +19,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const Destinationscreen = ({route, navigation}) => {
     const dispatch = useDispatch()
     const mapView = useRef()
+    const translation = useRef(new Animated.Value(SCREEN_HEIGHT/2.2)).current
 
     const [latlng, setLatLng] = useState({latitude: 6.9271, longitude: 79.8612})
     const [city, setCity] = useState()
@@ -31,19 +33,21 @@ const Destinationscreen = ({route, navigation}) => {
         vicinity: city
     }
 
-    const checkPermission = async() => {
-        const hasPermission = await Location.requestForegroundPermissionsAsync()
-        if(hasPermission.status !== 'granted') {
-            const permission = await askPermission()
-            
-            return permission
-        }
-        return true
-    };
-
-    const askPermission = async() => {
-        const permission = await Location.requestForegroundPermissionsAsync()
-        return permission.status === 'granted'
+    const animation = (value, value1, delay) => {
+        Animated.timing(translation, {
+            toValue: value,
+            useNativeDriver: true,
+            duration: 500,
+            delay: delay ? delay : 0
+        }).start()
+        setTimeout(() => {
+            Animated.timing(translation, {
+                toValue: value1,
+                useNativeDriver: true,
+                duration: 500,
+                delay: delay ? delay + 500 : 0
+            }).start()
+        }, 1000)
     }
 
     const getLocation = async() => {
@@ -74,10 +78,14 @@ const Destinationscreen = ({route, navigation}) => {
         getLocation()
     },[])
 
+    useEffect(() => {
+        animation(SCREEN_HEIGHT/2.2, 120)
+    }, [])
+
     return (
-        <SafeAreaView style = {styles.container}>
+        <SafeAreaView style = {{height: SCREEN_HEIGHT}}>
             <KeyboardAvoidingView behavior = 'position' keyboardVerticalOffset = {-50}>
-            <View style = {styles.container2}>
+            <View style = {{height: SCREEN_HEIGHT}}>
                 <Mapcomponent 
                     latlng = {latlng}
                     mapView = {mapView}
@@ -86,31 +94,41 @@ const Destinationscreen = ({route, navigation}) => {
                 />
 
                 <TouchableOpacity style = {styles.view}
-                        onPress = {() => {
-                            clearTimeout(timeout)
-                            navigation.navigate('Home')
+                    onPress = {() => {
+                        clearTimeout(timeout)
+                        navigation.navigate('Home')
+                    }}
+                >
+                    <Icon
+                        type = 'material'
+                        name = 'arrow-back'
+                        color = {colors.blue5}
+                        size = {25}
+                        style = {{
+                            alignSelf: 'flex-start',
+                            marginTop: 25,
+                            display: 'flex'
                         }}
-                    >
-                        <Icon
-                            type = 'material'
-                            name = 'arrow-back'
-                            color = {colors.blue5}
-                            size = {25}
-                            style = {{
-                                alignSelf: 'flex-start',
-                                marginTop: 25,
-                                display: 'flex'
-                            }}
-                        />
-                        <Text style = {styles.text}>Home</Text>
+                    />
+                    <Text style = {styles.text}>Home</Text>
                 </TouchableOpacity>
             </View>
-            <View style = {styles.container3}>
+            
+            <Animated.View style = {{...styles.container3, transform: [{translateY: translation}]}}>
                 <Text style = {styles.Text1}>Pick Up Location</Text>
                 <GooglePlacesAutocomplete
                     nearbyPlacesAPI = 'GoogleReverseGeocoding'
                     placeholder = 'Please enter your location'
+                    textInputProps = {{
+                        onChangeText: (text) => {
+                            if(!text)
+                                animation(0, 120)
+                            else
+                                animation(0, 0)
+                        },
+                    }}
                     listViewDisplayed = 'auto'
+                    keyboardShouldPersistTaps = 'handled'
                     debounce = {400}
                     currentLocation = {false}
                     minLength = {2}
@@ -152,10 +170,10 @@ const Destinationscreen = ({route, navigation}) => {
                                 mapView.current.fitToSuppliedMarkers(['mk1'], {
                                     animated: true,
                                     edgePadding: {
-                                        top: 50,
-                                        bottom: 50,
-                                        left: 50,
-                                        right: 50
+                                        top: SCREEN_WIDTH/20,
+                                        bottom: SCREEN_WIDTH/3,
+                                        left: SCREEN_WIDTH/20,
+                                        right: SCREEN_WIDTH/20,
                                     }
                                 })
                             }, 800)
@@ -170,7 +188,7 @@ const Destinationscreen = ({route, navigation}) => {
                         }, 4500)                       
                     }}
                 />
-            </View>
+            </Animated.View>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
@@ -180,14 +198,6 @@ export default Destinationscreen
 
 const styles = StyleSheet.create({
 
-    container: {
-        flex: 1
-    },
-    container2: {
-        maxHeight: SCREEN_HEIGHT/1.7,
-        //borderBottomEndRadius: -5,
-        zIndex: -1
-    },
     view: {
         position: 'absolute', 
         marginLeft: 15,
@@ -201,7 +211,10 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     container3: {
-        minHeight: SCREEN_HEIGHT/2.2,
+        position: 'absolute',
+        height: SCREEN_HEIGHT/2.2,
+        width: SCREEN_WIDTH,
+        marginTop: SCREEN_HEIGHT - SCREEN_HEIGHT/2.2,
         backgroundColor: colors.white,
         borderTopRightRadius: 25,
         borderTopLeftRadius: 25,

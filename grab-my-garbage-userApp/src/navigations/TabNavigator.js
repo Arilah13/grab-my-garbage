@@ -17,15 +17,15 @@ const TabNavigator = () => {
                 tabBarStyle: {
                     position: 'absolute',
                     elevation: 0,
-                    backgroundColor: '#f9f9fc',
+                    backgroundColor: colors.grey8,
                     //borderRadius: 15,
-                    height: 60
+                    height: 50
                 },
                 tabBarLabelStyle: {
                     fontSize: 11,
                     bottom: 4
                 },
-                tabBarShowLabel: true,
+                tabBarShowLabel: false,
                 headerShown: false
             }}
             initialRouteName = 'Home'
@@ -39,7 +39,7 @@ const TabNavigator = () => {
                         <Icon
                             type = 'material-community'
                             name = 'home'
-                            color = {focused ? colors.blue5 : colors.blue4 }
+                            color = {focused ? colors.darkBlue : colors.darkGrey }
                             size = {30}
                         />
                     ),
@@ -84,7 +84,7 @@ const TabNavigator = () => {
                         <Icon
                             type = 'material-icons'
                             name = 'account-circle'
-                            color = {focused ? colors.blue5 : colors.blue4 }
+                            color = {focused ? colors.darkBlue : colors.darkGrey }
                             size = {30}
                         />
                     )

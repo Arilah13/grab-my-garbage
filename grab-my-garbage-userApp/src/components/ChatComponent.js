@@ -1,22 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, KeyboardAvoidingView, Dimensions, Image } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { View, Text, StyleSheet, KeyboardAvoidingView, Dimensions, Image, Pressable } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
+import { Icon } from 'react-native-elements'
 
-import Headercomponent from '../../components/HeaderComponent'
-import { colors } from '../../global/styles'
-import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
-import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
+import { colors } from '../global/styles'
+
+import { getConversation, sendMessage, getMessage } from '../redux/actions/conversationActions'
+import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../helpers/chatScreenHelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Scheduledpickupchatscreen = ({route, navigation}) => {
+const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
 
     const dispatch = useDispatch()
-
-    const { name, haulerid, pickupid } = route.params
 
     const [messages, setMessages] = useState([])
 
@@ -93,51 +91,58 @@ const Scheduledpickupchatscreen = ({route, navigation}) => {
     }, [])
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1, height: SCREEN_HEIGHT}}>
-            <Headercomponent name = {name} />
-
-            <View style = {{height: 9*SCREEN_HEIGHT/10, paddingHorizontal: 15, paddingTop: 5}}>
-                <View style = {{backgroundColor: colors.white, borderTopRightRadius: 15, borderTopLeftRadius: 15, overflow: 'hidden'}}>
-                    <View style = {{height: 1*SCREEN_HEIGHT/10, flexDirection: 'row', backgroundColor: colors.grey10}}>
-                        <Image 
-                            source = {{uri: haulerid.image}}
-                            style = {styles.image}
-                        />
-                        <Text style = {styles.text}>{haulerid.name}</Text>
-                    </View>
-                    <View style = {{backgroundColor: colors.white, height: 8*SCREEN_HEIGHT/10, paddingBottom: 35}}>
-                        <GiftedChat
-                            messages = {messages}
-                            onSend = {messages => {
-                                onSend(messages)
-                                sendMsg(messages)
-                            }}
-                            user={{
-                                _id: user._id,
-                                name: user.name,
-                                avatar: user.image
-                            }}
-                            renderBubble = {renderBubble}
-                            alwaysShowSend = {true}
-                            renderSend = {renderSend}
-                            scrollToBottom = {true}
-                            scrollToBottomComponent = {scrollToBottomComponent}
-                            renderInputToolbar = {renderInputToolbar}
-                            renderComposer = {renderComposer}
-                            renderMessage = {renderMessage}
-                            isLoadingEarlier = {messageLoading === true ? true : false}
-                        />
-                        {
-                            Platform.OS === 'android' && <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {2.5*SCREEN_HEIGHT/10} />
-                        }
-                    </View>
-                </View>
+        <View style = {{backgroundColor: colors.white, borderTopRightRadius: 15, borderTopLeftRadius: 15, overflow: 'hidden'}}>
+            <View style = {{height: 1*SCREEN_HEIGHT/10, flexDirection: 'row', backgroundColor: colors.white}}>
+                <Pressable onPress = {() => setModalVisible(false)}>
+                    <Icon 
+                        type = 'font-awesome-5'
+                        name = 'angle-left'
+                        size = {32}
+                        color = {colors.darkBlue}
+                        style = {{
+                            marginLeft: 15,
+                            marginTop: 17,
+                            marginRight: 45
+                        }}
+                    />
+                </Pressable>
+                <Image 
+                    source = {{uri: haulerid.image}}
+                    style = {styles.image}
+                />
+                <Text style = {styles.text}>{haulerid.name}</Text>
             </View>
-        </SafeAreaView>
+            <View style = {{backgroundColor: colors.grey9, height: 8*SCREEN_HEIGHT/10, paddingBottom: 10}}>
+                <GiftedChat
+                    messages = {messages}
+                    onSend = {messages => {
+                        onSend(messages)
+                        sendMsg(messages)
+                    }}
+                    user={{
+                        _id: user._id,
+                        name: user.name,
+                        avatar: user.image
+                    }}
+                    renderBubble = {renderBubble}
+                    alwaysShowSend = {true}
+                    renderSend = {renderSend}
+                    scrollToBottom = {true}
+                    scrollToBottomComponent = {scrollToBottomComponent}
+                    renderInputToolbar = {renderInputToolbar}
+                    renderComposer = {renderComposer}
+                    renderMessage = {renderMessage}
+                    isLoadingEarlier = {messageLoading === true ? true : false}
+                />
+                {
+                    Platform.OS === 'android' && <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {2.5*SCREEN_HEIGHT/10} />
+                }
+            </View>
+        </View>
     );
 }
 
-export default Scheduledpickupchatscreen
+export default Chatcomponent
 
 const styles = StyleSheet.create({
 

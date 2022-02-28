@@ -45,7 +45,7 @@ const Stacknavigator = () => {
     })
 
     useEffect(async() => {   
-        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/')
+        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com')
         dispatch(addSocket(socket))
     }, [])
 

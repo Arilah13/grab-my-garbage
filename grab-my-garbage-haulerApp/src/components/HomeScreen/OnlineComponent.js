@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Text } from 'react-native'
+import { Text, Dimensions } from 'react-native'
 import ToggleButton from 'react-native-toggle-element'
 import * as Location from 'expo-location'
 import { Icon } from 'react-native-elements'
@@ -8,6 +8,9 @@ import { Icon } from 'react-native-elements'
 import { colors } from '../../global/styles'
 import { TASK_FETCH_LOCATION } from '../../redux/constants/mapConstants'
 import { getLocation } from '../../helpers/homehelper'
+
+const SCREEN_WIDTH = Dimensions.get('window').width
+const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Onlinecomponent = ({animation, online, setOnline, pickupBtn, choice, order}) => {
     
@@ -19,11 +22,11 @@ const Onlinecomponent = ({animation, online, setOnline, pickupBtn, choice, order
             await getLocation()
             
             if(pickupBtn === true)
-                animation(220, 30)
+                animation(2.8*SCREEN_HEIGHT/10, 2.8*SCREEN_HEIGHT/110)
             else if(choice === null && pickupBtn === false)
-                animation(220, 20)
+                animation(2.8*SCREEN_HEIGHT/10, 2.8*3*SCREEN_HEIGHT/220)
             else if(choice !== null && order === null) {
-                animation(200, 0)
+                animation(2.8*SCREEN_HEIGHT/11, 0)
             }
             setOnline(true)
 

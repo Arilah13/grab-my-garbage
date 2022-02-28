@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { View, StyleSheet, Dimensions, Animated } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -46,6 +46,9 @@ const Homescreen = ({navigation}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { loading: socketLoading, socket } = socketHolder
 
+    const map = useSelector((state) => state.map)
+    const { origin } = map
+
     const animation = (value, value1, delay) => {
         Animated.timing(translation, {
             toValue: value,
@@ -67,6 +70,7 @@ const Homescreen = ({navigation}) => {
         const pickupOrder = await pickup.sort((pickup_1, pickup_2) => 
             getLatngDiffInMeters(pickup_1.location[0].latitude, pickup_1.location[0].longitude, origin.latitude, origin.longitude) > 
             getLatngDiffInMeters (pickup_2.location[0].latitude, pickup_2.location[0].longitude, origin.latitude, origin.longitude) ? 1 : -1)
+        console.log(pickupOrder)
         return pickupOrder
     }
 
@@ -220,7 +224,7 @@ const Homescreen = ({navigation}) => {
                                         setTimeout(() => {
                                             setpickupBtn(false)
                                         }, 500) 
-                                        animation(220, 20)
+                                        animation(2.8*SCREEN_HEIGHT/10, 2.8*SCREEN_HEIGHT/110)
                                     }}
                                 />
                             ) : 
@@ -300,11 +304,11 @@ const styles = StyleSheet.create({
     view1:{
         position: 'absolute',
         padding: 10,
-        marginTop: SCREEN_HEIGHT/1.75,
+        marginTop: 5.5*SCREEN_HEIGHT/10,
     },
     view2:{
         width: SCREEN_WIDTH/1.05,
-        height: 220,
+        height: 2.8*SCREEN_HEIGHT/10,
         backgroundColor: colors.white,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20

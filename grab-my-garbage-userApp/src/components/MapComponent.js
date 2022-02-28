@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react'
-import { View, StyleSheet, Image } from 'react-native'
+import { View, StyleSheet, Image, Dimensions } from 'react-native'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 
 import { mapStyle } from '../global/mapStyle'
 
-const Mapcomponent = ({latlng, mapView, latlngDelta, timeoutValue}) => {  
+const SCREEN_HEIGHT = Dimensions.get('window').height
+const SCREEN_WIDTH = Dimensions.get('window').width
 
+const Mapcomponent = ({latlng, mapView, latlngDelta, timeoutValue}) => {  
     return (
         <View>
             <MapView
@@ -21,10 +23,10 @@ const Mapcomponent = ({latlng, mapView, latlngDelta, timeoutValue}) => {
                                 mapView.current.fitToSuppliedMarkers(['mk1'], {
                                     animated: true,
                                     edgePadding: {
-                                        top: 50,
-                                        bottom: 50,
-                                        left: 50,
-                                        right: 50
+                                        top: SCREEN_WIDTH/20,
+                                        bottom: SCREEN_WIDTH/20,
+                                        left: SCREEN_WIDTH/20,
+                                        right: SCREEN_WIDTH/20,
                                     }
                                 })
                             }, 1000)
