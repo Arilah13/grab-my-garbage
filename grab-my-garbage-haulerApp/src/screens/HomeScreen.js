@@ -6,13 +6,13 @@ import LottieView from 'lottie-react-native'
 import { Button } from 'react-native-elements'
 
 import { colors } from '../global/styles'
-import Onlinecomponent from '../components/HomeScreen/OnlineComponent'
-
 import { getLatngDiffInMeters } from '../helpers/homehelper'
 import { sendSMS } from '../redux/actions/specialRequestActions'
 import { getScheduledPickupsToCollect, completeScheduledPickup } from '../redux/actions/scheduleRequestActions'
 import { getUpcomingPickups, completedPickup } from '../redux/actions/specialRequestActions'
-import Mapcomponent from '../components/HomeScreen/MapComponent'
+
+import Onlinecomponent from '../components/HomeScreen/onlineComponent'
+import Mapcomponent from '../components/HomeScreen/mapComponent'
 import Onpickupcomponent from '../components/HomeScreen/onPickupComponent'
 import Pickupcompletecomponent from '../components/HomeScreen/pickupCompleteComponent'
 
@@ -70,7 +70,6 @@ const Homescreen = ({navigation}) => {
         const pickupOrder = await pickup.sort((pickup_1, pickup_2) => 
             getLatngDiffInMeters(pickup_1.location[0].latitude, pickup_1.location[0].longitude, origin.latitude, origin.longitude) > 
             getLatngDiffInMeters (pickup_2.location[0].latitude, pickup_2.location[0].longitude, origin.latitude, origin.longitude) ? 1 : -1)
-        console.log(pickupOrder)
         return pickupOrder
     }
 
@@ -81,7 +80,6 @@ const Homescreen = ({navigation}) => {
                 longitude: pickupOrder[0].location[0].longitude
             })
             setOrder(pickupOrder[0])
-            
             if (choice.current === 'schedule') {
                 socket.emit('scheduledPickupOnProgress', { haulerid: userInfo._id, ongoingPickup: pickupOrder[0], pickup: pickupOrder })
             } else if (choice.current === 'special') {
@@ -126,7 +124,7 @@ const Homescreen = ({navigation}) => {
 
             if (choice.current === 'schedule') {
                 dispatch(completeScheduledPickup({id: order._id, completedDate: new Date(), completedHauler: userInfo}))
-                socket.emit('schedulePickupCompleted', {pickupid: order._id, userid: order.customerId._id})
+                socket.emit('schedulePickupCompleted', {pickupid: order._id, userid: order.customerId._id, haulerid: userInfo._id})
             } else if(choice.current === 'special') {
                 dispatch(completedPickup(order._id))
                 socket.emit('pickupCompleted', {pickupid: order._id})

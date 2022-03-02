@@ -4,10 +4,10 @@ import { View, Text, StyleSheet, KeyboardAvoidingView, Dimensions, Image, Pressa
 import { GiftedChat } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
 
-import { colors } from '../global/styles'
+import { colors } from '../../global/styles'
 
-import { getConversation, sendMessage, getMessage } from '../redux/actions/conversationActions'
-import { renderBubble, renderComposer, renderInputToolbar, renderMessage, renderSend, scrollToBottomComponent } from '../helpers/chatScreenHelper'
+import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
+import { renderBubble, renderComposer, renderInputToolbar, renderMessage, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -60,6 +60,7 @@ const Chatcomponent = ({userid, pickupid, setModalVisible}) => {
     useEffect(() => {
         socket.on('getMessage', ({senderid, text, sender, createdAt, Pickupid}) => {
             const message = [{text, user: sender, createdAt, _id: Date.now()}]
+
             if(senderid === userid._id && pickupid === Pickupid)
                 onSend(message)
         })

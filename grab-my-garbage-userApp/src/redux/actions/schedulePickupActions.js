@@ -79,3 +79,10 @@ export const addOngoingSchedulePickupLocation = ({latitude, longitude, heading, 
         payload: data
     })
 }
+
+export const removeOngoingSchedulePickup = (pickupid) => async(dispatch) => {
+    dispatch({
+        type: actionTypes.REMOVE_ONGOING_SCHEDULED_PICKUP_LOCATION,
+        payload: pickupid
+    })
+}

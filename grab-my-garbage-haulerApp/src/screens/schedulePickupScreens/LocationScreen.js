@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { colors } from '../../global/styles'
-import Headercomponent from '../../components/HeaderComponent'
-import Mapcomponent from '../../components/MapComponent'
+import Headercomponent from '../../components/headerComponent'
+import Mapcomponent from '../../components/mapComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

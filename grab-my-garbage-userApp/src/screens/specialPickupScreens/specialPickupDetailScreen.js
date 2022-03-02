@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon } from 'react-native-elements'
+import Modal from 'react-native-modal'
 
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
+import Mapcomponent from '../../components/pickupComponent/mapComponent'
+import Chatcomponent from '../../components/pickupComponent/chatComponent'
+
 import { colors } from '../../global/styles'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -14,7 +17,8 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
 
     const { item, time, date, name, date1, completedTime } = route.params
 
-    const dispatch = useDispatch()
+    const [modalVisible, setModalVisible] = useState(false)
+    const [modalVisible1, setModalVisible1] = useState(false)
 
     return (
         <SafeAreaView>
@@ -26,7 +30,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                 <Headercomponent name = {name} />    
 
                 <View style = {{height: 9*SCREEN_HEIGHT/10, backgroundColor: colors.grey8, borderTopLeftRadius: 30, borderTopRightRadius: 30}}>
-                    <Pressable style = {styles.container2} onPress = {() => navigation.navigate('Location', {location: item.location[0], item})}>
+                    <Pressable style = {styles.container2} onPress = {() => setModalVisible(true) }>
                         <Icon 
                             type = 'feather'
                             name = 'map-pin'
@@ -118,7 +122,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                             </View> 
                             <TouchableOpacity 
                                 style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
-                                onPress = {() => navigation.navigate('Chat', {haulerid: item.pickerId, name: 'Pickup Detail', pickupid: item._id})}
+                                onPress = {() => setModalVisible1(true)}
                             >
                                 <Icon
                                     type = 'material'
@@ -132,6 +136,47 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                             : null
                         }
                     </View>
+
+                    <Modal 
+                        isVisible = {modalVisible}
+                        swipeDirection = {'down'}
+                        style = {{ justifyContent: 'center', margin: 10 }}
+                        onBackButtonPress = {() => setModalVisible(false)}
+                        onBackdropPress = {() => setModalVisible(false)}
+                        animationIn = 'zoomIn'
+                        animationOut = 'zoomOut'
+                        animationInTiming = {500}
+                        animationOutTiming = {500}
+                        useNativeDriver = {true}
+                        useNativeDriverForBackdrop = {true}
+                        deviceHeight = {SCREEN_HEIGHT}
+                        deviceWidth = {SCREEN_WIDTH}
+                    >
+                        <View style = {styles.view1}>
+                            <Mapcomponent location = {item.location[0]} item = {item} setModalVisible = {setModalVisible} type = 'special' navigation = {navigation} />
+                        </View>                
+                    </Modal>
+
+                    <Modal 
+                        isVisible = {modalVisible1}
+                        swipeDirection = {'down'}
+                        style = {{ justifyContent: 'center', margin: 10 }}
+                        onBackButtonPress = {() => setModalVisible1(false)}
+                        onBackdropPress = {() => setModalVisible1(false)}
+                        animationIn = 'zoomIn'
+                        animationOut = 'zoomOut'
+                        animationInTiming = {500}
+                        animationOutTiming = {500}
+                        useNativeDriver = {true}
+                        useNativeDriverForBackdrop = {true}
+                        deviceHeight = {SCREEN_HEIGHT}
+                        deviceWidth = {SCREEN_WIDTH}
+                    >
+                        <View style = {styles.view2}>
+                            <Chatcomponent haulerid = {item.pickerId} pickupid = {item._id} setModalVisible = {setModalVisible1}/>
+                        </View>                
+                    </Modal>
+
                 </View>
             </ScrollView>
         </SafeAreaView>

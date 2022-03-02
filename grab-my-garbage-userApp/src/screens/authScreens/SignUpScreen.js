@@ -8,7 +8,7 @@ import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
 import { register } from '../../redux/actions/userActions'
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

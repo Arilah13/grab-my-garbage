@@ -6,9 +6,10 @@ import LottieView from 'lottie-react-native'
 
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
+
 import { getUserDetails } from '../redux/actions/userActions'
-import { addOngoingPickupLocation } from '../redux/actions/specialPickupActions'
-import { addOngoingSchedulePickupLocation } from '../redux/actions/schedulePickupActions'
+import { addOngoingPickupLocation, removeOngoingPickup } from '../redux/actions/specialPickupActions'
+import { addOngoingSchedulePickupLocation, removeOngoingSchedulePickup } from '../redux/actions/schedulePickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -46,6 +47,12 @@ const Homescreen = ({navigation}) => {
                 dispatch(addOngoingSchedulePickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: time.haulerid, ongoingPickupid: ongoingPickup, pickupid: pickupid, time: time.time}))
             })
 
+            socket.on('pickupDone', async(pickupid) => {
+                dispatch(removeOngoingPickup(pickupid))
+            })
+            socket.on('schedulePickupDone', async({pickupid}) => {
+                dispatch(removeOngoingSchedulePickup(pickupid))
+            })
         }
     }, [socket])
 

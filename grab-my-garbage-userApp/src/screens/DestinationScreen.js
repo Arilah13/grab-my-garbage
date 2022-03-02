@@ -6,7 +6,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { Icon } from 'react-native-elements'
 import * as Location from 'expo-location'
 
-import Mapcomponent from '../components/MapComponent'
+import Mapcomponent from '../components/mapComponent'
 
 import { addDestination } from '../redux/actions/mapActions'
 import { checkPermission } from '../helpers/destinationHelper'

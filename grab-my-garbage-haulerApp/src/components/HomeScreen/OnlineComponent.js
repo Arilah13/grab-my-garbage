@@ -4,6 +4,7 @@ import { Text, Dimensions } from 'react-native'
 import ToggleButton from 'react-native-toggle-element'
 import * as Location from 'expo-location'
 import { Icon } from 'react-native-elements'
+import * as TaskManager from 'expo-task-manager'
 
 import { colors } from '../../global/styles'
 import { TASK_FETCH_LOCATION } from '../../redux/constants/mapConstants'
@@ -24,7 +25,7 @@ const Onlinecomponent = ({animation, online, setOnline, pickupBtn, choice, order
             if(pickupBtn === true)
                 animation(2.8*SCREEN_HEIGHT/10, 2.8*SCREEN_HEIGHT/110)
             else if(choice === null && pickupBtn === false)
-                animation(2.8*SCREEN_HEIGHT/10, 2.8*3*SCREEN_HEIGHT/220)
+                animation(2.8*SCREEN_HEIGHT/10, 2.8*SCREEN_HEIGHT/110)
             else if(choice !== null && order === null) {
                 animation(2.8*SCREEN_HEIGHT/11, 0)
             }
@@ -42,10 +43,10 @@ const Onlinecomponent = ({animation, online, setOnline, pickupBtn, choice, order
             })
         } else {
             if(pickupBtn === true) {
-                animation(30, 220)
+                animation(2.8*SCREEN_HEIGHT/110, 2.8*SCREEN_HEIGHT/10)
             }
             else if(choice === null && pickupBtn === false) {
-                animation(20, 220)
+                animation(2.8*SCREEN_HEIGHT/110, 2.8*SCREEN_HEIGHT/10)
             }
             else if(choice !== null && order === null) {
                 animation(0, 220)

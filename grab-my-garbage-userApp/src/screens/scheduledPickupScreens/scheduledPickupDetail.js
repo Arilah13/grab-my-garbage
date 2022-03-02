@@ -4,9 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon } from 'react-native-elements'
 import Modal from 'react-native-modal'
 
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/pickupComponent/mapComponent'
-import Chatcomponent from '../../components/ChatComponent'
+import Chatcomponent from '../../components/pickupComponent/chatComponent'
 
 import { colors } from '../../global/styles'
 import { dayConverter } from '../../helpers/schedulepickupHelper'
@@ -123,7 +123,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         deviceWidth = {SCREEN_WIDTH}
                     >
                         <View style = {styles.view1}>
-                            <Mapcomponent location = {item.location[0]} item = {item}/>
+                            <Mapcomponent location = {item.location[0]} item = {item} setModalVisible = {setModalVisible} type = 'schedule' navigation = {navigation} />
                         </View>                
                     </Modal>
 
@@ -143,7 +143,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         deviceWidth = {SCREEN_WIDTH}
                     >
                         <View style = {styles.view2}>
-                            <Chatcomponent haulerid = {item.pickerId} pickupid = {item._id} setModalVisible = {setModalVisible1}/>
+                            <Chatcomponent haulerid = {item.pickerId} pickupid = {item._id} setModalVisible = {setModalVisible1} />
                         </View>                
                     </Modal>
 

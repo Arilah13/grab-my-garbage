@@ -168,10 +168,10 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                             if(redo === true){
                                 mapView.current.fitToCoordinates(result.coordinates, {
                                     edgePadding: {
-                                        right: SCREEN_WIDTH/20,
+                                        right: SCREEN_WIDTH/7,
                                         bottom: SCREEN_HEIGHT/3,
-                                        left: SCREEN_WIDTH/20,
-                                        top: SCREEN_HEIGHT/20
+                                        left: SCREEN_WIDTH/7,
+                                        top: SCREEN_HEIGHT/7
                                     }
                                 })
 

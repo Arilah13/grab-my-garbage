@@ -11,7 +11,7 @@ import LottieView from 'lottie-react-native'
 import { colors } from '../../global/styles'
 import { mapStyle } from '../../global/mapStyle'
 import { GOOGLE_MAPS_APIKEY } from '@env'
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 import { removeOngoingPickup, getAcceptedPickups, getCompletedPickups } from '../../redux/actions/specialPickupActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width

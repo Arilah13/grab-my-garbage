@@ -9,7 +9,7 @@ import Modal from 'react-native-modal'
 import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 import { getUserDetails, updateUserProfile } from '../../redux/actions/userActions'
 import { USER_UPDATE_PROFILE_RESET } from '../../redux/constants/userConstants'
 

@@ -11,7 +11,7 @@ import * as Yup from 'yup'
 import { colors } from '../../global/styles'
 import { specialLogin, specialLoginFB ,Login } from '../../redux/actions/userActions'
 import { ANDROID_CLIENT_ID } from '@env'
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

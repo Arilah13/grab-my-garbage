@@ -7,7 +7,7 @@ import Modal from 'react-native-modal'
 import axios from 'axios'
 
 import { colors } from '../../global/styles'
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

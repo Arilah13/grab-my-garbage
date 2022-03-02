@@ -7,7 +7,7 @@ import { Formik } from 'formik'
 import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 import { updateUserPassword } from '../../redux/actions/userActions'
 import { USER_UPDATE_PROFILE_RESET } from '../../redux/constants/userConstants'
 

@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, KeyboardAvoidingView, Dimensions, Image } from 
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { GiftedChat } from 'react-native-gifted-chat'
 
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 import { colors } from '../../global/styles'
 import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'

@@ -9,7 +9,7 @@ import { StripeProvider } from '@stripe/stripe-react-native'
 import socketIO from 'socket.io-client'
 
 import { colors } from '../../global/styles'
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 import { getPaymentSheet } from '../../redux/actions/paymentActions'
 import { getSpecialPickupInfo } from '../../redux/actions/specialPickupActions'
 import { getScheduledPickupInfo } from '../../redux/actions/schedulePickupActions'

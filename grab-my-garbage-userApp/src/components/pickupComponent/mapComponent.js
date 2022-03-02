@@ -6,18 +6,23 @@ import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import * as Linking from 'expo-linking'
 import LottieView from 'lottie-react-native'
+import Modal from 'react-native-modal'
 
 import { colors } from '../../global/styles'
 import { mapStyle } from '../../global/mapStyle'
 import { GOOGLE_MAPS_APIKEY } from '@env'
+
 import { removeOngoingPickup } from '../../redux/actions/specialPickupActions'
+import { removeOngoingSchedulePickup } from '../../redux/actions/schedulePickupActions'
+
+import Chatcomponent from './chatComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 
-const Mapcomponent = ({location, item}) => {
+const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
 
     const dispatch = useDispatch()
 
@@ -26,12 +31,21 @@ const Mapcomponent = ({location, item}) => {
     const first = useRef(true)
     const translation = useRef(new Animated.Value(SCREEN_HEIGHT/4.3)).current
     const fade = useRef(new Animated.Value(0)).current
+    const rotation = useRef(new Animated.Value(0)).current
+
+    const bearingDegree = rotation.interpolate({
+        inputRange: [0, 360],
+        outputRange: ['0deg', '360deg']
+    })
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
     const ongoingScheduledPickupLocation = useSelector((state) => state.ongoingScheduledPickupLocation)
     const { ongoingPickups } = ongoingScheduledPickupLocation
+
+    const ongoingPickupLocation = useSelector((state) => state.ongoingPickupLocation)
+    const { ongoingPickups: ongoingSpecialPickups } = ongoingPickupLocation
 
     const [redo, setRedo] = useState(true)
     const [pickup, setPickup] = useState(null)
@@ -40,6 +54,8 @@ const Mapcomponent = ({location, item}) => {
     const [show, setShow] = useState(false)
     const [timeout1, setTimeoutValue1] = useState(null)
     const [timeout2, setTimeoutValue2] = useState(null)
+    const [timeout3, setTimeoutValue3] = useState(null)
+    const [modalVisible1, setModalVisible1] = useState(false)
 
     const timeChanger = (duration) => {
         const date = new Date().getTime() 
@@ -56,31 +72,67 @@ const Mapcomponent = ({location, item}) => {
     }
 
     useEffect(() => {
-        if(ongoingPickups !== undefined && ongoingPickups.length > 0) {
-            const ongoingPickup =  ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
-            if(ongoingPickup) {
-                setPickup(ongoingPickup)
-                timeChanger(ongoingPickup.time)
-                if(ongoingPickup.pickupid === ongoingPickup.ongoingPickupid){
-                    setShow(true)
-                    mapView.current.animateToRegion({
-                        latitude: ongoingPickup.latitude,
-                        longitude: ongoingPickup.longitude,
-                        latitudeDelta: 0.0005,
-                        longitudeDelta: 0.00025
-                    }, 5000)
-                    if(first.current === false)
-                        marker.current.animateMarkerToCoordinate({latitude: ongoingPickup.latitude, longitude: ongoingPickup.longitude}, 5000)
-                    first.current = false
+        if (type === 'schedule') {
+            if(ongoingPickups !== undefined && ongoingPickups.length > 0) {
+                const ongoingPickup =  ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
+                if(ongoingPickup) {
+                    setPickup(ongoingPickup)
+                    timeChanger(ongoingPickup.time)
+                    Animated.timing(rotation, {
+                        toValue: ongoingPickup.heading,
+                        useNativeDriver: true,
+                        duration: 4000
+                    }).start()
+                    if(ongoingPickup.pickupid === ongoingPickup.ongoingPickupid){
+                        setShow(true)
+                        mapView.current.animateToRegion({
+                            latitude: ongoingPickup.latitude,
+                            longitude: ongoingPickup.longitude,
+                            latitudeDelta: 0.0005,
+                            longitudeDelta: 0.00025
+                        }, 2000)
+                        if(ongoingPickup)
+                            marker.current.animateMarkerToCoordinate({latitude: ongoingPickup.latitude, longitude: ongoingPickup.longitude}, 5000)
+                    }
+                    Animated.timing(translation, {
+                        toValue: 0,
+                        useNativeDriver: true,
+                        duration: 1000
+                    }).start()
                 }
-                Animated.timing(translation, {
-                    toValue: 0,
-                    useNativeDriver: true,
-                    duration: 1000
-                }).start()
+            }
+        } else if (type === 'special') {
+            if(ongoingSpecialPickups !== undefined && ongoingSpecialPickups.length > 0) {
+                const ongoingSpecialPickup =  ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
+                if(ongoingSpecialPickup) {
+                    setPickup(ongoingSpecialPickup)
+                    timeChanger(ongoingSpecialPickup.time)
+                    Animated.timing(rotation, {
+                        toValue: ongoingSpecialPickup.heading,
+                        useNativeDriver: true,
+                        duration: 4000
+                    }).start()
+                    if(ongoingSpecialPickup.pickupid === ongoingSpecialPickup.ongoingPickupid){
+                        setShow(true)
+                        mapView.current.animateToRegion({
+                            latitude: ongoingSpecialPickup.latitude,
+                            longitude: ongoingSpecialPickup.longitude,
+                            latitudeDelta: 0.0005,
+                            longitudeDelta: 0.00025
+                        }, 2000)
+                        if(ongoingSpecialPickup)
+                            marker.current.animateMarkerToCoordinate({latitude: ongoingSpecialPickup.latitude, longitude: ongoingSpecialPickup.longitude}, 5000)
+                        first.current = false
+                    }
+                    Animated.timing(translation, {
+                        toValue: 0,
+                        useNativeDriver: true,
+                        duration: 1000
+                    }).start()
+                }
             }
         }
-    }, [ongoingPickups]) 
+    }, [ongoingPickups, ongoingSpecialPickups]) 
 
     useEffect(() => {
         if(pickup !== null) 
@@ -91,13 +143,25 @@ const Mapcomponent = ({location, item}) => {
 
     useEffect(() => {
         socket.on('pickupDone', async({pickupid}) => {
-            setPickup(null)
-            dispatch(removeOngoingPickup(pickupid))
-            setComplete(true)
-            const timeout = setTimeout(() => {
-                navigation.navigate('acceptedPickup')
-            }, 1500)
-            setTimeoutValue2(timeout)
+            if(item._id === pickupid) {
+                setPickup(null)
+                setComplete(true)
+                const timeout = setTimeout(() => {
+                    setModalVisible(false)
+                }, 2500)
+                setTimeoutValue2(timeout)
+            }
+        })
+
+        socket.on('schedulePickupDone', async({pickupid}) => {
+            if(item._id === pickupid) {
+                setPickup(null)
+                setComplete(true)
+                const timeout = setTimeout(() => {
+                    setModalVisible(false)
+                }, 2500)
+                setTimeoutValue2(timeout)
+            }
         })
     }, [socket])
 
@@ -117,7 +181,7 @@ const Mapcomponent = ({location, item}) => {
                 customMapStyle = {mapStyle}
                 showsUserLocation = {false}
                 followsUserLocation = {false}
-                initialRegion = {{ latitude: location.latitude, longitude: location.longitude, latitudeDelta: 0.02, longitudeDelta: 0.01 }}
+                initialRegion = {{latitude: location.latitude, longitude: location.longitude, latitudeDelta: 0.02, longitudeDelta: 0.01}}
                 ref = {mapView}
                 minZoomLevel = {8}
                 maxZoomLevel = {20}
@@ -128,7 +192,11 @@ const Mapcomponent = ({location, item}) => {
                 >
                     <AnimatedImage
                         source = {require('../../../assets/marker.png')}
-                        style = {styles.marker}
+                        style = {{
+                            width: 25,
+                            height: 25,
+                            resizeMode: 'cover',
+                        }}
                     />
                 </Marker.Animated>
                 {
@@ -140,8 +208,15 @@ const Mapcomponent = ({location, item}) => {
                             anchor = {{x: 0.5, y: 0.5}}
                         >
                             <AnimatedImage
-                                source = {require('../../../assets/garbage_truck.png')}
-                                style = {styles.marker2}
+                                source = {require('../../../assets/map/truck_garbage.png')}
+                                style = {{
+                                    width: 35,
+                                    height: 35,
+                                    resizeMode: 'cover',
+                                    transform: [{
+                                        rotate: bearingDegree
+                                    }]
+                                }}
                             />
                         </Marker.Animated>
                         <MapViewDirections
@@ -149,8 +224,8 @@ const Mapcomponent = ({location, item}) => {
                             destination = {{latitude: location.latitude, longitude: location.longitude}}
                             mode = 'DRIVING'
                             language = 'en'
-                            strokeWidth = {show === true ? 3 : 0}
-                            strokeColor = {colors.blue2}
+                            strokeWidth = {show === true ? 5 : 0}
+                            strokeColor = {colors.darkBlue}
                             apikey = {GOOGLE_MAPS_APIKEY}
                             resetOnChange = {false}
                             timePrecision = 'now'
@@ -179,7 +254,7 @@ const Mapcomponent = ({location, item}) => {
             <Animated.View style = {{...styles.view, opacity: fade}}>
                 <TouchableOpacity onPress = {() => {
                         //clearTimeout(timeout)
-                        navigation.navigate('Home')
+                        setModalVisible(false)
                     }}
                 >
                     <Icon
@@ -246,9 +321,7 @@ const Mapcomponent = ({location, item}) => {
                                     style = {{
                                         flexDirection: 'row', 
                                     }}
-                                    onPress = {() => navigation.navigate('Chat', {
-                                        haulerid: pickup.haulerid, name: 'Location', pickupid: pickup.pickupid
-                                    })}
+                                    onPress = {() => setModalVisible1(true)}
                                 >
                                     <Icon
                                         type = 'material'
@@ -258,7 +331,28 @@ const Mapcomponent = ({location, item}) => {
                                     />    
                                     <Text style = {styles.text2}>Chat</Text>
                                 </TouchableOpacity>
-                            </View>     
+                            </View>    
+                            
+                            {
+                                pickup !== null &&
+                                <Modal
+                                    isVisible = {modalVisible1}
+                                    swipeDirection = {'down'}
+                                    style = {{ justifyContent: 'flex-end', marginHorizontal: 10, marginBottom: 0 }}
+                                    onBackButtonPress = {() => setModalVisible1(false)}
+                                    onBackdropPress = {() => setModalVisible1(false)}
+                                    animationInTiming = {500}
+                                    animationOutTiming = {500}
+                                    useNativeDriver = {true}
+                                    useNativeDriverForBackdrop = {true}
+                                    deviceHeight = {SCREEN_HEIGHT}
+                                    deviceWidth = {SCREEN_WIDTH}
+                                >
+                                    <View style = {styles.view3}>
+                                        <Chatcomponent haulerid = {pickup.haulerid} pickupid = {pickup.pickupid} setModalVisible = {setModalVisible1}/>
+                                    </View>  
+                                </Modal>
+                            } 
                             </>                             
                     }                           
                 </View>
@@ -286,14 +380,6 @@ const styles = StyleSheet.create({
         width: "100%",
         zIndex: -1
     },    
-    marker: {
-        width: 28,
-        height: 29,
-    },
-    marker2: {
-        width: 28,
-        height: 40,
-    },
     view1:{
         position: 'absolute',
         padding: 10,
@@ -328,6 +414,14 @@ const styles = StyleSheet.create({
         marginLeft: 30,
         borderColor: colors.darkBlue,
         borderWidth: 2
+    },
+    view3:{
+        backgroundColor: colors.white,
+        height: '95%',
+        width: '100%',
+        borderTopStartRadius: 15,
+        borderTopEndRadius: 15,
+        overflow: 'hidden',
     },
 
 })

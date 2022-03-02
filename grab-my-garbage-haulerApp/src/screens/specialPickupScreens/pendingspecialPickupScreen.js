@@ -6,7 +6,7 @@ import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 
 import { getPendingPickupsOffline } from '../../redux/actions/specialRequestActions'
 import { dateHelper, date1Helper, timeHelper } from '../../helpers/specialPickuphelper'

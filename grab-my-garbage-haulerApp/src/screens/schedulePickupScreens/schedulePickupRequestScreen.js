@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
-import Headercomponent from '../../components/HeaderComponent'
+import Headercomponent from '../../components/headerComponent'
 import { colors } from '../../global/styles'
 
 import { getScheduledPickups } from '../../redux/actions/scheduleRequestActions'
