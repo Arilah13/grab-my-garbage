@@ -6,8 +6,11 @@ import LottieView from 'lottie-react-native'
 import { Icon, Button } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
-import { getPendingPickups } from '../../redux/actions/specialPickupActions'
 import { dateHelper, timeHelper, date1Helper } from '../../helpers/pickupHelper'
+
+import { getPendingPickups } from '../../redux/actions/specialPickupActions'
+
+import Headercomponent from '../../components/headerComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -29,6 +32,7 @@ const Pendingspecialpickupscreen = ({navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+            <Headercomponent name = 'Home' destination = 'Home' />
 
             <View style = {styles.container}>   
                 {loading === true ?
@@ -87,7 +91,7 @@ const Pendingspecialpickupscreen = ({navigation}) => {
                                             marginLeft: SCREEN_WIDTH/1.65,
                                             backgroundColor: colors.buttons
                                         }}
-                                        onPress = {() => navigation.navigate('pickupDetail', {item, time: timeHelper(item.datetime), date1: date1Helper(item.datetime), date: dateHelper(item.datetime), name: 'Pending Pickups'})}
+                                        onPress = {() => navigation.navigate('pickupDetail', {item, name: 'Pending Pickups'})}
                                     />
                                 </View>
                                 </View>
@@ -109,8 +113,8 @@ const styles = StyleSheet.create({
     container:{
         display: 'flex',
         backgroundColor: colors.grey9,
-        height: '100%',
-        paddingLeft: 10,
+        height: 7.8*SCREEN_HEIGHT/10,
+        paddingLeft: 30,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         paddingTop: 10

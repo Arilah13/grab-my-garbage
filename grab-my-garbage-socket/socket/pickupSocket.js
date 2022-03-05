@@ -6,9 +6,9 @@ let ongoingSpecialPickups = []
 let ongoingScheduledPickups = []
 
 const pickupSocket = {
-    haulerJoin: async({id, haulerid, latitude, longitude}) => {
-        const hauler = {id, haulerid, latitude, longitude}
-        const exist = haulers.find((hauler) => hauler.haulerid === haulerid)
+    haulerJoin: async({id, haulerid, latitude, longitude, heading}) => {
+        const hauler = {id, haulerid, latitude, longitude, heading}
+        const exist = await haulers.find((hauler) => hauler.haulerid === haulerid)
 
         if(!exist) {
             haulers.push(hauler)
@@ -21,7 +21,7 @@ const pickupSocket = {
     },
     userJoin: async({id, userid}) => {
         const user = {id, userid}
-        const exist = users.find((user) => user.userid === userid)
+        const exist = await users.find((user) => user.userid === userid)
 
         if(!exist) {
             users.push(user)
@@ -42,7 +42,7 @@ const pickupSocket = {
     },
     pickupOnProgress: async({haulerid, pickupid, userid}) => {
         const ongoingPickup = {userid, haulerid, pickupid}
-        const exist = ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.pickupid === pickupid)
+        const exist = await ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.pickupid === pickupid)
 
         if(!exist)
             ongoingSpecialPickups.push(ongoingPickup)
@@ -51,7 +51,7 @@ const pickupSocket = {
     },
     scheduledPickupOnProgress: async({haulerid, ongoingPickup, pickup}) => {
         const scheduledOngoingPickup = {haulerid, ongoingPickup, pickup}
-        const exist = ongoingScheduledPickups.find((ongoingScheduledPickup) => ongoingScheduledPickup.haulerid === haulerid)
+        const exist = await ongoingScheduledPickups.find((ongoingScheduledPickup) => ongoingScheduledPickup.haulerid === haulerid)
 
         if(!exist)
             ongoingScheduledPickups.push(scheduledOngoingPickup)
@@ -59,7 +59,7 @@ const pickupSocket = {
         return scheduledOngoingPickup
     },
     checkOngoingPickup: async({userid}) => {
-        const ongoingPickup = ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.userid === userid)
+        const ongoingPickup = await ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.userid === userid)
 
         if(ongoingPickup)
             return ongoingPickup
@@ -81,8 +81,8 @@ const pickupSocket = {
             return Promise.all(ongoingScheduledPickup)
     },
     returnHaulerLocation: async({haulerid}) => {
-        const hauler = haulers.find((hauler) => hauler.haulerid === haulerid)
-
+        const hauler = await haulers.find((hauler) => hauler.haulerid === haulerid)
+        
         if(hauler) 
             return hauler
     },
@@ -102,26 +102,26 @@ const pickupSocket = {
         return ongoingPickup
     },
     findPickupOnProgress: async({haulerid}) => {
-        const ongoingPickup = ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.haulerid === haulerid)
+        const ongoingPickup = await ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.haulerid === haulerid)
 
         if(ongoingPickup)
             return ongoingPickup
     },
     findScheduledPickupOnProgress: async({haulerid}) => {
-        const ongoingPickup = ongoingScheduledPickups.find((ongoingScheduledPickup) => ongoingScheduledPickup.haulerid === haulerid)
+        const ongoingPickup = await ongoingScheduledPickups.find((ongoingScheduledPickup) => ongoingScheduledPickup.haulerid === haulerid)
 
         if(ongoingPickup)
             return ongoingPickup
     },
     returnUserSocketid: async({userid}) => {
-        const user = users.find((user) => user.userid === userid)
+        const user = await users.find((user) => user.userid === userid)
 
         if(user)
             return user.id
     },
     returnUserSchedulePickupDetails: async({haulerid, hauler}) => {
         const ongoingScheduledPickup = await ongoingScheduledPickups.find((ongoingScheduledPickup) => ongoingScheduledPickup.haulerid === haulerid)
-        
+
         const data = await ongoingScheduledPickup.pickup.map(async(pickup) => {
             const socketId = await returnUserSocketid({userid: pickup.customerId._id})
             const time = await getTime(hauler, pickup.location[0])
@@ -132,7 +132,7 @@ const pickupSocket = {
         
         return await Promise.all(data)
     },
-    completePickup: async({pickupid}) => {
+    completeSpecialPickup: async({pickupid}) => {
         const ongoingPickup = await ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.pickupid === pickupid)
         const userid = await ongoingPickup.userid
         const userSocketid = await users.find((user) => user.userid === userid)
@@ -140,6 +140,9 @@ const pickupSocket = {
         ongoingSpecialPickups.splice(ongoingSpecialPickups.findIndex(ongoingPickup => ongoingPickup.pickupid === pickupid), 1)
 
         return userSocketid
+    },
+    completeSchedulePickup: async({haulerid}) => {
+        ongoingScheduledPickups.splice(ongoingScheduledPickups.findIndex(ongoingScheduledPickup => ongoingScheduledPickup.haulerid === haulerid), 1)
     },
     haulerDisconnect: async({id}) => {
         haulers.splice(haulers.findIndex(hauler => hauler.id === id), 1)
@@ -189,7 +192,7 @@ const getTime = async(hauler, location) => {
     const endlongitude = location.longitude
 
     const { data } = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${startlatitude},${startlongitude}&destinations=${endlatitude},${endlongitude}&key=${process.env.GOOGLE_MAPS}`)
-    
+
     return data.rows[0].elements[0].duration.value
 }
 

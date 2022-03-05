@@ -146,14 +146,3 @@ export const removeOngoingPickup = (pickupid) => async(dispatch) => {
         payload: pickupid
     })
 }
-
-export const hideComponent = (value) => async(dispatch) => {
-    if(value === true)
-        dispatch({
-            type: actionTypes.HIDE_COMPONENT_ADD
-        })
-    else if(value === false)
-        dispatch({
-            type: actionTypes.HIDE_COMPONENT_REMOVE
-        })
-}

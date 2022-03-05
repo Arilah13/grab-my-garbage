@@ -1,5 +1,4 @@
 import React from 'react'
-import { StyleSheet, Dimensions } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 
 import Completedstacknavigator from './CompletedStackNavigator'
@@ -8,13 +7,9 @@ import Upcomingstacknavigator from './UpcomingStackNavigator'
 
 import { colors } from '../global/styles'
 
-const SCREEN_WIDTH = Dimensions.get('window').width
-const SCREEN_HEIGHT = Dimensions.get('window').height
-
 const Tab = createMaterialTopTabNavigator()
 
 const Topnavigator = () => {
-
     return (
         <>
             <Tab.Navigator
@@ -75,37 +70,3 @@ const Topnavigator = () => {
 }
 
 export default Topnavigator
-
-const styles = StyleSheet.create({
-
-    view1:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
-        //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
-        flexDirection: 'row'
-    },
-    text1:{
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 18,
-        marginTop: 15
-    },
-    container:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 15, 
-        paddingTop: 10,
-        marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
-        flexDirection: 'row',
-    },
-    text:{
-        display: 'flex',
-        top: 15,
-        left: 5,
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 14
-    }
-
-})

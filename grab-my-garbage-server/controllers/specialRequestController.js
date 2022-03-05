@@ -80,7 +80,9 @@ const requestController = {
             request.declinedHaulers.push(haulerId)
             await request.save()
 
-            res.status(200)
+            res.status(200).json({
+                message: 'success'
+            })
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -96,7 +98,9 @@ const requestController = {
             request.accepted = 1
             await request.save()
 
-            res.status(200)
+            res.status(200).json({
+                message: 'success'
+            })
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -112,7 +116,9 @@ const requestController = {
             request.completedDate = date
             await request.save()
 
-            res.status(200)
+            res.status(200).json({
+                message: 'success'
+            })
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

@@ -7,9 +7,9 @@ import { Icon, Button } from 'react-native-elements'
 import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
-import { Login } from '../../redux/actions/userActions'
-
 import { ANDROID_CLIENT_ID } from '@env'
+
+import { Login } from '../../redux/actions/userActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

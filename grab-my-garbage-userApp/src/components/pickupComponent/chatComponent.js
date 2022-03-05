@@ -5,9 +5,9 @@ import { GiftedChat } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
+import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
 import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
-import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

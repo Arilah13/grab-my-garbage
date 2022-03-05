@@ -9,8 +9,11 @@ import * as Facebook from 'expo-facebook'
 import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
-import { specialLogin, specialLoginFB ,Login } from '../../redux/actions/userActions'
 import { ANDROID_CLIENT_ID } from '@env'
+import { getPushToken } from '../../helpers/notificationHelper'
+
+import { specialLogin, specialLoginFB ,Login } from '../../redux/actions/userActions'
+
 import Headercomponent from '../../components/headerComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -52,7 +55,7 @@ const Signinscreen = ({navigation}) => {
         setTimeout(() => setStatus(true), 200)
     }
 
-    const handleGoogleSignIn = () => {
+    const handleGoogleSignIn = async() => {
         setGoogleSubmitting(true)
         const config = {
             androidClientId: ANDROID_CLIENT_ID,
@@ -64,7 +67,7 @@ const Signinscreen = ({navigation}) => {
             .then(async(result) => {
                 const {type, user} = result
 
-                dispatch(specialLogin(user))
+                dispatch(specialLogin({user, notification_token: await getPushToken()}))
 
                 if(type === 'success') 
                 {          
@@ -104,7 +107,7 @@ const Signinscreen = ({navigation}) => {
             setFbSubmitting(false)
             if (type === 'success') {
                 const data = await response.json()
-                dispatch(specialLoginFB(data.email, data.name, data.id, token))
+                dispatch(specialLoginFB({email: data.email, name: data.name, id: data.id, token, notification_token: await getPushToken()}))
             }
         } catch ({ message }) {
             Alert.alert(`Facebook Login Error: ${message}`);

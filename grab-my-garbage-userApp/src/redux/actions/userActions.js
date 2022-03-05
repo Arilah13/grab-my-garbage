@@ -43,11 +43,12 @@ export const specialLogin = (info) => async(dispatch) => {
             },
         }
         const registerrole = 'user'
-
-        const { name, email, photoUrl } = info
-
+        
+        const { name, email, photoUrl } = info.user
+        const { notification_token } = info
+        
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/googleregister',
-            {name, email, registerrole, photoUrl}, config, 
+            {name, email, registerrole, photoUrl, notification_token}, config, 
         )
 
         dispatch({
@@ -64,7 +65,7 @@ export const specialLogin = (info) => async(dispatch) => {
     }
 }
 
-export const specialLoginFB = (email, name, id, token) => async(dispatch) => {
+export const specialLoginFB = (email, name, id, token, notification_token) => async(dispatch) => {
     try{
         dispatch({
             type: actionTypes.USER_LOGIN_REQUEST
@@ -78,7 +79,7 @@ export const specialLoginFB = (email, name, id, token) => async(dispatch) => {
         const registerrole = 'user'
 
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/facebookregister',
-            {name, email, registerrole, id, token}, config, 
+            {name, email, registerrole, id, token, notification_token}, config, 
         )
 
         dispatch({
@@ -95,7 +96,7 @@ export const specialLoginFB = (email, name, id, token) => async(dispatch) => {
     }
 }
 
-export const register = ({name, email, password, image}) => async(dispatch) => {
+export const register = (info) => async(dispatch) => {
     try {
         dispatch({
             type: actionTypes.USER_REGISTER_REQUEST,
@@ -108,8 +109,11 @@ export const register = ({name, email, password, image}) => async(dispatch) => {
         }
         const registerrole = 'user'
 
+        const { name, email, password, image } = info.values
+        const { notification_token } = info
+
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/register',
-            {name, email, password, registerrole, image}, config, 
+            {name, email, password, registerrole, image, notification_token}, config, 
         )
 
         dispatch({

@@ -6,12 +6,13 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { Icon } from 'react-native-elements'
 import * as Location from 'expo-location'
 
-import Mapcomponent from '../components/mapComponent'
+import { colors } from '../global/styles'
+import { GOOGLE_MAPS_APIKEY } from '@env'
 
 import { addDestination } from '../redux/actions/mapActions'
 import { checkPermission } from '../helpers/destinationHelper'
-import { colors } from '../global/styles'
-import { GOOGLE_MAPS_APIKEY } from '@env'
+
+import Mapcomponent from '../components/mapComponent'
 
 const SCREEN_HEIGHT = Dimensions.get('window').height
 const SCREEN_WIDTH = Dimensions.get('window').width

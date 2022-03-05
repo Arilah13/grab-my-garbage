@@ -1,8 +1,9 @@
 import React from 'react'
-import { View, Text, StyleSheet, Dimensions } from 'react-native'
+import { View, StyleSheet, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { colors } from '../../global/styles'
+
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/mapComponent'
 

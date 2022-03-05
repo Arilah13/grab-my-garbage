@@ -12,8 +12,7 @@ import { colors } from '../../global/styles'
 import { mapStyle } from '../../global/mapStyle'
 import { GOOGLE_MAPS_APIKEY } from '@env'
 
-import { removeOngoingPickup } from '../../redux/actions/specialPickupActions'
-import { removeOngoingSchedulePickup } from '../../redux/actions/schedulePickupActions'
+import { getAcceptedPickups, getCompletedPickups } from '../../redux/actions/specialPickupActions'
 
 import Chatcomponent from './chatComponent'
 
@@ -85,14 +84,17 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
                     }).start()
                     if(ongoingPickup.pickupid === ongoingPickup.ongoingPickupid){
                         setShow(true)
-                        mapView.current.animateToRegion({
-                            latitude: ongoingPickup.latitude,
-                            longitude: ongoingPickup.longitude,
-                            latitudeDelta: 0.0005,
-                            longitudeDelta: 0.00025
-                        }, 2000)
-                        if(ongoingPickup)
+                        if(mapView.current) {
+                            mapView.current.animateToRegion({
+                                latitude: ongoingPickup.latitude,
+                                longitude: ongoingPickup.longitude,
+                                latitudeDelta: 0.0005,
+                                longitudeDelta: 0.00025
+                            }, 2000)
+                        }
+                        if(marker.current) {
                             marker.current.animateMarkerToCoordinate({latitude: ongoingPickup.latitude, longitude: ongoingPickup.longitude}, 5000)
+                        }
                     }
                     Animated.timing(translation, {
                         toValue: 0,
@@ -104,25 +106,25 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
         } else if (type === 'special') {
             if(ongoingSpecialPickups !== undefined && ongoingSpecialPickups.length > 0) {
                 const ongoingSpecialPickup =  ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
-                if(ongoingSpecialPickup) {
+
+                if(ongoingSpecialPickup && ongoingSpecialPickup.pickupid === item._id){
+                    setShow(true)
                     setPickup(ongoingSpecialPickup)
-                    timeChanger(ongoingSpecialPickup.time)
                     Animated.timing(rotation, {
                         toValue: ongoingSpecialPickup.heading,
                         useNativeDriver: true,
                         duration: 4000
                     }).start()
-                    if(ongoingSpecialPickup.pickupid === ongoingSpecialPickup.ongoingPickupid){
-                        setShow(true)
+                    if(mapView.current) {
                         mapView.current.animateToRegion({
                             latitude: ongoingSpecialPickup.latitude,
                             longitude: ongoingSpecialPickup.longitude,
                             latitudeDelta: 0.0005,
                             longitudeDelta: 0.00025
                         }, 2000)
-                        if(ongoingSpecialPickup)
-                            marker.current.animateMarkerToCoordinate({latitude: ongoingSpecialPickup.latitude, longitude: ongoingSpecialPickup.longitude}, 5000)
-                        first.current = false
+                    }
+                    if(marker.current) {
+                        marker.current.animateMarkerToCoordinate({latitude: ongoingSpecialPickup.latitude, longitude: ongoingSpecialPickup.longitude}, 5000)
                     }
                     Animated.timing(translation, {
                         toValue: 0,
@@ -143,25 +145,30 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
 
     useEffect(() => {
         socket.on('pickupDone', async({pickupid}) => {
-            if(item._id === pickupid) {
+            if(item._id === pickupid && first.current === true) {
                 setPickup(null)
+                dispatch(getAcceptedPickups())
+                dispatch(getCompletedPickups())
                 setComplete(true)
-                const timeout = setTimeout(() => {
+                setTimeout(() => {
                     setModalVisible(false)
                 }, 2500)
-                setTimeoutValue2(timeout)
+                const timeout = setTimeout(() => {
+                    navigation.navigate('acceptedPickup')
+                }, 2600)
             }
+            first.current = false
         })
 
         socket.on('schedulePickupDone', async({pickupid}) => {
-            if(item._id === pickupid) {
+            if(item._id === pickupid && first.current === true) {
                 setPickup(null)
                 setComplete(true)
-                const timeout = setTimeout(() => {
+                setTimeout(() => {
                     setModalVisible(false)
                 }, 2500)
-                setTimeoutValue2(timeout)
             }
+            first.current = false
         })
     }, [socket])
 
@@ -231,6 +238,9 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
                             timePrecision = 'now'
                             
                             onReady = {(result) => {
+                                if(type === 'special') {
+                                    timeChanger(Math.round(result.duration * 10) / 10)
+                                }
                                 const timeout = setTimeout(() => {
                                     redo === true ?
                                     mapView.current.fitToCoordinates(result.coordinates, {
@@ -285,7 +295,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
                                 loop = {true}
                                 autoPlay = {true}
                             /> 
-                                :
+                                : pickup !== null ?
                             <>
                             <View style = {{flex: 1, flexWrap: 'wrap', flexDirection: 'row'}}>
                                 <View>
@@ -333,27 +343,26 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
                                 </TouchableOpacity>
                             </View>    
                             
-                            {
-                                pickup !== null &&
-                                <Modal
-                                    isVisible = {modalVisible1}
-                                    swipeDirection = {'down'}
-                                    style = {{ justifyContent: 'flex-end', marginHorizontal: 10, marginBottom: 0 }}
-                                    onBackButtonPress = {() => setModalVisible1(false)}
-                                    onBackdropPress = {() => setModalVisible1(false)}
-                                    animationInTiming = {500}
-                                    animationOutTiming = {500}
-                                    useNativeDriver = {true}
-                                    useNativeDriverForBackdrop = {true}
-                                    deviceHeight = {SCREEN_HEIGHT}
-                                    deviceWidth = {SCREEN_WIDTH}
-                                >
-                                    <View style = {styles.view3}>
-                                        <Chatcomponent haulerid = {pickup.haulerid} pickupid = {pickup.pickupid} setModalVisible = {setModalVisible1}/>
-                                    </View>  
-                                </Modal>
-                            } 
-                            </>                             
+                            
+                            <Modal
+                                isVisible = {modalVisible1}
+                                swipeDirection = {'down'}
+                                style = {{ justifyContent: 'flex-end', marginHorizontal: 10, marginBottom: 0 }}
+                                onBackButtonPress = {() => setModalVisible1(false)}
+                                onBackdropPress = {() => setModalVisible1(false)}
+                                animationInTiming = {500}
+                                animationOutTiming = {500}
+                                useNativeDriver = {true}
+                                useNativeDriverForBackdrop = {true}
+                                deviceHeight = {SCREEN_HEIGHT}
+                                deviceWidth = {SCREEN_WIDTH}
+                            >
+                                <View style = {styles.view3}>
+                                    <Chatcomponent haulerid = {pickup.haulerid} pickupid = {pickup.pickupid} setModalVisible = {setModalVisible1}/>
+                                </View>  
+                            </Modal>
+                            </>     
+                            : null                        
                     }                           
                 </View>
             </Animated.View>
@@ -395,6 +404,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 30
     },
     text1:{
+        marginTop: 25,
         marginLeft: 20,
         fontSize: 16,
         fontWeight: 'bold',

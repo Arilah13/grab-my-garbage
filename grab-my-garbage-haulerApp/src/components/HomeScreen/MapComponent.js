@@ -24,7 +24,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
     const rotation = useRef(new Animated.Value(0)).current
     
     const bearingDegree = rotation.interpolate({
-        inputRange: [0, 360],
+        inputRange: [130, 490],
         outputRange: ['0deg', '360deg']
     })
 

@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const http = require('http')
 const SOCKET = require('socket.io')
@@ -13,8 +14,8 @@ const server = http.createServer(app)
 const io = SOCKET(server)
 
 io.on('connection', socket => {
-    socket.on('online', async({haulerid, latitude, longitude}) => {
-        const hauler = await pickupSocket.haulerJoin({id: socket.id, haulerid, latitude, longitude})
+    socket.on('online', async({haulerid, latitude, longitude, heading}) => {
+        const hauler = await pickupSocket.haulerJoin({id: socket.id, haulerid, latitude, longitude, heading})
         const ongoingPickup = await pickupSocket.findPickupOnProgress({haulerid})
         
         if(ongoingPickup) {
@@ -62,7 +63,7 @@ io.on('connection', socket => {
                             const time = Time.id === pickup._id ? Time.time : null
                             socket.emit('userSchedulePickup', {hauler: hauler, time: {time: time, haulerid: pickup.pickerId}, ongoingPickup: detail._id, pickupid: pickup._id})
                         }
-                    }, index * 1000) 
+                    }, index * 2000) 
 
                 })
             })
@@ -97,31 +98,34 @@ io.on('connection', socket => {
     })
 
     socket.on('pickupCompleted', async({pickupid}) => {
-        const userSocketid = await pickupSocket.completePickup({pickupid})
+        const userSocketid = await pickupSocket.completeSpecialPickup({pickupid})
 
         if(userSocketid)
-            socket.to(userSocketid.id).emit('pickupDone', {pickupid: pickupid})
-    })
-
-    socket.on('schedulePickupCompleted', async({pickupid, userid}) => {
-        const userSocketid = await pickupSocket.returnUserSocketid({userid})
-
-        if(userSocketid)
-            socket.to(userSocketid).emit('pickupDone', {pickupid: pickupid})
+            socket.to(userSocketid.id).emit('pickupDone', {pickupid})
     })
 
     socket.on('scheduledPickupOnProgress', async({haulerid, ongoingPickup, pickup}) => {
         await pickupSocket.scheduledPickupOnProgress({haulerid, ongoingPickup, pickup})
         const hauler = await pickupSocket.returnHaulerLocation({haulerid})
+        //console.log(hauler)
         const userSchedulePickup = await pickupSocket.returnUserSchedulePickupDetails({haulerid, hauler})
-
+        
         userSchedulePickup.map((user, index) => {
             setTimeout(() => {
                 if(user.socketId !== false) {
                     socket.to(user.socketId).emit('userSchedulePickup', {hauler, time: user, ongoingPickup: ongoingPickup._id, pickupid: user.id})
                 }
-            }, 1000*index)
+            }, 2000*index)
         })
+    })
+
+    socket.on('schedulePickupCompleted', async({pickupid, userid, haulerid}) => {
+        const userSocketid = await pickupSocket.returnUserSocketid({userid})
+        await pickupSocket.completeSchedulePickup({haulerid})
+        
+        if(userSocketid) {
+            socket.to(userSocketid).emit('schedulePickupDone', {pickupid})
+        }
     })
 
     socket.on('haulerDisconnect', () => {
@@ -131,7 +135,7 @@ io.on('connection', socket => {
     socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid}) => {
         const hauler = await chatSocket.returnHaulerSocketid({haulerid: receiverid})
         const user = await chatSocket.returnUserSocketid({userid: receiverid})
-        
+
         if(user !== false) {
             socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
         } else if(hauler !== false) {

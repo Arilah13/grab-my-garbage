@@ -4,18 +4,19 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon } from 'react-native-elements'
 import Modal from 'react-native-modal'
 
+import { colors } from '../../global/styles'
+import { dateHelper, date1Helper, timeHelper } from '../../helpers/pickupHelper'
+
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/pickupComponent/mapComponent'
 import Chatcomponent from '../../components/pickupComponent/chatComponent'
-
-import { colors } from '../../global/styles'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Specialpickupdetailscreen = ({route, navigation}) => {
 
-    const { item, time, date, name, date1, completedTime } = route.params
+    const { item, name, completedTime } = route.params
 
     const [modalVisible, setModalVisible] = useState(false)
     const [modalVisible1, setModalVisible1] = useState(false)
@@ -59,11 +60,11 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                     <View style = {{flex: 1, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30, padding: 15}}>
                         <View style = {styles.container3}>
                             <Text style = {styles.text3}>Pickup Scheduled on:</Text>
-                            <Text style = {styles.text4}>{date1 + ' ' + time}</Text>
+                            <Text style = {styles.text4}>{date1Helper(item.datetime) + ' ' + timeHelper(item.datetime)}</Text>
                         </View>
                         <View style = {{...styles.container5, paddingTop: 0}}>
                             <Text style = {styles.text3}>{name === 'Completed Pickups' ? 'Pickup Collected On:' : 'Collect Pickup Before:'}</Text>
-                            <Text style = {styles.text4}>{name === 'Completed Pickups' ? date+' '+completedTime : date+' '+time}</Text>
+                            <Text style = {styles.text4}>{name === 'Completed Pickups' ? dateHelper(item.datetime)+' '+completedTime : dateHelper(item.datetime)+' '+timeHelper(item.datetime)}</Text>
                         </View>
                         <View style = {styles.container4}>
                             <Text style = {styles.text5}>Trash Categories:</Text>
@@ -259,6 +260,20 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: colors.darkBlue
-    }
+    },
+    view1:{
+        backgroundColor: colors.white,
+        height: '95%',
+        width: '100%',
+        borderRadius: 15,
+        overflow: 'hidden',
+    },
+    view2:{
+        backgroundColor: colors.white,
+        height: '95%',
+        width: '100%',
+        borderRadius: 15,
+        overflow: 'hidden',
+    },
 
 })

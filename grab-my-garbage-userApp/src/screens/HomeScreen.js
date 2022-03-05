@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, StyleSheet, Text, FlatList, Dimensions, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
+import * as Notifications from 'expo-notifications'
 
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
@@ -30,11 +31,51 @@ const Homescreen = ({navigation}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { loading: socketLoading, socket } = socketHolder
 
+    const [expoPushToken, setExpoPushToken] = useState()
+    const [isSubscribed, setIsSubscribed] = useState(false)
+    const [notification, setNotification] = useState()
+
+    const notificationListener = useRef()
+    const responseListener = useRef()
+
     useEffect(() => {
         if(userInfo !== undefined) {
             dispatch(getUserDetails(userInfo._id))
         }
     }, [userInfo])
+
+    useEffect(() => {
+        Notifications.setNotificationHandler({
+            handleNotification: async() => ({
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+                shouldSetBadge: true
+            })
+        })
+    }, [])
+
+    useEffect(async() => {
+        if(loading === false) {
+            setExpoPushToken(user.pushId)
+
+            notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+                setNotification(notification)
+            })
+            responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+                const {notification: {request: {content: {data: {screen}}}}} = response
+
+                if(screen) {
+                    navigation.navigate(screen)
+                }
+            })
+
+            return () => {
+                Notifications.removeNotificationSubscription(notificationListener.current)
+
+                Notifications.removeNotificationSubscription(responseListener.current)
+            }
+        }
+    }, [user, loading])
 
     useEffect(async() => {
         if(socketLoading === false) {
@@ -47,7 +88,7 @@ const Homescreen = ({navigation}) => {
                 dispatch(addOngoingSchedulePickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: time.haulerid, ongoingPickupid: ongoingPickup, pickupid: pickupid, time: time.time}))
             })
 
-            socket.on('pickupDone', async(pickupid) => {
+            socket.on('pickupDone', async({pickupid}) => {
                 dispatch(removeOngoingPickup(pickupid))
             })
             socket.on('schedulePickupDone', async({pickupid}) => {

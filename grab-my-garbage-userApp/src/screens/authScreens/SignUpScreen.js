@@ -7,13 +7,14 @@ import { Icon, Button } from 'react-native-elements'
 import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
+import { getPushToken } from '../../helpers/notificationHelper'
+
 import { register } from '../../redux/actions/userActions'
+
 import Headercomponent from '../../components/headerComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
-
-const initialValues = {name:'', email: '', password: '', password_1: ''}
 
 const Signupscreen = ({navigation}) => {
 
@@ -29,6 +30,8 @@ const Signupscreen = ({navigation}) => {
 
     const userRegister = useSelector(state => state.userRegister)
     const {success, error} = userRegister
+
+    const initialValues = {name:'', email: '', password: '', password_1: ''}
 
     const handleVisibility = () => {
         setShow(!show)
@@ -97,9 +100,9 @@ const Signupscreen = ({navigation}) => {
                 validateOnChange = {false}
                 onSubmit = {(values, actions) => {
                     if(actions.validateForm) {
-                        setTimeout(() => {
+                        setTimeout(async() => {
                             actions.setSubmitting(false)
-                            SignUp(values)
+                            SignUp({values, notification_token: await getPushToken()})
                         }, 400)
                     } else {
                         actions.setSubmitting(false)

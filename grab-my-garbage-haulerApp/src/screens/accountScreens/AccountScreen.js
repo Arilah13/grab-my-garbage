@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { colors } from '../../global/styles'
 import { accountData } from '../../global/data'
+
 import { logout } from '../../redux/actions/userActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width

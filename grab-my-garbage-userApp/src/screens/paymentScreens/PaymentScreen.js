@@ -9,11 +9,13 @@ import { StripeProvider } from '@stripe/stripe-react-native'
 import socketIO from 'socket.io-client'
 
 import { colors } from '../../global/styles'
-import Headercomponent from '../../components/headerComponent'
+
 import { getPaymentSheet } from '../../redux/actions/paymentActions'
 import { getSpecialPickupInfo } from '../../redux/actions/specialPickupActions'
 import { getScheduledPickupInfo } from '../../redux/actions/schedulePickupActions'
 import { PAYMENT_SHEET_RESET } from '../../redux/constants/paymentConstants'
+
+import Headercomponent from '../../components/headerComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

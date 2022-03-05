@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { View, Text, Image, StyleSheet, Dimensions, FlatList, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, Image, StyleSheet, Dimensions, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { CheckBox, Button } from 'react-native-elements'
-import Modal from 'react-native-modal'
-import axios from 'axios'
 
 import { colors } from '../../global/styles'
+
 import Headercomponent from '../../components/headerComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width

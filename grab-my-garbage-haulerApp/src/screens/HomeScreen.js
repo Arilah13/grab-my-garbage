@@ -7,6 +7,7 @@ import { Button } from 'react-native-elements'
 
 import { colors } from '../global/styles'
 import { getLatngDiffInMeters } from '../helpers/homehelper'
+
 import { sendSMS } from '../redux/actions/specialRequestActions'
 import { getScheduledPickupsToCollect, completeScheduledPickup } from '../redux/actions/scheduleRequestActions'
 import { getUpcomingPickups, completedPickup } from '../redux/actions/specialRequestActions'
@@ -24,6 +25,7 @@ const Homescreen = ({navigation}) => {
 
     const translation = useRef(new Animated.Value(220)).current
     const choice = useRef(null)
+    const first = useRef(true)
 
     const [end, setEnd] = useState(null)
     const [online, setOnline] = useState(false)
@@ -81,9 +83,13 @@ const Homescreen = ({navigation}) => {
             })
             setOrder(pickupOrder[0])
             if (choice.current === 'schedule') {
+                if(first.current === true) {
+                    socket.emit('schedulePickupStarted', { pickup: pickupOrder })
+                    first.current = false
+                }
                 socket.emit('scheduledPickupOnProgress', { haulerid: userInfo._id, ongoingPickup: pickupOrder[0], pickup: pickupOrder })
             } else if (choice.current === 'special') {
-                socket.emit('pickupOnProgress', { haulerid: userInfo._id, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id })
+                socket.emit('specialPickupOnProgress', { haulerid: userInfo._id, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id, pickup: pickupOrder[0] })
             }
         } else {
             setEnd(null)
@@ -119,18 +125,24 @@ const Homescreen = ({navigation}) => {
 
             dispatch(sendSMS({receiver: receiver, message: message}))
 
+            if (choice.current === 'schedule') {
+                socket.emit('schedulePickupArrived', {pickup: order})
+            } else if(choice.current === 'special') {
+                await socket.emit('specialPickupArrived', {pickup: order})
+            }
+
         } else if(arrived === true) {
             setLoading(true)
 
             if (choice.current === 'schedule') {
                 dispatch(completeScheduledPickup({id: order._id, completedDate: new Date(), completedHauler: userInfo}))
-                socket.emit('schedulePickupCompleted', {pickupid: order._id, userid: order.customerId._id, haulerid: userInfo._id})
+                socket.emit('schedulePickupCompleted', {pickupid: order._id, userid: order.customerId._id, haulerid: userInfo._id, pickup: order})
+                setNextPickup(true)
             } else if(choice.current === 'special') {
                 dispatch(completedPickup(order._id))
-                socket.emit('pickupCompleted', {pickupid: order._id})
+                await socket.emit('specialPickupCompleted', {pickupid: order._id, pickup: order})
+                setNextPickup(true)
             }
-
-            setNextPickup(true)
 
         }
     }

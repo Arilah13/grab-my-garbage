@@ -9,11 +9,11 @@
     "facebookAdvertiserIDCollectionEnabled": false,
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/app/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ebf4f3"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -40,10 +40,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.rilah.grabmygarbage"
+      "package": "com.rilah.grabmygarbage",
+      "permissions": ["NOTIFICATIONS"],
+      "useNextNotificationsApi": true
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/app/icon.png"
     },
     "plugins": [
       [

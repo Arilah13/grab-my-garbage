@@ -4,12 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon } from 'react-native-elements'
 import Modal from 'react-native-modal'
 
+import { colors } from '../../global/styles'
+import { dayConverter } from '../../helpers/schedulepickupHelper'
+
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/pickupComponent/mapComponent'
 import Chatcomponent from '../../components/pickupComponent/chatComponent'
-
-import { colors } from '../../global/styles'
-import { dayConverter } from '../../helpers/schedulepickupHelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

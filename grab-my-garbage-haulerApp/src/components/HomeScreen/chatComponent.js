@@ -5,9 +5,9 @@ import { GiftedChat } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
+import { renderBubble, renderComposer, renderInputToolbar, renderMessage, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
 import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
-import { renderBubble, renderComposer, renderInputToolbar, renderMessage, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -43,7 +43,9 @@ const Chatcomponent = ({userid, pickupid, setModalVisible}) => {
             receiverid: userid._id,
             text: message[0].text,
             createdAt: message[0].createdAt,
-            pickupid: pickupid
+            pickupid: pickupid,
+            senderRole: 'hauler',
+            receiver: userid
         }))
     }
 

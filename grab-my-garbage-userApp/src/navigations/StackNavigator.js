@@ -3,6 +3,9 @@ import { useDispatch } from 'react-redux'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import socketIO from 'socket.io-client'
 
+import { getPaymentIntent } from '../redux/actions/paymentActions'
+import { addSocket } from  '../redux/actions/socketActions'
+
 import Specialpickupscreen from '../screens/specialPickupScreens/specialPickupScreen'
 import TabNavigator from './TabNavigator'
 import Destinationscreen from '../screens/DestinationScreen'
@@ -18,9 +21,6 @@ import Prerequestscreen from '../screens/preRequestScreen'
 import Schedulepickuprequestscreen from '../screens/scheduledPickupScreens/schedulePickupRequestScreen'
 import Scheduledpickupdetail from '../screens/scheduledPickupScreens/scheduledPickupDetail'
 
-import { getPaymentIntent } from '../redux/actions/paymentActions'
-import { addSocket } from  '../redux/actions/socketActions'
-
 const Stack = createNativeStackNavigator()
 
 const StackNavigator = () => {
@@ -31,7 +31,7 @@ const StackNavigator = () => {
     }, [])
 
     useEffect(async() => {
-        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com')
+        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/')
         dispatch(addSocket(socket))
     }, [])
 

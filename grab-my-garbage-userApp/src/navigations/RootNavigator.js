@@ -3,8 +3,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import { NavigationContainer } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-import StackNavigator from './StackNavigator'
 import { uploadDetails } from '../redux/actions/userActions'
+
+import StackNavigator from './StackNavigator'
 import Authnavigator from './AuthNavigator'
 
 const Rootnavigator = () => {

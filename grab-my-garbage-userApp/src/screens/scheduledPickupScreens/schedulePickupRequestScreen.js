@@ -5,10 +5,12 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
-import Headercomponent from '../../components/headerComponent'
 import { colors } from '../../global/styles'
-import { getScheduledPickups } from '../../redux/actions/schedulePickupActions'
 import { dayConverter, fromDate } from '../../helpers/schedulepickupHelper'
+
+import { getScheduledPickups } from '../../redux/actions/schedulePickupActions'
+
+import Headercomponent from '../../components/headerComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

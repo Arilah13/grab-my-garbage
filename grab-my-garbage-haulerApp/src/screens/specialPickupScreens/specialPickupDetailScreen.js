@@ -5,12 +5,13 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
 import Modal from 'react-native-modal'
 
+import { colors } from '../../global/styles'
+
+import { declinePickup, acceptPickup } from '../../redux/actions/specialRequestActions'
+
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/mapComponent'
 import Chatcomponent from '../../components/HomeScreen/chatComponent'
-
-import { colors } from '../../global/styles'
-import { declinePickup, acceptPickup } from '../../redux/actions/specialRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

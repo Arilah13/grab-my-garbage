@@ -3,8 +3,9 @@ import { View, StyleSheet, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button } from 'react-native-elements'
 
-import Headercomponent from '../components/headerComponent'
 import { colors } from '../global/styles'
+
+import Headercomponent from '../components/headerComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
