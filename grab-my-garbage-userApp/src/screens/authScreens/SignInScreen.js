@@ -14,8 +14,6 @@ import { getPushToken } from '../../helpers/notificationHelper'
 
 import { specialLogin, specialLoginFB ,Login } from '../../redux/actions/userActions'
 
-import Headercomponent from '../../components/headerComponent'
-
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
@@ -141,7 +139,9 @@ const Signinscreen = ({navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <Headercomponent name = 'Welcome' />
+            <View style = {{marginTop: SCREEN_HEIGHT/10}}>
+
+            </View>
             <View style = {{height: 9*SCREEN_HEIGHT/10, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30}}>
             <View style = {{marginLeft: 4, marginTop: 20, height: SCREEN_HEIGHT/20 }}>
                 <Text style = {styles.title}>Sign In</Text>

@@ -3,8 +3,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 
 import store from './src/redux/store'
-import Rootnavigator from './src/navigations/RootNavigator'
-
+import Splashnavigator from './src/navigations/SplashNavigator'
 
 export default function App() {
 
@@ -13,7 +12,7 @@ export default function App() {
       <StatusBar 
         style = 'light'
       />
-      <Rootnavigator />
+      <Splashnavigator />
     </Provider>
   );
 }

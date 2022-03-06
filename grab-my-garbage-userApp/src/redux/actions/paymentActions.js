@@ -18,7 +18,7 @@ export const getPaymentIntent = () => async(dispatch, getState) => {
 
         const { data } = await axios.get('https://grab-my-garbage-server.herokuapp.com/payment/paymentIntent', config, 
         )
-
+        
         dispatch({
             type: actionTypes.PAYMENT_INTENT_SUCCESS,
             payload: data
@@ -27,7 +27,7 @@ export const getPaymentIntent = () => async(dispatch, getState) => {
     } catch (err) {
         dispatch({
             type: actionTypes.PAYMENT_INTENT_FAIL,
-            payload: err.response.data.msg
+            payload: err
         })
     }
 }

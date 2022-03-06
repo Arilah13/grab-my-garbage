@@ -136,6 +136,10 @@ export const register = (info) => async(dispatch) => {
 
 export const uploadDetails = (info) => async (dispatch) => {
     try{
+        dispatch({
+            type: actionTypes.USER_LOGIN_REQUEST
+        })
+        
         const config = {
             headers: {
                 'Content-type': 'application/json'
@@ -252,13 +256,13 @@ export const logout = () => async (dispatch, getState) => {
     AsyncStorage.removeItem('userInfo')
 
     const { userLogin: { userInfo }} = getState()
-    if(userInfo.fbid !== '' && userInfo.fbid !== null) {
-        await Facebook.initializeAsync({
-            appId: '619829139115277',
-        });
-        var IParams = `access_token=${userInfo.fbtoken}`
-        await fetch(`https://graph.facebook.com/${userInfo.fbid}/permissions`,{method: 'DELETE', body: IParams})
-    }
+    // if(userInfo.fbid !== '' && userInfo.fbid !== null) {
+    //     await Facebook.initializeAsync({
+    //         appId: '619829139115277',
+    //     });
+    //     var IParams = `access_token=${userInfo.fbtoken}`
+    //     await fetch(`https://graph.facebook.com/${userInfo.fbid}/permissions`,{method: 'DELETE', body: IParams})
+    // }
 
     dispatch({ type: actionTypes.USER_LOGOUT })
 }

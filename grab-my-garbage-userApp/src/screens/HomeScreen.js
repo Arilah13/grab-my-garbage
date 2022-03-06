@@ -8,9 +8,9 @@ import * as Notifications from 'expo-notifications'
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
 
-import { getUserDetails } from '../redux/actions/userActions'
 import { addOngoingPickupLocation, removeOngoingPickup } from '../redux/actions/specialPickupActions'
 import { addOngoingSchedulePickupLocation, removeOngoingSchedulePickup } from '../redux/actions/schedulePickupActions'
+import { getPaymentIntent } from '../redux/actions/paymentActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -18,9 +18,6 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Homescreen = ({navigation}) => {
 
     const dispatch = useDispatch()
-
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
 
     const userDetail = useSelector((state) => state.userDetail)
     const { loading, user } = userDetail
@@ -39,10 +36,8 @@ const Homescreen = ({navigation}) => {
     const responseListener = useRef()
 
     useEffect(() => {
-        if(userInfo !== undefined) {
-            dispatch(getUserDetails(userInfo._id))
-        }
-    }, [userInfo])
+        dispatch(getPaymentIntent())
+    }, [])
 
     useEffect(() => {
         Notifications.setNotificationHandler({
@@ -79,7 +74,7 @@ const Homescreen = ({navigation}) => {
 
     useEffect(async() => {
         if(socketLoading === false) {
-            await socket.emit('userJoined', { userid: userInfo._id })
+            await socket.emit('userJoined', { userid: user._id })
 
             socket.on('userPickup', async({pickup, hauler}) => {
                 dispatch(addOngoingPickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: pickup.haulerid, pickupid: pickup.pickupid}))

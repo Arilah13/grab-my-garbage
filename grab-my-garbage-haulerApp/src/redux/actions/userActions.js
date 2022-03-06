@@ -32,6 +32,10 @@ export const Login = (email, password) => async (dispatch) => {
 
 export const uploadDetails = (info) => async (dispatch) => {
     try{
+        dispatch({
+            type: actionTypes.USER_LOGIN_REQUEST
+        })
+
         const config = {
             headers: {
                 'Content-type': 'application/json'

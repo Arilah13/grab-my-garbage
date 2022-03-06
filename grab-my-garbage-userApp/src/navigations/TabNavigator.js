@@ -4,8 +4,8 @@ import { Icon } from 'react-native-elements'
 
 import { colors } from '../global/styles'
 
-import Accountscreen from '../screens/accountScreens/AccountScreen'
-import Homescreen from '../screens/HomeScreen'
+import Accountscreen from '../screens/accountScreens/accountScreen'
+import Homescreen from '../screens/homeScreen'
 
 const Tab = createBottomTabNavigator();
 

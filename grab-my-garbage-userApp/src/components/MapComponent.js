@@ -38,7 +38,7 @@ const Mapcomponent = ({latlng, mapView, latlngDelta, timeoutValue}) => {
                     identifier = {'mk1'}
                 >
                     <Image
-                        source = {require('../../assets/marker.png')}
+                        source = {require('../../assets/map/marker.png')}
                         style = {styles.marker}
                     />
                 </Marker>

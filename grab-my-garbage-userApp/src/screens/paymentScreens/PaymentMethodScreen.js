@@ -107,7 +107,7 @@ const Paymentmethodscreen = ({route, navigation}) => {
                 <Text style = {styles.text2}>Payment Methods</Text>
                 <View style = {styles.view1}>
                     <Image
-                        source = {require('../../../assets/visa.png')}
+                        source = {require('../../../assets/payment/visa.png')}
                         resizeMode = 'contain'
                         style = {{
                             position: 'absolute',
@@ -132,7 +132,7 @@ const Paymentmethodscreen = ({route, navigation}) => {
                 <View style = {{...styles.view1, marginTop: 25}}>
                     <Text style = {styles.text3}>Paypal</Text>
                     <Image
-                        source = {require('../../../assets/paypal.png')}
+                        source = {require('../../../assets/payment/paypal.png')}
                         resizeMode = 'contain'
                         style = {{
                             position: 'absolute',
@@ -155,7 +155,7 @@ const Paymentmethodscreen = ({route, navigation}) => {
                 <View style = {{...styles.view1, marginTop: 25}}>
                     <Text style = {styles.text3}>Cash On Pickup</Text>
                     <Image
-                        source = {require('../../../assets/money.png')}
+                        source = {require('../../../assets/payment/money.png')}
                         resizeMode = 'contain'
                         style = {{
                             position: 'absolute',

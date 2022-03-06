@@ -11,7 +11,7 @@ import { declinePickup, acceptPickup } from '../../redux/actions/specialRequestA
 
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/mapComponent'
-import Chatcomponent from '../../components/HomeScreen/chatComponent'
+import Chatcomponent from '../../components/homeScreen/chatComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

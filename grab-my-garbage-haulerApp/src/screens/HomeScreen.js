@@ -12,10 +12,10 @@ import { sendSMS } from '../redux/actions/specialRequestActions'
 import { getScheduledPickupsToCollect, completeScheduledPickup } from '../redux/actions/scheduleRequestActions'
 import { getUpcomingPickups, completedPickup } from '../redux/actions/specialRequestActions'
 
-import Onlinecomponent from '../components/HomeScreen/onlineComponent'
-import Mapcomponent from '../components/HomeScreen/mapComponent'
-import Onpickupcomponent from '../components/HomeScreen/onPickupComponent'
-import Pickupcompletecomponent from '../components/HomeScreen/pickupCompleteComponent'
+import Onlinecomponent from '../components/homeScreen/onlineComponent'
+import Mapcomponent from '../components/homeScreen/mapComponent'
+import Onpickupcomponent from '../components/homeScreen/onPickupComponent'
+import Pickupcompletecomponent from '../components/homeScreen/pickupCompleteComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height

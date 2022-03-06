@@ -1,52 +1,29 @@
 import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { NavigationContainer } from '@react-navigation/native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import * as Location from 'expo-location'
+import { useSelector } from 'react-redux'
 
-import AuthNavigator from './AuthNavigator'
 import Stacknavigator from './StackNavigator'
+import AuthNavigator from './AuthNavigator'
 
-import { uploadDetails } from '../redux/actions/userActions'
-import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
-import { addOrigin } from '../redux/actions/mapActions'
-
-const Rootnavigator = () => {
-
-    const dispatch = useDispatch()
-
+const Rootnavigator = ({first, setFirst}) => {
     const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
-
-    useEffect(async() => {
-        const result = await AsyncStorage.getItem('haulerInfo')
-        const location = await AsyncStorage.getItem('userLocation')
-        
-        if(result !== null) {
-            dispatch(uploadDetails(JSON.parse(result)))
+    const { loading, userInfo } = userLogin
+    
+    useEffect(() => {
+        if(first === true && loading === false) {
+            setFirst(false)
         }
-        if(location === true) {
-            const parse = await JSON.parse(location)
-            dispatch(addOrigin(parse.latitude, parse.longitude, parse.heading))
-        }
-
-        Location.hasStartedLocationUpdatesAsync(TASK_FETCH_LOCATION).then((value) => {
-            if(value) {
-                Location.stopLocationUpdatesAsync(TASK_FETCH_LOCATION)
-            }
-        })
-    }, [])
+    }, [loading])
 
     return (
-        <NavigationContainer>
+        <>
             {
-                userLogin.userInfo === undefined ? (
-                    <AuthNavigator />
-                ) : (
+                loading === false && userLogin.userInfo !== undefined ? (
                     <Stacknavigator />
+                ) : (
+                    <AuthNavigator />
                 )
             }
-        </NavigationContainer>
+        </>
     );
 }
 

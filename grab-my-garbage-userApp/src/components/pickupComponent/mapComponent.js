@@ -198,7 +198,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
                     anchor = {{x: 0.5, y: 0.5}}
                 >
                     <AnimatedImage
-                        source = {require('../../../assets/marker.png')}
+                        source = {require('../../../assets/map/marker.png')}
                         style = {{
                             width: 25,
                             height: 25,

@@ -4,16 +4,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import socketIO from 'socket.io-client'
 import * as TaskManager from 'expo-task-manager'
 
+import { addSocket } from '../redux/actions/socketActions'
+import { addOrigin } from '../redux/actions/mapActions'
+import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
+
 import Topnavigator from './TopNavigator'
 import TabNavigator from './TabNavigator'
 import Schedulepickuprequestscreen from '../screens/schedulePickupScreens/schedulePickupRequestScreen'
 import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePickupDetailScreen'
-import Locationscreen from '../screens/schedulePickupScreens/LocationScreen'
+import Locationscreen from '../screens/schedulePickupScreens/locationScreen'
 import Prepickupscreen from '../screens/prePickupScreen'
-
-import { addSocket } from '../redux/actions/socketActions'
-import { addOrigin } from '../redux/actions/mapActions'
-import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
 
 const Stack = createNativeStackNavigator()
 

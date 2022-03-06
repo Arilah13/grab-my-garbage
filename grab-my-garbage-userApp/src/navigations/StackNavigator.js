@@ -3,19 +3,18 @@ import { useDispatch } from 'react-redux'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import socketIO from 'socket.io-client'
 
-import { getPaymentIntent } from '../redux/actions/paymentActions'
 import { addSocket } from  '../redux/actions/socketActions'
 
 import Specialpickupscreen from '../screens/specialPickupScreens/specialPickupScreen'
 import TabNavigator from './TabNavigator'
-import Destinationscreen from '../screens/DestinationScreen'
-import Paymentmethodscreen from '../screens/paymentScreens/PaymentMethodScreen'
-import Paymentscreen from '../screens/paymentScreens/PaymentScreen'
+import Destinationscreen from '../screens/destinationScreen'
+import Paymentmethodscreen from '../screens/paymentScreens/paymentMethodScreen'
+import Paymentscreen from '../screens/paymentScreens/paymentScreen'
 import Schedulepickupscreen from '../screens/scheduledPickupScreens/schedulePickupScreen'
-import Editprofilescreen from '../screens/accountScreens/EditProfileScreen'
-import Changepasswordscreen from '../screens/accountScreens/ChangePasswordScreen'
+import Editprofilescreen from '../screens/accountScreens/editProfileScreen'
+import Changepasswordscreen from '../screens/accountScreens/changePasswordScreen'
 import Paymentsuccessscreen from '../screens/paymentScreens/paymentSuccessScreen'
-import Paymentpresuccessscreen from '../screens/paymentScreens/PaymentPreSuccessScreen'
+import Paymentpresuccessscreen from '../screens/paymentScreens/paymentPreSuccessScreen'
 import Topnavigator from './TopNavigator'
 import Prerequestscreen from '../screens/preRequestScreen'
 import Schedulepickuprequestscreen from '../screens/scheduledPickupScreens/schedulePickupRequestScreen'
@@ -25,10 +24,6 @@ const Stack = createNativeStackNavigator()
 
 const StackNavigator = () => {
     const dispatch = useDispatch()
-
-    useEffect(() => {
-        dispatch(getPaymentIntent())
-    }, [])
 
     useEffect(async() => {
         const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/')

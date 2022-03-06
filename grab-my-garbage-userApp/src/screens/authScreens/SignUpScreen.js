@@ -11,8 +11,6 @@ import { getPushToken } from '../../helpers/notificationHelper'
 
 import { register } from '../../redux/actions/userActions'
 
-import Headercomponent from '../../components/headerComponent'
-
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
@@ -87,8 +85,8 @@ const Signupscreen = ({navigation}) => {
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <View style = {{height: SCREEN_HEIGHT/10}}>
-                <Headercomponent name = 'Welcome' />
+            <View style = {{marginTop: SCREEN_HEIGHT/10}}>
+
             </View>
             
             <Formik 

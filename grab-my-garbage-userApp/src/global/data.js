@@ -1,25 +1,25 @@
 export const menuData = [ 
   {
     name: 'Schedule Pickup',
-    image: require('../../assets/calendar.png'), 
+    image: require('../../assets/menu/calendar.png'), 
     id: '0', 
     destination: 'Destination'
   },
   {
     name: 'Special Pickup',
-    image: require('../../assets/truck.png'),
+    image: require('../../assets/menu/truck.png'),
     id: '1', 
     destination: 'Destination'
   },
   {
     name: 'Requests',
-    image: require('../../assets/request.png'),
+    image: require('../../assets/menu/request.png'),
     id: '2',
     destination: 'PreRequest'
   },
   {
     name: 'Payments',
-    image: require('../../assets/payments.png'),
+    image: require('../../assets/menu/payments.png'),
     id: '3',
     destination: ''
   }                  
@@ -29,22 +29,22 @@ export const trashCategoryData = [
   {
     value: '0',
     label: 'Loose Bags',
-    avatarSource: require('../../assets/garbage-bag.jpeg'),
+    avatarSource: require('../../assets/trash/garbage-bag.jpeg'),
   },
   {
     value: '1',
     label: 'Appliances',
-    avatarSource: require('../../assets/appliances.png'),
+    avatarSource: require('../../assets/trash/appliances.png'),
   },
   {
     value: '2',
     label: 'Electronics',
-    avatarSource: require('../../assets/electronics.png'),
+    avatarSource: require('../../assets/trash/electronics.png'),
   },
   {
     value: '3',
     label: 'Furniture',
-    avatarSource: require('../../assets/furniture.png'),
+    avatarSource: require('../../assets/trash/furniture.png'),
   },
 ];
 
@@ -62,19 +62,19 @@ export const timeIntervalData = [
 export const accountData = [
   {
     name: 'Edit Profile',
-    image: require('../../assets/edit_profile.png'), 
+    image: require('../../assets/profile/edit_profile.png'), 
     id: '0', 
     destination: 'Editprofile'
   },
   {
     name: 'Change Password',
-    image: require('../../assets/lock.png'),
+    image: require('../../assets/profile/lock.png'),
     id: '1',
     destination: 'Changepassword'
   },
   {
     name: 'Signout',
-    image: require('../../assets/logout.png'), 
+    image: require('../../assets/profile/logout.png'), 
     id: '2', 
     destination: 'Logout'
   },

@@ -1,7 +1,7 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-import Signinscreen from '../screens/authScreens/SignInScreen'
+import Signinscreen from '../screens/authScreens/signInScreen'
 
 const Stack = createNativeStackNavigator()
 

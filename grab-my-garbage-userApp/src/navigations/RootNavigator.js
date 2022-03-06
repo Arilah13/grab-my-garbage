@@ -1,36 +1,29 @@
 import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { NavigationContainer } from '@react-navigation/native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
-import { uploadDetails } from '../redux/actions/userActions'
+import { useSelector } from 'react-redux'
 
 import StackNavigator from './StackNavigator'
 import Authnavigator from './AuthNavigator'
 
-const Rootnavigator = () => {
-    const dispatch = useDispatch()
+const Rootnavigator = ({first, setFirst}) => {
+    const userDetail = useSelector((state) => state.userDetail)
+    const { loading } = userDetail
 
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
-
-    useEffect(async() => {
-        const result = await AsyncStorage.getItem('userInfo')
-        if(result !== null) {
-            dispatch(uploadDetails(JSON.parse(result)))
+    useEffect(() => {
+        if(first === true && loading === false) {
+            setFirst(false)
         }
-    }, [])
-
+    }, [loading])
+ 
     return (
-        <NavigationContainer>
+        <>
             {
-                userLogin.userInfo === undefined ? (
-                    <Authnavigator />
-                ) : (
+                loading === false && userDetail.user !== undefined ? (
                     <StackNavigator />
+                ) : (
+                    <Authnavigator />
                 )
             }
-        </NavigationContainer>
+        </>
     );
 }
 
