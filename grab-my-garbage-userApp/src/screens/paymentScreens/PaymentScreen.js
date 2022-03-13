@@ -49,13 +49,13 @@ const Paymentscreen = ({route, navigation}) => {
     const paymentSheet = useSelector((state) => state.paymentSheet)
     const {loading, paymentSheet: sheet} = paymentSheet
 
-    const requestPickup = async() => {
-        const socket = socketIO.connect('http://192.168.13.1:5000')
+    // const requestPickup = async() => {
+    //     const socket = socketIO.connect('http://192.168.13.1:5000')
         
-        const latitude = pickupInfo.location.latitude
-        const longitude = pickupInfo.location.longitude
-        socket.emit('lookingPickup', {latitude, longitude})
-    }
+    //     const latitude = pickupInfo.location.latitude
+    //     const longitude = pickupInfo.location.longitude
+    //     socket.emit('lookingPickup', {latitude, longitude})
+    // }
 
     const initializeStripe = async() => {
         const publishableKey = await paymentInfo.publishable_key

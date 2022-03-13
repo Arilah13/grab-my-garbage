@@ -90,6 +90,7 @@ const Schedulepickupscreen = ({navigation}) => {
             <ScrollView
                 stickyHeaderIndices = {[0]}
                 showsVerticalScrollIndicator = {false}
+                style = {{height: SCREEN_HEIGHT}}
             >
                 <Headercomponent name = 'Home' destination = 'Home'/>
 
@@ -311,7 +312,7 @@ const Schedulepickupscreen = ({navigation}) => {
                                 </View>
                             </View>
 
-                            <View style = {{top: SCREEN_HEIGHT/1.2, position: 'absolute', width: SCREEN_WIDTH, padding: 15}}>
+                            <View style = {{top: SCREEN_HEIGHT/1.23, position: 'absolute', width: SCREEN_WIDTH, padding: 15}}>
                                 <Button
                                     title = 'Continue'
                                     buttonStyle = {styles.button}
@@ -356,7 +357,7 @@ const styles = StyleSheet.create({
     container3:{
         backgroundColor: colors.white,
         padding: 25, 
-        height: "91%",
+        height: SCREEN_HEIGHT,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30
     },

@@ -23,7 +23,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Homescreen = ({navigation}) => {
     const dispatch = useDispatch()
 
-    const translation = useRef(new Animated.Value(220)).current
+    const translation = useRef(new Animated.Value(2.8*SCREEN_HEIGHT/10)).current
     const choice = useRef(null)
     const first = useRef(true)
 

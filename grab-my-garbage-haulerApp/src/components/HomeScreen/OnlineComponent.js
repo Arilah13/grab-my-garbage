@@ -21,15 +21,15 @@ const Onlinecomponent = ({animation, online, setOnline, pickupBtn, choice, order
     const handleOnline = async() => {
         if(online === false) {
             await getLocation()
+            setOnline(true)
             
             if(pickupBtn === true)
-                animation(2.8*SCREEN_HEIGHT/10, 2.8*SCREEN_HEIGHT/110)
+                animation(220, 2.8*SCREEN_HEIGHT/110)
             else if(choice === null && pickupBtn === false)
                 animation(2.8*SCREEN_HEIGHT/10, 2.8*SCREEN_HEIGHT/110)
             else if(choice !== null && order === null) {
                 animation(2.8*SCREEN_HEIGHT/11, 0)
             }
-            setOnline(true)
 
             Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
                 accuracy: Location.Accuracy.Highest,

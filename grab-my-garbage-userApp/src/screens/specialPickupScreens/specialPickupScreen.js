@@ -373,6 +373,8 @@ const Specialpickupscreen = ({navigation}) => {
                 style = {{ justifyContent: 'flex-end', margin: 0 }}
                 onBackButtonPress = {() => setModalVisible(false)}
                 onBackdropPress = {() => setModalVisible(false)}
+                useNativeDriver = {true}
+                useNativeDriverForBackdrop = {true}
             >
                 <View style = {styles.view10}>
                     <Text style = {styles.text13}>Choose from</Text>

@@ -35,7 +35,7 @@ const Stacknavigator = () => {
         if(data) {
             const { locations } = data
             const [location] = locations
-            //console.log(location)
+            
             dispatch(addOrigin(location.coords.latitude, location.coords.longitude, location.coords.heading))
             skt.emit('online', {haulerid: userInfo._id, 
                 latitude: location.coords.latitude, longitude: location.coords.longitude,
@@ -45,7 +45,7 @@ const Stacknavigator = () => {
     })
 
     useEffect(async() => {   
-        const socket = await socketIO.connect('http://192.168.13.1:5001')
+        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/')
         dispatch(addSocket(socket))
     }, [])
 
