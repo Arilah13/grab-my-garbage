@@ -15,7 +15,7 @@ const userController = {
     returnUserDetail: async(req, res) => {
         try{
             const user = await Users.findById(req.params.id).select('-password')
-            if(!user) return res.status(400).json({msg: "User does not exists."})
+            if(!user) return res.status(400).json({msg: 'User does not exists.'})
 
             res.status(200).json(user)
         } catch(err) {
@@ -25,7 +25,7 @@ const userController = {
     updateUserDetail: async(req, res) => {
         try{
             const user = await Users.findById(req.params.id).select('-password')
-            if(!user) return res.status(400).json({msg: "User does not exists."})
+            if(!user) return res.status(400).json({msg: 'User does not exists.'})
 
             user.name = req.body.name || user.name
             user.email = req.body.email || user.email
@@ -43,7 +43,7 @@ const userController = {
                         api_secret: process.env.CLOUD_API_SECRET
                     })
                     
-                    await cloudinary.v2.uploader.upload("data:image/gif;base64," + req.body.image, {folder: "grab-my-garbage"}, (err, result) =>{
+                    await cloudinary.v2.uploader.upload('data:image/gif;base64,' + req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
                         if(err) 
                             throw err
                         else
@@ -58,6 +58,19 @@ const userController = {
                 message: 'User updated'
             }) 
         } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    deleteUser: async(req, res) => {
+        try{
+            const user = await Users.findById(req.params.id)
+
+            if(!user)
+                return res.status(400).json({msg: 'The user does not exist.'})
+
+            await user.remove()
+            res.status(200).json({msg: 'User removed'})
+        } catch (err) {
             return res.status(500).json({msg: err.message})
         }
     }

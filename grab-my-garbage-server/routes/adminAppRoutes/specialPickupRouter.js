@@ -7,4 +7,6 @@ router.get('/', specialPickupController.returnspecialPickupList)
 
 router.get('/:id', specialPickupController.returnSpecialPickupUser)
 
+router.get('/hauler/:id', specialPickupController.returnSpecialPickupHauler)
+
 module.exports = router

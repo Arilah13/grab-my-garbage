@@ -5,8 +5,9 @@ const authAdmin = require('../../middleware/authAdmin')
 
 router.get('/', userController.returnUserList)
 
-router.get('/:id', userController.returnUserDetail)
-
-router.put('/:id', userController.updateUserDetail)
+router.route('/:id')
+        .get(userController.returnUserDetail)
+        .put(userController.updateUserDetail)
+        .delete(userController.deleteUser)
 
 module.exports = router

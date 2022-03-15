@@ -11,7 +11,8 @@ import {
 } from './reducers/userReducers'
 
 import {
-    haulerListReducer
+    haulerListReducer,
+    haulerAddReducer
 } from './reducers/haulerReducers'
 
 import {
@@ -30,6 +31,7 @@ const reducer = combineReducers({
     userDetailUpdate: userDetailUpdateReducer,
 
     haulerList: haulerListReducer,
+    haulerAdd: haulerAddReducer,
 
     schedulePickupList: schedulePickupListReducer,
 

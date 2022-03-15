@@ -17,7 +17,6 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const initialValues = {email: '', password: ''}
 
 const Signinscreen = ({navigation}) => {
-
     const dispatch = useDispatch()
 
     const [show, setShow] = useState(false)
@@ -49,7 +48,7 @@ const Signinscreen = ({navigation}) => {
     }
 
     useEffect(() => {
-        if(success == false)
+        if(success === false)
         {
             Alert.alert('Login Failed', error,
                 [
@@ -61,6 +60,9 @@ const Signinscreen = ({navigation}) => {
                     cancelable: true
                 }
             )
+            formikRef.current.setSubmitting(false)
+        } else if(success === true) {
+            formikRef.current.setSubmitting(false)
         }
     }, [success])
 
@@ -85,7 +87,6 @@ const Signinscreen = ({navigation}) => {
                 onSubmit = {(values, actions) => {
                     if(actions.validateForm) {
                         setTimeout(() => {
-                            actions.setSubmitting(false)
                             handleLogin(values)
                         }, 400)
                     } else {

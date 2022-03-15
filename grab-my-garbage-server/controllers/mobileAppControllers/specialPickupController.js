@@ -1,5 +1,8 @@
 const Pickups = require('../../models/specialPickupModel')
 const cloudinary = require('cloudinary')
+const haulers = require('../../models/haulerModel')
+const polygonData = require('../../helpers/polygonData')
+const turf = require('@turf/turf')
 
 const pickupController = {
     addSpecialPickup: async(req, res) => {
@@ -15,7 +18,7 @@ const pickupController = {
                     api_secret: process.env.CLOUD_API_SECRET
                 })
                 
-                await cloudinary.v2.uploader.upload("data:image/gif;base64," + pickupInfo.photo, {folder: "grab-my-garbage"}, (err, result) =>{
+                await cloudinary.v2.uploader.upload('data:image/gif;base64,' + pickupInfo.photo, {folder: 'grab-my-garbage'}, (err, result) =>{
                     if(err) 
                         throw err
                     else
@@ -25,6 +28,10 @@ const pickupController = {
                 photo = null
             }
 
+            const service_city = await isPointInPolygon(pickupInfo.location.latitude, pickupInfo.location.longitude, polygonData)
+
+            const hauler = await haulers.find({service_city: service_city})
+
             const newPickup = new Pickups({
                 location: pickupInfo.location,
                 datetime: pickupInfo.date,
@@ -33,7 +40,8 @@ const pickupController = {
                 image: photo,
                 payment: total,
                 paymentMethod: method,
-                customerId: id
+                customerId: id,
+                pickerId: hauler._id
             })
 
             await newPickup.save()
@@ -57,7 +65,7 @@ const pickupController = {
         try{
             const customerId = req.params.id
             const pickups = await Pickups.find({ customerId, accepted: 0, cancelled: 0, completed: 0 })
-            if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(pickups)
         } catch(err) {
@@ -68,7 +76,7 @@ const pickupController = {
         try{
             const customerId = req.params.id
             const pickups = await Pickups.find({ customerId, accepted: 1, cancelled: 0, completed: 0 }).populate('pickerId')
-            if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(pickups)
         } catch(err) {
@@ -79,11 +87,22 @@ const pickupController = {
         try{
             const customerId = req.params.id
             const pickups = await Pickups.find({ customerId, accepted: 1, cancelled: 0, completed: 1 })
-            if(!pickups) return res.status(400).json({msg: "No Pickup is available."})
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(pickups)
         } catch(err) {
             return res.status(500).json({msg: err.message})
+        }
+    }
+}
+
+const isPointInPolygon = (latitude, longitude, polygon) => {
+    console.log(latitude)
+    const point = turf.point([longitude, latitude])
+    for(let i = 0; i < polygon.length; i++) {
+        const value = turf.booleanPointInPolygon(point, turf.polygon([polygon[i].coordinates]))
+        if(value === true) {
+            return polygon[i].name
         }
     }
 }

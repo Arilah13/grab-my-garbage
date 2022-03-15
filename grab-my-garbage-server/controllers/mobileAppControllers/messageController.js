@@ -29,7 +29,7 @@ const messageController = {
 
             const message = await Messages.find({conversationId: messageid})
 
-            if(!message) return res.status(400).json({msg: "Message does not exists."})
+            if(!message) return res.status(400).json({msg: 'Message does not exists.'})
 
             res.status(200).json(message)
         } catch(err) {

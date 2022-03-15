@@ -11,7 +11,7 @@ const requestController = {
             let pendingPickups = []
 
             const request = await Pickups.find({accepted: 0, cancelled: 0, completed: 0, declinedHaulers: {$nin:{id: id}}}).populate('customerId')
-            if(!request) return res.status(400).json({msg: "No Pickup is available."})
+            if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             request.map(pickup => {
                 if(getLatngDiffInMeters(lat, lng, pickup.location[0].latitude, pickup.location[0].longitude) <= 25)
@@ -34,7 +34,7 @@ const requestController = {
             const lng = haulers.location[0].longitude
 
             const request = await Pickups.find({accepted: 0, cancelled: 0, completed: 0, declinedHaulers: {$nin:{id: id}}}).populate('customerId')
-            if(!request) return res.status(400).json({msg: "No Pickup is available."})
+            if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             request.map(pickup => {
                 if(getLatngDiffInMeters(lat, lng, pickup.location[0].latitude, pickup.location[0].longitude) <= 25)
@@ -51,7 +51,7 @@ const requestController = {
             const id = req.params.id
 
             const request = await Pickups.find({accepted: 1, cancelled: 0, completed: 0, pickerId: id}).populate('customerId')
-            if(!request) return res.status(400).json({msg: "No Pickup is available."})
+            if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(request)
         } catch(err) {
@@ -63,7 +63,7 @@ const requestController = {
             const id = req.params.id
 
             const request = await Pickups.find({accepted: 1, cancelled: 0, completed: 1, pickerId: id}).populate('customerId')
-            if(!request) return res.status(400).json({msg: "No Pickup is available."})
+            if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(request)
         } catch(err) {
@@ -75,7 +75,7 @@ const requestController = {
             const haulerId = req.body
 
             const request = await Pickups.findById(req.params.id)
-            if(!request) return res.status(400).json({msg: "No Pickup is available."})
+            if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             request.declinedHaulers.push(haulerId)
             await request.save()
@@ -92,7 +92,7 @@ const requestController = {
             const haulerId = req.body
 
             const request = await Pickups.findById(req.params.id)
-            if(!request) return res.status(400).json({msg: "No Pickup is available."})
+            if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             request.pickerId = haulerId.id
             request.accepted = 1
@@ -110,7 +110,7 @@ const requestController = {
             const {date} = req.body
 
             const request = await Pickups.findById(req.params.id)
-            if(!request) return res.status(400).json({msg: "No Pickup is available."})
+            if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             request.completed = 1
             request.completedDate = date

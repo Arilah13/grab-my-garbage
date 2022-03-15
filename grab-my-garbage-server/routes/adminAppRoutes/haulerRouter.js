@@ -3,8 +3,13 @@ const haulerController = require('../../controllers/adminAppControllers/haulerCo
 const auth = require('../../middleware/auth')
 const authAdmin = require('../../middleware/authAdmin')
 
-router.get('/', haulerController.returnHaulerList)
+router.route('/')
+        .get(haulerController.returnHaulerList)
+        .post(haulerController.addHaulers)
 
-router.post('/', haulerController.addHaulers)
+router.route('/:id')
+        .get(haulerController.returnHaulerDetail)
+        .delete(haulerController.deleteHauler)
+        .put(haulerController.updateHaulerDetail)
 
 module.exports = router

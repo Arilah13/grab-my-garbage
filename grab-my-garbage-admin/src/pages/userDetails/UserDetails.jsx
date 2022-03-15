@@ -205,12 +205,12 @@ const UserDetails = ({ match }) => {
                                         <TextField
                                             error = {props.errors.name && props.touched.name}
                                             id = 'name'
-                                            label = {props.errors.name && props.touched.name ? props.errors.username : 'Name'}
+                                            label = {props.errors.name && props.touched.name ? props.errors.name : 'Name'}
                                             style = {{
                                                 width: '250px'
                                             }}
                                             InputLabelProps = {{
-                                                shrink: true
+                                                shrink: props.values.name !== null ? true : false
                                             }}
                                             value = {props.values.name}
                                             onChange = {(event) => setName(event.target.value)}
@@ -225,7 +225,7 @@ const UserDetails = ({ match }) => {
                                                 width: '250px'
                                             }}
                                             InputLabelProps = {{
-                                                shrink: true
+                                                shrink: props.values.email !== null ? true : false
                                             }}
                                             value = {props.values.email}
                                             onChange = {(event) => setEmail(event.target.value)}
@@ -242,7 +242,7 @@ const UserDetails = ({ match }) => {
                                                 width: '250px'
                                             }}
                                             InputLabelProps = {{
-                                                shrink: true
+                                                shrink: props.values.phone !== null ? true : false
                                             }}
                                             value = {props.values.phone}
                                             onChange = {(event) => setPhone(event.target.value)}
@@ -253,8 +253,20 @@ const UserDetails = ({ match }) => {
                                     <div className = 'userFlex'>
                                         <div className = 'form-field'>
                                             <label htmlFor = 'contained-button'>
-                                                <input accept = 'image/*' id = 'contained-button' multiple type = 'file' style = {{display: 'none'}} onChange = {handleImage}/>
-                                                <Button variant = 'contained' component = 'span' startIcon = {<Publish />} style = {{marginTop: 50, marginLeft: 100}} >
+                                                <input 
+                                                    accept = 'image/*' 
+                                                    id = 'contained-button' 
+                                                    multiple 
+                                                    type = 'file' 
+                                                    style = {{display: 'none'}} 
+                                                    onChange = {handleImage}
+                                                />
+                                                <Button 
+                                                    variant = 'contained' 
+                                                    component = 'span' 
+                                                    startIcon = {<Publish />} 
+                                                    style = {{marginTop: 50, marginLeft: 100}} 
+                                                >
                                                     Upload
                                                 </Button>
                                             </label>
@@ -262,7 +274,7 @@ const UserDetails = ({ match }) => {
                                         <div className = 'form-field'>
                                             <img 
                                                 src = {props.values.image !== undefined ? props.values.image : require('../../assets/user.png')} 
-                                                alt = {props.values.username} 
+                                                alt = {props.values.name} 
                                                 className = 'userUploadImg' 
                                             />
                                         </div>
@@ -272,7 +284,7 @@ const UserDetails = ({ match }) => {
                                     <div className = 'form-field'>
                                         <LoadingButton 
                                             variant = 'contained' 
-                                            style = {{marginLeft: '70%', width: 150, marginTop: 20}}
+                                            style = {{marginLeft: '70%', width: 150, marginTop: 20, backgroundColor: '#00d0f1'}}
                                             loading = {props.isSubmitting}
                                             onClick = {props.handleSubmit}
                                         >

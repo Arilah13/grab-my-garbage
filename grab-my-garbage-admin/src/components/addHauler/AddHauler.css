@@ -65,3 +65,10 @@
     color: rgb(151, 150, 150);
     flex-direction: row;
 }
+
+.haulerUploadImg {
+    width: 130px;
+    height: 140px;
+    border-radius: 10px;
+    object-fit: cover;
+}

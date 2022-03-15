@@ -47,7 +47,14 @@ export const addHauler = (info) => async(dispatch, getState) => {
             }
         }
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/admin/haulers/', config)
+        const { name, email, password, phone, pic, service_city } = info
+
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/admin/haulers/', {email, name, phone, password, pic, service_city, role: 1}, config)
+
+        dispatch({
+            type: actionTypes.HAULER_ADD_SUCCESS
+        })
+        dispatch(getHaulers())
     } catch(err) {
         dispatch({
             type: actionTypes.HAULER_ADD_FAIL,

@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@turf/turf": "^6.5.0",
     "bcrypt": "^5.0.1",
     "cloudinary": "^1.28.1",
     "cookie-parser": "^1.4.6",

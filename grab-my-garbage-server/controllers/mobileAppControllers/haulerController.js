@@ -9,9 +9,9 @@ const haulerController = {
             const {email, password} = req.body       
 
             const hauler = await Haulers.findOne({email})
-            if(!hauler) return res.status(400).json({msg: "User does not exist"})
+            if(!hauler) return res.status(400).json({msg: 'Hauler does not exist'})
 
-            if(!hauler.password) return res.status(400).json({msg: "Login Unsuccessful"})
+            if(!hauler.password) return res.status(400).json({msg: 'Login Unsuccessful'})
 
             // const isMatch = await bcrypt.compare(password, user.password)
             // if(!isMatch) return res.status(400).json({msg: "Incorrect password"})
@@ -37,7 +37,7 @@ const haulerController = {
             const {email} = req.body
 
             const hauler = await Haulers.findOne({email})
-            if(!hauler) return res.status(400).json({msg: "User does not exists."})
+            if(!hauler) return res.status(400).json({msg: 'User does not exists.'})
 
             const accesstoken = createAccessToken(hauler._id)
 

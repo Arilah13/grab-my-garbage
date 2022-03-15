@@ -7,4 +7,6 @@ router.get('/', schedulePickupController.returnschedulePickupList)
 
 router.get('/:id', schedulePickupController.returnSchedulePickupUser)
 
+router.get('/hauler/:id', schedulePickupController.returnSchedulePickupHauler)
+
 module.exports = router

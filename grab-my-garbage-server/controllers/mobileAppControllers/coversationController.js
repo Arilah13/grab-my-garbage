@@ -25,7 +25,7 @@ const conversationController = {
             const conversation = await Conversations.find({
                 members: { $in: [userid, receiverid] }
             })
-            if(!conversation) {return res.status(400).json({msg: "Conversation does not exists."})}
+            if(!conversation) {return res.status(400).json({msg: 'Conversation does not exists.'})}
 
             res.status(200).json(conversation)
         } catch(err) {

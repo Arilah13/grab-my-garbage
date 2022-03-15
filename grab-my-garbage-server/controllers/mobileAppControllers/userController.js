@@ -25,7 +25,7 @@ const userController = {
                 const newUser = new Users({
                     name: name,
                     email: email,
-                    role: registerrole === "user" ? 0 : 1,
+                    role: registerrole === 'user' ? 0 : 1,
                     image: photoUrl,
                     pushId: notification_token
                 })
@@ -72,7 +72,7 @@ const userController = {
                     name: name,
                     email: email,
                     pushId: notification_token,
-                    role: registerrole === "user" ? 0 : 1,
+                    role: registerrole === 'user' ? 0 : 1,
                 })
 
                 await newUser.save()
@@ -100,17 +100,17 @@ const userController = {
 
             const user = await Users.findOne({email}) 
             if(user)
-                return res.status(400).json({msg: "The email already exists."})
+                return res.status(400).json({msg: 'The email already exists.'})
             
             if(password.length < 6)
-                return res.status(400).json({msg: "Password should be atleast 6 character long"});
+                return res.status(400).json({msg: 'Password should be atleast 6 character long'});
 
             const passwordHash = await bcrypt.hash(password, 10)
 
             const newUser = new Users({
                 name: name,
                 email: email,
-                role: registerrole === "user" ? 0 : 1,
+                role: registerrole === 'user' ? 0 : 1,
                 password: passwordHash,
                 pushId: notification_token,
                 //image: photoUrl
@@ -137,12 +137,12 @@ const userController = {
             const {email, password} = req.body       
 
             const user = await Users.findOne({email})
-            if(!user) return res.status(400).json({msg: "User does not exist"})
+            if(!user) return res.status(400).json({msg: 'User does not exist'})
 
-            if(!user.password) return res.status(400).json({msg: "Login Unsuccessful"})
+            if(!user.password) return res.status(400).json({msg: 'Login Unsuccessful'})
 
             const isMatch = await bcrypt.compare(password, user.password)
-            if(!isMatch) return res.status(400).json({msg: "Incorrect password"})
+            if(!isMatch) return res.status(400).json({msg: 'Incorrect password'})
 
             const accesstoken = createAccessToken(user._id)
             const refreshtoken = createRefreshToken(user._id)
@@ -162,7 +162,7 @@ const userController = {
     logout: async(req, res) => {
         try{
             res.clearCookie('refreshtoken', {path: '/user/refresh_token'})
-            return res.status(200).json({msg: "Logged out"})
+            return res.status(200).json({msg: 'Logged out'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -170,10 +170,10 @@ const userController = {
     refreshtoken: (req, res) => {
         try {
             const rf_token = req.cookies.refreshtoken
-            if(!rf_token) return res.status(400).json({msg: "Please Login or Register"})
+            if(!rf_token) return res.status(400).json({msg: 'Please Login or Register'})
 
             jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-                if(err) return res.status(400).json({msg: "Please Login or Register"})
+                if(err) return res.status(400).json({msg: 'Please Login or Register'})
 
                 const accesstoken = createAccessToken({id: user._id})
                 res.status(200).json({accesstoken})
@@ -187,7 +187,7 @@ const userController = {
     updateUserProfile: async(req, res) => {
         try{
             const user = await Users.findById(req.params.id).select('-password')
-            if(!user) return res.status(400).json({msg: "User does not exists."})
+            if(!user) return res.status(400).json({msg: 'User does not exists.'})
 
             user.name = req.body.name || user.name
             user.email = req.body.email || user.email
@@ -205,17 +205,13 @@ const userController = {
                         api_secret: process.env.CLOUD_API_SECRET
                     })
                     
-                    await cloudinary.v2.uploader.upload("data:image/gif;base64," + req.body.image, {folder: "grab-my-garbage"}, (err, result) =>{
+                    await cloudinary.v2.uploader.upload('data:image/gif;base64,' + req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
                         if(err) 
                             throw err
                         else
                             user.image = result.secure_url   
                     })
                 }   
-            }
-            
-            if (req.body.password) {
-                user.password = req.body.password
             }
 
             await user.save()
@@ -230,7 +226,7 @@ const userController = {
     getUserById: async(req, res) => {
         try {
             const user = await Users.findById(req.params.id)
-            if(!user) return res.status(400).json({msg: "User does not exists."})
+            if(!user) return res.status(400).json({msg: 'User does not exists.'})
 
             res.status(200).json(user)         
         } catch(err) {
@@ -242,7 +238,7 @@ const userController = {
             const {email} = req.body
 
             const user = await Users.findOne({email})
-            if(!user) return res.status(400).json({msg: "User does not exists."})
+            if(!user) return res.status(400).json({msg: 'User does not exists.'})
 
             const accesstoken = createAccessToken(user._id)
 
@@ -261,7 +257,7 @@ const userController = {
     updateUserPassword: async(req, res) => {
         try{
             const user = await Users.findById(req.params.id).select('-password')
-            if(!user) return res.status(400).json({msg: "User does not exists."})
+            if(!user) return res.status(400).json({msg: 'User does not exists.'})
             
             const password = req.body.password
             const passwordHash = await bcrypt.hash(password, 10)

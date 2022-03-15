@@ -29,24 +29,21 @@ const scheduledPickupSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    customerId:{
+    customerId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'Users'
     },
-    pickerId:{
-        type: String
+    pickerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Haulers'
     },
-    // pickerId:{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     required: false,
-    //     ref: 'Haulers'
-    // },
-    completed:{
+    completed: {
         type: Number,
         default: 0
     },
-    completedPickups:{
+    completedPickups: {
         type: Array,
         required: false,
     }
