@@ -66,10 +66,14 @@ const HaulerDetails = ({match}) => {
             .min(6, 'Password must be atleast 6 characters')
             .max(50, 'Password must not be more than 50 characters'),
         password1: Yup.string()
-            .notRequired()
-            .min(6, 'Password must be atleast 6 characters')
-            .max(50, 'Password must not be more than 50 characters')
-            .oneOf([Yup.ref('password'), null], "Passwords don't match"),
+            .when('password', {
+                is: (password) => password !== undefined,
+                then: Yup.string()
+                        .required('Password is required')
+                        .min(6, 'Password must be atleast 6 characters')
+                        .max(50, 'Password must not be more than 50 characters')
+                        .oneOf([Yup.ref('password'), null], "Passwords don't match")
+            }),
         service_city: Yup.string().required('Choose a service city')
     })
 
@@ -162,12 +166,13 @@ const HaulerDetails = ({match}) => {
             <div className = 'haulerTitleContainer'>
                 <h1 className = 'haulerTitle'>Hauler</h1>
             </div>
+
             {
                 scheduleLoading === true && specialLoading === true && pickupList === null && paymentList === null && haulerLoading === true && first.current === true ?
                 <Loader /> :
                 <>
-                <div className = 'userTop'>
-                    <div className = 'userTopLeft'>
+                <div className = 'haulerTop'>
+                    <div className = 'haulerTopLeft'>
                         <Chart 
                             dataKey = 'Schedule Pickups' 
                             title = 'Special and Scheduled Pickups Collection' 
@@ -175,7 +180,7 @@ const HaulerDetails = ({match}) => {
                             dataKey1 = 'Special Pickups'
                         />
                     </div>
-                    <div className = 'userTopRight'>
+                    <div className = 'haulerTopRight'>
                         <Chart 
                             dataKey = 'Schedule Pickups' 
                             title = 'Special and Scheduled Pickups Payment' 
@@ -184,10 +189,9 @@ const HaulerDetails = ({match}) => {
                         />
                     </div>
                 </div>
-
-                <div className = 'userBottom'>
-                    <h3>User Details</h3>
-                    <div className = 'userDetails'>
+                <div className = 'haulerBottom'>
+                    <h3>Hauler Details</h3>
+                    <div className = 'haulerDetails'>
 
                         <Formik
                             initialValues = {initialValues}
@@ -209,8 +213,8 @@ const HaulerDetails = ({match}) => {
                         >
                         {
                             (props) =>
-                            <div className = 'userDetailsLeft'>
-                                <div className = 'userFlex'>
+                            <div className = 'haulerDetailsLeft'>
+                                <div className = 'haulerFlex'>
                                     <div className = 'form-field'>
                                         <TextField
                                             error = {props.errors.name && props.touched.name}
@@ -220,7 +224,7 @@ const HaulerDetails = ({match}) => {
                                                 width: '250px'
                                             }}
                                             InputLabelProps = {{
-                                                shrink: props.values.name !== null ? true : false
+                                                shrink: props.values.name !== '' ? true : false
                                             }}
                                             value = {props.values.name}
                                             onChange = {(event) => setName(event.target.value)}
@@ -235,7 +239,7 @@ const HaulerDetails = ({match}) => {
                                                 width: '250px'
                                             }}
                                             InputLabelProps = {{
-                                                shrink: props.values.email !== null ? true : false
+                                                shrink: props.values.email !== '' ? true : false
                                             }}
                                             value = {props.values.email}
                                             onChange = {(event) => setEmail(event.target.value)}
@@ -243,7 +247,7 @@ const HaulerDetails = ({match}) => {
                                     </div>
                                 </div>
 
-                                <div className = 'userFlex'>
+                                <div className = 'haulerFlex'>
                                     <div className = 'form-field'>
                                         <TextField
                                             error = {props.errors.phone && props.touched.phone}
@@ -253,7 +257,7 @@ const HaulerDetails = ({match}) => {
                                                 width: '250px'
                                             }}
                                             InputLabelProps = {{
-                                                shrink: props.values.phone !== null ? true : false
+                                                shrink: props.values.phone !== '' ? true : false
                                             }}
                                             value = {props.values.phone}
                                             onChange = {(event) => setPhone(event.target.value)}
@@ -281,7 +285,7 @@ const HaulerDetails = ({match}) => {
                                     </div>
                                 </div>
 
-                                <div className = 'userFlex'>
+                                <div className = 'haulerFlex'>
                                     <div className = 'form-field'>
                                         <TextField
                                             error = {props.errors.password && props.touched.password}
@@ -291,7 +295,7 @@ const HaulerDetails = ({match}) => {
                                                 width: '250px'
                                             }}
                                             InputLabelProps = {{
-                                                shrink: props.values.password !== null ? true : false
+                                                shrink: props.values.password !== '' ? true : false
                                             }}
                                             type = 'password'
                                             onChange = {(event) => setPassword(event.target.value)}
@@ -306,7 +310,7 @@ const HaulerDetails = ({match}) => {
                                                 width: '250px'
                                             }}
                                             InputLabelProps = {{
-                                                shrink: props.values.password1 !== null ? true : false
+                                                shrink: props.values.password1 !== '' ? true : false
                                             }}
                                             type = 'password'
                                             onChange = {(event) => setPassword1(event.target.value)}
@@ -314,7 +318,7 @@ const HaulerDetails = ({match}) => {
                                     </div>
                                 </div>
 
-                                <div className = 'userFlex'>
+                                <div className = 'haulerFlex'>
                                     <div className = 'form-field'>
                                         <label htmlFor = 'contained-button'>
                                             <input 
@@ -339,7 +343,7 @@ const HaulerDetails = ({match}) => {
                                         <img 
                                             src = {props.values.image !== undefined ? props.values.image : require('../../assets/user.png')} 
                                             alt = {props.values.name} 
-                                            className = 'userUploadImg' 
+                                            className = 'haulerUploadImg' 
                                         />
                                     </div>
                                 </div>

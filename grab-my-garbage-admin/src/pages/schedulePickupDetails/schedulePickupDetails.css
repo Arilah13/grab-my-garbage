@@ -1,0 +1,51 @@
+.schedulePickup {
+    flex: 6;
+    padding: 40px;
+}
+
+.schedulePickupTitleContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+  
+.schedulePickupTopLeft,
+.schedulePickupTopRight {
+    flex: 1;
+    padding: 20px;
+    margin: 20px;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    width: 45%;
+    flex-direction: column;
+}
+
+.schedulePickupTop {
+    display: flex;
+}
+
+.schedulePickupDetails {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.schedulePickupTopLeft > h3 {
+    margin-bottom: 20px;
+    color: gray;
+}
+
+.form-field {
+    width: 250px;
+    margin-bottom: 20px;
+    margin-right: 15px;
+}
+
+.form-field > h4 {
+    margin-top: 5px;
+    color: gray;
+}
+
+.schedulePickupFlex {
+    display: flex;
+    flex-direction: row;
+}

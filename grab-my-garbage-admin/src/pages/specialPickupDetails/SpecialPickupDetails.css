@@ -1,0 +1,51 @@
+.specialPickup {
+    flex: 6;
+    padding: 40px;
+}
+
+.specialPickupTitleContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+  
+.specialPickupTopLeft,
+.specialPickupTopRight {
+    flex: 1;
+    padding: 20px;
+    margin: 20px;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    width: 45%;
+    flex-direction: column;
+}
+
+.specialPickupTop {
+    display: flex;
+}
+
+.specialPickupDetails {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.specialPickupTopLeft > h3 {
+    margin-bottom: 20px;
+    color: gray;
+}
+
+.form-field {
+    width: 250px;
+    margin-bottom: 20px;
+    margin-right: 15px;
+}
+
+.form-field > h4 {
+    margin-top: 5px;
+    color: gray;
+}
+
+.specialPickupFlex {
+    display: flex;
+    flex-direction: row;
+}

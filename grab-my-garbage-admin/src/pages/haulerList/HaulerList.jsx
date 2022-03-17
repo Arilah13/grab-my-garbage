@@ -5,11 +5,13 @@ import { DataGrid } from '@mui/x-data-grid'
 import { DeleteOutline } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import { Backdrop, Slide, Modal, Box } from '@mui/material'
-import { SpinnerDotted } from 'spinners-react'
+import Swal from 'sweetalert2'
 
-import { getHaulers } from '../../redux/actions/haulerActions'
+import { getHaulers, deleteHauler } from '../../redux/actions/haulerActions'
 
 import AddHauler from '../../components/addHauler/AddHauler'
+import Loader from '../../components/loader/loader'
+import { HAULER_DELETE_RESET } from '../../redux/constants/haulerConstants'
 
 const HaulerList = () => {
     const dispatch = useDispatch()
@@ -17,12 +19,26 @@ const HaulerList = () => {
     const haulerList = useSelector((state) => state.haulerList)
     const { loading, haulerList: haulers } = haulerList
 
+    const haulerDelete = useSelector((state) => state.haulerDelete)
+    const { success, error } = haulerDelete
+
     const [data, setData] = useState()
     const [open, setOpen] = useState(false)
 
-    // const handleDelete = (id) => {
-    //     setData(data.filter((item) => item.id !== id))
-    // }
+    const handleDelete = (id) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                dispatch(deleteHauler(id))
+            }
+        })
+    }
 
     const columns = [
         { field: '_id', hide: true },
@@ -42,12 +58,12 @@ const HaulerList = () => {
             renderCell: (params) => {
                 return (
                 <>
-                    <Link to = {'/user/' + params.row._id}>
+                    <Link to = {'/haulers/' + params.row._id}>
                         <button className = 'haulerListEdit'>View</button>
                     </Link>
                     <DeleteOutline
                         className = 'haulerListDelete'
-                        //onClick={() => handleDelete(params.row.id)}
+                        onClick={() => handleDelete(params.row._id)}
                     />
                 </>
                 )
@@ -58,15 +74,34 @@ const HaulerList = () => {
     useEffect(() => {
         if(haulers === undefined) {
             dispatch(getHaulers())
+        } else if(haulers !== undefined) {
+            setData(haulers)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [haulers])
 
     useEffect(() => {
-        if(haulers !== undefined) {
-            setData(haulers)
+        if(success === true) {
+            Swal.fire(
+                'Hauler Deleted',
+                'Hauler details has been deleted.',
+                'success'
+            )
+            dispatch({
+                type: HAULER_DELETE_RESET
+            })
+            dispatch(getHaulers())
+        } else if(success === false) {
+            Swal.fire(
+                'Error',
+                error,
+                'error'
+            )
+            dispatch({
+                type: HAULER_DELETE_RESET
+            })
         }
-    }, [haulers])
+    }, [haulerDelete])
 
     return (
         <>
@@ -82,14 +117,7 @@ const HaulerList = () => {
 
             {
                 loading === true ?
-                <SpinnerDotted 
-                    size = {150}
-                    color = '#00d0f1'
-                    style = {{
-                        marginTop: '10%',
-                        marginLeft: '40%'
-                    }}
-                /> :
+                <Loader /> :
                 <DataGrid
                     rows = {data}
                     columns = {columns}
@@ -117,7 +145,7 @@ const HaulerList = () => {
         >
             <Slide in = {open}>
                 <Box sx={style}>
-                    <AddHauler />
+                    <AddHauler setOpen = {setOpen} />
                 </Box>
             </Slide>
         </Modal>

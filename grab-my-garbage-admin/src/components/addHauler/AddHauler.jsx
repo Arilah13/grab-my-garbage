@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { TextField, InputLabel, Select, MenuItem, FormControl, Button } from '@mui/material'
 import { Publish } from '@mui/icons-material'
 import { Formik } from 'formik'
@@ -11,11 +11,15 @@ import './AddHauler.css'
 import OverLay from '../map/OverLay'
 import polygonData from '../../helpers/polygonData'
 import { addHauler } from '../../redux/actions/haulerActions'
+import { HAULER_ADD_RESET } from '../../redux/constants/haulerConstants'
 
-const AddHauler = () => {
+const AddHauler = ({setOpen}) => {
     const dispatch = useDispatch()
 
     const formik = useRef()
+
+    const haulerAdd = useSelector((state) => state.haulerAdd)
+    const { loading, success, error } = haulerAdd
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -80,6 +84,32 @@ const AddHauler = () => {
             name: polygondata.name
         })
     })
+
+    useEffect(() => {
+        if(success === true) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Hauler Registration Success',
+                text: 'Hauler Details have been successfully added'
+            })
+            formik.current.setSubmitting(false)
+            dispatch({
+                type: HAULER_ADD_RESET
+            })
+            setOpen(false)
+        }
+        else if(error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hauler Registration Fail',
+                text: error
+            })
+            dispatch({
+                type: HAULER_ADD_RESET
+            })
+            formik.current.setSubmitting(false)
+        }
+    }, [loading])
 
     return (
         <div style = {{padding: '30px'}}>
@@ -164,8 +194,8 @@ const AddHauler = () => {
                                 }}
                                 onChange = {(event) => setServiceCity(event.target.value)}
                             >
-                                <MenuItem value = 'Wellwatte'>Wellawatte</MenuItem>
-                                <MenuItem value = 'Bambalapitiya'>Bambalapitiya</MenuItem>
+                                <MenuItem value = 'wellwatte'>Wellawatte</MenuItem>
+                                <MenuItem value = 'bambalapitiya'>Bambalapitiya</MenuItem>
                             </Select>
                         </FormControl>
                     </div>

@@ -3,31 +3,25 @@ import { useSelector, useDispatch } from 'react-redux'
 import './SpecialPickupList.css'
 import { DataGrid } from '@mui/x-data-grid'
 import { Link } from 'react-router-dom'
-import { SpinnerDotted } from 'spinners-react'
 
 import { getSpecialPickups } from '../../redux/actions/specialPickupActions'
 import { timeHelper, dateHelper } from '../../helpers/timeHelpers'
 
+import Loader from '../../components/loader/loader'
+
 const SpecialPickupList = () => {
     const dispatch = useDispatch()
-    let number = 0
 
     const specialPickupList = useSelector((state) => state.specialPickupList)
     const { loading, specialPickupList: specialPickup } = specialPickupList
 
     const [data, setData] = useState(null)
 
-    const addition = () => {
-        number = number + 1
-        return number
-    }
-
     const Button = ({ type }) => {
         return <button className = {'button ' + type}>{type}</button>
     }
 
     const columns = [
-        { field: '_id', headerName: 'ID', width: 200, headerAlign: 'center', align: 'center' },
         { field: 'customerId', headerName: 'User', width: 250, headerAlign: 'center', align: 'center',
             renderCell: (params) => {
                 return (
@@ -63,7 +57,7 @@ const SpecialPickupList = () => {
         { field: 'action', headerName: 'Action', width: 200, headerAlign: 'center', align: 'center',
             renderCell: (params) => {
                 return (
-                    <Link to = {'/user/' + params.row._id}>
+                    <Link to = {'/specialpickups/' + params.row._id}>
                         <button className = 'pickupListEdit'>View</button>
                     </Link>
                 )
@@ -94,14 +88,7 @@ const SpecialPickupList = () => {
 
             {
                 loading === true ?
-                <SpinnerDotted 
-                    size = {150}
-                    color = '#00d0f1'
-                    style = {{
-                        marginTop: '10%',
-                        marginLeft: '40%'
-                    }}
-                /> :
+                <Loader /> :
                 <DataGrid
                     rows = {data}
                     columns = {columns}

@@ -7,20 +7,33 @@ import {
     userSchedulePickupReducer,
     userSpecialPickupReducer,
     userDetailReducer,
-    userDetailUpdateReducer
+    userDetailUpdateReducer,
+    userDeleteReducer
 } from './reducers/userReducers'
 
 import {
     haulerListReducer,
-    haulerAddReducer
+    haulerAddReducer,
+    haulerDeleteReducer,
+    haulerSchedulePickupReducer,
+    haulerSpecialPickupReducer,
+    haulerDetailReducer,
+    haulerDetailUpdateReducer
 } from './reducers/haulerReducers'
 
 import {
-    schedulePickupListReducer
+    schedulePickupListReducer,
+    schedulePickupAddReducer,
+    schedulePickupDeleteReducer,
+    schedulePickupDetailReducer,
+    schedulePickupDisableReducer,
+    schedulePickupUpdateReducer
 } from './reducers/schedulePickupReducers'
 
 import {
-    specialPickupListReducer
+    specialPickupListReducer,
+    specialPickupDeleteReducer,
+    specialPickupDetailReducer,
 } from './reducers/specialPickupReducers'
 
 const reducer = combineReducers({
@@ -29,13 +42,26 @@ const reducer = combineReducers({
     userSpecialPickup: userSpecialPickupReducer,
     userDetail: userDetailReducer,
     userDetailUpdate: userDetailUpdateReducer,
+    userDelete: userDeleteReducer,
 
     haulerList: haulerListReducer,
     haulerAdd: haulerAddReducer,
+    haulerDelete: haulerDeleteReducer,
+    haulerSchedulePickup: haulerSchedulePickupReducer,
+    haulerSpecialPickup: haulerSpecialPickupReducer,
+    haulerDetail: haulerDetailReducer,
+    haulerDetailUpdate: haulerDetailUpdateReducer,
 
     schedulePickupList: schedulePickupListReducer,
+    schedulePickupAdd: schedulePickupAddReducer,
+    schedulePickupDelete: schedulePickupDeleteReducer,
+    schedulePickupDetail: schedulePickupDetailReducer,
+    schedulePickupDisable: schedulePickupDisableReducer,
+    schedulePickupUpdate: schedulePickupUpdateReducer,
 
-    specialPickupList: specialPickupListReducer
+    specialPickupList: specialPickupListReducer,
+    specialPickupDelete: specialPickupDeleteReducer,
+    specialPickupDetail: specialPickupDetailReducer,
 })
 
 const middleware = [thunk]

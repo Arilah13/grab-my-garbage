@@ -1,9 +1,9 @@
 import React from 'react'
-import { GoogleMap, withScriptjs, withGoogleMap, Polygon } from 'react-google-maps'
+import { GoogleMap, withScriptjs, withGoogleMap, Polygon, Marker } from 'react-google-maps'
 
 import mapStyle from './MapStyles'
 
-const Map = ({polygon}) => {
+const Map = ({polygon, lat, lng}) => {
 
     const parseCoordinates = (coordinates) => {
         var result = []
@@ -22,8 +22,9 @@ const Map = ({polygon}) => {
             defaultZoom = {13}
             defaultOptions = {{ styles: mapStyle }}
             tilt = {45}
+            center = {lat && lng && {lat: lat, lng: lng}}
         >
-            {polygon.map((poly, i) => {
+            {polygon && polygon.map((poly, i) => {
                 console.log(parseCoordinates(poly.area))
                 return(
                     <Polygon 
@@ -39,6 +40,16 @@ const Map = ({polygon}) => {
                     />
                 )
             })}
+
+            {lat && lng && 
+                <Marker
+                    position = {{lat: parseFloat(lat), lng: parseFloat(lng)}}
+                    icon = {{
+                        url: '/mapIcon.svg',
+                        scaledSize: new window.google.maps.Size(25, 25)
+                    }}
+                />
+            }
         </GoogleMap>
     )
 }

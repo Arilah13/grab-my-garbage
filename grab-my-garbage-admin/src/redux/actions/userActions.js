@@ -47,7 +47,7 @@ export const getUserScheduledPickups = (userid) => async(dispatch, getState) => 
             }
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/admin/schedulepickup/${userid}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/admin/user/schedulepickup/${userid}`, config)
 
         dispatch({
             type: actionTypes.RETRIEVE_USER_SCHEDULE_PICKUP_SUCCESS,
@@ -78,7 +78,7 @@ export const getUserSpecialPickups = (userid) => async(dispatch, getState) => {
             }
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/admin/specialpickup/${userid}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/admin/user/specialpickup/${userid}`, config)
 
         dispatch({
             type: actionTypes.RETRIEVE_USER_SPECIAL_PICKUP_SUCCESS,
@@ -153,6 +153,32 @@ export const updateUserDetail = (userid, values) => async(dispatch, getState) =>
     } catch(err) {
         dispatch({
             type: actionTypes.USER_DETAIL_UPDATE_FAIL,
+            payload: err.response && err.response.data.msg
+            ? err.response.data.msg
+            : err
+        })
+    }
+}
+
+export const deleteUser = (id) => async(dispatch, getState) => {
+    try{
+        //const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                //Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        const { data } = await axios.delete(`https://grab-my-garbage-server.herokuapp.com/admin/users/${id}`)
+
+        dispatch({
+            type: actionTypes.USER_DELETE_SUCCESS
+        })
+    } catch (err) {
+        dispatch({
+            type: actionTypes.USER_DELETE_FAIL,
             payload: err.response && err.response.data.msg
             ? err.response.data.msg
             : err

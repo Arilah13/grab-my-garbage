@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { SpinnerDotted } from 'spinners-react'
 import { TextField, Button } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import { Publish } from "@mui/icons-material"
@@ -15,6 +14,7 @@ import { returnPerMonthPickup, moneyreturn } from '../../helpers/userDetailsHelp
 
 import './UserDetails.css'
 import Chart from '../../components/chart/Chart'
+import Loader from '../../components/loader/loader'
 
 const UserDetails = ({ match }) => {
     const dispatch = useDispatch()
@@ -24,11 +24,11 @@ const UserDetails = ({ match }) => {
 
     const [pickupList, setPickupList] = useState(null)
     const [paymentList, setPaymentList] = useState(null)
-    const [name, setName] = useState(null)
-    const [phone, setPhone] = useState(null)
-    const [email, setEmail] = useState(null)
-    const [image, setImage] = useState(null)
-    const [pic, setPic] = useState(null)
+    const [name, setName] = useState('')
+    const [phone, setPhone] = useState('')
+    const [email, setEmail] = useState('')
+    const [image, setImage] = useState('')
+    const [pic, setPic] = useState('')
 
     const userSchedulePickup = useSelector((state) => state.userSchedulePickup)
     const { loading: scheduleLoading, userScheduleList } = userSchedulePickup
@@ -78,14 +78,14 @@ const UserDetails = ({ match }) => {
     }
 
     useEffect(() => {
-        if(userScheduleList === undefined || userScheduleList.length === 0 || (userScheduleList.length > 0 && userScheduleList[0].customerId !== match.params.userId)) {
+        if(userScheduleList === undefined || (userScheduleList.length > 0 && userScheduleList[0].customerId !== match.params.userId)) {
             dispatch(getUserScheduledPickups(match.params.userId))
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userScheduleList])
 
     useEffect(() => {
-        if(userSpecialList === undefined || userSpecialList.length === 0 || (userSpecialList.length > 0 && userSpecialList[0].customerId !== match.params.userId)) {
+        if(userSpecialList === undefined || (userSpecialList.length > 0 && userSpecialList[0].customerId !== match.params.userId)) {
             dispatch(getUserSpecialPickups(match.params.userId))
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -136,6 +136,7 @@ const UserDetails = ({ match }) => {
             dispatch({
                 type: USER_DETAIL_UPDATE_RESET
             })
+            formik.current.setSubmitting(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [updateLoading])
@@ -147,14 +148,7 @@ const UserDetails = ({ match }) => {
             </div>
             {
                 scheduleLoading === true && specialLoading === true && pickupList === null && paymentList === null && userLoading === true && first.current === true ?
-                <SpinnerDotted 
-                    size = {150}
-                    color = '#00d0f1'
-                    style = {{
-                        marginTop: '10%',
-                        marginLeft: '40%'
-                    }}
-                /> :
+                <Loader /> :
                 <> 
                 <div className = 'userTop'>
                     <div className = 'userTopLeft'>
@@ -210,7 +204,7 @@ const UserDetails = ({ match }) => {
                                                 width: '250px'
                                             }}
                                             InputLabelProps = {{
-                                                shrink: props.values.name !== null ? true : false
+                                                shrink: props.values.name !== '' ? true : false
                                             }}
                                             value = {props.values.name}
                                             onChange = {(event) => setName(event.target.value)}
@@ -225,72 +219,69 @@ const UserDetails = ({ match }) => {
                                                 width: '250px'
                                             }}
                                             InputLabelProps = {{
-                                                shrink: props.values.email !== null ? true : false
+                                                shrink: props.values.email !== '' ? true : false
                                             }}
                                             value = {props.values.email}
                                             onChange = {(event) => setEmail(event.target.value)}
                                         />
                                     </div>
                                 </div>
-                                <div className = 'userDetailsLeft'>
+
+                                <div className = 'form-field'>
+                                    <TextField
+                                        error = {props.errors.phone && props.touched.phone}
+                                        id = 'phone'
+                                        label = {props.errors.phone && props.touched.phone ? props.errors.phone : 'Phone Number'}
+                                        style = {{
+                                            width: '250px'
+                                        }}
+                                        InputLabelProps = {{
+                                            shrink: props.values.phone !== '' ? true : false
+                                        }}
+                                        value = {props.values.phone}
+                                        onChange = {(event) => setPhone(event.target.value)}
+                                    />
+                                </div>
+
+                                <div className = 'userFlex'>
                                     <div className = 'form-field'>
-                                        <TextField
-                                            error = {props.errors.phone && props.touched.phone}
-                                            id = 'phone'
-                                            label = {props.errors.phone && props.touched.phone ? props.errors.phone : 'Phone Number'}
-                                            style = {{
-                                                width: '250px'
-                                            }}
-                                            InputLabelProps = {{
-                                                shrink: props.values.phone !== null ? true : false
-                                            }}
-                                            value = {props.values.phone}
-                                            onChange = {(event) => setPhone(event.target.value)}
+                                        <label htmlFor = 'contained-button'>
+                                            <input 
+                                                accept = 'image/*' 
+                                                id = 'contained-button' 
+                                                multiple 
+                                                type = 'file' 
+                                                style = {{display: 'none'}} 
+                                                onChange = {handleImage}
+                                            />
+                                            <Button 
+                                                variant = 'contained' 
+                                                component = 'span' 
+                                                startIcon = {<Publish />} 
+                                                style = {{marginTop: 50, marginLeft: 100}} 
+                                            >
+                                                Upload
+                                            </Button>
+                                        </label>
+                                    </div>
+                                    <div className = 'form-field'>
+                                        <img 
+                                            src = {props.values.image !== undefined ? props.values.image : require('../../assets/user.png')} 
+                                            alt = {props.values.name} 
+                                            className = 'userUploadImg' 
                                         />
                                     </div>
                                 </div>
-                                <div className = 'userDetailsLeft'>
-                                    <div className = 'userFlex'>
-                                        <div className = 'form-field'>
-                                            <label htmlFor = 'contained-button'>
-                                                <input 
-                                                    accept = 'image/*' 
-                                                    id = 'contained-button' 
-                                                    multiple 
-                                                    type = 'file' 
-                                                    style = {{display: 'none'}} 
-                                                    onChange = {handleImage}
-                                                />
-                                                <Button 
-                                                    variant = 'contained' 
-                                                    component = 'span' 
-                                                    startIcon = {<Publish />} 
-                                                    style = {{marginTop: 50, marginLeft: 100}} 
-                                                >
-                                                    Upload
-                                                </Button>
-                                            </label>
-                                        </div>
-                                        <div className = 'form-field'>
-                                            <img 
-                                                src = {props.values.image !== undefined ? props.values.image : require('../../assets/user.png')} 
-                                                alt = {props.values.name} 
-                                                className = 'userUploadImg' 
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className = 'userDetailsLeft'>
-                                    <div className = 'form-field'>
-                                        <LoadingButton 
-                                            variant = 'contained' 
-                                            style = {{marginLeft: '70%', width: 150, marginTop: 20, backgroundColor: '#00d0f1'}}
-                                            loading = {props.isSubmitting}
-                                            onClick = {props.handleSubmit}
-                                        >
-                                            Update
-                                        </LoadingButton>
-                                    </div>
+  
+                                <div className = 'form-field'>
+                                    <LoadingButton 
+                                        variant = 'contained' 
+                                        style = {{marginLeft: '70%', width: 150, marginTop: 20, backgroundColor: '#00d0f1'}}
+                                        loading = {props.isSubmitting}
+                                        onClick = {props.handleSubmit}
+                                    >
+                                        Update
+                                    </LoadingButton>
                                 </div>
                             </div>
                         }
