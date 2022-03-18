@@ -99,7 +99,11 @@ const haulerController = {
                 hauler.password = await bcrypt.hash(req.body.password, 10)
             }
 
+            await hauler.save()
 
+            res.status(200).json({
+                message: 'Hauler updated'
+            }) 
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }

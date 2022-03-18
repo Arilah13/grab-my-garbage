@@ -4,12 +4,12 @@ const auth = require('../../middleware/auth')
 const authAdmin = require('../../middleware/authAdmin')
 
 router.route('/')
-        .get(haulerController.returnHaulerList)
         .post(haulerController.addHaulers)
+        .get(haulerController.returnHaulerList)
 
 router.route('/:id')
+        .put(haulerController.updateHaulerDetail)
         .get(haulerController.returnHaulerDetail)
         .delete(haulerController.deleteHauler)
-        .put(haulerController.updateHaulerDetail)
 
 module.exports = router

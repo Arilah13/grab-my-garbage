@@ -3,7 +3,12 @@ const userController = require('../../controllers/adminAppControllers/userContro
 const auth = require('../../middleware/auth')
 const authAdmin = require('../../middleware/authAdmin')
 
-router.get('/', userController.returnUserList)
+router.get('/list', userController.returnUserList)
+
+router.route('/')
+        .post(userController.loginAdmin)
+        .get(userController.returnAdmin)
+        .put(userController.updateAdmin)
 
 router.route('/:id')
         .get(userController.returnUserDetail)

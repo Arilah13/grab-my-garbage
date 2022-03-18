@@ -3,9 +3,14 @@ const specialPickupController = require('../../controllers/adminAppControllers/s
 const auth = require('../../middleware/auth')
 const authAdmin = require('../../middleware/authAdmin')
 
-router.get('/', specialPickupController.returnspecialPickupList)
+router.route('/')
+        .get(specialPickupController.returnspecialPickupList)
 
-router.get('/:id', specialPickupController.returnSpecialPickupUser)
+router.route('/:id')
+        .get(specialPickupController.returnSpecialPickupDetail)
+        .delete(specialPickupController.deleteSpecialPickup)
+
+router.get('/user/:id', specialPickupController.returnSpecialPickupUser)
 
 router.get('/hauler/:id', specialPickupController.returnSpecialPickupHauler)
 

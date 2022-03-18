@@ -3,9 +3,16 @@ const schedulePickupController = require('../../controllers/adminAppControllers/
 const auth = require('../../middleware/auth')
 const authAdmin = require('../../middleware/authAdmin')
 
-router.get('/', schedulePickupController.returnschedulePickupList)
+router.route('/')
+        .get(schedulePickupController.returnschedulePickupList)
+        .post(schedulePickupController.addSchedulePickup)
 
-router.get('/:id', schedulePickupController.returnSchedulePickupUser)
+router.route('/:id')
+        .get(schedulePickupController.returnSchedulePickupDetail)
+        .put(schedulePickupController.updateSchedulePickupDetail)
+        .delete(schedulePickupController.deleteSchedulePickup)
+
+router.get('/user/:id', schedulePickupController.returnSchedulePickupUser)
 
 router.get('/hauler/:id', schedulePickupController.returnSchedulePickupHauler)
 
