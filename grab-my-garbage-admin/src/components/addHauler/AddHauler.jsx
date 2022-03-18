@@ -249,7 +249,7 @@ const AddHauler = ({setOpen}) => {
                                         backgroundColor: props.errors.image && 'red'
                                     }} 
                                 >
-                                    { props.errors.image ? 'Image Needed' : 'Upload Image'}
+                                    { props.errors.image ? 'Image Needed' : 'Upload'}
                                 </Button>
                             </label>
                         </div>

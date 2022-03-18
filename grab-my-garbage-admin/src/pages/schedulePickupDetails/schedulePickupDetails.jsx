@@ -21,6 +21,7 @@ const SchedulePickupDetails = ({history, match}) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pickup])
+    
     return (
         <div className = 'schedulePickup'>
             <div className = 'schedulePickupTitleContainer'>

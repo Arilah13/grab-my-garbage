@@ -110,11 +110,15 @@ const UserList = () => {
             </div>
 
             {
-                loading === true ?
-                <Loader /> :
+                loading === true && users === undefined &&
+                <Loader /> 
+            }
+            {
+                loading === false && users !== undefined &&
                 <DataGrid
                     rows = {data}
                     columns = {columns}
+                    rowsPerPageOptions = {[5, 8, 10]}
                     pageSize = {8}
                     style = {{
                         backgroundColor: 'white'

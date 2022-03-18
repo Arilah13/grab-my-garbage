@@ -76,7 +76,7 @@ export const deleteHauler = (id) => async(dispatch, getState) => {
             }
         }
 
-        const { data } = await axios.delete(`https://grab-my-garbage-server.herokuapp.com/admin/haulers/${id}`)
+        const { data } = await axios.delete(`https://grab-my-garbage-server.herokuapp.com/admin/haulers/${id}`, config)
 
         dispatch({
             type: actionTypes.HAULER_DELETE_SUCCESS

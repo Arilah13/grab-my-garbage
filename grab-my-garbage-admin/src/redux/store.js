@@ -2,13 +2,18 @@ import { createStore, combineReducers, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
+import { ADMIN_LOGOUT } from './constants/userConstants'
+
 import {
     userListReducer,
     userSchedulePickupReducer,
     userSpecialPickupReducer,
     userDetailReducer,
     userDetailUpdateReducer,
-    userDeleteReducer
+    userDeleteReducer,
+    adminDetailReducer,
+    adminDetailUpdateReducer,
+    adminLoginReducer
 } from './reducers/userReducers'
 
 import {
@@ -43,6 +48,9 @@ const reducer = combineReducers({
     userDetail: userDetailReducer,
     userDetailUpdate: userDetailUpdateReducer,
     userDelete: userDeleteReducer,
+    adminDetail: adminDetailReducer,
+    adminDetailUpdate: adminDetailUpdateReducer,
+    adminLogin: adminLoginReducer,
 
     haulerList: haulerListReducer,
     haulerAdd: haulerAddReducer,
@@ -66,8 +74,15 @@ const reducer = combineReducers({
 
 const middleware = [thunk]
 
+const rootReducer = (state, action) => {
+    if(action.type === ADMIN_LOGOUT) {
+        state = undefined
+    }
+    return reducer(state, action)
+}
+
 const store = createStore(
-    reducer,
+    rootReducer,
     composeWithDevTools(applyMiddleware(...middleware))
 )
 

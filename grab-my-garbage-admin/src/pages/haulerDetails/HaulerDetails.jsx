@@ -333,9 +333,13 @@ const HaulerDetails = ({match}) => {
                                                 variant = 'contained' 
                                                 component = 'span' 
                                                 startIcon = {<Publish />} 
-                                                style = {{marginTop: 50, marginLeft: 100}} 
+                                                style = {{
+                                                    marginTop: 50,
+                                                    marginLeft: 100,
+                                                    backgroundColor: props.errors.image && 'red'
+                                                }} 
                                             >
-                                                Upload
+                                                { props.errors.image ? 'Image Needed' : 'Upload'}
                                             </Button>
                                         </label>
                                     </div>
