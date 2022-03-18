@@ -11,7 +11,6 @@ import Loader from '../../components/loader/loader'
 
 const SchedulePickupList = () => {
     const dispatch = useDispatch()
-    let number = 0
 
     const schedulePickupList = useSelector((state) => state.schedulePickupList)
     const { loading, schedulePickupList: schedulePickup } = schedulePickupList
@@ -57,7 +56,7 @@ const SchedulePickupList = () => {
         { field: 'action', headerName: 'Action', width: 200, headerAlign: 'center', align: 'center',
             renderCell: (params) => {
                 return (
-                    <Link to = {'/user/' + params.row._id}>
+                    <Link to = {'/schedulepickups/' + params.row._id}>
                         <button className = 'pickupListEdit'>View</button>
                     </Link>
                 );
@@ -76,6 +75,7 @@ const SchedulePickupList = () => {
         if(schedulePickup !== undefined) {
             setData(schedulePickup)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [schedulePickup])
 
     return (

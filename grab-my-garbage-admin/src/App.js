@@ -11,6 +11,7 @@ import SchedulePickupList from './pages/schedulePickupList/SchedulePickupList'
 import UserDetails from './pages/userDetails/UserDetails'
 import HaulerDetails from './pages/haulerDetails/HaulerDetails'
 import SpecialPickupDetails from './pages/specialPickupDetails/SpecialPickupDetails'
+import SchedulePickupDetails from './pages/schedulePickupDetails/SchedulePickupDetails'
 
 import './App.css'
 
@@ -34,6 +35,7 @@ function App() {
           <Route exact path = '/specialpickups/:pickupId' component = {SpecialPickupDetails} />
 
           <Route exact path = '/schedulepickups' component = {SchedulePickupList} />
+          <Route exact path = '/schedulepickups/:pickupId' component = {SchedulePickupDetails} />
 
         </Switch>
       </div>
