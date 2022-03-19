@@ -72,6 +72,16 @@ const reducer = combineReducers({
     specialPickupDetail: specialPickupDetailReducer,
 })
 
+const adminInfoFromStorage = localStorage.getItem('admingarbage')
+    ? JSON.parse(localStorage.getItem('admingarbage'))
+    : null
+
+const initialState = {
+    adminLogin: {
+        admin: adminInfoFromStorage
+    }
+}
+
 const middleware = [thunk]
 
 const rootReducer = (state, action) => {
@@ -83,6 +93,7 @@ const rootReducer = (state, action) => {
 
 const store = createStore(
     rootReducer,
+    initialState,
     composeWithDevTools(applyMiddleware(...middleware))
 )
 

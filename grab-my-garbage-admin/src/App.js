@@ -1,5 +1,5 @@
-import React from 'react'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import React, { useState } from 'react'
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 
 import Sidebar from './components/sidebar/Sidebar'
 import Topbar from './components/topbar/Topbar'
@@ -13,36 +13,46 @@ import HaulerDetails from './pages/haulerDetails/HaulerDetails'
 import SpecialPickupDetails from './pages/specialPickupDetails/SpecialPickupDetails'
 import SchedulePickupDetails from './pages/schedulePickupDetails/SchedulePickupDetails'
 import Profile from './pages/profile/Profile'
+import Login from './pages/login/Login'
 
 import './App.css'
+import Loader from './components/loader/loader'
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(false)
+  const [loading, setLoading] = useState(true)
+
   return (
-    <Router>
-      <Topbar />
-      <div className = 'container'>
-        <Sidebar />
-        <Switch>
+    <>
+      <Router>
+        {!loggedIn ? <Redirect to = '/login'/> : <Redirect to = '/home'/>}
+        {loggedIn && <Topbar setLogin = {(islogged) => setLoggedIn(islogged)} />}
+        <div className = 'container'>
+          {loggedIn && <Sidebar />}
+          <Switch>
 
-          <Route exact path = '/' component = {Home} />
+            {!loggedIn && <Route exact path = '/login' component = {() => <Login setLogin = {(islogged) => setLoggedIn(islogged)} /> }/>}
 
-          <Route exact path = '/users' component = {UserList} />
-          <Route exact path = '/users/:userId' component = {UserDetails} />
+            <Route exact path = '/home' component = {Home} />
 
-          <Route exact path = '/haulers' component = {HaulerList} />
-          <Route exact path = '/haulers/:haulerId' component = {HaulerDetails} />
+            <Route exact path = '/users' component = {UserList} />
+            <Route exact path = '/users/:userId' component = {UserDetails} />
 
-          <Route exact path = '/specialpickups' component = {SpecialPickupList} />
-          <Route exact path = '/specialpickups/:pickupId' component = {SpecialPickupDetails} />
+            <Route exact path = '/haulers' component = {HaulerList} />
+            <Route exact path = '/haulers/:haulerId' component = {HaulerDetails} />
 
-          <Route exact path = '/schedulepickups' component = {SchedulePickupList} />
-          <Route exact path = '/schedulepickups/:pickupId' component = {SchedulePickupDetails} />
+            <Route exact path = '/specialpickups' component = {SpecialPickupList} />
+            <Route exact path = '/specialpickups/:pickupId' component = {SpecialPickupDetails} />
 
-          <Route exact path = '/profile' component = {Profile} />
+            <Route exact path = '/schedulepickups' component = {SchedulePickupList} />
+            <Route exact path = '/schedulepickups/:pickupId' component = {SchedulePickupDetails} />
 
-        </Switch>
-      </div>
-    </Router>
+            <Route exact path = '/profile' component = {Profile} />
+
+          </Switch>
+        </div>
+      </Router>
+    </>
   );
 }
 

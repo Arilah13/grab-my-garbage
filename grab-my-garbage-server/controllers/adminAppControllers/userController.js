@@ -110,8 +110,9 @@ const userController = {
             const admin = await Users.findOne({role: 2})
 
             admin.email = req.body.email || admin.email
-
+            
             if(req.body.password) {
+                console.log(req.body.password)
                 admin.password = await bcrypt.hash(req.body.password, 10)
             }
 
@@ -129,6 +130,9 @@ const userController = {
                         admin.image = result.secure_url   
                 })  
             }
+            await admin.save()
+
+            res.status(200).json({message: 'Admin updated'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

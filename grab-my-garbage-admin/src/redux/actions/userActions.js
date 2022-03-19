@@ -250,7 +250,7 @@ export const updateAdminDetails = (values) => async(dispatch, getState) => {
     }
 }
 
-export const adminLogin = () => async(dispatch, getState) => {
+export const adminLogin = (values) => async(dispatch, getState) => {
     try{
         dispatch({
             type: actionTypes.ADMIN_LOGIN_REQUEST
@@ -265,12 +265,17 @@ export const adminLogin = () => async(dispatch, getState) => {
             }
         }
 
-        const { data } = await axios.post(`https://grab-my-garbage-server.herokuapp.com/admin/users`, config)
+        const { email, password } = values
+
+        const { data } = await axios.post(`https://grab-my-garbage-server.herokuapp.com/admin/users`,
+        {email, password}, config)
 
         dispatch({
             type: actionTypes.ADMIN_LOGIN_SUCCESS,
             payload: data
         })
+
+        localStorage.setItem('admingarbage', JSON.stringify(data))
     } catch(err) {
         dispatch({
             type: actionTypes.ADMIN_LOGIN_FAIL,
@@ -279,4 +284,12 @@ export const adminLogin = () => async(dispatch, getState) => {
             : err
         })
     }
+}
+
+export const logout = () => async(dispatch) => {
+    localStorage.removeItem('admingarbage')
+
+    dispatch({
+        type: actionTypes.ADMIN_LOGOUT
+    })
 }

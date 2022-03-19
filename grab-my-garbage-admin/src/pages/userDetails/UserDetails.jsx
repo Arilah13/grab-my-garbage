@@ -109,8 +109,6 @@ const UserDetails = ({ match }) => {
             const list = returnPerMonthPickup(userScheduleList, userSpecialList)
             setPickupList(list)
             const list1 = moneyreturn(userScheduleList, userSpecialList)
-            console.log(list)
-            console.log(list1)
             setPaymentList(list1)
             first.current = false
         }

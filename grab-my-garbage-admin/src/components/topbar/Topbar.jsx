@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Menu, MenuItem, Fade } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 
+import { logout } from '../../redux/actions/userActions'
 
 import './Topbar.css'
 
-const Topbar = () => {
+const Topbar = ({setLogin}) => {
+    const dispatch = useDispatch()
     const history = useHistory()
 
     const [anchorEl, setAnchorEl] = useState(null)
@@ -17,9 +20,12 @@ const Topbar = () => {
 
     const handleClose = (event) => {
         setAnchorEl(null)
-        console.log(event.target.outerText)
+
         if(event.target.outerText !== 'Logout') {
             history.push('/profile')
+        } else {
+            dispatch(logout())
+            setLogin(false)
         }
     }
 

@@ -23,7 +23,7 @@ const scheduledPickupController = {
                 payment: total,
                 paymentMethod: method,
                 customerId: id,
-                pickerId: hauler._id
+                pickerId: hauler[0]._id
             })
 
             await newPickup.save()
@@ -46,7 +46,7 @@ const scheduledPickupController = {
     getSchedulePickup: async(req, res) => {
         try{
             const customerId = req.params.id
-            const pickups = await ScheduledPickups.find({ customerId, completed: 0 })
+            const pickups = await ScheduledPickups.find({ customerId, completed: 0 }).populate('pickerId')
             if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(pickups)
@@ -57,7 +57,6 @@ const scheduledPickupController = {
 }
 
 const isPointInPolygon = (latitude, longitude, polygon) => {
-    console.log(latitude)
     const point = turf.point([longitude, latitude])
     for(let i = 0; i < polygon.length; i++) {
         const value = turf.booleanPointInPolygon(point, turf.polygon([polygon[i].coordinates]))

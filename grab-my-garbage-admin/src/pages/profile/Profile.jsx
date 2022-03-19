@@ -25,7 +25,10 @@ const Profile = () => {
     const [pic, setPic] = useState('')
 
     const adminDetail = useSelector((state) => state.adminDetail)
-    const { loading, admin, success, error } = adminDetail
+    const { loading, admin } = adminDetail
+
+    const adminDetailUpdate = useSelector((state) => state.adminDetailUpdate)
+    const { loading: updateLoading, success, error } = adminDetailUpdate
 
     const initialValues = {email: email, password: password, confirm_password: confirm_password, image: image, pic: pic}
 
@@ -102,7 +105,7 @@ const Profile = () => {
             formik.current.setSubmitting(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loading])
+    }, [updateLoading])
 
     return (
         <div className = 'profile'>
