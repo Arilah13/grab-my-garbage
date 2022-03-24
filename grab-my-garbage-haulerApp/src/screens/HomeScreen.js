@@ -98,19 +98,19 @@ const Homescreen = ({navigation}) => {
     }
 
     const pickupHandler = async() => {
-            setLoading(true)
-            setRedo(true)
-            
-            if (choice.current === 'schedule') {
-                const pickupOrder = await filterPickup(pickupInfo)
-                setPickups(pickupOrder)
-            } else if (choice.current === 'special') {
-                const pickupOrder = await filterPickup(specialPickupInfo)
-                setPickups(pickupOrder)
-            }
-            
-            setLoading(false)
-            setRedo(false)
+        setLoading(true)
+        setRedo(true)
+        
+        if (choice.current === 'schedule') {
+            const pickupOrder = await filterPickup(pickupInfo)
+            setPickups(pickupOrder)
+        } else if (choice.current === 'special') {
+            const pickupOrder = await filterPickup(specialPickupInfo)
+            setPickups(pickupOrder)
+        }
+        
+        setLoading(false)
+        setRedo(false)
     }
 
     const handlePickupComplete = async() => {

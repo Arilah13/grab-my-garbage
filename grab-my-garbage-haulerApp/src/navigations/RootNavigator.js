@@ -6,7 +6,7 @@ import AuthNavigator from './AuthNavigator'
 
 const Rootnavigator = ({first, setFirst}) => {
     const userLogin = useSelector((state) => state.userLogin)
-    const { loading, userInfo } = userLogin
+    const { loading } = userLogin
     
     useEffect(() => {
         if(first === true && loading === false) {

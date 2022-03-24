@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { NavigationContainer } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import * as Location from 'expo-location'
 
 import { uploadDetails } from '../redux/actions/userActions'
-import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
 import { addOrigin } from '../redux/actions/mapActions'
 
 import Splashscreen from '../screens/authScreens/splashScreen'
@@ -17,7 +15,10 @@ const Splashnavigator = () => {
     const [first, setFirst] = useState(true)
 
     const userLogin = useSelector((state) => state.userLogin)
-    const { loading, userInfo } = userLogin
+    const { loading } = userLogin
+
+    const socketHolder = useSelector((state) => state.socketHolder)
+    const { socket: skt } = socketHolder
 
     useEffect(async() => {
         const result = await AsyncStorage.getItem('haulerInfo')
@@ -29,16 +30,10 @@ const Splashnavigator = () => {
             setFirst(false)
         }
         
-        if(location === true) {
+        if(location) {
             const parse = await JSON.parse(location)
             dispatch(addOrigin(parse.latitude, parse.longitude, parse.heading))
         }
-
-        Location.hasStartedLocationUpdatesAsync(TASK_FETCH_LOCATION).then((value) => {
-            if(value) {
-                Location.stopLocationUpdatesAsync(TASK_FETCH_LOCATION)
-            }
-        })
     }, [])
 
     useEffect(() => {
@@ -50,7 +45,7 @@ const Splashnavigator = () => {
     return (
         <NavigationContainer>
             {
-                first === true && (loading === true) ? (
+                first === true && (loading === true || loading === undefined) ? (
                     <Splashscreen />
                 ) : (
                     <Rootnavigator setFirst = {setFirst} first = {first} />

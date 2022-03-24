@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useDispatch, useSelector } from 'react-redux'
 import socketIO from 'socket.io-client'
 import * as TaskManager from 'expo-task-manager'
+import * as BackgroundFetch from 'expo-background-fetch'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { addSocket } from '../redux/actions/socketActions'
 import { addOrigin } from '../redux/actions/mapActions'
@@ -18,7 +20,6 @@ import Prepickupscreen from '../screens/prePickupScreen'
 const Stack = createNativeStackNavigator()
 
 const Stacknavigator = () => {
-
     const dispatch = useDispatch()
 
     const socketHolder = useSelector((state) => state.socketHolder)
@@ -34,14 +35,21 @@ const Stacknavigator = () => {
         }
         if(data) {
             const { locations } = data
-            const [location] = locations
+            const [location] = await locations
             
             dispatch(addOrigin(location.coords.latitude, location.coords.longitude, location.coords.heading))
+            AsyncStorage.setItem('userLocation', JSON.stringify(location.coords))
             skt.emit('online', {haulerid: userInfo._id, 
                 latitude: location.coords.latitude, longitude: location.coords.longitude,
                 heading: location.coords.heading
             })
         }
+    })
+
+    BackgroundFetch.registerTaskAsync(TASK_FETCH_LOCATION, {
+        minimumInterval: 20,
+        startOnBoot: false,
+        stopOnTerminate: true
     })
 
     useEffect(async() => {   
