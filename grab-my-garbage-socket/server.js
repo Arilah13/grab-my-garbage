@@ -2,9 +2,11 @@ require('dotenv').config()
 const express = require('express')
 const http = require('http')
 const SOCKET = require('socket.io')
+const { Expo } = require('expo-server-sdk')
 
 const pickupSocket = require('./socket/pickupSocket')
 const chatSocket = require('./socket/chatSocket')
+const notificationHelper = require('./helpers/notificationHelpers')
 
 const app = express()
 
@@ -12,6 +14,8 @@ const PORT = process.env.PORT || 5001
 
 const server = http.createServer(app)
 const io = SOCKET(server)
+
+let expo = new Expo({})
 
 io.on('connection', socket => {
     socket.on('online', async({haulerid, latitude, longitude, heading}) => {
@@ -88,43 +92,94 @@ io.on('connection', socket => {
         } 
     })
 
-    socket.on('pickupOnProgress', async({haulerid, pickupid, userid}) => {
+    socket.on('specialPickupOnProgress', async({haulerid, pickupid, userid, pickup}) => {
         const ongoingPickup = await pickupSocket.pickupOnProgress({haulerid, pickupid, userid})
         const userSocketid = await pickupSocket.returnUserSocketid({userid})
         const hauler = await pickupSocket.returnHaulerLocation({haulerid})
+
+        if(!userSocketid) {
+            notificationHelper.notifySpecialPickup(pickup, 'onProgress')
+        }
         
         if(userSocketid)
             socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
     })
 
-    socket.on('pickupCompleted', async({pickupid}) => {
+    socket.on('specialPickupArrived', async({pickup}) => {
+        notificationHelper.notifySpecialPickup(pickup, 'arrived')
+    })
+
+    socket.on('specialPickupCompleted', async({pickupid, pickup}) => {
         const userSocketid = await pickupSocket.completeSpecialPickup({pickupid})
+
+        if(!userSocketid) {
+            notificationHelper.notifySpecialPickup(pickup, 'completed')
+        }
 
         if(userSocketid)
             socket.to(userSocketid.id).emit('pickupDone', {pickupid})
     })
 
+    socket.on('schedulePickupStarted', async({pickup}) => {
+        let messages = []
+
+        pickup.map((pickup) => {
+            const socketId = pickupSocket.returnUserSocketid({userid: pickup.customerId._id})
+            if(!socketId) {
+                messages.push({
+                    to: pickup.customerId.pushId,
+                    sound: 'default',
+                    title: 'Schedule Pickup',
+                    body: 'Hauler has started collecting pickups',
+                    data: { 
+                        screen: 'pickupDetail',
+                        item: pickup,
+                    }
+                })   
+            } 
+        })
+
+        let chunks = expo.chunkPushNotifications(messages)
+        
+        for (let chunk of chunks) {
+            try{
+                await expo.sendPushNotificationsAsync(chunk)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    })
+
     socket.on('scheduledPickupOnProgress', async({haulerid, ongoingPickup, pickup}) => {
         await pickupSocket.scheduledPickupOnProgress({haulerid, ongoingPickup, pickup})
         const hauler = await pickupSocket.returnHaulerLocation({haulerid})
-        //console.log(hauler)
-        const userSchedulePickup = await pickupSocket.returnUserSchedulePickupDetails({haulerid, hauler})
         
+        const userSchedulePickup = await pickupSocket.returnUserSchedulePickupDetails({haulerid, hauler})
+
         userSchedulePickup.map((user, index) => {
             setTimeout(() => {
                 if(user.socketId !== false) {
                     socket.to(user.socketId).emit('userSchedulePickup', {hauler, time: user, ongoingPickup: ongoingPickup._id, pickupid: user.id})
+                } else {
+                    if(ongoingPickup.customerId._id === user.userid)
+                        notificationHelper.notifySchedulePickup(ongoingPickup, 'onProgress')
                 }
             }, 2000*index)
         })
     })
 
-    socket.on('schedulePickupCompleted', async({pickupid, userid, haulerid}) => {
+    socket.on('schedulePickupArrived', async({pickup}) => {
+        notificationHelper.notifySpecialPickup(pickup, 'arrived')
+    })
+
+    socket.on('schedulePickupCompleted', async({pickupid, userid, haulerid, pickup}) => {
         const userSocketid = await pickupSocket.returnUserSocketid({userid})
         await pickupSocket.completeSchedulePickup({haulerid})
         
         if(userSocketid) {
             socket.to(userSocketid).emit('schedulePickupDone', {pickupid})
+        } else {
+            notificationHelper.notifySchedulePickup(pickup, 'completed')
         }
     })
 
@@ -132,15 +187,25 @@ io.on('connection', socket => {
         pickupSocket.haulerDisconnect({id: socket.id})
     })
 
-    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid}) => {
-        const hauler = await chatSocket.returnHaulerSocketid({haulerid: receiverid})
-        const user = await chatSocket.returnUserSocketid({userid: receiverid})
+    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid, senderRole, receiver}) => {
+        if(senderRole === 'hauler') {
+            const user = await chatSocket.returnUserSocketid({userid: receiverid})
+            
+            if(user !== false) {
+                socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
+            } else {
+                notificationHelper.notifyMessages(receiver, senderid, receiverid)
+            }
+        } else {
+            const hauler = await chatSocket.returnHaulerSocketid({haulerid: receiverid})
 
-        if(user !== false) {
-            socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
-        } else if(hauler !== false) {
-            socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
+            if(hauler !== false) {
+                socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
+            } else {
+                notificationHelper.notifyMessages(receiver, senderid, receiverid)
+            }
         }
+        
     })
 
     socket.on('disconnect', () => {

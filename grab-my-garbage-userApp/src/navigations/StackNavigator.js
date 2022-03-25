@@ -16,7 +16,6 @@ import Changepasswordscreen from '../screens/accountScreens/changePasswordScreen
 import Paymentsuccessscreen from '../screens/paymentScreens/paymentSuccessScreen'
 import Paymentpresuccessscreen from '../screens/paymentScreens/paymentPreSuccessScreen'
 import Topnavigator from './TopNavigator'
-import Prerequestscreen from '../screens/preRequestScreen'
 import Schedulepickuprequestscreen from '../screens/scheduledPickupScreens/schedulePickupRequestScreen'
 import Scheduledpickupdetail from '../screens/scheduledPickupScreens/scheduledPickupDetail'
 
@@ -49,15 +48,7 @@ const StackNavigator = () => {
             />
 
             <Stack.Screen
-                name = 'PreRequest'
-                component = {Prerequestscreen}
-                options = {{
-                    headerShown: false
-                }}
-            />
-
-            <Stack.Screen
-                name = 'Requests'
+                name = 'SpecialRequests'
                 component = {Topnavigator}
                 options = {{
                     headerShown: false
@@ -65,7 +56,7 @@ const StackNavigator = () => {
             />
 
             <Stack.Screen
-                name = 'ScheduleRequest'
+                name = 'ScheduleRequests'
                 component = {Schedulepickuprequestscreen}
                 options = {{
                     headerShown: false

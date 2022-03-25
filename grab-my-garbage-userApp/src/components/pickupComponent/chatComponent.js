@@ -43,7 +43,9 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
             receiverid: haulerid,
             text: message[0].text,
             createdAt: message[0].createdAt,
-            pickupid: pickupid
+            pickupid: pickupid,
+            senderRole: 'user',
+            receiver: haulerid
         }))
     }
 

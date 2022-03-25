@@ -2,7 +2,7 @@ import axios from 'axios'
 import * as actionTypes from '../constants/userConstants'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-export const Login = (email, password) => async (dispatch) => {
+export const Login = ({email, password, pushId}) => async (dispatch) => {
     try {
         dispatch({
             type: actionTypes.USER_LOGIN_REQUEST
@@ -14,7 +14,7 @@ export const Login = (email, password) => async (dispatch) => {
             },
         }
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/haulers/login', { email, password }, config )
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/haulers/login', { email, password, pushId }, config )
 
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,

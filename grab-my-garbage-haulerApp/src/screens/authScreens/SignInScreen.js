@@ -8,6 +8,7 @@ import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
 import { ANDROID_CLIENT_ID } from '@env'
+import { getPushToken } from '../../helpers/notificationHelper'
 
 import { Login } from '../../redux/actions/userActions'
 
@@ -42,8 +43,8 @@ const Signinscreen = ({navigation}) => {
         setShow(!show)
     }
 
-    const handleLogin = (values) => {
-        dispatch(Login(values.email, values.password))
+    const handleLogin = async(values) => {
+        dispatch(Login({email: values.email, password: values.password, pushId: await getPushToken()}))
         setTimeout(() => setStatus(true), 200)
     }
 

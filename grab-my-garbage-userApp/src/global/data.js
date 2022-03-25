@@ -12,16 +12,16 @@ export const menuData = [
     destination: 'Destination'
   },
   {
-    name: 'Requests',
+    name: 'Schedule Requests',
     image: require('../../assets/menu/request.png'),
     id: '2',
-    destination: 'PreRequest'
+    destination: 'ScheduleRequests'
   },
   {
-    name: 'Payments',
+    name: 'Special Requests',
     image: require('../../assets/menu/payments.png'),
     id: '3',
-    destination: ''
+    destination: 'SpecialRequests'
   }                  
 ];
 

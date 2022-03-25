@@ -12,6 +12,11 @@ const userController = {
             if(user) {
                 const accesstoken = createAccessToken(user._id)
 
+                if(user.pushId !== notification_token) {
+                    user.pushId = notification_token
+                    await user.save()
+                }
+
                 res.json({
                     _id: user._id,
                     name: user.name,
@@ -56,6 +61,11 @@ const userController = {
             const user = await Users.findOne({email}) 
             if(user) {
                 const accesstoken = createAccessToken(user._id)
+
+                if(user.pushId !== notification_token) {
+                    user.pushId = notification_token
+                    await user.save()
+                }
 
                 res.json({
                     _id: user._id,
@@ -134,7 +144,7 @@ const userController = {
     },
     login: async(req, res) => {
         try {
-            const {email, password} = req.body       
+            const {email, password, notification_token} = req.body       
 
             const user = await Users.findOne({email})
             if(!user) return res.status(400).json({msg: 'User does not exist'})
@@ -146,6 +156,11 @@ const userController = {
 
             const accesstoken = createAccessToken(user._id)
             const refreshtoken = createRefreshToken(user._id)
+
+            if(user.pushId !== notification_token) {
+                user.pushId = notification_token
+                await user.save()
+            }
 
             res.status(200).json({
                 _id: user._id,

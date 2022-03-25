@@ -125,7 +125,7 @@ const pickupSocket = {
         const data = await ongoingScheduledPickup.pickup.map(async(pickup) => {
             const socketId = await returnUserSocketid({userid: pickup.customerId._id})
             const time = await getTime(hauler, pickup.location[0])
-            const data = {socketId, time, haulerid, id: pickup._id, ongoingPickup: ongoingScheduledPickup.pickup[0]._id}
+            const data = {socketId, time, haulerid, id: pickup._id, ongoingPickup: ongoingScheduledPickup.pickup[0]._id, userid: pickup.customerId._id}
 
             return data
         })

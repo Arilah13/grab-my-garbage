@@ -1,20 +1,24 @@
 const Haulers = require('../../models/haulerModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const cloudinary = require('cloudinary')
 
 const haulerController = {
     login: async(req, res) => {
         try {
-            const {email, password} = req.body       
+            const {email, password, pushId} = req.body       
 
             const hauler = await Haulers.findOne({email})
             if(!hauler) return res.status(400).json({msg: 'Hauler does not exist'})
 
             if(!hauler.password) return res.status(400).json({msg: 'Login Unsuccessful'})
 
-            // const isMatch = await bcrypt.compare(password, user.password)
-            // if(!isMatch) return res.status(400).json({msg: "Incorrect password"})
+            const isMatch = await bcrypt.compare(password, hauler.password)
+            if(!isMatch) return res.status(400).json({msg: "Incorrect password"})
+
+            if(hauler.pushId !== pushId) {
+                hauler.pushId = pushId
+                await hauler.save()
+            }
 
             const accesstoken = createAccessToken(hauler._id)
             const refreshtoken = createRefreshToken(hauler._id)
@@ -26,6 +30,7 @@ const haulerController = {
                 role: hauler.role,
                 image: hauler.image,
                 phone: hauler.phone,
+                pushId: hauler.pushId,
                 token: accesstoken
             })
         } catch(err) {
@@ -37,7 +42,7 @@ const haulerController = {
             const {email} = req.body
 
             const hauler = await Haulers.findOne({email})
-            if(!hauler) return res.status(400).json({msg: 'User does not exists.'})
+            if(!hauler) return res.status(400).json({msg: 'Hauler does not exists.'})
 
             const accesstoken = createAccessToken(hauler._id)
 

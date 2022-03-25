@@ -6,6 +6,6 @@ router.post('/login', haulerController.login)
 
 router.post('/', haulerController.returnDetails)
 
-router.put('/password/:id', haulerController.updateHaulerPassword)
+router.put('/password/:id', auth, haulerController.updateHaulerPassword)
 
 module.exports = router

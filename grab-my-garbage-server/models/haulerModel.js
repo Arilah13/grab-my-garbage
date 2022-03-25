@@ -32,6 +32,10 @@ const haulerSchema = new mongoose.Schema({
     service_city: {
         type: String,
         required: true
+    },
+    pushId: {
+        type: String,
+        required: false
     }
 }, {
     timestamps: true
