@@ -44,7 +44,7 @@ const Splashnavigator = () => {
     return (
         <NavigationContainer>
             {
-                first === true && (userDetailLoading === true || loading === true) ? (
+                first === true && (userDetailLoading === true || loading === true || userDetailLoading === undefined || loading === undefined) ? (
                     <Splashscreen />
                 ) : (
                     <Rootnavigator setFirst = {setFirst} first = {first} />

@@ -30,7 +30,7 @@ const Accountscreen = ({navigation}) => {
         <SafeAreaView>
             <View style = {styles.container1}>
                 <View>
-                    <Pressable onPress = {() => navigation.navigate('Editprofile')} style = {styles.view1} >
+                    <Pressable onPress = {() => navigation.navigate('Changepassword')} style = {styles.view1} >
                             <Text style = {styles.text1}>{userInfo.name}</Text>
                             <Image
                                 source = {userInfo.image ? {uri: userInfo.image} : require('../../../assets/user.png')}
@@ -41,10 +41,6 @@ const Accountscreen = ({navigation}) => {
                 </View>
 
                 <View style = {styles.container2}>
-                    <View style = {styles.view2}>
-
-                        
-                    </View>
 
                     <View style = {styles.view3}>
                         <Text style = {styles.text2}>Information Detail</Text>
@@ -108,14 +104,8 @@ const styles = StyleSheet.create({
         marginRight: SCREEN_WIDTH/20,
         borderRadius: 500,
     },
-    view2:{
-        height: SCREEN_HEIGHT/7,
-        backgroundColor: colors.blue2,
-        borderTopRightRadius: 30,
-        borderTopStartRadius: 30
-    },
     view3:{
-        height: 6*SCREEN_HEIGHT/7,
+        height: 9*SCREEN_HEIGHT/10,
         backgroundColor: colors.white,
         borderTopRightRadius: 30,
         borderTopLeftRadius: 30,

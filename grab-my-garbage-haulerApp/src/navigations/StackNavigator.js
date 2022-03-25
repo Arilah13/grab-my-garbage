@@ -16,6 +16,7 @@ import Schedulepickuprequestscreen from '../screens/schedulePickupScreens/schedu
 import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePickupDetailScreen'
 import Locationscreen from '../screens/schedulePickupScreens/locationScreen'
 import Prepickupscreen from '../screens/prePickupScreen'
+import Changepasswordscreen from '../screens/accountScreens/changePasswordScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -53,7 +54,7 @@ const Stacknavigator = () => {
     })
 
     useEffect(async() => {   
-        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/')
+        const socket = await socketIO.connect('http://192.168.13.1:5001')
         dispatch(addSocket(socket))
     }, [])
 
@@ -98,6 +99,13 @@ const Stacknavigator = () => {
             <Stack.Screen
                 name = 'Location'
                 component = {Locationscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name = 'Changepassword'
+                component = {Changepasswordscreen}
                 options = {{
                     headerShown: false
                 }}

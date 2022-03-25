@@ -60,6 +60,35 @@ export const uploadDetails = (info) => async (dispatch) => {
     }
 }
 
+export const updateUserPassword = (password) => async (dispatch, getState) => {
+    try {
+        dispatch({
+            type: actionTypes.USER_UPDATE_PROFILE_REQUEST,
+        })
+
+        const { userLogin: { userInfo }} = getState()
+        
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/haulers/password/${userInfo._id}`, {password}, config)
+
+        dispatch({
+            type: actionTypes.USER_UPDATE_PROFILE_SUCCESS,
+            payload: data
+        })
+    } catch (err) {
+        dispatch({
+            type: actionTypes.USER_UPDATE_PROFILE_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}
+
 export const logout = () => async (dispatch) => {
     AsyncStorage.removeItem('haulerInfo')
 

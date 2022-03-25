@@ -127,6 +127,9 @@ const Destinationscreen = ({route, navigation}) => {
                             else
                                 animation(0, 0)
                         },
+                        onBlur: () => {
+                            animation(0, 120)
+                        }
                     }}
                     listViewDisplayed = 'auto'
                     keyboardShouldPersistTaps = 'handled'

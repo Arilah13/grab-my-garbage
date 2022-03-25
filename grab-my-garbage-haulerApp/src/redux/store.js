@@ -5,7 +5,8 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 import { USER_LOGOUT } from './constants/userConstants'
 
 import {
-    userLoginReducer
+    userLoginReducer,
+    userUpdateProfileReducer
 } from './reducers/userReducer'
 
 import { 
@@ -41,6 +42,7 @@ import {
 
 const reducer = combineReducers({
     userLogin: userLoginReducer,
+    userUpdateProfile: userUpdateProfileReducer,
 
     pendingPickups: retrievePendingPickupReducer,
     upcomingPickups: retrieveUpcomingPickupReducer,

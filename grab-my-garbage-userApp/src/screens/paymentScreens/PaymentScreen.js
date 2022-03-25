@@ -104,7 +104,6 @@ const Paymentscreen = ({route, navigation}) => {
             })
             navigation.navigate('Paymentpresuccess', { name: name })
             if(name === 'Special') {
-                requestPickup()
                 dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'Creditcard'}))
             } else if (name === 'Schedule') { 
                 dispatch(getScheduledPickupInfo({pickupInfo: scheduledPickupInfo, total, method: 'Creditcard'}))
@@ -136,7 +135,6 @@ const Paymentscreen = ({route, navigation}) => {
         if (payment.status === 'COMPLETED') {
             navigation.navigate('Paymentpresuccess', { name: name })
             if(name === 'Special') {
-                requestPickup()
                 dispatch(getSpecialPickupInfo({pickupInfo, total, method: 'PayPal'}))
             } else if (name === 'Schedule') {
                 dispatch(getScheduledPickupInfo({pickupInfo: scheduledPickupInfo, total, method: 'PayPal'}))

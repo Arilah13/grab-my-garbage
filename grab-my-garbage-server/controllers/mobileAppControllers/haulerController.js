@@ -52,7 +52,26 @@ const haulerController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
-    }
+    },
+    updateHaulerPassword: async(req, res) => {
+        try{
+            const hauler = await Haulers.findById(req.params.id)
+            if(!hauler) return res.status(400).json({msg: 'Hauler does not exists.'})
+            
+            const password = req.body.password
+            const passwordHash = await bcrypt.hash(password, 10)
+
+            hauler.password = passwordHash
+
+            await hauler.save()
+
+            res.status(200).json({
+                message: 'Hauler updated'
+            })  
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    } 
 }
 
 const createAccessToken = (user) => {

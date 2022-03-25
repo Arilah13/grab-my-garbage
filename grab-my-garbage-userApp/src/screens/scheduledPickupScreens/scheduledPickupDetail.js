@@ -91,7 +91,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
 
                         <View style = {{...styles.container5, paddingTop: 0}}>
                             <Text style = {styles.text3}>Hauler Name:</Text>
-                            <Text style = {styles.text4}></Text>
+                            <Text style = {styles.text4}>{item.pickerId.name}</Text>
                         </View> 
                         <TouchableOpacity 
                             style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}

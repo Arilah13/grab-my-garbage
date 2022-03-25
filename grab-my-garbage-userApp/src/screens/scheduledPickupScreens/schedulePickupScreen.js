@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, Pressable, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, Pressable, ScrollView, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon } from 'react-native-elements'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
@@ -79,6 +79,37 @@ const Schedulepickupscreen = ({navigation}) => {
             return false
     }
 
+    const alert = () => {
+        if(date1.getDate() < new Date().getDate() + 1 && days1.length !== 0 && timeInterval !== null) {
+            alertMsg('Date Not Selected', 'Pickup Date should be selected')
+        } else if(days1.length === 0 && date1.getDate() >= new Date().getDate() + 1 && timeInterval !== null) {
+            alertMsg('Day Not Selected', 'Atleast one day should be selected')
+        } else if(days1.length !== 0 && date1.getDate() >= new Date().getDate() + 1 && timeInterval === null) {
+            alertMsg('Time Interval Not Selected', 'Select a time interval')
+        } else if(date1.getDate() < new Date().getDate() + 1 && days1.length === 0 && timeInterval !== null) {
+            alertMsg('Date and Day Not Selected', 'Pickup Date and Day should be selected')
+        } else if(date1.getDate() < new Date().getDate() + 1 && days1.length !== 0 && timeInterval === null) {
+            alertMsg('Date and Time Not Selected', 'Pickup Date and Time should be selected')
+        } else if(date1.getDate() >= new Date().getDate() + 1 && days1.length === 0 && timeInterval === null) {
+            alertMsg('Day and Time Not Selected', 'Pickup Day and Time should be selected')
+        } else {
+            alertMsg('Day, Time and Date Not Selected', 'Pickup Date, Day and Time should be selected')
+        }  
+    }
+
+    const alertMsg = (heading, msg) => {
+        Alert.alert(heading, msg,
+                [
+                    {
+                        text: 'Ok',
+                    }
+                ],
+                {
+                    cancelable: true
+                }
+            )
+    }
+
     useEffect(() => {
         formattedDate1 = date1.toDateString().split(' ')
         formattedDate2 = date2.toDateString().split(' ')
@@ -111,6 +142,7 @@ const Schedulepickupscreen = ({navigation}) => {
                             }, 400)
                         } else {
                             actions.setSubmitting(false)
+                            alert()
                         }
                     }}
                 >

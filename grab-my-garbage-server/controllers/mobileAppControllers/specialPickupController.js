@@ -31,7 +31,7 @@ const pickupController = {
             const service_city = await isPointInPolygon(pickupInfo.location.latitude, pickupInfo.location.longitude, polygonData)
 
             const hauler = await haulers.find({service_city: service_city})
-
+            console.log(hauler)
             const newPickup = new Pickups({
                 location: pickupInfo.location,
                 datetime: pickupInfo.date,
