@@ -1,24 +1,36 @@
 export const menuData = [ 
   {
-    name: 'Schedule Pickup',
+    name: 'Schedule',
+    name1: 'Pickup',
+    description: 'Pickup to collect',
+    description1: 'solid-waste in terms',
     image: require('../../assets/menu/calendar.png'), 
     id: '0', 
     destination: 'Destination'
   },
   {
-    name: 'Special Pickup',
+    name: 'Special',
+    name1: 'Pickup',
+    description: 'One-time pickup to',
+    description1: 'collect solid-waste',
     image: require('../../assets/menu/truck.png'),
     id: '1', 
     destination: 'Destination'
   },
   {
-    name: 'Schedule Requests',
+    name: 'Schedule Pickup',
+    name1: 'Requests',
+    description: 'Find your schedule',
+    description1: 'pickups here',
     image: require('../../assets/menu/request.png'),
     id: '2',
     destination: 'ScheduleRequests'
   },
   {
-    name: 'Special Requests',
+    name: 'Special Pickup',
+    name1: 'Requests',
+    description: 'Find your special',
+    description1: 'pickups here',
     image: require('../../assets/menu/payments.png'),
     id: '3',
     destination: 'SpecialRequests'

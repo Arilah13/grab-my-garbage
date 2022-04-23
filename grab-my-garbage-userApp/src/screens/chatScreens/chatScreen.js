@@ -3,18 +3,21 @@ import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, KeyboardAvoidingView, Dimensions, Image, Pressable } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
 import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
+import { GET_CONVERSATION_RESET, GET_MESSAGE_RESET } from '../../redux/constants/conversationConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
-
+const Chatscreen = ({route, navigation}) => {
     const dispatch = useDispatch()
+
+    const { haulerid } = route.params
 
     const [messages, setMessages] = useState([])
 
@@ -40,19 +43,15 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
         socket.emit('sendMessage', ({
             senderid: user._id,
             sender: message[0].user,
-            receiverid: haulerid,
+            receiverid: haulerid._id,
             text: message[0].text,
             createdAt: message[0].createdAt,
-            pickupid: pickupid,
             senderRole: 'user',
-            receiver: haulerid
         }))
     }
 
     useEffect(() => {
-        if(conversation === undefined) {
-            dispatch(getConversation({receiverid: haulerid._id, senderid: user._id}))
-        }
+        dispatch(getConversation({receiverid: haulerid._id, senderid: user._id}))
     }, [])
 
     useEffect(() => {
@@ -62,9 +61,10 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
     }, [conversation])
 
     useEffect(() => {
-        socket.on('getMessage', ({senderid, text, sender, createdAt, Pickupid}) => {
+        socket.on('getMessage', ({senderid, text, sender, createdAt}) => {
             const message = [{text, user: sender, createdAt, _id: Date.now()}]
-            if(senderid === haulerid)
+
+            if(senderid === haulerid._id)
                 onSend(message)
         })
     }, [socket])
@@ -95,9 +95,17 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
     }, [])
 
     return (
-        <View style = {{backgroundColor: colors.white, borderTopRightRadius: 15, borderTopLeftRadius: 15, overflow: 'hidden'}}>
+        <SafeAreaView style = {{backgroundColor: colors.white, height: SCREEN_HEIGHT}}>
             <View style = {{height: 1*SCREEN_HEIGHT/10, flexDirection: 'row', backgroundColor: colors.white}}>
-                <Pressable onPress = {() => setModalVisible(false)}>
+                <Pressable onPress = {() => {
+                    navigation.goBack()
+                    dispatch({
+                        type: GET_CONVERSATION_RESET
+                    })
+                    dispatch({
+                        type: GET_MESSAGE_RESET
+                    })
+                }}>
                     <Icon 
                         type = 'font-awesome-5'
                         name = 'angle-left'
@@ -113,10 +121,10 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
                 <Image 
                     source = {{uri: haulerid.image}}
                     style = {styles.image}
-                />
+                /> 
                 <Text style = {styles.text}>{haulerid.name}</Text>
             </View>
-            <View style = {{backgroundColor: colors.grey9, height: 8*SCREEN_HEIGHT/10, paddingBottom: 10}}>
+            <View style = {{backgroundColor: colors.grey9, height: 8.6*SCREEN_HEIGHT/10}}>
                 <GiftedChat
                     messages = {messages}
                     onSend = {messages => {
@@ -139,14 +147,14 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
                     isLoadingEarlier = {messageLoading === true ? true : false}
                 />
                 {
-                    Platform.OS === 'android' && <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {2*SCREEN_HEIGHT/10} />
+                    Platform.OS === 'android' && <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {1.4*SCREEN_HEIGHT/10} />
                 }
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
-export default Chatcomponent
+export default Chatscreen
 
 const styles = StyleSheet.create({
 

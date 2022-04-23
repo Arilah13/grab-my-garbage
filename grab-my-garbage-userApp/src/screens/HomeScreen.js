@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, StyleSheet, Text, FlatList, Dimensions, Image, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Text, FlatList, Dimensions, Image, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import * as Notifications from 'expo-notifications'
@@ -129,7 +129,7 @@ const Homescreen = ({navigation}) => {
                             data = {menuData}
                             keyExtractor = {(item) => item.id}
                             renderItem = {({item}) => (
-                                <TouchableOpacity style = {styles.card}
+                                <Pressable style = {styles.card}
                                     onPress = {() => {
                                         if(pickupInfo === undefined) {
                                             navigation.navigate(item.destination, {destination: item.name})
@@ -144,8 +144,11 @@ const Homescreen = ({navigation}) => {
                                     <View style = {styles.view2}>
                                         <Image style = {styles.image2} source = {item.image}/>     
                                         <Text style = {styles.title}>{item.name}</Text>
+                                        <Text style = {styles.title}>{item.name1}</Text>
+                                        <Text style = {styles.description}>{item.description}</Text>
+                                        <Text style = {styles.description}>{item.description1}</Text>
                                     </View>
-                                </TouchableOpacity>
+                                </Pressable>
                             )}
                         />
                     </View> 
@@ -202,30 +205,35 @@ const styles = StyleSheet.create({
         borderRadius: 25,
     },
     card:{
-        margin: SCREEN_WIDTH/22,
-        marginTop: 0,
         flex: 1,
-        paddingLeft: 2,
-        marginLeft: 8,
-        marginRight: 8,
+        margin: 5,
+        marginHorizontal: 10
     },
     view2:{
         paddingBottom: 10,
-        paddingTop: 25,
+        paddingTop: 10,
         borderRadius: 15,
-        backgroundColor: colors.blue1,
-        alignItems: 'center',
+        backgroundColor: colors.white,
+        elevation: 5,
+        width: SCREEN_WIDTH/2.6,
+        paddingHorizontal: 0
     },
     image2:{
-        height: 60,
-        width: 60,
-        alignItems: 'center'
+        height: 40,
+        width: 40,
+        marginLeft: 10,
+        alignSelf: 'flex-start'
     },
     title:{
         color: colors.blue2,
-        fontSize: 14,
-        marginTop: 5,
-        textAlign: 'center'
-    }
+        marginLeft: 10,
+        fontSize: 15,
+        fontWeight: 'bold'
+    },
+    description:{
+        color: colors.grey2,
+        marginLeft: 10,
+        fontSize: 13
+    },
 
 })

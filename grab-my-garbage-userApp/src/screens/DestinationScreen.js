@@ -185,11 +185,11 @@ const Destinationscreen = ({route, navigation}) => {
                             setLatlngDelta({latitudeDelta: 0.00025, longitudeDelta: 0.000125})
                         }
                         setTimeout(() => {
-                            if(route.params.destination === 'Special Pickup')
+                            if(route.params.destination === 'Special')
                                 navigation.navigate('SpecialPickup')
-                            if(route.params.destination === 'Schedule Pickup')
+                            if(route.params.destination === 'Schedule')
                                 navigation.navigate('Schedule')
-                        }, 4500)                       
+                        }, 3000)                       
                     }}
                 />
             </Animated.View>

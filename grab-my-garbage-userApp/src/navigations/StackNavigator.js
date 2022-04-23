@@ -18,6 +18,7 @@ import Paymentpresuccessscreen from '../screens/paymentScreens/paymentPreSuccess
 import Topnavigator from './TopNavigator'
 import Schedulepickuprequestscreen from '../screens/scheduledPickupScreens/schedulePickupRequestScreen'
 import Scheduledpickupdetail from '../screens/scheduledPickupScreens/scheduledPickupDetail'
+import Chatscreen from '../screens/chatScreens/chatScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -135,6 +136,13 @@ const StackNavigator = () => {
                 }}
             />
 
+            <Stack.Screen
+                name = 'Message'
+                component = {Chatscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
         </Stack.Navigator>
     );
 }

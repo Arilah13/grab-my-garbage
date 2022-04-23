@@ -6,8 +6,9 @@ import { colors } from '../global/styles'
 
 import Accountscreen from '../screens/accountScreens/accountScreen'
 import Homescreen from '../screens/homeScreen'
+import Chatmenuscreen from '../screens/chatScreens/chatMenuScreen'
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator()
 
 const TabNavigator = () => {
     return (
@@ -47,35 +48,20 @@ const TabNavigator = () => {
                 }}
             />
 
-            {/* <Tab.Screen
-                name="Schedule"
-                component={Schedulescreen}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <Icon
-                            name='material-icons'
-                            name='schedule'
-                            color={focused ? colors.blue5 : colors.blue4 }
-                            size={30}
-                        />
-                    )
-                }}
-            /> */}
-
-            {/* <Tab.Screen
+            <Tab.Screen
                 name = 'Chat'
-                component = {Schedulescreen}
+                component = {Chatmenuscreen}
                 options = {{
                     tabBarIcon: ({ focused }) => (
                         <Icon
                             type = 'material-icons'
                             name = 'chat-bubble-outline'
-                            color = {focused ? colors.blue5 : colors.blue4 }
-                            size = {30}
+                            color = {focused ? colors.darkBlue : colors.darkGrey }
+                            size = {26}
                         />
                     )
                 }}
-            /> */}
+            />
 
             <Tab.Screen
                 name = 'Account'

@@ -63,7 +63,7 @@ const Chatcomponent = ({userid, pickupid, setModalVisible}) => {
         socket.on('getMessage', ({senderid, text, sender, createdAt, Pickupid}) => {
             const message = [{text, user: sender, createdAt, _id: Date.now()}]
 
-            if(senderid === userid._id && pickupid === Pickupid)
+            if(senderid === userid._id)
                 onSend(message)
         })
     }, [socket])

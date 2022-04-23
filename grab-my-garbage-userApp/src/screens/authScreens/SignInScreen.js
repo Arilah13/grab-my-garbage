@@ -118,24 +118,26 @@ const Signinscreen = ({navigation}) => {
             if(success === true)
             {  
                 setStatus(false)
+                formikRef.current.setSubmitting(false)
                 formikRef.current.resetForm()
             }
             else
             {
                 setStatus(false)
-                Alert.alert(error,
-                    [
-                        {
-                            text: 'Ok',
-                        }
-                    ],
-                    {
-                        cancelable: true
-                    }
-                )
+                formikRef.current.setSubmitting(false)
+                // Alert.alert(error,
+                //     [
+                //         {
+                //             text: 'Ok',
+                //         }
+                //     ],
+                //     {
+                //         cancelable: true
+                //     }
+                // )
             }
         }
-    }, [handleLogin])
+    }, [userLogin])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -161,7 +163,6 @@ const Signinscreen = ({navigation}) => {
                 onSubmit = {(values, actions) => {
                     if(actions.validateForm) {
                         setTimeout(() => {
-                            actions.setSubmitting(false)
                             handleLogin(values)
                         }, 400)
                     } else {

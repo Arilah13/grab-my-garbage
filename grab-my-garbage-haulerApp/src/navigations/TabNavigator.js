@@ -7,6 +7,7 @@ import { colors } from '../global/styles'
 import Accountscreen from '../screens/accountScreens/accountScreen'
 import Homescreen from '../screens/homeScreen'
 import Prerequestscreen from '../screens/preRequestScreen'
+import Chatmenuscreen from '../screens/chatScreens/chatMenuScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -58,6 +59,21 @@ const TabNavigator = () => {
                             size = {30}
                         />
                     ),
+                }}
+            />
+
+            <Tab.Screen
+                name = 'Chat'
+                component = {Chatmenuscreen}
+                options = {{
+                    tabBarIcon: ({ focused }) => (
+                        <Icon
+                            type = 'material-icons'
+                            name = 'chat-bubble-outline'
+                            color = {focused ? colors.darkBlue : colors.darkGrey }
+                            size = {26}
+                        />
+                    )
                 }}
             />
 

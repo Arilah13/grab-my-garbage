@@ -33,7 +33,7 @@ const Paymentsuccessscreen = ({navigation, route}) => {
             <Button
                 title = 'Check your pickup'
                 buttonStyle = {styles.button}
-                onPress = {() => name === 'Special' ? navigation.navigate('Requests') : navigation.navigate('ScheduleRequest')}
+                onPress = {() => name === 'Special' ? navigation.navigate('SpecialRequests') : navigation.navigate('ScheduleRequests')}
             />
         </SafeAreaView>
     );

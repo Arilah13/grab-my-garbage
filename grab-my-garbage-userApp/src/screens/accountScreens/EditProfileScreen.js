@@ -223,6 +223,7 @@ const Editprofilescreen = ({navigation}) => {
             </KeyboardAvoidingView>
             <Modal 
                 isVisible = {modalVisible}
+                useNativeDriver = {true}
                 swipeDirection = {'down'}
                 style = {{ justifyContent: 'flex-end', margin: 0 }}
                 deviceHeight = {SCREEN_HEIGHT}

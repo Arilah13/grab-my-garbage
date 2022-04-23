@@ -17,6 +17,7 @@ import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePick
 import Locationscreen from '../screens/schedulePickupScreens/locationScreen'
 import Prepickupscreen from '../screens/prePickupScreen'
 import Changepasswordscreen from '../screens/accountScreens/changePasswordScreen'
+import Chatscreen from '../screens/chatScreens/chatScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -68,6 +69,7 @@ const Stacknavigator = () => {
                     headerShown: false
                 }}
             />
+            
             <Stack.Screen 
                 name = 'PrePickup' 
                 component = {Prepickupscreen} 
@@ -75,6 +77,7 @@ const Stacknavigator = () => {
                     headerShown: false
                 }}
             />
+
             <Stack.Screen
                 name = 'History'
                 component = {Topnavigator}
@@ -82,6 +85,7 @@ const Stacknavigator = () => {
                     headerShown: false
                 }}
             />  
+
             <Stack.Screen
                 name = 'Schedule'
                 component = {Schedulepickuprequestscreen}
@@ -89,6 +93,7 @@ const Stacknavigator = () => {
                     headerShown: false
                 }}
             />
+
             <Stack.Screen
                 name = 'ScheduleDetail'
                 component = {Scheduledpickupdetail}
@@ -96,6 +101,7 @@ const Stacknavigator = () => {
                     headerShown: false
                 }}
             />
+
             <Stack.Screen
                 name = 'Location'
                 component = {Locationscreen}
@@ -103,9 +109,18 @@ const Stacknavigator = () => {
                     headerShown: false
                 }}
             />
+
             <Stack.Screen
                 name = 'Changepassword'
                 component = {Changepasswordscreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
+                name = 'Message'
+                component = {Chatscreen}
                 options = {{
                     headerShown: false
                 }}

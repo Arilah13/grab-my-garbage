@@ -18,11 +18,11 @@ export const getConversation = ({senderid, receiverid}) => async(dispatch, getSt
             },
         }
 
-        const final  = await axios.get(`https://grab-my-garbage-server.herokuapp.com/conversation/${userInfo._id}/${receiverid}`, config, 
+        const final  = await axios.get(`https://grab-my-garbage-server.herokuapp.com/conversation/${receiverid}/${userInfo._id}`, config, 
         )
 
         if(final.data.length === 0) {
-            const final = await axios.post('https://grab-my-garbage-server.herokuapp.com/conversation/', { senderid, receiverid }, config)
+            const final = await axios.post('https://grab-my-garbage-server.herokuapp.com/conversation/', { haulerid: senderid, userid: receiverid }, config)
             data = await final.data
         } else {
             data = final.data
@@ -91,6 +91,35 @@ export const getMessage = ({conversationId}) => async(dispatch, getState) => {
     } catch (err) {
         dispatch({
             type: actionTypes.GET_MESSAGE_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}
+
+export const getConversations = () => async(dispatch, getState) => {
+    try{
+        dispatch({
+            type: actionTypes.GET_ALL_CONVERSATIONS_REQUEST
+        })
+
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/conversation/${userInfo._id}`, config)
+
+        dispatch({
+            type: actionTypes.GET_ALL_CONVERSATIONS_SUCCESS,
+            payload: data
+        })
+    } catch (err) {
+        dispatch({
+            type: actionTypes.GET_ALL_CONVERSATIONS_FAIL,
             payload: err.response.data.msg
         })
     }
