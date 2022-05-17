@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Text, Dimensions } from 'react-native'
 import ToggleButton from 'react-native-toggle-element'
 import * as Location from 'expo-location'
@@ -9,14 +9,19 @@ import { colors } from '../../global/styles'
 import { getLocation } from '../../helpers/homehelper'
 
 import { TASK_FETCH_LOCATION } from '../../redux/constants/mapConstants'
+import { addOrigin } from '../../redux/actions/mapActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Onlinecomponent = ({animation, online, setOnline, pickupBtn, choice, order}) => {
-    
+    const dispatch = useDispatch()
+
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
 
     const handleOnline = async() => {
         if(online === false) {
@@ -31,16 +36,29 @@ const Onlinecomponent = ({animation, online, setOnline, pickupBtn, choice, order
                 animation(2.8*SCREEN_HEIGHT/11, 0)
             }
 
-            Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-                accuracy: Location.Accuracy.Highest,
-                distanceInterval: 0,
-                deferredUpdatesInterval: 20,
-                showsBackgroundLocationIndicator: true,
-                foregroundService: {
-                    notificationTitle: 'Using your location',
-                    notificationBody: 'As long as you are online, location will be used',
-                }
+            const {
+                coords: {latitude, longitude, heading}
+            } = await Location.getCurrentPositionAsync()
+
+            await socket.emit('online', {haulerid: userInfo._id, 
+                latitude: latitude, longitude: longitude,
+                heading: heading
             })
+
+            dispatch(addOrigin(latitude, longitude, heading))
+
+            setTimeout(() => {
+                Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
+                    accuracy: Location.Accuracy.High,
+                    distanceInterval: 2,
+                    deferredUpdatesInterval: 0,
+                    showsBackgroundLocationIndicator: true,
+                    foregroundService: {
+                        notificationTitle: 'Using your location',
+                        notificationBody: 'As long as you are online, location will be used',
+                    }
+                })
+            }, 1000)
         } else {
             if(pickupBtn === true) {
                 animation(2.8*SCREEN_HEIGHT/110, 2.8*SCREEN_HEIGHT/10)

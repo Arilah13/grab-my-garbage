@@ -11,6 +11,7 @@ import { getLatngDiffInMeters } from '../helpers/homehelper'
 import { sendSMS } from '../redux/actions/specialRequestActions'
 import { getScheduledPickupsToCollect, completeScheduledPickup } from '../redux/actions/scheduleRequestActions'
 import { getUpcomingPickups, completedPickup } from '../redux/actions/specialRequestActions'
+import { getConversations } from '../redux/actions/conversationActions'
 
 import Onlinecomponent from '../components/homeScreen/onlineComponent'
 import Mapcomponent from '../components/homeScreen/mapComponent'
@@ -147,16 +148,6 @@ const Homescreen = ({navigation}) => {
         }
     }
 
-    // const animatePolylineStart = () => {     
-    //     if(polylinePath.length < directionRoutes.length) {
-    //         const Direction = directionRoutes
-    //         const polylinePath = [...Direction.slice(0, polylinePath.length - 1)]
-    //         setPolylinePath(polylinePath)
-    //     } else {
-    //         setPolylinePath([])
-    //     }
-    // }
-
     useEffect(async() => {
         if(nextPickup === true && specialPickupSuccess === true && specialPickupLoading === false && success === true && pickupLoading === false) {
             setArrived(false)
@@ -186,10 +177,9 @@ const Homescreen = ({navigation}) => {
             choice.current = null
     }, [pickupBtn])
 
-    // useEffect(() => {
-    //     if(polylinePath.length > 0 && directionRoutes.length > 0)
-    //         setInterval(() => animatePolylineStart(), 70)
-    // }, [polylinePath, directionRoutes])
+    useEffect(() => {
+        dispatch(getConversations())
+    }, [])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.grey8}}>

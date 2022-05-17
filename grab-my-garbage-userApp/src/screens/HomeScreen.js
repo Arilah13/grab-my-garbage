@@ -11,6 +11,7 @@ import { menuData } from '../global/data'
 import { addOngoingPickupLocation, removeOngoingPickup } from '../redux/actions/specialPickupActions'
 import { addOngoingSchedulePickupLocation, removeOngoingSchedulePickup } from '../redux/actions/schedulePickupActions'
 import { getPaymentIntent } from '../redux/actions/paymentActions'
+import { getConversations } from '../redux/actions/conversationActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -37,6 +38,7 @@ const Homescreen = ({navigation}) => {
 
     useEffect(() => {
         dispatch(getPaymentIntent())
+        dispatch(getConversations())
     }, [])
 
     useEffect(() => {
@@ -76,8 +78,8 @@ const Homescreen = ({navigation}) => {
         if(socketLoading === false) {
             await socket.emit('userJoined', { userid: user._id })
 
-            socket.on('userPickup', async({pickup, hauler}) => {
-                dispatch(addOngoingPickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: pickup.haulerid, pickupid: pickup.pickupid}))
+            socket.on('userPickup', async({pickup, hauler, time}) => {
+                dispatch(addOngoingPickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: pickup.haulerid, pickupid: pickup.pickupid, time: time}))
             })
             socket.on('userSchedulePickup', async({hauler, time, ongoingPickup, pickupid}) => {
                 dispatch(addOngoingSchedulePickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: time.haulerid, ongoingPickupid: ongoingPickup, pickupid: pickupid, time: time.time}))
@@ -88,6 +90,10 @@ const Homescreen = ({navigation}) => {
             })
             socket.on('schedulePickupDone', async({pickupid}) => {
                 dispatch(removeOngoingSchedulePickup(pickupid))
+            })
+
+            socket.on('getMessage', () => {
+                dispatch(getConversations())
             })
         }
     }, [socket])

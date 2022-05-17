@@ -48,14 +48,14 @@ const Stacknavigator = () => {
         }
     })
 
-    BackgroundFetch.registerTaskAsync(TASK_FETCH_LOCATION, {
-        minimumInterval: 20,
-        startOnBoot: false,
-        stopOnTerminate: true
-    })
+    // BackgroundFetch.registerTaskAsync(TASK_FETCH_LOCATION, {
+    //     minimumInterval: 20,
+    //     startOnBoot: false,
+    //     stopOnTerminate: true
+    // })
 
     useEffect(async() => {   
-        const socket = await socketIO.connect('http://192.168.13.1:5001')
+        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/')
         dispatch(addSocket(socket))
     }, [])
 

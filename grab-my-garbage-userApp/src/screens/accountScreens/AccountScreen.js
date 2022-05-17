@@ -44,11 +44,6 @@ const Accountscreen = ({navigation}) => {
                 </View>
 
                 <View style = {styles.container2}>
-                    <View style = {styles.view2}>
-
-                        
-                    </View>
-
                     <View style = {styles.view3}>
                         <Text style = {styles.text2}>Information Detail</Text>
                         <View style = {styles.view5}>
@@ -111,14 +106,8 @@ const styles = StyleSheet.create({
         marginRight: SCREEN_WIDTH/20,
         borderRadius: 500,
     },
-    view2:{
-        height: SCREEN_HEIGHT/7,
-        backgroundColor: colors.blue2,
-        borderTopRightRadius: 30,
-        borderTopStartRadius: 30
-    },
     view3:{
-        height: 6*SCREEN_HEIGHT/7,
+        height: 7*SCREEN_HEIGHT/7,
         backgroundColor: colors.white,
         borderTopRightRadius: 30,
         borderTopLeftRadius: 30,

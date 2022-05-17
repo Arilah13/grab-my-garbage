@@ -24,7 +24,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
     const rotation = useRef(new Animated.Value(0)).current
     
     const bearingDegree = rotation.interpolate({
-        inputRange: [130, 490],
+        inputRange: [0, 360],
         outputRange: ['0deg', '360deg']
     })
 
@@ -47,21 +47,21 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                 }))
                 first.current = false
             }
-            mapView.current.animateCamera({
-                center: {
-                    latitude: origin.latitude,
-                    longitude: origin.longitude,
-                },
-                heading: origin.heading,
-                zoom: 18
-            })
+            // mapView.current.animateCamera({
+            //     center: {
+            //         latitude: origin.latitude,
+            //         longitude: origin.longitude,
+            //     },
+            //     heading: origin.heading,
+            //     zoom: 18
+            // })
             if(Platform.OS === 'android') {
                 if(marker.current) {
-                    marker.current.animateMarkerToCoordinate({latitude: origin.latitude, longitude: origin.longitude}, 10000)
+                    marker.current.animateMarkerToCoordinate({latitude: origin.latitude, longitude: origin.longitude}, 1)
                     Animated.timing(rotation, {
                         toValue: origin.heading,
                         useNativeDriver: true,
-                        duration: 4000
+                        duration: 1000
                     }).start()
                 }
             } else {
@@ -91,7 +91,8 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                 {latitude: 6.9271, longitude: 79.8612, latitudeDelta: 0.04, longitudeDelta: 0.02}
             }
             ref = {mapView}
-            showsCompass = {false}
+            showsCompass = {true}
+            rotateEnabled = {false}
 
             onMapReady = {() => {
                 if(origin) {

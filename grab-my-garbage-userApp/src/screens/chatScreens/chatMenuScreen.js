@@ -1,22 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
+import { Icon } from 'react-native-elements'
+
+import { receiverRead } from '../../redux/actions/conversationActions'
 
 import { colors } from '../../global/styles'
 import { date1Helper } from '../../helpers/pickupHelper'
-
-import { getConversations } from '../../redux/actions/conversationActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Chatmenuscreen = ({navigation}) => {
+    const data = useRef([])
+    
     const dispatch = useDispatch()
 
-    const [data, setData] = useState([])
     const [assigned, setAssigned] = useState(false)
+    const [convoData, setConvoData] = useState([])
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading, conversation } = getAllConversation
@@ -24,33 +27,69 @@ const Chatmenuscreen = ({navigation}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
-    useEffect(() => {
-        dispatch(getConversations())
-    }, [])
+    const messageRead = async(id) => {
+        const index = data.current.findIndex((d, index) => {
+            if(d.conversation._id === id) {
+                return Promise.all(index)
+            }
+        })
+        Promise.all(index)
+        const element = data.current.splice(index, 1)[0]
+        Promise.all(element)
+        if(element.conversation.receiverRead === false) {
+            element.conversation.receiverRead = true
+            dispatch(receiverRead(id))
+        }
+        data.current.splice(index, 0, element)
+        data.current = [...data.current]
+        setConvoData(data.current)
+    }
 
-    useEffect(() => {
+    useEffect(async() => {
         if(conversation !== undefined && assigned === false) {
-            setData(conversation)
             setAssigned(true)
+            setConvoData(conversation)
+            data.current = conversation
         }
     }, [conversation])
 
     useEffect(() => {
-        if(socket) {
-            socket.on('getMessage', async({senderid}) => {
-                const index =  data.findIndex((data, index) => {
-                    if(data.conversation[index].haulerId._id === senderid) {
-                        return index
-                    }
-                })
-                const element = await data.splice(index, 1)[0]
-                await element
-                //console.log(element)
-                //console.log(element)
-                //console.log(element)
-                data.splice(0, 0, element)
+        socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
+            const index = data.current.findIndex((d, index) => {
+                if(d.conversation.haulerId._id === senderid) {
+                    return Promise.all(index)
+                }
             })
-        }
+            Promise.all(index)
+            if(index >= 0) {
+                const element = data.current.splice(index, 1)[0]
+                Promise.all(element)
+                element.message.text = text
+                element.message.created = createdAt
+                element.conversation.receiverRead = false
+                data.current = [element, ...data.current]
+                setConvoData(data.current)
+            }
+            else if(index === -1) {
+                const element = {
+                    conversation: {
+                        _id: createdAt,
+                        haulerId: {
+                            _id: sender._id,
+                            image: sender.avatar,
+                            name: sender.name
+                        },
+                        receiverRead: false
+                    },
+                    message: {
+                        created: createdAt,
+                        text: text
+                    }
+                }
+                data.current = [element, ...data.current]
+                setConvoData(data.current)
+            }
+        })
     }, [socket])
 
     return (
@@ -59,7 +98,7 @@ const Chatmenuscreen = ({navigation}) => {
                 <Text style = {styles.title}>Chat</Text>
             </View>
             {
-                loading === true &&
+                loading === true && conversation === undefined && assigned === false ?
                 <LottieView 
                     source = {require('../../../assets/animation/truck_loader.json')}
                     style = {{
@@ -70,41 +109,56 @@ const Chatmenuscreen = ({navigation}) => {
                     }}
                     loop = {true}
                     autoPlay = {true}
-                /> 
-            }
-            {
-                loading === false && conversation !== undefined && assigned === true &&
+                /> :
                 <View style = {styles.container}>
                     <View style = {{alignItems: 'center'}}>
                         <FlatList
-                        data = {data}
-                        keyExtractor = {(item, index)=>index}
-                        renderItem = {({item, index}) => (
-                            <Pressable 
-                                style = {styles.card}
-                                onPress = {() => {
-                                    navigation.navigate('Message', {haulerid: item.conversation[index].haulerId})
-                                }}
-                            >
-                                <View style = {styles.userInfo}>
-                                    <View style = {styles.userImgWrapper}>
-                                        <Image
-                                            source = {{uri: item.conversation[0].haulerId.image === null ? require('../../../assets/user.png') : item.conversation[0].haulerId.image }}
-                                            style = {styles.userImg}
-                                        />
-                                    </View>
-
-                                    <View style = {styles.textSection}>
-                                        <View style = {styles.userInfoText}>
-                                            <Text style = {styles.userName}>{item.message.sender[1]}</Text>
-                                            <Text style = {styles.postTime}>{date1Helper(item.message.created)}</Text>
+                            data = {convoData}
+                            extraData = {convoData}
+                            keyExtractor = {(item, index)=>item.conversation._id}
+                            renderItem = {({item}) => (
+                                <Pressable 
+                                    style = {styles.card}
+                                    onPress = {async() => {
+                                        await messageRead(item.conversation._id)
+                                        navigation.navigate('Message', {haulerid: item.conversation.haulerId})
+                                    }}
+                                >
+                                    <View style = {styles.userInfo}>
+                                        <View style = {styles.userImgWrapper}>
+                                            <Image
+                                                source = {{uri: item.conversation.haulerId.image === null ? require('../../../assets/user.png') : item.conversation.haulerId.image }}
+                                                style = {styles.userImg}
+                                            />
                                         </View>
-                                        <Text style = {styles.messageText}>{item.message.text}</Text>
+
+                                        <View style = {styles.textSection}>
+                                            <View style = {styles.userInfoText}>
+                                                <Text style = {styles.userName}>{item.conversation.haulerId.name}</Text>
+                                                <Text style = {styles.postTime}>{date1Helper(item.message.created)}</Text>
+                                            </View>
+                                            <View style = {styles.userInfoText}>
+                                                <Text style = {styles.messageText}>{item.message.text}</Text>
+                                                {
+                                                    item.conversation.receiverRead === false &&
+                                                        <Icon
+                                                            type = 'material-community'
+                                                            name = 'circle-medium'
+                                                            color = 'red'
+                                                            size = {26}
+                                                            style = {{
+                                                                marginRight: 5,
+                                                                marginBottom: -10
+                                                            }}
+                                                        />
+                                                    
+                                                }
+                                            </View>
+                                        </View>
                                     </View>
-                                </View>
-                            </Pressable>
-                        )}
-                    />
+                                </Pressable>
+                            )}
+                        />
                     </View>
                 </View>
             }
@@ -125,7 +179,7 @@ const styles = StyleSheet.create({
         borderTopEndRadius: 15
     },
     card:{
-        width: '100%'
+        width: '100%',
     },
     userInfo:{
         flexDirection: 'row',    

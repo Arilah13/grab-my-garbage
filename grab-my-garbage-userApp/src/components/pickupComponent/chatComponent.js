@@ -7,7 +7,7 @@ import { Icon } from 'react-native-elements'
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
-import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
+import { getConversation, sendMessage, getMessage, getConversations } from '../../redux/actions/conversationActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -31,11 +31,12 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
     const { socket } = socketHolder
 
     const sendMsg = (message) => {
+        dispatch(getConversations())
         dispatch(sendMessage({
             text: message[0].text,
             createdAt: message[0].createdAt,
             sender: message[0].user,
-            conversationId: conversation[0]._id
+            conversationId: conversation._id
         }))
         socket.emit('sendMessage', ({
             senderid: user._id,
@@ -43,7 +44,6 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
             receiverid: haulerid,
             text: message[0].text,
             createdAt: message[0].createdAt,
-            pickupid: pickupid,
             senderRole: 'user',
             receiver: haulerid
         }))
@@ -57,12 +57,12 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
 
     useEffect(() => {
         if(loading === false) {
-            dispatch(getMessage({ conversationId: conversation[0]._id }))
+            dispatch(getMessage({ conversationId: conversation._id }))
         }
     }, [conversation])
 
     useEffect(() => {
-        socket.on('getMessage', ({senderid, text, sender, createdAt, Pickupid}) => {
+        socket.on('getMessage', ({senderid, text, sender, createdAt}) => {
             const message = [{text, user: sender, createdAt, _id: Date.now()}]
             if(senderid === haulerid)
                 onSend(message)

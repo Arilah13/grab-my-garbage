@@ -124,3 +124,28 @@ export const getConversations = () => async(dispatch, getState) => {
         })
     }
 }
+
+export const receiverRead = (id) => async(dispatch, getState) => {
+    try{
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/conversation/${id}`, config)
+
+        dispatch({
+            type: actionTypes.UPDATE_READ_MESSAGE_SUCCESS,
+            payload: data
+        })
+    } catch(err) {
+        dispatch({
+            type: actionTypes.UPDATE_READ_MESSAGE_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}

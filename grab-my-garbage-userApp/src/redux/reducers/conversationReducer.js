@@ -53,3 +53,14 @@ export const getAllConversationReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const updateReadMessageReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.UPDATE_READ_MESSAGE_SUCCESS:
+            return { success: true }
+        case actionTypes.UPDATE_READ_MESSAGE_FAIL:
+            return { success: false, error: action.payload }
+        default:
+            return state
+    }
+}

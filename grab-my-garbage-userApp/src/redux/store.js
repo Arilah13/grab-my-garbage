@@ -43,7 +43,8 @@ import {
     getConversationReducer,
     sendMessageReducer,
     getMessageReducer,
-    getAllConversationReducer
+    getAllConversationReducer,
+    updateReadMessageReducer
 } from './reducers/conversationReducer'
 
 const reducer = combineReducers({
@@ -72,7 +73,8 @@ const reducer = combineReducers({
     getConversation: getConversationReducer,
     sendMessage: sendMessageReducer,
     getMessage: getMessageReducer,
-    getAllConversation: getAllConversationReducer
+    getAllConversation: getAllConversationReducer,
+    updateReadMessage: updateReadMessageReducer
 })
 
 const rootReducer = (state, action) => {
