@@ -50,14 +50,14 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
     }
 
     useEffect(() => {
-        if(conversation === undefined) {
+        if(conversation === undefined || conversation[0].haulerId._id !== haulerid._id) {
             dispatch(getConversation({receiverid: haulerid._id, senderid: user._id}))
         }
     }, [])
 
     useEffect(() => {
         if(loading === false) {
-            dispatch(getMessage({ conversationId: conversation._id }))
+            dispatch(getMessage({ conversationId: conversation[0]._id }))
         }
     }, [conversation])
 

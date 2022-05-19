@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Menu, MenuItem, Fade } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 
@@ -10,6 +10,9 @@ import './Topbar.css'
 const Topbar = ({setLogin}) => {
     const dispatch = useDispatch()
     const history = useHistory()
+
+    const adminDetail = useSelector((state) => state.adminDetail)
+    const { admin } = adminDetail
 
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl)
@@ -37,8 +40,8 @@ const Topbar = ({setLogin}) => {
                 </div>
                 <div className = 'topRight'>
                     <img 
-                        src = 'https://res.cloudinary.com/rilah/image/upload/v1646563014/grab-my-garbage/photo-by-face-generator_62248ea14ca88a000ddee071_ouipsz.jpg' 
-                        alt = '' 
+                        src = {admin && admin.admin.image}
+                        alt = 'admin' 
                         className = 'topAvatar'
                         id = 'fade-button'
                         aria-controls = {open ? 'fade-menu' : undefined}

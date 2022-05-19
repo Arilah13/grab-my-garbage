@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable } from '
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Icon } from 'react-native-elements'
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 
 import { colors } from '../../global/styles'
 import { date1Helper } from '../../helpers/specialPickuphelper'
@@ -22,6 +23,9 @@ const Chatmenuscreen = ({navigation}) => {
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading, conversation } = getAllConversation
+
+    const getConversation = useSelector((state) => state.getConversation)
+    const { conversation: currentConversation } = getConversation
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
@@ -123,6 +127,7 @@ const Chatmenuscreen = ({navigation}) => {
                                     style = {styles.card}
                                     onPress = {async() => {
                                         await messageRead(item.conversation._id)
+                                        setAssigned(false)
                                         navigation.navigate('Message', {userid: item.conversation.userId})
                                     }}
                                 >

@@ -72,11 +72,11 @@ const Profile = () => {
     }
 
     useEffect(() => {
-        if(admin === undefined) {
+        if(admin.admin === undefined) {
             dispatch(getAdminDetails())
-        } else if(admin !== undefined) {
-            setEmail(admin.email)
-            setImage(admin.image)
+        } else if(admin.admin !== undefined) {
+            setEmail(admin.admin.email)
+            setImage(admin.admin.image)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [admin])
@@ -228,6 +228,7 @@ const Profile = () => {
                                             style = {{
                                                 resize: 'block'
                                             }}
+                                            alt = 'admin'
                                         />
                                     </div>
                                 </div>

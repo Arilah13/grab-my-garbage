@@ -20,11 +20,10 @@ export const returnPerMonthPickup = (data, data1) => {
     for(let index = 0; index < 12; index++) {
         let count = 0
         dates.forEach((date) => date === index && count++)
-        if(count > 0)
-            sortedDates.push({
-                name: index,
-                'Schedule Pickups': count
-            })
+        sortedDates.push({
+            name: index,
+            'Schedule Pickups': count
+        })
     }
 
     dates = []
@@ -37,11 +36,10 @@ export const returnPerMonthPickup = (data, data1) => {
     for(let index = 0; index < 12; index++) {
         let count = 0
         dates.forEach((date) => date === index && count++)
-        if(count > 0)
-            sortedDates.push({
-                name: index,
-                'Special Pickups': count
-            })
+        sortedDates.push({
+            name: index,
+            'Special Pickups': count
+        })
     }
 
     sortedDates.map((data) => {
@@ -159,11 +157,10 @@ export const moneyreturn = (data, data1) => {
     for(let index = 0; index < 12; index++) {
         let sum = 0
         dates.forEach((d) => index === d.date && (sum += Number(d.payment)))
-        if(sum > 0)
-            sortedDates.push({
-                name: index,
-                'Schedule Pickups': sum
-            })
+        sortedDates.push({
+            name: index,
+            'Schedule Pickups': sum
+        })
     }
 
     dates = []
@@ -176,11 +173,10 @@ export const moneyreturn = (data, data1) => {
     for(let index = 0; index < 12; index++) {
         let sum = 0
         dates.forEach((d) => index === d.date && (sum += Number(d.payment)))
-        if(sum > 0)
-            sortedDates.push({
-                name: index,
-                'Special Pickups': sum
-            })
+        sortedDates.push({
+            name: index,
+            'Special Pickups': sum
+        })
     }
 
     sortedDates.map((data) => {

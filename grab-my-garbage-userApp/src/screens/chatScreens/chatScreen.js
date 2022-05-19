@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
-import { getConversation, sendMessage, getMessage, getConversations } from '../../redux/actions/conversationActions'
+import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
 import { GET_CONVERSATION_RESET, GET_MESSAGE_RESET } from '../../redux/constants/conversationConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -34,7 +34,6 @@ const Chatscreen = ({route, navigation}) => {
     const { socket } = socketHolder
 
     const sendMsg = (message) => {
-        dispatch(getConversations())
         dispatch(sendMessage({
             text: message[0].text,
             createdAt: message[0].createdAt,

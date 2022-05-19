@@ -13,7 +13,7 @@ const Sidebar = ({}) => {
                     <h3 className = 'sidebarTitle'>Main</h3>
                     <ul className = 'sidebarList'>
                         <Link to = '/home' className = 'link'>
-                            <li className = {location.pathname === '/' ? 'sidebarListItemActive' : 'sidebarListItem'}>
+                            <li className = {location.pathname === '/' || location.pathname === '/home' ? 'sidebarListItemActive' : 'sidebarListItem'}>
                                 <Timeline className = 'sidebarIcon'/>
                                 Home
                             </li>

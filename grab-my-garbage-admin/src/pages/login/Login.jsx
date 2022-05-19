@@ -56,7 +56,6 @@ const Login = ({setLogin}) => {
 
     useEffect(() => {
         if(admin && admin !== undefined) {
-          console.log(admin)
           setLogin(true)
         } else {
           setLogin(false)

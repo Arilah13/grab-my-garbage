@@ -202,7 +202,7 @@ export const getAdminDetails = () => async(dispatch, getState) => {
         }
 
         const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/admin/users`, config)
-
+        console.log(data)
         dispatch({
             type: actionTypes.RETRIEVE_ADMIN_DETAILS_SUCCESS,
             payload: data
@@ -234,11 +234,16 @@ export const updateAdminDetails = (values) => async(dispatch, getState) => {
             }
         }
 
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/admin/users`,
+        const { data } = await axios.put(`http://192.168.13.1:5000/admin/users`,
         {email, password, image}, config)
 
         dispatch({
             type: actionTypes.ADMIN_DETAIL_UPDATE_SUCCESS,
+        })
+
+        dispatch({
+            type: actionTypes.RETRIEVE_ADMIN_DETAILS_SUCCESS,
+            payload: data
         })
     } catch(err) {
         dispatch({
@@ -272,6 +277,11 @@ export const adminLogin = (values) => async(dispatch, getState) => {
 
         dispatch({
             type: actionTypes.ADMIN_LOGIN_SUCCESS,
+            payload: data
+        })
+
+        dispatch({
+            type: actionTypes.RETRIEVE_ADMIN_DETAILS_SUCCESS,
             payload: data
         })
 

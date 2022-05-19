@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Icon } from 'react-native-elements'
@@ -13,7 +13,8 @@ import Chatmenuscreen from '../screens/chatScreens/chatMenuScreen'
 const Tab = createBottomTabNavigator()
 
 const TabNavigator = () => {
-    const status = useRef(false)
+    //const status = useRef(false)
+    const [status, setStatus] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -28,11 +29,12 @@ const TabNavigator = () => {
             const read = await conversation.map((convo) => {
                 return convo.conversation.receiverRead
             })
-            console.log(read)
             if(read.some(item => item !== true)) {
-                status.current = true
+                //status.current = true
+                setStatus(true)
             } else {
-                status.current = false
+                //status.current = false
+                setStatus(false)
             }
         }
     }, [conversation, dispatch])
@@ -40,7 +42,8 @@ const TabNavigator = () => {
     useEffect(() => {
         if(socket) {
             socket.on('getMessage', async() => {
-                status.current = true
+                //status.current = true
+                setStatus(true)
             })
         }
     }, [socket])
@@ -102,7 +105,7 @@ const TabNavigator = () => {
                         <Icon
                             type = 'material-icons'
                             name = 'chat-bubble-outline'
-                            color = {status.current === true ? (focused ? 'red' : 'red') :
+                            color = {status === true ? 'red' :
                             (focused ? colors.darkBlue : colors.darkGrey) }
                             size = {26}
                         />

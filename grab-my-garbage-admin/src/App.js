@@ -16,11 +16,9 @@ import Profile from './pages/profile/Profile'
 import Login from './pages/login/Login'
 
 import './App.css'
-import Loader from './components/loader/loader'
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false)
-  const [loading, setLoading] = useState(true)
 
   return (
     <>

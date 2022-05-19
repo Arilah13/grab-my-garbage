@@ -61,7 +61,6 @@ const Stacknavigator = () => {
 
     return (
         <Stack.Navigator>
-
             <Stack.Screen 
                 name = 'HomeScreen' 
                 component = {TabNavigator} 

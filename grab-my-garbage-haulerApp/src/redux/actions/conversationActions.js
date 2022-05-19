@@ -59,6 +59,7 @@ export const sendMessage = ({conversationId, sender, text, createdAt}) => async(
         dispatch({
             type: actionTypes.SEND_MESSAGE_SUCCESS
         })
+        dispatch(getConversations())
     } catch (err) {
         dispatch({
             type: actionTypes.SEND_MESSAGE_FAIL,
@@ -142,6 +143,7 @@ export const receiverRead = (id) => async(dispatch, getState) => {
             type: actionTypes.UPDATE_READ_MESSAGE_SUCCESS,
             payload: data
         })
+        dispatch(getConversations())
     } catch(err) {
         dispatch({
             type: actionTypes.UPDATE_READ_MESSAGE_FAIL,

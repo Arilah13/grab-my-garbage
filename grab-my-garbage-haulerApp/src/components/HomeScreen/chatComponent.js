@@ -50,7 +50,9 @@ const Chatcomponent = ({userid, pickupid, setModalVisible}) => {
     }
 
     useEffect(() => {
-        dispatch(getConversation({receiverid: userid._id, senderid: userInfo._id}))
+        if(conversation === undefined || conversation[0].userId._id !== userid._id) {
+            dispatch(getConversation({receiverid: userid._id, senderid: userInfo._id}))
+        }
     }, [])
 
     useEffect(() => {

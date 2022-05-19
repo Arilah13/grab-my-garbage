@@ -1,42 +1,52 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import './FeaturedInfo.css'
-import { ArrowDownward, ArrowUpward } from '@mui/icons-material'
+
+import { getSum } from '../../helpers/adminDetailsHelpers'
 
 const FeaturedInfo = () => {
+    const first = useRef(true)
+
+    const [total, setTotal] = useState(null)
+
+    const adminLogin = useSelector((state) => state.adminLogin)
+    const { admin } = adminLogin
+
+    useEffect(async() => {
+        if(admin !== undefined) {
+            first.current = false
+            const sum = await getSum(admin.special, admin.schedule)
+            setTotal(sum)
+        }
+    }, [admin])
+
     return (
         <div className = 'featured'>
-            <div className="featuredItem">
-                <span className="featuredTitle">Revenue</span>
-                <div className="featuredMoneyContainer">
-                    <span className="featuredMoney">$2,415</span>    
-                    <span className="featuredMoneyRate">
-                        -11.4 <ArrowDownward className = 'featuredIcon negative'/>
-                    </span>    
+        {
+            first.current === false && admin &&
+            <>
+                <div className="featuredItem">
+                    <span className="featuredTitle">Scheduled Pickups</span>
+                    <div className="featuredMoneyContainer">
+                        <span className="featuredMoney">{admin.scheduleCount}</span>    
+                    </div>
                 </div>
-                <span className="featuredSub">Compare to last month</span>
-            </div>
 
-            <div className="featuredItem">
-                <span className="featuredTitle">Sales</span>
-                <div className="featuredMoneyContainer">
-                    <span className="featuredMoney">$2,415</span>    
-                    <span className="featuredMoneyRate">
-                        -11.4 <ArrowDownward className = 'featuredIcon negative'/>
-                    </span>    
+                <div className="featuredItem">
+                    <span className="featuredTitle">Special Pickups</span>
+                    <div className="featuredMoneyContainer">
+                        <span className="featuredMoney">{admin.specialCount}</span>    
+                    </div>
                 </div>
-                <span className="featuredSub">Compare to last month</span>
-            </div>
 
-            <div className="featuredItem">
-                <span className="featuredTitle">Cost</span>
-                <div className="featuredMoneyContainer">
-                    <span className="featuredMoney">$2,415</span>    
-                    <span className="featuredMoneyRate">
-                        -11.4 <ArrowUpward className = 'featuredIcon'/>
-                    </span>    
+                <div className="featuredItem">
+                    <span className="featuredTitle">Total Earnings</span>
+                    <div className="featuredMoneyContainer">
+                        <span className="featuredMoney">Rs. {total}</span>    
+                    </div>
                 </div>
-                <span className="featuredSub">Compare to last month</span>
-            </div>
+            </>
+        }
         </div>
     )
 }
