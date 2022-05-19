@@ -4,10 +4,10 @@ const Messages = require('../../models/messageModel')
 const conversationController = {
     newConversation: async(req, res) => {
         try{
-            const { senderid, receiverid } = req.body
+            const { userid: userId, haulerid: haulerId } = req.body
 
             const newConversation = new Conversations({
-                members: [senderid, receiverid]
+                haulerId: haulerId, userId: userId, receiverRead: false
             })
 
             const savedConversation = await newConversation.save()
@@ -19,15 +19,54 @@ const conversationController = {
     },
     findConversation: async(req, res) => {
         try{
-            const userid = req.params.id1
-            const receiverid = req.params.id2
+            const userId = req.params.id1
+            const haulerId = req.params.id2
 
             const conversation = await Conversations.find({
-                members: { $in: [userid, receiverid] }
-            })
+                haulerId: haulerId, userId: userId
+            }).populate('haulerId').populate('userId')
+            
             if(!conversation) {return res.status(400).json({msg: 'Conversation does not exists.'})}
 
             res.status(200).json(conversation)
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    getConversation: async(req, res) => {
+        try{
+            let endResult = []
+
+            const conversation = await Conversations.find({
+                $or: [{userId: req.params.id}, {haulerId: req.params.id}]
+            }).populate('haulerId').populate('userId')
+
+            if(conversation.length > 0) {
+                for(let i=0; i<conversation.length; i++) {
+                    const message = await Messages.find({conversationId: conversation[i]._id})
+                    if(message.length > 0) {
+                        endResult.push({conversation: conversation[i], message: message[message.length-1]})
+                    }
+                }
+                if(endResult.length > 1 ) {
+                    endResult.sort((a, b) => b.message.createdAt - a.message.createdAt)
+                }
+            }
+            
+            res.status(200).json(endResult)
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    markRead: async(req, res) => {
+        try{
+            const conversation = await Conversations.findById(req.params.id)
+
+            conversation.receiverRead = true
+
+            await conversation.save()
+
+            res.status(200).json({msg: 'updated'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

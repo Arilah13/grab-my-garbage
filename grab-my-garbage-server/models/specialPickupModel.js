@@ -58,6 +58,10 @@ const pickupSchema = new mongoose.Schema({
     declinedHaulers:{
         type: Array,
         required: false
+    },
+    inactive:{
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

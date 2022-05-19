@@ -21,12 +21,14 @@ io.on('connection', socket => {
     socket.on('online', async({haulerid, latitude, longitude, heading}) => {
         const hauler = await pickupSocket.haulerJoin({id: socket.id, haulerid, latitude, longitude, heading})
         const ongoingPickup = await pickupSocket.findPickupOnProgress({haulerid})
-        
+
         if(ongoingPickup) {
             const userSocketid = await pickupSocket.returnUserSocketid({userid: ongoingPickup.userid})
-            
+            const hauler = {latitude, longitude, heading}
+            const location = {latitude: ongoingPickup.pickup.location[0].latitude, longitude: ongoingPickup.pickup.location[0].longitude}
+            const time = await pickupSocket.returnTime(hauler, location)
             if(userSocketid)
-                socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
+                socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler, time: time})
         }
         
         const ongoingScheduledPickup = await pickupSocket.findScheduledPickupOnProgress({haulerid})
@@ -48,8 +50,10 @@ io.on('connection', socket => {
         
         if(ongoingPickup) {
             const hauler = await pickupSocket.returnHaulerLocation({haulerid: ongoingPickup.haulerid})
+            const location = {latitude: ongoingPickup.pickup.location[0].latitude, longitude: ongoingPickup.pickup.location[0].longitude}
+            const time = await pickupSocket.returnTime({latitude: hauler.latitude, longitude: hauler.longitude}, location)
             
-            socket.emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
+            socket.emit('userPickup', {pickup: ongoingPickup, hauler: hauler, time})
         }
 
         const ongoingScheduledPickup = await pickupSocket.checkOngoingScheduledPickup({userid})
@@ -93,16 +97,17 @@ io.on('connection', socket => {
     })
 
     socket.on('specialPickupOnProgress', async({haulerid, pickupid, userid, pickup}) => {
-        const ongoingPickup = await pickupSocket.pickupOnProgress({haulerid, pickupid, userid})
+        const ongoingPickup = await pickupSocket.pickupOnProgress({haulerid, pickupid, userid, pickup})
         const userSocketid = await pickupSocket.returnUserSocketid({userid})
         const hauler = await pickupSocket.returnHaulerLocation({haulerid})
-
+        const location = {latitude: pickup.location[0].latitude, longitude: pickup.location[0].longitude}
+        const time = await pickupSocket.returnTime({latitude: hauler.latitude, longitude: hauler.longitude}, location)
         if(!userSocketid) {
             notificationHelper.notifySpecialPickup(pickup, 'onProgress')
         }
         
         if(userSocketid)
-            socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler})
+            socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler, time: time})
     })
 
     socket.on('specialPickupArrived', async({pickup}) => {
@@ -187,14 +192,16 @@ io.on('connection', socket => {
         pickupSocket.haulerDisconnect({id: socket.id})
     })
 
-    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid, senderRole, receiver}) => {
+    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid, senderRole}) => {
+        
         if(senderRole === 'hauler') {
             const user = await chatSocket.returnUserSocketid({userid: receiverid})
             
             if(user !== false) {
+                console.log(user)
                 socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
             } else {
-                notificationHelper.notifyMessages(receiver, senderid, receiverid)
+                notificationHelper.notifyMessages(receiverid)
             }
         } else {
             const hauler = await chatSocket.returnHaulerSocketid({haulerid: receiverid})
@@ -202,7 +209,7 @@ io.on('connection', socket => {
             if(hauler !== false) {
                 socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
             } else {
-                notificationHelper.notifyMessages(receiver, senderid, receiverid)
+                notificationHelper.notifyMessages(receiverid)
             }
         }
         

@@ -91,7 +91,7 @@ const notificationHelper = {
             }
         }
     },
-    notifyMessages: async(receiver, senderid, receiverid) => {
+    notifyMessages: async(receiver) => {
         let result
 
         // if(conversationNotifications.length > 0) {
@@ -126,7 +126,7 @@ const notificationHelper = {
         })    
     
         let chunks = expo.chunkPushNotifications(messages)
-        console.log(messages)
+
         for (let chunk of chunks) {
             try{
                 await expo.sendPushNotificationsAsync(chunk)

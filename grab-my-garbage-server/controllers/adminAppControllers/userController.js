@@ -1,4 +1,7 @@
 const Users = require('../../models/userModel')
+const Haulers = require('../../models/haulerModel')
+const SpecialPickup = require('../../models/specialPickupModel')
+const SchedulePickup = require('../../models/scheduledPickupModel')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary')
 const bcrypt = require('bcrypt')
@@ -6,7 +9,7 @@ const bcrypt = require('bcrypt')
 const userController = {
     returnUserList: async(req, res) => {
         try{
-            const users = await Users.find({}).select('-password')
+            const users = await Users.find({role: {$ne: 2}}).select('-password')
 
             res.status(200).json(users)
         } catch(err) {
@@ -40,7 +43,7 @@ const userController = {
                     api_secret: process.env.CLOUD_API_SECRET
                 })
                 
-                await cloudinary.v2.uploader.upload('data:image/gif;base64,' + req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
+                await cloudinary.v2.uploader.upload(req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
                     if(err) 
                         throw err
                     else
@@ -73,7 +76,7 @@ const userController = {
     },
     loginAdmin: async(req, res) => {
         try{
-            const {password} = req.body       
+            const {password} = req.body      
 
             const admin = await Users.findOne({role: 2})
 
@@ -83,14 +86,29 @@ const userController = {
             if(!isMatch) return res.status(400).json({msg: 'Incorrect password'})
 
             const accesstoken = createAccessToken(admin._id)
-            const refreshtoken = createRefreshToken(admin._id)
+
+            const users = await Users.find({role: {$ne: 2}}).select('-password')
+
+            const haulers = await Haulers.find({role: 1}).select('-password')
+
+            const scheduleCount = await SchedulePickup.countDocuments({cancelled: 0})
+
+            const specialCount = await SpecialPickup.countDocuments({cancelled: 0})
+
+            const schedule = await SchedulePickup.find({cancelled: 0})
+
+            const special = await SpecialPickup.find({cancelled: 0})
+
+            admin.accesstoken = accesstoken
 
             res.status(200).json({
-                _id: admin._id,
-                name: admin.name,
-                email: admin.email,
-                role: admin.role,
-                token: accesstoken
+                admin: admin,
+                users: users,
+                haulers: haulers,
+                scheduleCount: scheduleCount,
+                specialCount: specialCount,
+                schedule: schedule,
+                special: special
             })
         } catch(err) {
             return res.status(500).json({msg: err.message})
@@ -100,7 +118,27 @@ const userController = {
         try{
             const admin = await Users.findOne({role: 2}).select('-password')
 
-            res.status(200).json(admin)
+            const users = await Users.find({role: {$ne: 2}}).select('-password')
+
+            const haulers = await Haulers.find({role: 1}).select('-password')
+
+            const scheduleCount = await SchedulePickup.countDocuments({cancelled: 0})
+
+            const specialCount = await SpecialPickup.countDocuments({cancelled: 0})
+
+            const schedule = await SchedulePickup.find({cancelled: 0})
+
+            const special = await SpecialPickup.find({cancelled: 0})
+
+            res.status(200).json({
+                admin: admin,
+                users: users,
+                haulers: haulers,
+                scheduleCount: scheduleCount,
+                specialCount: specialCount,
+                schedule: schedule,
+                special: special
+            })
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -112,7 +150,6 @@ const userController = {
             admin.email = req.body.email || admin.email
             
             if(req.body.password) {
-                console.log(req.body.password)
                 admin.password = await bcrypt.hash(req.body.password, 10)
             }
 
@@ -123,16 +160,36 @@ const userController = {
                     api_secret: process.env.CLOUD_API_SECRET
                 })
                 
-                await cloudinary.v2.uploader.upload('data:image/gif;base64,' + req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
+                await cloudinary.v2.uploader.upload(req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
                     if(err) 
                         throw err
                     else
                         admin.image = result.secure_url   
                 })  
             }
-            await admin.save()
+            const newAdmin = await admin.save()
 
-            res.status(200).json({message: 'Admin updated'})
+            const users = await Users.find({role: {$ne: 2}}).select('-password')
+
+            const haulers = await Haulers.find({role: 1}).select('-password')
+
+            const scheduleCount = await SchedulePickup.countDocuments({cancelled: 0})
+
+            const specialCount = await SpecialPickup.countDocuments({cancelled: 0})
+
+            const schedule = await SchedulePickup.find({cancelled: 0})
+
+            const special = await SpecialPickup.find({cancelled: 0})
+
+            res.status(200).json({
+                admin: newAdmin,
+                users: users,
+                haulers: haulers,
+                scheduleCount: scheduleCount,
+                specialCount: specialCount,
+                schedule: schedule,
+                special: special
+            })
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -141,10 +198,6 @@ const userController = {
 
 const createAccessToken = (user) => {
     return jwt.sign({user}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1d'})
-}
-
-const createRefreshToken = (user) => {
-    return jwt.sign({user}, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '7d'})
 }
 
 module.exports = userController

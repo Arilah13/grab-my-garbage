@@ -1,8 +1,18 @@
 const mongoose = require('mongoose')
 
 const conversationSchema = new mongoose.Schema({
-    members: {
-        type: Array
+    haulerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Haulers'
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Users'
+    },
+    receiverRead: {
+        type: Boolean
     }
 }, {
     timestamps: true

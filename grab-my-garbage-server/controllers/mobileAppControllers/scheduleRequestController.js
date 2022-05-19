@@ -10,7 +10,7 @@ const requestController = {
             const date = new Date()
             const day = dayFinder(date.getDay())
 
-            const request = await scheduledPickups.find({ pickerId, from: {$lte: date.toISOString()}, to: {$gte: date.toISOString()}, days: {$in: [day]} }).populate('customerId')
+            const request = await scheduledPickups.find({ pickerId, from: {$lte: date.toISOString()}, to: {$gte: date.toISOString()}, days: {$in: [day]}, cancelled: 0 }).populate('customerId')
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
             
             for(let i=0; i<request.length; i++){
@@ -61,7 +61,7 @@ const requestController = {
             const date = new Date()
             const day = dayFinder(date.getDay())
 
-            const request = await scheduledPickups.find({ pickerId, from: {$lte: date.toISOString()}, to: {$gte: date.toISOString()}, days: {$in: [day]} }).populate('customerId')
+            const request = await scheduledPickups.find({ pickerId, from: {$lte: date.toISOString()}, to: {$gte: date.toISOString()}, days: {$in: [day]}, cancelled: 0, inactive: 0 }).populate('customerId')
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
             
             for(let i=0; i<request.length; i++){

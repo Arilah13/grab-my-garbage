@@ -53,6 +53,32 @@ const scheduledPickupController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
+    },
+    inactiveSchedulePickup: async(req, res) => {
+        try{
+            const pickups = await ScheduledPickups.findById(req.params.id)
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            pickups.inactive = 1
+            await pickups.save()
+
+            res.status(200).json({msg: 'success'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    cancelSchedulePickup: async(req, res) => {
+        try{
+            const pickups = await ScheduledPickups.findById(req.params.id)
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            pickups.cancelled = 1
+            await pickups.save()
+
+            res.status(200).json({msg: 'success'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
     }
 }
 

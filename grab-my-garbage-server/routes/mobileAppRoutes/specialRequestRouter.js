@@ -16,6 +16,8 @@ router.put('/acceptPickup/:id', auth, requestController.updateAcceptHauler)
 
 router.put('/updateCompletedPickup/:id', auth, requestController.updateCompletedPickup)
 
+router.put('/exclude/:id', auth, requestController.excludePickup)
+
 //router.get('/allPickups/:id', auth, pickupController.getAllPickups)
 
 module.exports = router

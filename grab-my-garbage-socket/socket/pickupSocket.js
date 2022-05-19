@@ -40,8 +40,8 @@ const pickupSocket = {
 
         return nearbyhaulers
     },
-    pickupOnProgress: async({haulerid, pickupid, userid}) => {
-        const ongoingPickup = {userid, haulerid, pickupid}
+    pickupOnProgress: async({haulerid, pickupid, userid, pickup}) => {
+        const ongoingPickup = {userid, haulerid, pickupid, pickup}
         const exist = await ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.pickupid === pickupid)
 
         if(!exist)
@@ -156,7 +156,12 @@ const pickupSocket = {
         } else if(haulerList) {
             haulers = haulers.filter(hauler => hauler.id !== id)
         }
-    }
+    },
+    returnTime: async(hauler, location) => {
+        const time = await getTime(hauler, location)
+
+        return time
+    },
 }
 
 const getLatngDiffInMeters = (lat1, lng1, lat2, lng2) => {

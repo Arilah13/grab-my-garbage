@@ -3,6 +3,7 @@ const cloudinary = require('cloudinary')
 const haulers = require('../../models/haulerModel')
 const polygonData = require('../../helpers/polygonData')
 const turf = require('@turf/turf')
+const schedule = require('node-schedule')
 
 const pickupController = {
     addSpecialPickup: async(req, res) => {
@@ -31,7 +32,7 @@ const pickupController = {
             const service_city = await isPointInPolygon(pickupInfo.location.latitude, pickupInfo.location.longitude, polygonData)
 
             const hauler = await haulers.find({service_city: service_city})
-            console.log(hauler)
+
             const newPickup = new Pickups({
                 location: pickupInfo.location,
                 datetime: pickupInfo.date,
@@ -90,6 +91,19 @@ const pickupController = {
             if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(pickups)
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    cancelPickup: async(req, res) => {
+        try{
+            const pickups = await Pickups.findById(req.params.id)
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            pickups.cancelled = 1
+            await pickups.save()
+
+            res.status(200).json({message: 'success'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

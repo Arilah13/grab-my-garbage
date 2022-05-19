@@ -46,6 +46,14 @@ const scheduledPickupSchema = new mongoose.Schema({
     completedPickups: {
         type: Array,
         required: false,
+    },
+    cancelled:{
+        type: Number,
+        default: 0
+    },
+    inactive:{
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

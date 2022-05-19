@@ -78,7 +78,7 @@ const haulerController = {
                 const check = checkURL(req.body.image)
                 
                 if(check) {
-                    user.image = req.body.image       
+                    hauler.image = req.body.image       
                 } else {                  
                     cloudinary.config({
                         cloud_name: process.env.CLOUD_NAME,
@@ -86,7 +86,7 @@ const haulerController = {
                         api_secret: process.env.CLOUD_API_SECRET
                     })
                     
-                    await cloudinary.v2.uploader.upload('data:image/gif;base64,' + req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
+                    await cloudinary.v2.uploader.upload(req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
                         if(err) 
                             throw err
                         else

@@ -3,6 +3,7 @@ const client = require('twilio')(
     process.env.TWILIO_ACCOUNT_SID,
     process.env.TWILIO_AUTH_TOKEN
 )
+const Conversations = require('../../models/conversationModel')
 
 const messageController = {
     newMessage: async(req, res) => {
@@ -17,6 +18,12 @@ const messageController = {
             })
 
             const savedMessage = await newMessage.save()
+
+            const conversation = await Conversations.findById(conversationId)
+
+            conversation.receiverRead = false
+
+            await conversation.save()
             
             res.status(201).json(savedMessage)
         } catch(err) {
@@ -28,7 +35,7 @@ const messageController = {
             const messageid = req.params.id
 
             const message = await Messages.find({conversationId: messageid})
-
+            //console.log(messageid)
             if(!message) return res.status(400).json({msg: 'Message does not exists.'})
 
             res.status(200).json(message)
