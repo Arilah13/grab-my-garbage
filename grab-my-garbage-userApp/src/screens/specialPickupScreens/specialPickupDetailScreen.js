@@ -1,11 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Icon } from 'react-native-elements'
+import { Icon, Button } from 'react-native-elements'
 import Modal from 'react-native-modal'
+import axios from 'axios'
 
 import { colors } from '../../global/styles'
 import { dateHelper, date1Helper, timeHelper } from '../../helpers/pickupHelper'
+
+import { getPendingPickups } from '../../redux/actions/specialPickupActions'
 
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/pickupComponent/mapComponent'
@@ -15,11 +19,44 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Specialpickupdetailscreen = ({route, navigation}) => {
+    const dispatch = useDispatch()
 
     const { item, name, completedTime } = route.params
 
     const [modalVisible, setModalVisible] = useState(false)
     const [modalVisible1, setModalVisible1] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [disable, setDisable] = useState(false)
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
+    const config = {
+        headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`
+        },
+    }
+
+    const handleCancel = async(id) => {
+        setLoading(true)
+        const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialpickup/${id}`, config)
+        if(res.status === 200) {
+            dispatch(getPendingPickups())
+            setTimeout(() => {
+                setLoading(false)
+                navigation.navigate('pendingPickup')
+            }, 3000)
+        }  
+    }
+
+    useEffect(() => {
+        if(item.active === 1) {
+            setDisable(true)
+        } else if(item.active === 0) {
+            setDisable(false)
+        }
+    }, [])
 
     return (
         <SafeAreaView>
@@ -135,6 +172,18 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                             </TouchableOpacity>
                             </>
                             : null
+                        }
+                        {
+                            item.accepted === 0 && item.completed === 0 &&
+                            <View style = {{alignSelf: 'center', flexDirection: 'row', marginTop: 20}}>
+                                <Button
+                                    title = 'Cancel'
+                                    buttonStyle = {styles.button}
+                                    loading = {loading}
+                                    disabled = {loading || disable}
+                                    onPress = {() => handleCancel(item._id)}
+                                />
+                        </View>
                         }
                     </View>
 
@@ -274,6 +323,13 @@ const styles = StyleSheet.create({
         width: '100%',
         borderRadius: 15,
         overflow: 'hidden',
+    },
+    button:{
+        backgroundColor: colors.darkBlue,
+        borderRadius: 10,
+        height: 40,
+        width: 140,
+        marginHorizontal: 20
     },
 
 })

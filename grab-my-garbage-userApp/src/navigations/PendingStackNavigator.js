@@ -35,7 +35,7 @@ const Pendingstacknavigator = ({navigation, route}) => {
         <Stack.Navigator>
 
             <Stack.Screen 
-                name = "pendingPickup" 
+                name = 'pendingPickup'
                 component = {Pendingpickupscreen} 
                 options = {{
                     headerShown: false

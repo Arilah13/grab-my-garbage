@@ -9,8 +9,8 @@ import { colors } from '../global/styles'
 import { getLatngDiffInMeters } from '../helpers/homehelper'
 
 import { sendSMS } from '../redux/actions/specialRequestActions'
-import { getScheduledPickupsToCollect, completeScheduledPickup } from '../redux/actions/scheduleRequestActions'
-import { getUpcomingPickups, completedPickup } from '../redux/actions/specialRequestActions'
+import { getScheduledPickupsToCollect, completeScheduledPickup, activeSchedulePickup, inactiveSchedulePickup } from '../redux/actions/scheduleRequestActions'
+import { getUpcomingPickups, completedPickup, activeSpecialPickup } from '../redux/actions/specialRequestActions'
 import { getConversations } from '../redux/actions/conversationActions'
 
 import Onlinecomponent from '../components/homeScreen/onlineComponent'
@@ -89,8 +89,10 @@ const Homescreen = ({navigation}) => {
                     first.current = false
                 }
                 socket.emit('scheduledPickupOnProgress', { haulerid: userInfo._id, ongoingPickup: pickupOrder[0], pickup: pickupOrder })
+                dispatch(activeSchedulePickup(pickupOrder[0]._id))
             } else if (choice.current === 'special') {
                 socket.emit('specialPickupOnProgress', { haulerid: userInfo._id, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id, pickup: pickupOrder[0] })
+                dispatch(activeSpecialPickup(pickupOrder[0]._id))
             }
         } else {
             setEnd(null)
@@ -137,6 +139,7 @@ const Homescreen = ({navigation}) => {
 
             if (choice.current === 'schedule') {
                 dispatch(completeScheduledPickup({id: order._id, completedDate: new Date(), completedHauler: userInfo}))
+                dispatch(inactiveSchedulePickup(order._id))
                 socket.emit('schedulePickupCompleted', {pickupid: order._id, userid: order.customerId._id, haulerid: userInfo._id, pickup: order})
                 setNextPickup(true)
             } else if(choice.current === 'special') {

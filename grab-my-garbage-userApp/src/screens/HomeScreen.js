@@ -7,9 +7,10 @@ import * as Notifications from 'expo-notifications'
 
 import { colors } from '../global/styles'
 import { menuData } from '../global/data'
+import { fromDate } from '../helpers/schedulepickupHelper'
 
-import { addOngoingPickupLocation, removeOngoingPickup } from '../redux/actions/specialPickupActions'
-import { addOngoingSchedulePickupLocation, removeOngoingSchedulePickup } from '../redux/actions/schedulePickupActions'
+import { addOngoingPickupLocation, removeOngoingPickup, getAcceptedPickups } from '../redux/actions/specialPickupActions'
+import { addOngoingSchedulePickupLocation, removeOngoingSchedulePickup, getScheduledPickups } from '../redux/actions/schedulePickupActions'
 import { getPaymentIntent } from '../redux/actions/paymentActions'
 import { getConversations } from '../redux/actions/conversationActions'
 
@@ -29,19 +30,45 @@ const Homescreen = ({navigation}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { loading: socketLoading, socket } = socketHolder
 
+    const retrieveAcceptedPickups = useSelector((state) => state.retrieveAcceptedPickups)
+    const { loading: specialLoading, pickupInfo: acceptedPickups} = retrieveAcceptedPickups
+
+    const retrieveScheduledPickup = useSelector((state) => state.retrieveScheduledPickup)
+    const { loading: scheduleLoading, pickupInfo: schedulePickup } = retrieveScheduledPickup
+
     const [expoPushToken, setExpoPushToken] = useState()
     const [isSubscribed, setIsSubscribed] = useState(false)
     const [notification, setNotification] = useState()
+    const [activeScheduleStatus, setActiveScheduleStatus] = useState(false)
+    const [activeSpecialStatus, setActiveSpecialStatus] = useState(false)
+    const [scheduleId, setScheduleId] = useState(null)
+    const [specialId, setSpecialId] = useState(null)
 
     const notificationListener = useRef()
     const responseListener = useRef()
 
+    const handleSchedulePress = async() => {
+        const pickup = await schedulePickup.find((pickup) => pickup._id === scheduleId)
+        navigation.navigate('PickupScheduleDetail', {item: pickup, from: fromDate(pickup.from), to: fromDate(pickup.to)})
+    }
+
+    const handleSpecialPress = async() => {
+        const pickup = await acceptedPickups.find((pickup) => pickup._id === '6281ab1009937b9ae0049e2a')
+        navigation.navigate('SpecialRequests', {
+            screen: 'acceptedStack',
+            params: {
+                screen: 'pickupDetail',
+                params: {item: pickup, name: 'Accepted Pickups'}
+            }
+        })
+    }
+
     useEffect(() => {
         dispatch(getPaymentIntent())
         dispatch(getConversations())
-    }, [])
+        dispatch(getAcceptedPickups())
+        dispatch(getScheduledPickups())
 
-    useEffect(() => {
         Notifications.setNotificationHandler({
             handleNotification: async() => ({
                 shouldShowAlert: true,
@@ -79,17 +106,24 @@ const Homescreen = ({navigation}) => {
             await socket.emit('userJoined', { userid: user._id })
 
             socket.on('userPickup', async({pickup, hauler, time}) => {
+                console.log(pickup)
                 dispatch(addOngoingPickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: pickup.haulerid, pickupid: pickup.pickupid, time: time}))
+                setActiveSpecialStatus(true)
+                setSpecialId(pickup.pickupid)
             })
             socket.on('userSchedulePickup', async({hauler, time, ongoingPickup, pickupid}) => {
                 dispatch(addOngoingSchedulePickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: time.haulerid, ongoingPickupid: ongoingPickup, pickupid: pickupid, time: time.time}))
+                setActiveScheduleStatus(true)
+                setScheduleId(pickupid)
             })
 
             socket.on('pickupDone', async({pickupid}) => {
                 dispatch(removeOngoingPickup(pickupid))
+                setActiveSpecialStatus(false)
             })
             socket.on('schedulePickupDone', async({pickupid}) => {
                 dispatch(removeOngoingSchedulePickup(pickupid))
+                setActiveScheduleStatus(false)
             })
 
             socket.on('getMessage', () => {
@@ -113,6 +147,24 @@ const Homescreen = ({navigation}) => {
             :
             <View style={{backgroundColor: colors.blue1}}>
                 <View style = {styles.container}>
+                    {
+                        activeScheduleStatus &&
+                        <Pressable 
+                            style = {styles.view3}
+                            onPress = {() => handleSchedulePress()}                      
+                        >
+                            <Text style = {styles.text3}>Schedule Pickup Ongoing</Text>
+                        </Pressable>
+                    }
+                    {
+                        activeSpecialStatus &&
+                        <Pressable 
+                            onPress = {() => handleSpecialPress()}
+                            style = {styles.view3}
+                        >
+                            <Text style = {styles.text3}>Special Pickup Ongoing</Text>
+                        </Pressable>
+                    }
                     <View style = {styles.view1}>
                         <Text style = {styles.text1}>Hi {user.name}</Text>
                         <Text style = {styles.text2}>Have you taken out the trash today?</Text>
@@ -171,12 +223,12 @@ const styles = StyleSheet.create({
 
     container:{
         backgroundColor: colors.blue1,
-        paddingLeft: 25, 
         //marginBottom: 0,
         height: SCREEN_HEIGHT/3.5
     },
     view1:{
         display: 'flex',
+        paddingLeft: 25, 
         //flex: 1,
         justifyContent: 'space-around',
     },
@@ -241,5 +293,19 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 13
     },
+    view3:{
+        height: 25,
+        width: SCREEN_WIDTH,
+        position: 'absolute',
+        backgroundColor: colors.darkGrey,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        zIndex: 999
+    },
+    text3:{
+        color: colors.darkBlue,
+        fontSize: 16,
+        alignSelf: 'center'
+    }
 
 })

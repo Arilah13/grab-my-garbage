@@ -91,3 +91,53 @@ export const getScheduledPickupsToCollect = () => async(dispatch, getState) => {
         })
     }
 }
+
+export const activeSchedulePickup = (pickup) => async(dispatch, getState) => {
+    try{
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/schedulerequest/active/${pickup}`,
+        config)
+
+        dispatch({
+            type: actionTypes.SET_PICKUP_ACTIVE_SUCCESS,
+        })
+    } catch (err) {
+        dispatch({
+            type: actionTypes.SET_PICKUP_ACTIVE_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}
+
+export const inactiveSchedulePickup = (pickup) => async(dispatch, getState) => {
+    try{
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/schedulerequest/inactive/${pickup}`,
+        config)
+
+        dispatch({
+            type: actionTypes.SET_PICKUP_INACTIVE_SUCCESS,
+        })
+    } catch (err) {
+        dispatch({
+            type: actionTypes.SET_PICKUP_INACTIVE_FAIL,
+            payload: err.response.data.msg
+        })
+    }
+}

@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
 import Modal from 'react-native-modal'
+import axios from 'axios'
 
 import { colors } from '../../global/styles'
 
-import { declinePickup, acceptPickup } from '../../redux/actions/specialRequestActions'
+import { declinePickup, acceptPickup, getUpcomingPickups } from '../../redux/actions/specialRequestActions'
 
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/mapComponent'
@@ -25,6 +26,53 @@ const Pickupdetailscreen = ({navigation, route}) => {
     const [loading2, setLoading2] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
     const [modalVisible1, setModalVisible1] = useState(false)
+    const [active, setActive] = useState(true)
+    const [loading, setLoading] = useState(false)
+    const [disable, setDisable] = useState(false)
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
+    const config = {
+        headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`
+        },
+    }
+
+    const handleActive = async(id) => {
+        if(active === true) {
+            setLoading(true)
+            const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/exclude/${id}`, config)
+            if(res.status === 200) {
+                setActive(false)
+                setLoading(false)
+                dispatch(getUpcomingPickups())
+            }
+        } else if(active === false) {
+            setLoading(true)
+            const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/include/${id}`, config)
+            if(res.status === 200) {
+                setActive(true)
+                setLoading(false)
+                dispatch(getUpcomingPickups())
+            }
+        }
+    }
+
+    useEffect(() => {
+        if(item.inactive === 1) {
+            setActive(false)
+        } else if(item.inactive === 0) {
+            setActive(true)
+        }
+
+        if(item.active === 1) {
+            setDisable(true)
+        } else if(item.active === 0) {
+            setDisable(false)
+        }
+    }, [])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -114,62 +162,73 @@ const Pickupdetailscreen = ({navigation, route}) => {
                             }
                         </View>
                         {buttons === true ? 
-                            <View style = {{...styles.container5, flex: 1, flexWrap: 'wrap', alignSelf: 'center'}}>
-                                <Button
-                                    title = 'Accept'
-                                    buttonStyle = {{
-                                        width: 100,
-                                        height: 40,
-                                        marginTop: 18,
-                                        borderRadius: 15,
-                                        backgroundColor: colors.buttons
-                                    }}
-                                    onPress = {() => {
-                                        dispatch(acceptPickup(item._id))
-                                        setTimeout(() => {
-                                            navigation.navigate('pendingPickupScreen')
-                                        }, 100) 
-                                        setLoading1(true)                                       
-                                    }}
-                                    loading = {loading1}
-                                    disabled = {loading1}
-                                />
-                                <Button
-                                    title = 'Decline'
-                                    buttonStyle = {{
-                                        width: 100,
-                                        height: 40,
-                                        marginTop: 18,
-                                        borderRadius: 15,
-                                        marginLeft: 30,
-                                        backgroundColor: colors.buttons
-                                    }}
-                                    onPress = {() => {
-                                        dispatch(declinePickup(item._id))
-                                        setTimeout(() => {
-                                            navigation.navigate('pendingPickupScreen')
-                                        }, 100)
-                                        setLoading2(true)
-                                    }}
-                                    loading = {loading2}
-                                    disabled = {loading2}
-                                />
-                            </View> : 
-                                name === 'Upcoming Pickups' ? 
-                                <TouchableOpacity 
-                                    style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
-                                    onPress = {() => setModalVisible1(true)}
-                                >
-                                    <Icon
-                                        type = 'material'
-                                        name = 'chat'
-                                        color = {colors.darkBlue}
-                                        size = {27}
-                                    />    
-                                    <Text style = {styles.text7}>Chat With Customer</Text>
-                                </TouchableOpacity>
-                                : null                           
-                            }
+                        <View style = {{...styles.container5, flex: 1, flexWrap: 'wrap', alignSelf: 'center'}}>
+                            <Button
+                                title = 'Accept'
+                                buttonStyle = {{
+                                    width: 100,
+                                    height: 40,
+                                    marginTop: 18,
+                                    borderRadius: 15,
+                                    backgroundColor: colors.buttons
+                                }}
+                                onPress = {() => {
+                                    dispatch(acceptPickup(item._id))
+                                    setTimeout(() => {
+                                        navigation.navigate('pendingPickupScreen')
+                                    }, 100) 
+                                    setLoading1(true)                                       
+                                }}
+                                loading = {loading1}
+                                disabled = {loading1}
+                            />
+                            <Button
+                                title = 'Decline'
+                                buttonStyle = {{
+                                    width: 100,
+                                    height: 40,
+                                    marginTop: 18,
+                                    borderRadius: 15,
+                                    marginLeft: 30,
+                                    backgroundColor: colors.buttons
+                                }}
+                                onPress = {() => {
+                                    dispatch(declinePickup(item._id))
+                                    setTimeout(() => {
+                                        navigation.navigate('pendingPickupScreen')
+                                    }, 100)
+                                    setLoading2(true)
+                                }}
+                                loading = {loading2}
+                                disabled = {loading2}
+                            />
+                        </View> : 
+                        name === 'Upcoming Pickups' ? 
+                        <TouchableOpacity 
+                            style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
+                            onPress = {() => setModalVisible1(true)}
+                        >
+                            <Icon
+                                type = 'material'
+                                name = 'chat'
+                                color = {colors.darkBlue}
+                                size = {27}
+                            />    
+                            <Text style = {styles.text7}>Chat With Customer</Text>
+                        </TouchableOpacity>
+                        : null                           
+                        }
+
+                        <View style = {{alignSelf: 'center', flexDirection: 'row'}}>
+                            <Button
+                                title = {active ? 'Exclude' : 'Include'}
+                                buttonStyle = {{...styles.button, backgroundColor: active ? colors.darkBlue : colors.darkGrey}}
+                                loading = {loading}
+                                disabled = {loading || disable}
+                                onPress = {() => handleActive(item._id)}
+                            />
+                        </View>
+
                     </View>
                 </View>
             </ScrollView>
@@ -303,6 +362,13 @@ const styles = StyleSheet.create({
         width: '100%',
         borderRadius: 15,
         overflow: 'hidden',
+    },
+    button:{
+        backgroundColor: colors.darkBlue,
+        borderRadius: 10,
+        height: 40,
+        width: 140,
+        marginHorizontal: 20
     },
 
 })

@@ -21,7 +21,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 
-const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
+const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalVisible}) => {
 
     const dispatch = useDispatch()
 
@@ -116,7 +116,6 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
                         useNativeDriver: true,
                         duration: 2000
                     }).start()
-                    console.log(ongoingSpecialPickup)
                     // if(mapView.current) {
                     //     mapView.current.animateToRegion({
                     //         latitude: ongoingSpecialPickup.latitude,
@@ -153,11 +152,16 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
                 dispatch(getCompletedPickups())
                 setComplete(true)
                 setTimeout(() => {
-                    setModalVisible(false)
+                    if(modalVisible === true) {
+                        setModalVisible(false)
+                    }
+                    if(modalVisible1 === true) {
+                        setModalVisible1(false)
+                    }
                 }, 2500)
                 const timeout = setTimeout(() => {
                     navigation.navigate('acceptedPickup')
-                }, 2700)
+                }, 2800)
             }
             first.current = false
         })
@@ -167,7 +171,12 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
                 setPickup(null)
                 setComplete(true)
                 setTimeout(() => {
-                    setModalVisible(false)
+                    if(modalVisible === true) {
+                        setModalVisible(false)
+                    }
+                    if(modalVisible1 === true) {
+                        setModalVisible1(false)
+                    }
                 }, 2500)
             }
             first.current = false
@@ -180,6 +189,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
             duration: 3000,
             useNativeDriver: true
         }).start()
+        console.log(item)
     }, [])
 
     return (
@@ -357,7 +367,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation}) => {
                                 deviceWidth = {SCREEN_WIDTH}
                             >
                                 <View style = {styles.view3}>
-                                    <Chatcomponent haulerid = {pickup.haulerid} pickupid = {pickup.pickupid} setModalVisible = {setModalVisible1}/>
+                                    <Chatcomponent haulerid = {item.pickerId} pickupid = {pickup.pickupid} setModalVisible = {setModalVisible1}/>
                                 </View>  
                             </Modal>
                             </>     

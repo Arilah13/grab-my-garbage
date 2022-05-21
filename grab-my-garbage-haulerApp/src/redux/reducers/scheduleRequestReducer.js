@@ -38,3 +38,25 @@ export const retrieveCollectSchedulePickupReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const activeSchedulePickupReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.SET_PICKUP_ACTIVE_SUCCESS:
+            return { success: true }
+        case actionTypes.SET_PICKUP_ACTIVE_FAIL:
+            return { success: false, error: action.payload }
+        default:
+            return state
+    }
+}
+
+export const inactiveSchedulePickupReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.SET_PICKUP_INACTIVE_SUCCESS:
+            return { success: true }
+        case actionTypes.SET_PICKUP_INACTIVE_FAIL:
+            return { success: false, error: action.payload }
+        default:
+            return state
+    }
+}

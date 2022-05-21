@@ -17,12 +17,15 @@ import {
     acceptPickupReducer,
     completedPickupReducer,
     sendSMSReducer,
+    activeSpecialPickupReducer
 } from './reducers/specialRequestReducers'
 
 import {
     retrieveSchedulePickupReducer,
     completeSchedulePickupReducer,
     retrieveCollectSchedulePickupReducer,
+    activeSchedulePickupReducer,
+    inactiveSchedulePickupReducer
 } from './reducers/scheduleRequestReducer'
 
 import {
@@ -53,10 +56,13 @@ const reducer = combineReducers({
     acceptPickup: acceptPickupReducer,
     completedPickup: completedPickupReducer,
     sendSMS: sendSMSReducer,
+    activeSpecialPickup: activeSpecialPickupReducer,
 
     retrieveSchedulePickup: retrieveSchedulePickupReducer,
     completeSchedulePickup: completeSchedulePickupReducer,
     retrieveCollectSchedulePickup: retrieveCollectSchedulePickupReducer,
+    activeSchedulePickup: activeSchedulePickupReducer,
+    inactiveSchedulePickup: inactiveSchedulePickupReducer,
 
     socketHolder: socketHolderReducer,
 

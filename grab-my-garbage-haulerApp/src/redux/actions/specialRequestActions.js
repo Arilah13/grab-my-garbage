@@ -229,10 +229,27 @@ export const sendSMS = ({receiver, message}) => async(dispatch, getState) => {
     }
 }
 
-export const ongoingPickup = (pickup) => async(dispatch, getState) => {
+export const activeSpecialPickup = (pickup) => async(dispatch, getState) => {
     try{
-        
-    } catch (err) {
+        const { userLogin: { userInfo } } = getState()
 
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/active/${pickup}`,
+        config)
+
+        dispatch({
+            type: actionTypes.SET_PICKUP_ACTIVE_SUCCESS,
+        })
+    } catch (err) {
+        dispatch({
+            type: actionTypes.SET_PICKUP_ACTIVE_FAIL,
+            payload: err.response.data.msg
+        })
     }
 }

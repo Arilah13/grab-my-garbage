@@ -93,3 +93,14 @@ export const ongoingPickupReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const activeSpecialPickupReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.SET_PICKUP_ACTIVE_SUCCESS:
+            return { success: true }
+        case actionTypes.SET_PICKUP_ACTIVE_FAIL:
+            return { success: false, error: action.payload }
+        default:
+            return state
+    }
+}

@@ -87,6 +87,36 @@ const requestController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
+    },
+    activePickup: async(req, res) => {
+        try {
+            const pickups = await scheduledPickups.findById(req.params.id)
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            pickups.active = 1
+            await pickups.save()
+
+            res.status(200).json({
+                message: 'success'
+            })
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    inactivePickup: async(req, res) => {
+        try {
+            const pickups = await scheduledPickups.findById(req.params.id)
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            pickups.active = 0
+            await pickups.save()
+
+            res.status(200).json({
+                message: 'success'
+            })
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
     }
 }
 

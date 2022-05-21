@@ -15,7 +15,6 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Scheduledpickupdetail = ({navigation, route}) => {
-
     const { item, from, to } = route.params
 
     const [modalVisible, setModalVisible] = useState(false)

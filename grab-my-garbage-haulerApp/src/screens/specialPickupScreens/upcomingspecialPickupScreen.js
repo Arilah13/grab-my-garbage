@@ -88,12 +88,16 @@ const UpcomingPickupscreen = ({navigation}) => {
                                 </View>
                             </View>
                             <View style = {{position: 'absolute'}}>
+                                {
+                                    item.inactive === 1 &&
+                                    <Text style = {{color: 'grey', fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.61}}>Excluded</Text>
+                                }
                                 <Button
                                     title = 'View'
                                     buttonStyle = {{
                                         width: 70,
                                         height: 40,
-                                        marginTop: 18,
+                                        marginTop: item.inactive === 1 ? 5 : 18,
                                         borderRadius: 15,
                                         marginLeft: SCREEN_WIDTH/1.65,
                                         backgroundColor: colors.buttons

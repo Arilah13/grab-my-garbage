@@ -16,7 +16,11 @@ router.put('/acceptPickup/:id', auth, requestController.updateAcceptHauler)
 
 router.put('/updateCompletedPickup/:id', auth, requestController.updateCompletedPickup)
 
-router.put('/exclude/:id', auth, requestController.excludePickup)
+router.put('/exclude/:id', requestController.excludePickup)
+
+router.put('/include/:id', requestController.includePickup)
+
+router.put('/active/:id', requestController.activePickup)
 
 //router.get('/allPickups/:id', auth, pickupController.getAllPickups)
 

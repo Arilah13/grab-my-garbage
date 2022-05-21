@@ -54,6 +54,10 @@ const scheduledPickupSchema = new mongoose.Schema({
     inactive:{
         type: Number,
         default: 0
+    },
+    active:{
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

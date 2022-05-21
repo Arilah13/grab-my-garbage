@@ -8,4 +8,8 @@ router.get('/:id', requestController.getScheduledPickupToCollect)
 
 router.put('/pickupToday/:id', requestController.completeScheduledPickupforToday)
 
+router.put('/active/:id', requestController.activePickup)
+
+router.put('/inactive/:id', requestController.inactivePickup)
+
 module.exports = router

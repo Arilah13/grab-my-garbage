@@ -10,7 +10,7 @@ const requestController = {
 
             let pendingPickups = []
 
-            const request = await Pickups.find({accepted: 0, cancelled: 0, completed: 0, declinedHaulers: {$nin:{id: id}}, inactive: 0}).populate('customerId')
+            const request = await Pickups.find({accepted: 0, cancelled: 0, completed: 0, declinedHaulers: {$nin:{id: id}}}).populate('customerId')
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             request.map(pickup => {
@@ -50,7 +50,7 @@ const requestController = {
         try{
             const id = req.params.id
 
-            const request = await Pickups.find({accepted: 1, cancelled: 0, completed: 0, pickerId: id, inactive: 0}).populate('customerId')
+            const request = await Pickups.find({accepted: 1, cancelled: 0, completed: 0, pickerId: id}).populate('customerId')
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(request)
@@ -129,6 +129,36 @@ const requestController = {
             if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             pickups.inactive = 1
+            await pickups.save()
+
+            res.status(200).json({
+                message: 'success'
+            })
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    includePickup: async(req, res) => {
+        try {
+            const pickups = await Pickups.findById(req.params.id)
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            pickups.inactive = 0
+            await pickups.save()
+
+            res.status(200).json({
+                message: 'success'
+            })
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    activePickup: async(req, res) => {
+        try {
+            const pickups = await Pickups.findById(req.params.id)
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            pickups.active = 1
             await pickups.save()
 
             res.status(200).json({

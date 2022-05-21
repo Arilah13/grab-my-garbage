@@ -17,6 +17,7 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
     const dispatch = useDispatch()
 
     const [messages, setMessages] = useState([])
+    const [done, setDone] = useState(false)
 
     const userDetail = useSelector((state) => state.userDetail)
     const { user } = userDetail
@@ -52,14 +53,15 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
     useEffect(() => {
         if(conversation === undefined || conversation[0].haulerId._id !== haulerid._id) {
             dispatch(getConversation({receiverid: haulerid._id, senderid: user._id}))
+            setDone(true)
         }
     }, [])
 
     useEffect(() => {
-        if(loading === false) {
+        if(loading === false && done === true) {
             dispatch(getMessage({ conversationId: conversation[0]._id }))
         }
-    }, [conversation])
+    }, [conversation, done])
 
     useEffect(() => {
         socket.on('getMessage', ({senderid, text, sender, createdAt}) => {

@@ -81,12 +81,16 @@ const Acceptedspecialpickupscreen = ({navigation}) => {
                                     </View>
                                 </View>
                                 <View style = {{position: 'absolute'}}>
+                                    {
+                                        item.active === 1 &&
+                                        <Text style = {{color: 'red', fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Active</Text>
+                                    }
                                     <Button
                                         title = 'View'
                                         buttonStyle = {{
                                             width: 70,
                                             height: 40,
-                                            marginTop: 18,
+                                            marginTop: item.active === 1 ? 5 : 18,
                                             borderRadius: 15,
                                             marginLeft: SCREEN_WIDTH/1.65,
                                             backgroundColor: colors.buttons

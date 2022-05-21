@@ -96,12 +96,20 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                     </View>
                                 </View>
                                 <View style = {{position: 'absolute'}}>
+                                    {
+                                        item.inactive === 1 &&
+                                        <Text style = {{color: colors.darkGrey, fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Inactive</Text>
+                                    }
+                                    {
+                                        item.active === 1 &&
+                                        <Text style = {{color: 'red', fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Active</Text>
+                                    }
                                     <Button
                                         title = 'View'
                                         buttonStyle = {{
                                             width: 70,
                                             height: 40,
-                                            marginTop: 18,
+                                            marginTop: item.active === 1 || item.inactive === 1 ? 5 : 18,
                                             borderRadius: 15,
                                             marginLeft: SCREEN_WIDTH/1.65,
                                             backgroundColor: colors.buttons

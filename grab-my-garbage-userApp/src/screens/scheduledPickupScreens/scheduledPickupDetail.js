@@ -1,11 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, Dimensions, ScrollView, Pressable, TouchableOpacity } from 'react-native'
+import { useSelector, useDispatch } from 'react-redux'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Icon } from 'react-native-elements'
+import { Button, Icon } from 'react-native-elements'
 import Modal from 'react-native-modal'
+import axios from 'axios'
 
 import { colors } from '../../global/styles'
 import { dayConverter } from '../../helpers/schedulepickupHelper'
+
+import { getScheduledPickups } from '../../redux/actions/schedulePickupActions'
 
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/pickupComponent/mapComponent'
@@ -15,11 +19,73 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Scheduledpickupdetail = ({navigation, route}) => {
+    const dispatch = useDispatch()
 
     const { item, from, to } = route.params
 
     const [modalVisible, setModalVisible] = useState(false)
     const [modalVisible1, setModalVisible1] = useState(false)
+    const [active, setActive] = useState(true)
+    const [loading, setLoading] = useState(false)
+    const [loadingCancel, setLoadingCancel] = useState(false)
+    const [disable, setDisable] = useState(false)
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
+    const config = {
+        headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`
+        },
+    }
+
+    const handleActive = async(id) => {
+        if(active === true) {
+            setLoading(true)
+            const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/schedulepickup/inactive/${id}`, config)
+            if(res.status === 200) {
+                setActive(false)
+                setLoading(false)
+                dispatch(getScheduledPickups())
+            }
+        } else if(active === false) {
+            setLoading(false)
+            const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/schedulepickup/active/${id}`, config)
+            if(res.status === 200) {
+                setActive(true)
+                setLoading(false)
+                dispatch(getScheduledPickups())
+            }
+        }
+    }
+
+    const handleCancel = async(id) => {
+        setLoadingCancel(true)
+        const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/schedulepickup/${id}`, config)
+        if(res.status === 200) {
+            setActive(true)
+            dispatch(getScheduledPickups())
+            setTimeout(() => {
+                setLoadingCancel(false)
+                navigation.navigate('ScheduleRequests')
+            }, 3000)
+        }
+    }
+
+    useEffect(() => {
+        if(item.inactive === 0) {
+            setActive(true)
+        } else if(item.inactive === 1) {
+            setActive(false)
+        }
+
+        if(item.active === 1) {
+            setDisable(true)
+        } else if(item.active === 0) {
+            setDisable(false)
+        }
+    }, [])
 
     return (
         <SafeAreaView>
@@ -105,6 +171,24 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                             />    
                             <Text style = {styles.text7}>Chat With Hauler</Text>
                         </TouchableOpacity>
+
+                        <View style = {{alignSelf: 'center', flexDirection: 'row'}}>
+                            <Button
+                                title = {active ? 'Inactive' : 'Active'}
+                                buttonStyle = {{...styles.button, backgroundColor: active ? colors.darkBlue : colors.darkGrey}}
+                                loading = {loading}
+                                disabled = {loading || disable}
+                                onPress = {() => handleActive(item._id)}
+                            />
+
+                            <Button
+                                title = 'Cancel'
+                                buttonStyle = {styles.button}
+                                loading = {loadingCancel}
+                                disabled = {loadingCancel || disable}
+                                onPress = {() => handleCancel(item._id)}
+                            />
+                        </View>
                     </View>
 
                     <Modal 
@@ -123,7 +207,14 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         deviceWidth = {SCREEN_WIDTH}
                     >
                         <View style = {styles.view1}>
-                            <Mapcomponent location = {item.location[0]} item = {item} setModalVisible = {setModalVisible} type = 'schedule' navigation = {navigation} />
+                            <Mapcomponent 
+                                location = {item.location[0]} 
+                                item = {item} 
+                                setModalVisible = {setModalVisible} 
+                                type = 'schedule' 
+                                navigation = {navigation} 
+                                modalVisible = {modalVisible}
+                            />
                         </View>                
                     </Modal>
 
@@ -243,6 +334,13 @@ const styles = StyleSheet.create({
         width: '100%',
         borderRadius: 15,
         overflow: 'hidden',
+    },
+    button:{
+        backgroundColor: colors.darkBlue,
+        borderRadius: 10,
+        height: 40,
+        width: 140,
+        marginHorizontal: 20
     },
 
 })

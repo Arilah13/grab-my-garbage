@@ -13,7 +13,7 @@ const scheduledPickupController = {
             const service_city = await isPointInPolygon(pickupInfo.location.latitude, pickupInfo.location.longitude, polygonData)
 
             const hauler = await Haulers.find({service_city: service_city})
-            console.log(hauler)
+   
             const newPickup = new ScheduledPickups({
                 location: pickupInfo.location,
                 from: date1,
@@ -46,7 +46,7 @@ const scheduledPickupController = {
     getSchedulePickup: async(req, res) => {
         try{
             const customerId = req.params.id
-            const pickups = await ScheduledPickups.find({ customerId, completed: 0 }).populate('pickerId')
+            const pickups = await ScheduledPickups.find({ customerId, completed: 0, cancelled: 0 }).populate('pickerId')
             if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(pickups)
@@ -58,8 +58,21 @@ const scheduledPickupController = {
         try{
             const pickups = await ScheduledPickups.findById(req.params.id)
             if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
-
+            
             pickups.inactive = 1
+            await pickups.save()
+
+            res.status(200).json({msg: 'success'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    activeSchedulePickup: async(req, res) => {
+        try{
+            const pickups = await ScheduledPickups.findById(req.params.id)
+            if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
+            
+            pickups.inactive = 0
             await pickups.save()
 
             res.status(200).json({msg: 'success'})

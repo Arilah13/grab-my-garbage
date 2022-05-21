@@ -102,12 +102,12 @@ io.on('connection', socket => {
         const hauler = await pickupSocket.returnHaulerLocation({haulerid})
         const location = {latitude: pickup.location[0].latitude, longitude: pickup.location[0].longitude}
         const time = await pickupSocket.returnTime({latitude: hauler.latitude, longitude: hauler.longitude}, location)
-        if(!userSocketid) {
-            notificationHelper.notifySpecialPickup(pickup, 'onProgress')
-        }
+
+        notificationHelper.notifySpecialPickup(pickup, 'onProgress')
         
-        if(userSocketid)
+        if(userSocketid) {
             socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler, time: time})
+        }
     })
 
     socket.on('specialPickupArrived', async({pickup}) => {
@@ -117,12 +117,11 @@ io.on('connection', socket => {
     socket.on('specialPickupCompleted', async({pickupid, pickup}) => {
         const userSocketid = await pickupSocket.completeSpecialPickup({pickupid})
 
-        if(!userSocketid) {
-            notificationHelper.notifySpecialPickup(pickup, 'completed')
-        }
+        notificationHelper.notifySpecialPickup(pickup, 'completed')
 
-        if(userSocketid)
+        if(userSocketid) {
             socket.to(userSocketid.id).emit('pickupDone', {pickupid})
+        }
     })
 
     socket.on('schedulePickupStarted', async({pickup}) => {
@@ -130,18 +129,17 @@ io.on('connection', socket => {
 
         pickup.map((pickup) => {
             const socketId = pickupSocket.returnUserSocketid({userid: pickup.customerId._id})
-            if(!socketId) {
-                messages.push({
-                    to: pickup.customerId.pushId,
-                    sound: 'default',
-                    title: 'Schedule Pickup',
-                    body: 'Hauler has started collecting pickups',
-                    data: { 
-                        screen: 'pickupDetail',
-                        item: pickup,
-                    }
-                })   
-            } 
+            
+            messages.push({
+                to: pickup.customerId.pushId,
+                sound: 'default',
+                title: 'Schedule Pickup',
+                body: 'Hauler has started collecting pickups',
+                data: { 
+                    screen: 'pickupDetail',
+                    item: pickup,
+                }
+            })   
         })
 
         let chunks = expo.chunkPushNotifications(messages)
@@ -165,10 +163,12 @@ io.on('connection', socket => {
             setTimeout(() => {
                 if(user.socketId !== false) {
                     socket.to(user.socketId).emit('userSchedulePickup', {hauler, time: user, ongoingPickup: ongoingPickup._id, pickupid: user.id})
-                } else {
-                    if(ongoingPickup.customerId._id === user.userid)
-                        notificationHelper.notifySchedulePickup(ongoingPickup, 'onProgress')
+                } 
+
+                if(ongoingPickup.customerId._id === user.userid) {
+                    notificationHelper.notifySchedulePickup(ongoingPickup, 'onProgress')
                 }
+
             }, 2000*index)
         })
     })
@@ -183,9 +183,8 @@ io.on('connection', socket => {
         
         if(userSocketid) {
             socket.to(userSocketid).emit('schedulePickupDone', {pickupid})
-        } else {
-            notificationHelper.notifySchedulePickup(pickup, 'completed')
-        }
+        } 
+        notificationHelper.notifySchedulePickup(pickup, 'completed')
     })
 
     socket.on('haulerDisconnect', () => {
@@ -198,7 +197,6 @@ io.on('connection', socket => {
             const user = await chatSocket.returnUserSocketid({userid: receiverid})
             
             if(user !== false) {
-                console.log(user)
                 socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
             } else {
                 notificationHelper.notifyMessages(receiverid)
