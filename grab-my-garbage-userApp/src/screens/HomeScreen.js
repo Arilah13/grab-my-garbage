@@ -9,7 +9,7 @@ import { colors } from '../global/styles'
 import { menuData } from '../global/data'
 import { fromDate } from '../helpers/schedulepickupHelper'
 
-import { addOngoingPickupLocation, removeOngoingPickup, getAcceptedPickups } from '../redux/actions/specialPickupActions'
+import { addOngoingPickupLocation, removeOngoingPickup, getAcceptedPickups, getCompletedPickups, getPendingPickups } from '../redux/actions/specialPickupActions'
 import { addOngoingSchedulePickupLocation, removeOngoingSchedulePickup, getScheduledPickups } from '../redux/actions/schedulePickupActions'
 import { getPaymentIntent } from '../redux/actions/paymentActions'
 import { getConversations } from '../redux/actions/conversationActions'
@@ -23,6 +23,9 @@ const Homescreen = ({navigation}) => {
 
     const userDetail = useSelector((state) => state.userDetail)
     const { loading, user } = userDetail
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { loading: userLoading, userInfo } = userLogin
 
     const specialPickup = useSelector((state) => state.specialPickup)
     const { pickupInfo } = specialPickup
@@ -101,6 +104,17 @@ const Homescreen = ({navigation}) => {
         }
     }, [user, loading])
 
+    const summation = () => {
+        let sum = 0
+        userInfo.schedule.map((schedule) => {
+            sum += parseInt(schedule.payment)
+        })
+        userInfo.special.map((special) => {
+            sum += parseInt(special.payment)
+        })
+        return sum
+    }
+
     useEffect(async() => {
         if(socketLoading === false) {
             await socket.emit('userJoined', { userid: user._id })
@@ -128,6 +142,12 @@ const Homescreen = ({navigation}) => {
 
             socket.on('getMessage', () => {
                 dispatch(getConversations())
+            })
+
+            socket.on('refreshDone', () => {
+                dispatch(getAcceptedPickups())
+                dispatch(getCompletedPickups())
+                dispatch(getPendingPickups())
             })
         }
     }, [socket])
@@ -177,7 +197,14 @@ const Homescreen = ({navigation}) => {
 
                 <View style = {styles.container1}>
                     <View style = {styles.container2}>
-
+                        <View style = {{width: '50%', alignItems: 'center'}}>
+                            <Text style = {styles.text4}>Total Spent</Text>
+                            <Text style = {styles.text5}>Rs {summation()}</Text>
+                        </View>
+                        <View style = {{width: '50%', alignItems: 'center'}}>
+                            <Text style = {styles.text4}>Total Pickups</Text>
+                            <Text style = {styles.text5}>{userInfo.count}</Text>
+                        </View>
                     </View>
 
                     <View style = {{justifyContent: 'center', marginTop: '5%', flexDirection: 'column'}}>
@@ -261,6 +288,7 @@ const styles = StyleSheet.create({
         height: SCREEN_HEIGHT/6.5,
         padding: 10,
         borderRadius: 25,
+        flexDirection: 'row'
     },
     card:{
         flex: 1,
@@ -306,6 +334,17 @@ const styles = StyleSheet.create({
         color: colors.darkBlue,
         fontSize: 16,
         alignSelf: 'center'
+    },
+    text4:{
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'grey',
+        marginTop: 5
+    },
+    text5:{
+        marginTop: 20,
+        color: 'white',
+        fontSize: 15
     }
 
 })

@@ -64,3 +64,16 @@ export const updateReadMessageReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const currentConvoReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.ADD_CURRENT_CONVO:
+            return { convo: action.payload }
+        case actionTypes.ADD_CURRENT_CONVO_FAIL:
+            return { error: action.payload }
+        case actionTypes.RESET_CURRENT_CONVO:
+            return {}
+        default:
+            return state
+    }
+}

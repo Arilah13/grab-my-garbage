@@ -121,9 +121,10 @@ export const getCompletedPickups = () => async(dispatch, getState) => {
     }
 }
 
-export const declinePickup = (id) => async(dispatch, getState) => {
+export const declinePickup = (id, customerId) => async(dispatch, getState) => {
     try{
         const { userLogin: { userInfo } } = getState()
+        const { socketHolder: { socket } } = getState()
 
         const config = {
             headers: {
@@ -134,7 +135,7 @@ export const declinePickup = (id) => async(dispatch, getState) => {
 
         await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/declinePickup/${id}`, {id: userInfo._id},
         config)
-
+        await socket.emit('refresh', {userid: customerId})
         dispatch({
             type: actionTypes.DECLINE_PICKUP_SUCCESS
         })
@@ -147,9 +148,10 @@ export const declinePickup = (id) => async(dispatch, getState) => {
     }
 }
 
-export const acceptPickup = (id) => async(dispatch, getState) => {
+export const acceptPickup = (id, customerId) => async(dispatch, getState) => {
     try{
         const { userLogin: { userInfo } } = getState()
+        const { socketHolder: { socket } } = getState()
 
         const config = {
             headers: {
@@ -158,12 +160,16 @@ export const acceptPickup = (id) => async(dispatch, getState) => {
             },
         }
 
-        await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/acceptPickup/${id}`, {id: userInfo._id},
+        await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/acceptPickup/${id}`, {haulerId: userInfo._id},
         config)
+
+        // await axios.put(`http://192.168.13.1:5000/specialrequest/acceptPickup/${id}`, {haulerId: userInfo._id},
+        // config)
 
         dispatch({
             type: actionTypes.ACCEPT_PICKUP_SUCCESS,
         })
+        await socket.emit('refresh', {userid: customerId})
         dispatch(getPendingPickupsOffline())
         dispatch(getUpcomingPickups())
     } catch (err) {

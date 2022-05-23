@@ -173,7 +173,7 @@ const Pickupdetailscreen = ({navigation, route}) => {
                                     backgroundColor: colors.buttons
                                 }}
                                 onPress = {() => {
-                                    dispatch(acceptPickup(item._id))
+                                    dispatch(acceptPickup(item._id, item.customerId._id))
                                     setTimeout(() => {
                                         navigation.navigate('pendingPickupScreen')
                                     }, 100) 
@@ -192,8 +192,8 @@ const Pickupdetailscreen = ({navigation, route}) => {
                                     marginLeft: 30,
                                     backgroundColor: colors.buttons
                                 }}
-                                onPress = {() => {
-                                    dispatch(declinePickup(item._id))
+                                onPress = {async() => {
+                                    dispatch(declinePickup(item._id, item.customerId._id))
                                     setTimeout(() => {
                                         navigation.navigate('pendingPickupScreen')
                                     }, 100)
@@ -218,16 +218,18 @@ const Pickupdetailscreen = ({navigation, route}) => {
                         </TouchableOpacity>
                         : null                           
                         }
-
-                        <View style = {{alignSelf: 'center', flexDirection: 'row'}}>
-                            <Button
-                                title = {active ? 'Exclude' : 'Include'}
-                                buttonStyle = {{...styles.button, backgroundColor: active ? colors.darkBlue : colors.darkGrey}}
-                                loading = {loading}
-                                disabled = {loading || disable}
-                                onPress = {() => handleActive(item._id)}
-                            />
-                        </View>
+                        {
+                            name === 'Upcoming Pickups' &&
+                            <View style = {{alignSelf: 'center', flexDirection: 'row'}}>
+                                <Button
+                                    title = {active ? 'Exclude' : 'Include'}
+                                    buttonStyle = {{...styles.button, backgroundColor: active ? colors.darkBlue : colors.darkGrey}}
+                                    loading = {loading}
+                                    disabled = {loading || disable}
+                                    onPress = {() => handleActive(item._id)}
+                                />
+                            </View>
+                        }
 
                     </View>
                 </View>

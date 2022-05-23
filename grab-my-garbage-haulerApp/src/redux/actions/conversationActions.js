@@ -151,3 +151,17 @@ export const receiverRead = (id) => async(dispatch, getState) => {
         })
     }
 }
+
+export const addCurrentConvo = (id) => async(dispatch) => {
+    try{
+        dispatch({
+            type: actionTypes.ADD_CURRENT_CONVO,
+            payload: id
+        })
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ADD_CURRENT_CONVO_FAIL,
+            payload: err
+        })
+    }
+}

@@ -44,7 +44,8 @@ import {
     sendMessageReducer,
     getMessageReducer,
     getAllConversationReducer,
-    updateReadMessageReducer
+    updateReadMessageReducer,
+    currentConvoReducer
 } from './reducers/conversationReducer'
 
 const reducer = combineReducers({
@@ -74,7 +75,8 @@ const reducer = combineReducers({
     sendMessage: sendMessageReducer,
     getMessage: getMessageReducer,
     getAllConversation: getAllConversationReducer,
-    updateReadMessage: updateReadMessageReducer
+    updateReadMessage: updateReadMessageReducer,
+    currentConvo: currentConvoReducer
 })
 
 const rootReducer = (state, action) => {

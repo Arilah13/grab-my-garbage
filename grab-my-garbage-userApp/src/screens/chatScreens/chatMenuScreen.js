@@ -6,7 +6,7 @@ import LottieView from 'lottie-react-native'
 import { Icon } from 'react-native-elements'
 import { useRoute } from '@react-navigation/native'
 
-import { receiverRead } from '../../redux/actions/conversationActions'
+import { receiverRead, addCurrentConvo } from '../../redux/actions/conversationActions'
 
 import { colors } from '../../global/styles'
 import { date1Helper } from '../../helpers/pickupHelper'
@@ -127,6 +127,7 @@ const Chatmenuscreen = ({navigation}) => {
                                     onPress = {async() => {
                                         await messageRead(item.conversation._id)
                                         setAssigned(false)
+                                        dispatch(addCurrentConvo(item.conversation._id))
                                         navigation.navigate('Message', {haulerid: item.conversation.haulerId})
                                     }}
                                 >
