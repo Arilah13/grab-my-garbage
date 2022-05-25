@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable } from '
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Icon } from 'react-native-elements'
-import { useRoute } from '@react-navigation/native'
+import { useNavigationState } from '@react-navigation/native'
 
 import { receiverRead, addCurrentConvo } from '../../redux/actions/conversationActions'
 
@@ -18,7 +18,8 @@ const Chatmenuscreen = ({navigation}) => {
     const data = useRef([])
     
     const dispatch = useDispatch()
-    const route = useRoute()
+    const routes = useNavigationState(state => state.routes)
+    const currentRoute = routes[routes.length - 1].name
 
     const [assigned, setAssigned] = useState(false)
     const [convoData, setConvoData] = useState([])
@@ -26,8 +27,7 @@ const Chatmenuscreen = ({navigation}) => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading, conversation } = getAllConversation
 
-    const getConversation = useSelector((state) => state.getConversation)
-    const { conversation: currentConversation } = getConversation
+    const currentConvo = useSelector((state) => state.currentConvo)
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
@@ -41,8 +41,8 @@ const Chatmenuscreen = ({navigation}) => {
         Promise.all(index)
         const element = data.current.splice(index, 1)[0]
         Promise.all(element)
-        if(element.conversation.receiverRead === false) {
-            element.conversation.receiverRead = true
+        if(element.conversation.receiverUserRead === false) {
+            element.conversation.receiverUserRead = true
             dispatch(receiverRead(id))
         }
         data.current.splice(index, 0, element)
@@ -59,43 +59,87 @@ const Chatmenuscreen = ({navigation}) => {
     }, [conversation])
 
     useEffect(() => {
-        socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
-            const index = data.current.findIndex((d, index) => {
-                if(d.conversation.haulerId._id === senderid) {
-                    return Promise.all(index)
+        if(currentConvo.convo === undefined) {
+            socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
+                const index = data.current.findIndex((d, index) => {
+                    if(d.conversation.haulerId._id === senderid) {
+                        return Promise.all(index)
+                    }
+                })
+                Promise.all(index)
+                if(index >= 0) {
+                    const element = data.current.splice(index, 1)[0]
+                    Promise.all(element)
+                    element.message.text = text
+                    element.message.created = createdAt
+                    element.conversation.receiverUserRead = false
+                    data.current = [element, ...data.current]
+                    setConvoData(data.current)
+                }
+                else if(index === -1) {
+                    const element = {
+                        conversation: {
+                            _id: createdAt,
+                            haulerId: {
+                                _id: sender._id,
+                                image: sender.avatar,
+                                name: sender.name
+                            },
+                            receiverUserRead: false
+                        },
+                        message: {
+                            created: createdAt,
+                            text: text
+                        }
+                    }
+                    data.current = [element, ...data.current]
+                    setConvoData(data.current)
                 }
             })
-            Promise.all(index)
-            if(index >= 0) {
-                const element = data.current.splice(index, 1)[0]
-                Promise.all(element)
-                element.message.text = text
-                element.message.created = createdAt
-                element.conversation.receiverRead = false
-                data.current = [element, ...data.current]
-                setConvoData(data.current)
-            }
-            else if(index === -1) {
-                const element = {
-                    conversation: {
-                        _id: createdAt,
-                        haulerId: {
-                            _id: sender._id,
-                            image: sender.avatar,
-                            name: sender.name
-                        },
-                        receiverRead: false
-                    },
-                    message: {
-                        created: createdAt,
-                        text: text
+        } else if (currentConvo.convo !== undefined) {
+            socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
+                const index = data.current.findIndex((d, index) => {
+                    if(d.conversation.haulerId._id === senderid) {
+                        return Promise.all(index)
                     }
+                })
+                Promise.all(index)
+                if(index >= 0) {
+                    const element = data.current.splice(index, 1)[0]
+                    Promise.all(element)
+                    element.message.text = text
+                    element.message.created = createdAt
+                    if(currentConvo.convo === senderid) {
+                        element.conversation.receiverUserRead = true
+                    } 
+                    if(currentConvo.convo !== senderid) {
+                        element.conversation.receiverUserRead = false
+                    }
+                    data.current = [element, ...data.current]
+                    setConvoData(data.current)
                 }
-                data.current = [element, ...data.current]
-                setConvoData(data.current)
-            }
-        })
-    }, [socket])
+                else if(index === -1) {
+                    const element = {
+                        conversation: {
+                            _id: createdAt,
+                            haulerId: {
+                                _id: sender._id,
+                                image: sender.avatar,
+                                name: sender.name
+                            },
+                            receiverUserRead: false
+                        },
+                        message: {
+                            created: createdAt,
+                            text: text
+                        }
+                    }
+                    data.current = [element, ...data.current]
+                    setConvoData(data.current)
+                }
+            })
+        }
+    }, [socket, currentConvo])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -127,7 +171,7 @@ const Chatmenuscreen = ({navigation}) => {
                                     onPress = {async() => {
                                         await messageRead(item.conversation._id)
                                         setAssigned(false)
-                                        dispatch(addCurrentConvo(item.conversation._id))
+                                        dispatch(addCurrentConvo(item.conversation.haulerId._id))
                                         navigation.navigate('Message', {haulerid: item.conversation.haulerId})
                                     }}
                                 >
@@ -147,7 +191,7 @@ const Chatmenuscreen = ({navigation}) => {
                                             <View style = {styles.userInfoText}>
                                                 <Text style = {styles.messageText}>{item.message.text}</Text>
                                                 {
-                                                    item.conversation.receiverRead === false &&
+                                                    item.conversation.receiverUserRead === false &&
                                                         <Icon
                                                             type = 'material-community'
                                                             name = 'circle-medium'

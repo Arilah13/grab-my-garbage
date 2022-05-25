@@ -189,7 +189,6 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
             duration: 3000,
             useNativeDriver: true
         }).start()
-        console.log(item)
     }, [])
 
     return (

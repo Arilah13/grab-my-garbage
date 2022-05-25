@@ -52,7 +52,7 @@ export const sendMessage = ({conversationId, sender, text, createdAt}) => async(
             },
         }
 
-        await axios.post('https://grab-my-garbage-server.herokuapp.com/message/', 
+        await axios.post('https://grab-my-garbage-server.herokuapp.com/message/hauler', 
         { conversationId: conversationId, text, createdAt, sender_id: sender._id, sender_name: sender.name, sender_avatar: sender.image },
         config)
 
@@ -137,7 +137,7 @@ export const receiverRead = (id) => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/conversation/${id}`, config)
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/conversation/hauler/${id}`, config)
 
         dispatch({
             type: actionTypes.UPDATE_READ_MESSAGE_SUCCESS,

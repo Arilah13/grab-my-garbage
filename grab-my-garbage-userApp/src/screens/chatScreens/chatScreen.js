@@ -8,8 +8,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
-import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
-import { GET_CONVERSATION_RESET, GET_MESSAGE_RESET } from '../../redux/constants/conversationConstants'
+import { getConversation, sendMessage, getMessage, receiverRead } from '../../redux/actions/conversationActions'
+import { GET_CONVERSATION_RESET, GET_MESSAGE_RESET, RESET_CURRENT_CONVO } from '../../redux/constants/conversationConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -20,6 +20,7 @@ const Chatscreen = ({route, navigation}) => {
     const { haulerid } = route.params
 
     const [messages, setMessages] = useState([])
+    const [first, setFirst] = useState(false)
 
     const userDetail = useSelector((state) => state.userDetail)
     const { user } = userDetail
@@ -40,6 +41,7 @@ const Chatscreen = ({route, navigation}) => {
             sender: message[0].user,
             conversationId: conversation[0]._id
         }))
+        
         socket.emit('sendMessage', ({
             senderid: user._id,
             sender: message[0].user,
@@ -47,6 +49,7 @@ const Chatscreen = ({route, navigation}) => {
             text: message[0].text,
             createdAt: message[0].createdAt,
             senderRole: 'user',
+            conversationId: conversation[0]._id
         }))
     }
 
@@ -57,17 +60,27 @@ const Chatscreen = ({route, navigation}) => {
     useEffect(() => {
         if(loading === false) {
             dispatch(getMessage({ conversationId: conversation[0]._id }))
+            setFirst(true)
         }
     }, [conversation])
 
     useEffect(() => {
-        socket.on('getMessage', ({senderid, text, sender, createdAt}) => {
-            const message = [{text, user: sender, createdAt, _id: Date.now()}]
+        if(loading === false && first === false) {
+            socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
+                const message = [{text, user: sender, createdAt, _id: Date.now()}]
+    
+                if(senderid === haulerid._id) {
+                    onSend(message)
+                }
 
-            if(senderid === haulerid._id)
-                onSend(message)
-        })
-    }, [socket])
+                if(conversationId === conversation[0]._id) {
+                    setTimeout(() => {
+                        dispatch(receiverRead(conversationId))
+                    }, 3000) 
+                }
+            })
+        }
+    }, [socket, conversation])
 
     useEffect(async() => {
         if(messageLoading === false) {
@@ -104,6 +117,9 @@ const Chatscreen = ({route, navigation}) => {
                     })
                     dispatch({
                         type: GET_MESSAGE_RESET
+                    })
+                    dispatch({
+                        type: RESET_CURRENT_CONVO
                     })
                 }}>
                     <Icon 

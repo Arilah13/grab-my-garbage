@@ -120,7 +120,6 @@ const Homescreen = ({navigation}) => {
             await socket.emit('userJoined', { userid: user._id })
 
             socket.on('userPickup', async({pickup, hauler, time}) => {
-                console.log(pickup)
                 dispatch(addOngoingPickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: pickup.haulerid, pickupid: pickup.pickupid, time: time}))
                 setActiveSpecialStatus(true)
                 setSpecialId(pickup.pickupid)
@@ -138,10 +137,6 @@ const Homescreen = ({navigation}) => {
             socket.on('schedulePickupDone', async({pickupid}) => {
                 dispatch(removeOngoingSchedulePickup(pickupid))
                 setActiveScheduleStatus(false)
-            })
-
-            socket.on('getMessage', () => {
-                dispatch(getConversations())
             })
 
             socket.on('refreshDone', () => {

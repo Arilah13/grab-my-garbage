@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
-import { getConversation, sendMessage, getMessage } from '../../redux/actions/conversationActions'
+import { getConversation, sendMessage, getMessage, receiverRead } from '../../redux/actions/conversationActions'
 import { GET_CONVERSATION_RESET, GET_MESSAGE_RESET } from '../../redux/constants/conversationConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -20,6 +20,7 @@ const Chatscreen = ({route, navigation}) => {
     const { userid } = route.params
 
     const [messages, setMessages] = useState([])
+    const [first, setFirst] = useState(false)
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
@@ -47,6 +48,7 @@ const Chatscreen = ({route, navigation}) => {
             text: message[0].text,
             createdAt: message[0].createdAt,
             senderRole: 'hauler',
+            conversationId: conversation[0]._id
         }))
     }
 
@@ -57,17 +59,27 @@ const Chatscreen = ({route, navigation}) => {
     useEffect(() => {
         if(loading === false) {
             dispatch(getMessage({ conversationId: conversation[0]._id }))
+            setFirst(true)
         }
     }, [conversation])
 
     useEffect(() => {
-        socket.on('getMessage', ({senderid, text, sender, createdAt}) => {
-            const message = [{text, user: sender, createdAt, _id: Date.now()}]
-
-            if(senderid === userid._id)
-                onSend(message)
-        })
-    }, [socket])
+        if(loading === false && first === false) {
+            socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
+                const message = [{text, user: sender, createdAt, _id: Date.now()}]
+                
+                if(senderid === userid._id) {
+                    onSend(message)
+                }
+                
+                if(conversationId === conversation[0]._id) {
+                    setTimeout(() => {
+                        dispatch(receiverRead(conversationId))
+                    }, 3000) 
+                }
+            })
+        }
+    }, [socket, conversation])
 
     useEffect(async() => {
         if(messageLoading === false) {

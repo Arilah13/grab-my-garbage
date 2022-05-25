@@ -7,7 +7,7 @@ import { Icon } from 'react-native-elements'
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
-import { getConversation, sendMessage, getMessage, getConversations } from '../../redux/actions/conversationActions'
+import { getConversation, sendMessage, getMessage, receiverRead } from '../../redux/actions/conversationActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -17,7 +17,7 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
     const dispatch = useDispatch()
 
     const [messages, setMessages] = useState([])
-    const [done, setDone] = useState(false)
+    const [first, setFirst] = useState(false)
 
     const userDetail = useSelector((state) => state.userDetail)
     const { user } = userDetail
@@ -32,44 +32,51 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
     const { socket } = socketHolder
 
     const sendMsg = (message) => {
-        dispatch(getConversations())
         dispatch(sendMessage({
             text: message[0].text,
             createdAt: message[0].createdAt,
             sender: message[0].user,
-            conversationId: conversation._id
+            conversationId: conversation[0]._id
         }))
         socket.emit('sendMessage', ({
             senderid: user._id,
             sender: message[0].user,
-            receiverid: haulerid,
+            receiverid: haulerid._id,
             text: message[0].text,
             createdAt: message[0].createdAt,
             senderRole: 'user',
-            receiver: haulerid
+            receiver: haulerid,
+            conversationId: conversation[0]._id
         }))
     }
 
     useEffect(() => {
-        if(conversation === undefined || conversation[0].haulerId._id !== haulerid._id) {
-            dispatch(getConversation({receiverid: haulerid._id, senderid: user._id}))
-            setDone(true)
-        }
+        dispatch(getConversation({receiverid: haulerid._id, senderid: user._id}))
     }, [])
 
     useEffect(() => {
-        if(loading === false && done === true) {
+        if(loading === false) {
             dispatch(getMessage({ conversationId: conversation[0]._id }))
+            setFirst(true)
         }
-    }, [conversation, done])
+    }, [conversation])
 
     useEffect(() => {
-        socket.on('getMessage', ({senderid, text, sender, createdAt}) => {
-            const message = [{text, user: sender, createdAt, _id: Date.now()}]
-            if(senderid === haulerid)
-                onSend(message)
-        })
-    }, [socket])
+        if(loading === false && first === false) {
+            socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
+                const message = [{text, user: sender, createdAt, _id: Date.now()}]
+                if(senderid === haulerid._id) {
+                    onSend(message)
+                }       
+                
+                if(conversationId === conversation[0]._id) {
+                    setTimeout(() => {
+                        dispatch(receiverRead(conversationId))
+                    }, 3000) 
+                }
+            })
+        }    
+    }, [socket, conversation])
 
     useEffect(async() => {
         if(messageLoading === false) {

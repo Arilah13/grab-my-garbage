@@ -47,6 +47,14 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                 }))
                 first.current = false
             }
+            if(mapView.current) {
+                mapView.current.animateToRegion({
+                    latitude: origin.latitude,
+                    longitude: origin.longitude,
+                    latitudeDelta: 0.0005,
+                    longitudeDelta: 0.00025
+                }, 2000)
+            }
             // mapView.current.animateCamera({
             //     center: {
             //         latitude: origin.latitude,
@@ -55,6 +63,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
             //     heading: origin.heading,
             //     zoom: 18
             // })
+
             if(Platform.OS === 'android') {
                 if(marker.current) {
                     marker.current.animateMarkerToCoordinate({latitude: origin.latitude, longitude: origin.longitude}, 1)
@@ -191,13 +200,6 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                             }
                         }}
                     /> 
-                    {/* {
-                        polylinePath.length > 0 && <Polyline
-                            coordinates = {polylinePath}
-                            strokeColor = {colors.black}
-                            strokeWidth = {3}
-                        />
-                    } */}
                 </>
                 : null
             }

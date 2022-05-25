@@ -7,7 +7,7 @@ import { Icon } from 'react-native-elements'
 import { colors } from '../../global/styles'
 import { renderBubble, renderComposer, renderInputToolbar, renderMessage, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
-import { getConversation, sendMessage, getMessage, getConversations } from '../../redux/actions/conversationActions'
+import { getConversation, sendMessage, getMessage, receiverRead } from '../../redux/actions/conversationActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -17,6 +17,7 @@ const Chatcomponent = ({userid, pickupid, setModalVisible}) => {
     const dispatch = useDispatch()
 
     const [messages, setMessages] = useState([])
+    const [first, setFirst] = useState(false)
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
@@ -31,7 +32,6 @@ const Chatcomponent = ({userid, pickupid, setModalVisible}) => {
     const { socket } = socketHolder
 
     const sendMsg = (message) => {
-        dispatch(getConversations())
         dispatch(sendMessage({
             text: message[0].text,
             createdAt: message[0].createdAt,
@@ -45,30 +45,38 @@ const Chatcomponent = ({userid, pickupid, setModalVisible}) => {
             text: message[0].text,
             createdAt: message[0].createdAt,
             senderRole: 'hauler',
-            receiver: userid
+            receiver: userid,
+            conversationId: conversation[0]._id
         }))
     }
 
     useEffect(() => {
-        if(conversation === undefined || conversation[0].userId._id !== userid._id) {
-            dispatch(getConversation({receiverid: userid._id, senderid: userInfo._id}))
-        }
+        dispatch(getConversation({receiverid: userid._id, senderid: userInfo._id}))
     }, [])
 
     useEffect(() => {
         if(loading === false) {
             dispatch(getMessage({ conversationId: conversation[0]._id }))
+            setFirst(true)
         }
     }, [conversation])
 
     useEffect(() => {
-        socket.on('getMessage', ({senderid, text, sender, createdAt, Pickupid}) => {
+        socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
             const message = [{text, user: sender, createdAt, _id: Date.now()}]
 
-            if(senderid === userid._id)
+            if(senderid === userid._id) {
                 onSend(message)
+            }
+
+            if(conversationId === conversation[0]._id) {
+                setTimeout(() => {
+                    dispatch(receiverRead(conversationId))
+                }, 3000) 
+            }
+                
         })
-    }, [socket])
+    }, [socket, conversation])
 
     useEffect(async() => {
         if(messageLoading === false) {

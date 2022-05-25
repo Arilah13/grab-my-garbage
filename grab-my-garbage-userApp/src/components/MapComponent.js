@@ -34,7 +34,7 @@ const Mapcomponent = ({latlng, mapView, latlngDelta, timeoutValue}) => {
                 }}
             >
                 <Marker 
-                    coordinate = {latlng} 
+                    coordinate = {latlng && latlng} 
                     identifier = {'mk1'}
                 >
                     <Image

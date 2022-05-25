@@ -68,7 +68,7 @@ export const updateReadMessageReducer = (state = {}, action) => {
 export const currentConvoReducer = (state = {}, action) => {
     switch(action.type) {
         case actionTypes.ADD_CURRENT_CONVO:
-            return { convo: action.payload }
+            return { convo: action.payload.id }
         case actionTypes.ADD_CURRENT_CONVO_FAIL:
             return { error: action.payload }
         case actionTypes.RESET_CURRENT_CONVO:

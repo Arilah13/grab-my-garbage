@@ -27,6 +27,8 @@ const Chatmenuscreen = ({navigation}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
+    const currentConvo = useSelector((state) => state.currentConvo)
+
     const messageRead = async(id) => {
         const index = data.current.findIndex((d, index) => {
             if(d.conversation._id === id) {
@@ -36,8 +38,8 @@ const Chatmenuscreen = ({navigation}) => {
         Promise.all(index)
         const element = data.current.splice(index, 1)[0]
         Promise.all(element)
-        if(element.conversation.receiverRead === false) {
-            element.conversation.receiverRead = true
+        if(element.conversation.receiverHaulerRead === false) {
+            element.conversation.receiverHaulerRead = true
             dispatch(receiverRead(id))
         }
         data.current.splice(index, 0, element)
@@ -54,7 +56,7 @@ const Chatmenuscreen = ({navigation}) => {
     }, [conversation])
 
     useEffect(() => {
-        if(socket) {
+        if(currentConvo.convo === undefined) {
             socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
                 const index = data.current.findIndex((d, index) => {
                     if(d.conversation.userId._id === senderid) {
@@ -67,7 +69,7 @@ const Chatmenuscreen = ({navigation}) => {
                     Promise.all(element)
                     element.message.text = text
                     element.message.created = createdAt
-                    element.conversation.receiverRead = false
+                    element.conversation.receiverHaulerRead = false
                     data.current = [element, ...data.current]
                     setConvoData(data.current)
                 }
@@ -80,7 +82,7 @@ const Chatmenuscreen = ({navigation}) => {
                                 image: sender.avatar,
                                 name: sender.name
                             },
-                            receiverRead: false
+                            receiverHaulerRead: false
                         },
                         message: {
                             created: createdAt,
@@ -90,7 +92,49 @@ const Chatmenuscreen = ({navigation}) => {
                     data.current = [element, ...data.current]
                     setConvoData(data.current)
                 }
-            })
+            }) 
+        } else if (currentConvo.convo !== undefined) {
+            socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
+                const index = data.current.findIndex((d, index) => {
+                    if(d.conversation.userId._id === senderid) {
+                        return Promise.all(index)
+                    }
+                })
+                Promise.all(index)
+                if(index >= 0) {
+                    const element = data.current.splice(index, 1)[0]
+                    Promise.all(element)
+                    element.message.text = text
+                    element.message.created = createdAt
+                    if(currentConvo.convo === senderid) {
+                        element.conversation.receiverHaulerRead = true
+                    }
+                    if(currentConvo.convo !== senderid) {
+                        element.conversation.receiverHaulerRead = false
+                    }
+                    data.current = [element, ...data.current]
+                    setConvoData(data.current)
+                }
+                else if(index === -1) {
+                    const element = {
+                        conversation: {
+                            _id: createdAt,
+                            userId: {
+                                _id: sender._id,
+                                image: sender.avatar,
+                                name: sender.name
+                            },
+                            receiverHaulerRead: false
+                        },
+                        message: {
+                            created: createdAt,
+                            text: text
+                        }
+                    }
+                    data.current = [element, ...data.current]
+                    setConvoData(data.current)
+                }
+            }) 
         }
     }, [socket])
 
@@ -145,7 +189,7 @@ const Chatmenuscreen = ({navigation}) => {
                                             <View style = {styles.userInfoText}>
                                                 <Text style = {styles.messageText}>{item.message.text}</Text>
                                                 {
-                                                    item.conversation.receiverRead === false &&
+                                                    item.conversation.receiverHaulerRead === false &&
                                                         <Icon
                                                             type = 'material-community'
                                                             name = 'circle-medium'

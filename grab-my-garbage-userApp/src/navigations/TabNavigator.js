@@ -20,32 +20,55 @@ const TabNavigator = () => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading, conversation } = getAllConversation
 
+    const currentConvo = useSelector((state) => state.currentConvo)
+
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
+    const updateReadMessage = useSelector((state) => state.updateReadMessage)
+    const { success } = updateReadMessage
+
     useEffect(async() => {
         if(loading === false) {
-            const read = await conversation.map((convo) => {
-                return convo.conversation.receiverRead
+            const read = await conversation.filter((convo) => {
+                return convo.conversation.receiverUserRead === false
             })
-            if(read.some(item => item !== true)) {
-                //status.current = true
+
+            if(read.length > 0) {
                 setStatus(true)
             } else {
-                //status.current = false
                 setStatus(false)
             }
         }
-    }, [conversation, dispatch])
+    }, [conversation])
 
     useEffect(() => {
         if(socket) {
-            socket.on('getMessage', async() => {
-                //status.current = true
-                setStatus(true)
-            })
+            if(currentConvo.convo === undefined) {
+                socket.on('getMessage', async() => {
+                    //status.current = true
+                    setStatus(true)
+                })
+            } else if (currentConvo.convo !== undefined) {
+                socket.on('getMessage', async({senderid}) => {
+                    if(currentConvo.convo === senderid) {
+                        setStatus(false)
+                    }
+                    if(currentConvo.convo !== senderid) {
+                        setStatus(true)
+                    }
+                    //status.current = true
+                    
+                })
+            }
         }
-    }, [socket])
+    }, [socket, currentConvo])
+
+    // useEffect(() => {
+    //     if(success && success === true) {
+    //         setStatus(false)
+    //     }
+    // }, [updateReadMessage])
 
     return (
         <Tab.Navigator

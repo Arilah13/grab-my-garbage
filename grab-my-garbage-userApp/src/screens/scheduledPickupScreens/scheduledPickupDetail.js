@@ -33,6 +33,9 @@ const Scheduledpickupdetail = ({navigation, route}) => {
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
+    const socketHolder = useSelector((state) => state.socketHolder)
+    const { socket } = socketHolder
+
     const config = {
         headers: {
             'Content-type': 'application/json',
@@ -86,6 +89,22 @@ const Scheduledpickupdetail = ({navigation, route}) => {
             setDisable(false)
         }
     }, [])
+
+    useEffect(() => {
+        socket.on('schedulePickupDone', async({pickupid}) => {
+            if(pickupid === item._id) {
+                setDisable(false)
+                item.active = 0
+            }
+        })
+
+        socket.on('userSchedulePickup', async({pickupid}) => {
+            if(pickupid === item._id) {
+                setDisable(true)
+                item.active = 1
+            }
+        })
+    }, [socket])
 
     return (
         <SafeAreaView>
