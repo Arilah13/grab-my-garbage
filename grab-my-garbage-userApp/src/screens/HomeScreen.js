@@ -69,8 +69,6 @@ const Homescreen = ({navigation}) => {
     useEffect(() => {
         dispatch(getPaymentIntent())
         dispatch(getConversations())
-        dispatch(getAcceptedPickups())
-        dispatch(getScheduledPickups())
 
         Notifications.setNotificationHandler({
             handleNotification: async() => ({
@@ -121,11 +119,13 @@ const Homescreen = ({navigation}) => {
 
             socket.on('userPickup', async({pickup, hauler, time}) => {
                 dispatch(addOngoingPickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: pickup.haulerid, pickupid: pickup.pickupid, time: time}))
+                dispatch(getAcceptedPickups())
                 setActiveSpecialStatus(true)
                 setSpecialId(pickup.pickupid)
             })
             socket.on('userSchedulePickup', async({hauler, time, ongoingPickup, pickupid}) => {
                 dispatch(addOngoingSchedulePickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: time.haulerid, ongoingPickupid: ongoingPickup, pickupid: pickupid, time: time.time}))
+                dispatch(getScheduledPickups())
                 setActiveScheduleStatus(true)
                 setScheduleId(pickupid)
             })
