@@ -19,12 +19,23 @@ const userController = {
                     await user.save()
                 }
 
+                const scheduleCount = await Schedule.countDocuments({customerId: user._id})
+                const specialCount = await Special.countDocuments({customerId: user._id})
+
+                const schedule = await Schedule.find({customerId: user._id})
+                const special = await Special.find({customerId: user._id})
+
+                const count = scheduleCount + specialCount
+
                 res.json({
                     _id: user._id,
                     name: user.name,
                     email: user.email,
                     role: user.role,
                     image: user.image,
+                    count: count,
+                    schedule: schedule,
+                    special: special,
                     pushId: user.pushId,
                     token: accesstoken
                 })
@@ -41,12 +52,23 @@ const userController = {
 
                 const accesstoken = createAccessToken(newUser._id)
 
+                const scheduleCount = await Schedule.countDocuments({customerId: newUser._id})
+                const specialCount = await Special.countDocuments({customerId: newUser._id})
+
+                const schedule = await Schedule.find({customerId: newUser._id})
+                const special = await Special.find({customerId: newUser._id})
+
+                const count = scheduleCount + specialCount
+
                 res.status(200).json({
                     _id: newUser._id,
                     name: newUser.name,
                     email: newUser.email,
                     role: newUser.role,
                     image: newUser.image,
+                        count: count,
+                    schedule: schedule,
+                    special: special,
                     pushId: newUser.pushId,
                     token: accesstoken
                 })
@@ -164,12 +186,23 @@ const userController = {
                 await user.save()
             }
 
+            const scheduleCount = await Schedule.countDocuments({customerId: user._id})
+            const specialCount = await Special.countDocuments({customerId: user._id})
+
+            const schedule = await Schedule.find({customerId: user._id})
+            const special = await Special.find({customerId: user._id})
+
+            const count = scheduleCount + specialCount
+
             res.status(200).json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
                 pushId: user.pushId,
+                count: count,
+                schedule: schedule,
+                special: special,
                 token: accesstoken
             })
         } catch(err) {
