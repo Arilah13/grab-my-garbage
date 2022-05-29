@@ -191,13 +191,13 @@ io.on('connection', socket => {
         pickupSocket.haulerDisconnect({id: socket.id})
     })
 
-    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid, senderRole}) => {
+    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid, senderRole, conversationId}) => {
         
         if(senderRole === 'hauler') {
             const user = await chatSocket.returnUserSocketid({userid: receiverid})
             
             if(user !== false) {
-                socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
+                socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid, conversationId: conversationId})
             } else {
                 notificationHelper.notifyMessages(receiverid)
             }
@@ -205,12 +205,19 @@ io.on('connection', socket => {
             const hauler = await chatSocket.returnHaulerSocketid({haulerid: receiverid})
 
             if(hauler !== false) {
-                socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid})
+                socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid, conversationId: conversationId})
             } else {
                 notificationHelper.notifyMessages(receiverid)
             }
         }
         
+    })
+
+    socket.on('refresh', async({userid}) => {
+        const user = await chatSocket.returnUserSocketid({userid: userid})
+        if(user !== false) {
+            socket.to(user).emit('refreshDone')
+        }
     })
 
     socket.on('disconnect', () => {

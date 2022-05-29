@@ -3,7 +3,6 @@ const cloudinary = require('cloudinary')
 const haulers = require('../../models/haulerModel')
 const polygonData = require('../../helpers/polygonData')
 const turf = require('@turf/turf')
-const schedule = require('node-schedule')
 
 const pickupController = {
     addSpecialPickup: async(req, res) => {

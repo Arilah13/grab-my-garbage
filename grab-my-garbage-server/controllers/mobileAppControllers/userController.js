@@ -1,4 +1,6 @@
 const Users = require('../../models/userModel')
+const Schedule = require('../../models/scheduledPickupModel')
+const Special = require('../../models/specialPickupModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary')
@@ -255,6 +257,14 @@ const userController = {
             const user = await Users.findOne({email})
             if(!user) return res.status(400).json({msg: 'User does not exists.'})
 
+            const scheduleCount = await Schedule.countDocuments({customerId: user._id})
+            const specialCount = await Special.countDocuments({customerId: user._id})
+
+            const schedule = await Schedule.find({customerId: user._id})
+            const special = await Special.find({customerId: user._id})
+
+            const count = scheduleCount + specialCount
+
             const accesstoken = createAccessToken(user._id)
 
             res.status(200).json({
@@ -263,6 +273,9 @@ const userController = {
                 email: user.email,
                 role: user.role,
                 image: user.image,
+                count: count,
+                schedule: schedule,
+                special: special,
                 token: accesstoken
             })
         } catch(err) {

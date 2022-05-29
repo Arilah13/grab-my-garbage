@@ -1,15 +1,14 @@
 const router = require('express').Router()
 const haulerController = require('../../controllers/adminAppControllers/haulerController')
-const auth = require('../../middleware/auth')
 const authAdmin = require('../../middleware/authAdmin')
 
 router.route('/')
-        .post(haulerController.addHaulers)
-        .get(haulerController.returnHaulerList)
+        .post(authAdmin, haulerController.addHaulers)
+        .get(authAdmin, haulerController.returnHaulerList)
 
 router.route('/:id')
-        .put(haulerController.updateHaulerDetail)
-        .get(haulerController.returnHaulerDetail)
-        .delete(haulerController.deleteHauler)
+        .put(authAdmin, haulerController.updateHaulerDetail)
+        .get(authAdmin, haulerController.returnHaulerDetail)
+        .delete(authAdmin, haulerController.deleteHauler)
 
 module.exports = router

@@ -234,7 +234,7 @@ export const updateAdminDetails = (values) => async(dispatch, getState) => {
             }
         }
 
-        const { data } = await axios.put(`http://192.168.13.1:5000/admin/users`,
+        const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/admin/users`,
         {email, password, image}, config)
 
         dispatch({

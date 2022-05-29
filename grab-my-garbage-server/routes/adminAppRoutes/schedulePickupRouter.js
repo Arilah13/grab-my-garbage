@@ -1,19 +1,18 @@
 const router = require('express').Router()
 const schedulePickupController = require('../../controllers/adminAppControllers/schedulePickupController')
-const auth = require('../../middleware/auth')
 const authAdmin = require('../../middleware/authAdmin')
 
 router.route('/')
-        .get(schedulePickupController.returnschedulePickupList)
-        .post(schedulePickupController.addSchedulePickup)
+        .get(authAdmin, schedulePickupController.returnschedulePickupList)
+        .post(authAdmin, schedulePickupController.addSchedulePickup)
 
 router.route('/:id')
-        .get(schedulePickupController.returnSchedulePickupDetail)
-        .put(schedulePickupController.updateSchedulePickupDetail)
-        .delete(schedulePickupController.deleteSchedulePickup)
+        .get(authAdmin, schedulePickupController.returnSchedulePickupDetail)
+        .put(authAdmin, schedulePickupController.updateSchedulePickupDetail)
+        .delete(authAdmin, schedulePickupController.deleteSchedulePickup)
 
-router.get('/user/:id', schedulePickupController.returnSchedulePickupUser)
+router.get('/user/:id', authAdmin, schedulePickupController.returnSchedulePickupUser)
 
-router.get('/hauler/:id', schedulePickupController.returnSchedulePickupHauler)
+router.get('/hauler/:id',  authAdmin, schedulePickupController.returnSchedulePickupHauler)
 
 module.exports = router

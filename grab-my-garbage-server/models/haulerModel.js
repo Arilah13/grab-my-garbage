@@ -36,6 +36,10 @@ const haulerSchema = new mongoose.Schema({
     pushId: {
         type: String,
         required: false
+    },
+    scheduleNotification: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

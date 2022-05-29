@@ -7,7 +7,7 @@ const conversationController = {
             const { userid: userId, haulerid: haulerId } = req.body
 
             const newConversation = new Conversations({
-                haulerId: haulerId, userId: userId, receiverRead: false
+                haulerId: haulerId, userId: userId, receiverUserRead: false, receiverHaulerRead: false
             })
 
             const savedConversation = await newConversation.save()
@@ -58,11 +58,24 @@ const conversationController = {
             return res.status(500).json({msg: err.message})
         }
     },
-    markRead: async(req, res) => {
+    markReadUser: async(req, res) => {
         try{
             const conversation = await Conversations.findById(req.params.id)
 
-            conversation.receiverRead = true
+            conversation.receiverUserRead = true
+
+            await conversation.save()
+
+            res.status(200).json({msg: 'updated'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    markReadHauler: async(req, res) => {
+        try{
+            const conversation = await Conversations.findById(req.params.id)
+
+            conversation.receiverHaulerRead = true
 
             await conversation.save()
 

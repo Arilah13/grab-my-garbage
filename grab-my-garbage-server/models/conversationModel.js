@@ -11,7 +11,10 @@ const conversationSchema = new mongoose.Schema({
         required: true,
         ref: 'Users'
     },
-    receiverRead: {
+    receiverUserRead: {
+        type: Boolean
+    },
+    receiverHaulerRead: {
         type: Boolean
     }
 }, {

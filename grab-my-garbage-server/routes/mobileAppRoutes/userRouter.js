@@ -18,6 +18,6 @@ router.post('/refresh_token', auth, userController.refreshtoken)
 
 router.route('/:id').get(auth, userController.getUserById).put(auth, userController.updateUserProfile)
 
-router.route('/password/:id').put(userController.updateUserPassword)
+router.route('/password/:id').put(auth, userController.updateUserPassword)
 
 module.exports = router

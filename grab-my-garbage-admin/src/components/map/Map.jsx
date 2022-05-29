@@ -45,7 +45,7 @@ const Map = ({polygon, lat, lng}) => {
                 <Marker
                     position = {{lat: parseFloat(lat), lng: parseFloat(lng)}}
                     icon = {{
-                        url: '/mapIcon.svg',
+                        url: '/garbage.png',
                         scaledSize: new window.google.maps.Size(25, 25)
                     }}
                 />

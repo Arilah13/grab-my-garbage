@@ -1,5 +1,9 @@
 const Pickups = require('../../models/specialPickupModel')
 const Haulers = require('../../models/haulerModel')
+const schedule = require('node-schedule')
+const { Expo } = require('expo-server-sdk')
+
+let expo = new Expo({})
 
 const requestController = {
     getPendingPickups: async(req, res) => {
@@ -89,13 +93,31 @@ const requestController = {
     },
     updateAcceptHauler: async(req, res) => {
         try{
-            const haulerId = req.body
+            const haulerId = req.body.haulerId
 
             const request = await Pickups.findById(req.params.id)
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
-
-            request.pickerId = haulerId.id
+            
+            const hauler = await Haulers.findById(haulerId)
+            
+            request.pickerId = haulerId
             request.accepted = 1
+
+            const hour = (request.datetime.split('T')[1]).split(':')[0]
+            const minute = (request.datetime.split('T')[1]).split(':')[1]
+            const year = (request.datetime.split('T')[0]).split('-')[0]
+            const month = (request.datetime.split('T')[0]).split('-')[1]
+            const day = (request.datetime.split('T')[0]).split('-')[2]
+            console.log(hour)
+            const month1 = parseInt(month) - 1
+            const day1 = parseInt(day) + 1
+            const hour1 = parseInt(hour) - 19
+            const minute1 = parseInt(minute) + 47
+            //const date = new Date(year, parseInt(month) + 1, day, parent(hour) - 1, minute, 0)
+            const date = new Date(year,  month1, day1, hour1, minute1, 0)
+            console.log(date)
+            specialPickupNotify(date, hauler.pushId)
+
             await request.save()
 
             res.status(200).json({
@@ -168,6 +190,32 @@ const requestController = {
             return res.status(500).json({msg: err.message})
         }
     }
+}
+
+const specialPickupNotify = (date, pushId) => {
+    schedule.scheduleJob(date, async() => {
+        let messages = []
+        messages.push({
+            to: pushId,
+            sound: 'default',
+            title: 'Schedule Pickup',
+            body: 'Check your schedule for Special Pickup',
+            // data: { 
+            //     screen: 'pickupDetail',
+            //     item: pickup,
+            // }
+        })
+
+        let chunks = expo.chunkPushNotifications(messages)
+
+        for (let chunk of chunks) {
+            try{
+                await expo.sendPushNotificationsAsync(chunk)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    })
 }
 
 const getLatngDiffInMeters = (lat1, lng1, lat2, lng2) => {
