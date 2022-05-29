@@ -136,7 +136,7 @@ const Chatmenuscreen = ({navigation}) => {
                 }
             }) 
         }
-    }, [socket])
+    }, [socket, currentConvo])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>

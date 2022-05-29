@@ -34,7 +34,7 @@ const Accountscreen = ({navigation}) => {
             <View style = {styles.container1}>
                 <View>
                     <Pressable onPress = {() => navigation.navigate('Editprofile')} style = {styles.view1} >
-                            <Text style = {styles.text1}>{user.name}</Text>
+                            <Text style = {styles.text1}>{user.name && user.name}</Text>
                             <Image
                                 source = {user.image ? {uri: user.image} : require('../../../assets/user.png')}
                                 resizeMode = 'contain'

@@ -14,6 +14,7 @@ import { getScheduledPickups } from '../../redux/actions/schedulePickupActions'
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/pickupComponent/mapComponent'
 import Chatcomponent from '../../components/pickupComponent/chatComponent'
+import CompletedPickupsComponent from '../../components/completedPickupsComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -25,6 +26,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
 
     const [modalVisible, setModalVisible] = useState(false)
     const [modalVisible1, setModalVisible1] = useState(false)
+    const [modalVisible2, setModalVisible2] = useState(false)
     const [active, setActive] = useState(true)
     const [loading, setLoading] = useState(false)
     const [loadingCancel, setLoadingCancel] = useState(false)
@@ -35,6 +37,9 @@ const Scheduledpickupdetail = ({navigation, route}) => {
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
+
+    const retrieveScheduledPickup = useSelector(state => state.retrieveScheduledPickup)
+    const { pickupInfo } = retrieveScheduledPickup
 
     const config = {
         headers: {
@@ -53,7 +58,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                 dispatch(getScheduledPickups())
             }
         } else if(active === false) {
-            setLoading(false)
+            setLoading(true)
             const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/schedulepickup/active/${id}`, config)
             if(res.status === 200) {
                 setActive(true)
@@ -75,6 +80,17 @@ const Scheduledpickupdetail = ({navigation, route}) => {
             }, 3000)
         }
     }
+
+    // const findandActivePickups = () => {
+    //     const index = pickupInfo.findIndex((d, index) => {
+    //         if(d._id === item._id) {
+    //             return Promise.all(index)
+    //         }
+    //     })
+    //     Promise.all(index)
+    //     const element = pickupInfo.splice(index, 1)[0]
+    //     Promise.all(element)
+    // }
 
     useEffect(() => {
         if(item.inactive === 0) {
@@ -105,6 +121,10 @@ const Scheduledpickupdetail = ({navigation, route}) => {
             }
         })
     }, [socket])
+
+    // useEffect(() => {
+    //     console.log(item)
+    // }, [])
 
     return (
         <SafeAreaView>
@@ -178,6 +198,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                             <Text style = {styles.text3}>Hauler Name:</Text>
                             <Text style = {styles.text4}>{item.pickerId.name}</Text>
                         </View> 
+
                         <TouchableOpacity 
                             style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
                             onPress = {() => setModalVisible1(true)}
@@ -189,6 +210,19 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                                 size = {27}
                             />    
                             <Text style = {styles.text7}>Chat With Hauler</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity 
+                            style = {{...styles.container5, paddingTop: 5, marginBottom: 5, justifyContent: 'center'}}
+                            onPress = {() => setModalVisible2(true)}
+                        >
+                            <Icon
+                                type = 'material'
+                                name = 'airport-shuttle'
+                                color = {colors.darkBlue}
+                                size = {27}
+                            />    
+                            <Text style = {styles.text7}>Completed Pickups</Text>
                         </TouchableOpacity>
 
                         <View style = {{alignSelf: 'center', flexDirection: 'row'}}>
@@ -254,6 +288,26 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                     >
                         <View style = {styles.view2}>
                             <Chatcomponent haulerid = {item.pickerId} pickupid = {item._id} setModalVisible = {setModalVisible1} />
+                        </View>                
+                    </Modal>
+
+                    <Modal 
+                        isVisible = {modalVisible2}
+                        swipeDirection = {'down'}
+                        style = {{ justifyContent: 'center', margin: 10 }}
+                        onBackButtonPress = {() => setModalVisible2(false)}
+                        onBackdropPress = {() => setModalVisible2(false)}
+                        animationIn = 'zoomIn'
+                        animationOut = 'zoomOut'
+                        animationInTiming = {500}
+                        animationOutTiming = {500}
+                        useNativeDriver = {true}
+                        useNativeDriverForBackdrop = {true}
+                        deviceHeight = {SCREEN_HEIGHT}
+                        deviceWidth = {SCREEN_WIDTH}
+                    >
+                        <View style = {{...styles.view2, height: '35%'}}>
+                            <CompletedPickupsComponent item = {item} setModalVisible2 = {setModalVisible2} />
                         </View>                
                     </Modal>
 

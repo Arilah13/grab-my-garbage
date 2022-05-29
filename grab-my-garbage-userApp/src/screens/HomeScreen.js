@@ -137,6 +137,7 @@ const Homescreen = ({navigation}) => {
             socket.on('schedulePickupDone', async({pickupid}) => {
                 dispatch(removeOngoingSchedulePickup(pickupid))
                 setActiveScheduleStatus(false)
+                dispatch(getScheduledPickups())
             })
 
             socket.on('refreshDone', () => {

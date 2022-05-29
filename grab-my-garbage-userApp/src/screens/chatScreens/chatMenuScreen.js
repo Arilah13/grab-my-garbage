@@ -59,10 +59,9 @@ const Chatmenuscreen = ({navigation}) => {
     }, [conversation])
 
     useEffect(() => {
-        console.log(currentConvo)
         if(currentConvo.convo === undefined) {
             socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
-                console.log(senderid)
+                
                 const index = data.current.findIndex((d, index) => {
                     if(d.conversation.haulerId._id === senderid) {
                         return Promise.all(index)

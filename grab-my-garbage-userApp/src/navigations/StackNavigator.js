@@ -26,7 +26,9 @@ const StackNavigator = () => {
     const dispatch = useDispatch()
 
     useEffect(async() => {
-        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/')
+        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/', {
+            reconnection: true
+        })
         //const socket = await socketIO.connect('http://192.168.13.1:5001')
         dispatch(addSocket(socket))
     }, [])

@@ -11,7 +11,7 @@ import * as Yup from 'yup'
 import { colors } from '../../global/styles'
 
 import { getUserDetails, updateUserProfile } from '../../redux/actions/userActions'
-import { USER_UPDATE_PROFILE_RESET } from '../../redux/constants/userConstants'
+import { USER_UPDATE_PROFILE_RESET, USER_DETAILS_SUCCESS } from '../../redux/constants/userConstants'
 
 import Headercomponent from '../../components/headerComponent'
 
@@ -30,6 +30,7 @@ const Editprofilescreen = ({navigation}) => {
     const [image1, setImage1] = useState(null)
     const [image2, setImage2] = useState(null)
     const [imageSet, setImageSet] = useState(false)
+    const [Values, setValues] = useState(null)
 
     const dispatch = useDispatch()
 
@@ -96,8 +97,20 @@ const Editprofilescreen = ({navigation}) => {
 
     useEffect(() => {
         if(success === true) {
-            dispatch(getUserDetails(user._id))
+            formikRef.current.setSubmitting(false)
+            // dispatch(getUserDetails(user._id))
             dispatch({ type: USER_UPDATE_PROFILE_RESET })
+            user.name = Values.name
+            user.email = Values.email
+            if(image1 !== null) {
+                user.image = image1
+            }
+            user.phone = Values.phone
+            dispatch({
+                type: USER_DETAILS_SUCCESS,
+                payload: user
+            })
+
             Alert.alert('Profile Update Successful', 'Profile Details have been updated successfully',
                 [
                     {
@@ -110,7 +123,7 @@ const Editprofilescreen = ({navigation}) => {
             )
         }
     }, [info, success])
-
+    
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
             <Headercomponent name = 'Account' />
@@ -143,7 +156,7 @@ const Editprofilescreen = ({navigation}) => {
                     onSubmit = {(values, actions) => {
                         if(actions.validateForm) {
                             setTimeout(() => {
-                                actions.setSubmitting(false)
+                                setValues(values)
                                 dispatch(updateUserProfile(values))
                             }, 400)
                         } else {
