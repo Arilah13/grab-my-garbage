@@ -20,14 +20,11 @@ export const getSpecialPickupInfo = ({pickupInfo, total, method}) => async (disp
         const id = userInfo._id
 
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/specialpickup/', {pickupInfo, total, method, id}, config)
+        //const { data } = await axios.post('http://192.168.13.1:5000/specialpickup/', {pickupInfo, total, method, id}, config)
 
         dispatch({
             type: actionTypes.SPECIAL_PICKUP_ADD_SUCCESS,
             payload: data
-        })
-
-        dispatch({
-            type: actionTypes.SPECIAL_PICKUP_RESET
         })
     } catch (err) {
         dispatch({

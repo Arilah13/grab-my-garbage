@@ -8,7 +8,8 @@ import { Icon, Button } from 'react-native-elements'
 import { colors } from '../../global/styles'
 import { dateHelper, timeHelper, date1Helper } from '../../helpers/pickupHelper'
 
-import { getPendingPickups } from '../../redux/actions/specialPickupActions'
+import { getPendingPickups, getCompletedPickups } from '../../redux/actions/specialPickupActions'
+import { PENDING_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialPickupConstants'
 
 import Headercomponent from '../../components/headerComponent'
 
@@ -24,11 +25,32 @@ const Pendingspecialpickupscreen = ({navigation}) => {
     const retrievePendingPickups = useSelector(state => state.retrievePendingPickups)
     const { loading, pickupInfo } = retrievePendingPickups
 
+    const socketHolder = useSelector((state) => state.socketHolder)
+    const { socket } = socketHolder
+
     useEffect(() => {
         if(userInfo !== undefined) {
             dispatch(getPendingPickups())
         }
     }, [userInfo])
+
+    // useEffect(() => {
+    //     if(pickupInfo !== undefined) {
+    //         socket.on('pickupCancel', async({id}) => {
+    //             // const id1 = await pickupInfo.find((pickup, index) => {
+    //             //     if(pickup._id === id)
+    //             //     return id
+    //             // })
+    //             // console.log(id1)
+    //             pickupInfo.splice(0)
+    //             dispatch({
+    //                 type: PENDING_PICKUP_RETRIEVE_SUCCESS,
+    //                 payload: pickupInfo
+    //             })
+    //             dispatch(getCompletedPickups())
+    //         })
+    //     }
+    // }, [socket, pickupInfo])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>

@@ -1,15 +1,22 @@
 import React, { useEffect, useRef } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 
 import { colors } from '../../global/styles'
 
+import { SPECIAL_PICKUP_RESET } from '../../redux/constants/specialPickupConstants'
+
 const Paymentpresuccessscreen = ({navigation, route}) => {
+    const dispatch = useDispatch()
 
     const { name } = route.params
 
     const lottieRef = useRef()
+
+    const specialPickup = useSelector(state => state.specialPickup)
+    const { loading } = specialPickup
 
     useEffect(() => {
         if(lottieRef.current) {
@@ -21,10 +28,19 @@ const Paymentpresuccessscreen = ({navigation, route}) => {
     }, [lottieRef.current])
 
     useEffect(() => {
-        setTimeout(() => {
-            navigation.navigate('Paymentsuccess', { name: name })
-        }, 3500)
-    }, [])
+        if(name === 'Special') {
+            if(loading === false) {
+                navigation.navigate('Paymentsuccess', { name: name })
+                dispatch({
+                    type: SPECIAL_PICKUP_RESET
+                })
+            }
+        } else {
+            setTimeout(() => {
+                navigation.navigate('Paymentsuccess', { name: name })
+            }, 3500)
+        }    
+    }, [loading])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1, flex: 1}}>

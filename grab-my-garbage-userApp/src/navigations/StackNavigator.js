@@ -29,7 +29,9 @@ const StackNavigator = () => {
         const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/', {
             reconnection: true
         })
-        //const socket = await socketIO.connect('http://192.168.13.1:5001')
+        // const socket = await socketIO.connect('http://192.168.13.1:5001', {
+        //     reconnection: true
+        // })
         dispatch(addSocket(socket))
     }, [])
 

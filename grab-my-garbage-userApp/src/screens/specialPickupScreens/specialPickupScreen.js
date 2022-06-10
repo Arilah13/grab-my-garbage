@@ -255,6 +255,7 @@ const Specialpickupscreen = ({navigation}) => {
                                             onConfirm = {(dateTime) => handleConfirmDateTime(dateTime)}
                                             onCancel = {() => setShowDateTime(false)}
                                             maximumDate = {date2}
+                                            minimumDate = {new Date()}
                                             minuteInterval = {15}
                                             is24Hour = {false}
                                         />

@@ -56,18 +56,18 @@ const Paymentmethodscreen = ({route, navigation}) => {
             const date2 = new Date(scheduledPickupInfo.to).getTime()
             const days = (date2 - date1) / (1000*60*60*24)
             price = scheduledPickupInfo.days.length * 50 * (days / 7)
-            return price
+            return Math.floor(price)
         }
     }
     const Tax = () => {
         tax = 0
         tax = price * 0.2
-        return tax
+        return Math.floor(tax)
     }
     const Total = () => {
         total = 0
         total = price + tax 
-        return total
+        return Math.floor(total)
     }
 
     const pay = () => {
@@ -152,7 +152,7 @@ const Paymentmethodscreen = ({route, navigation}) => {
                         />
                     </View>
                 </View>
-                <View style = {{...styles.view1, marginTop: 25}}>
+                {/* <View style = {{...styles.view1, marginTop: 25}}>
                     <Text style = {styles.text3}>Cash On Pickup</Text>
                     <Image
                         source = {require('../../../assets/payment/money.png')}
@@ -174,7 +174,7 @@ const Paymentmethodscreen = ({route, navigation}) => {
                             onPress = {() => Check3()}
                         />
                     </View>
-                </View>
+                </View> */}
 
                 <View style = {{top: SCREEN_HEIGHT/1.36, position: 'absolute', width: SCREEN_WIDTH, padding: 15}}>
                     <Button

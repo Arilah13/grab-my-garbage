@@ -9,6 +9,7 @@ import { colors } from '../../global/styles'
 import { dateHelper, date1Helper, timeHelper } from '../../helpers/specialPickuphelper'
 
 import { getPendingPickupsOffline } from '../../redux/actions/specialRequestActions'
+import { PENDING_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialRequestConstants'
 
 import Headercomponent from '../../components/headerComponent'
 
@@ -22,13 +23,29 @@ const PendingPickupscreen = ({navigation}) => {
     const pendingPickups = useSelector((state) => state.pendingPickups)
     const { loading, pickupInfo } = pendingPickups
 
+    const socketHolder = useSelector((state) => state.socketHolder)
+    const { socket } = socketHolder
+
     useEffect(() => {
-        // const unsubscribe = navigation.addListener('focus', () => {
-            
-        // })
-        // return unsubscribe
         dispatch(getPendingPickupsOffline())
     }, [])
+
+    // useEffect(() => {
+    //     if(pickupInfo !== undefined) {
+    //         socket.on('pickupCancel', async({id}) => {
+    //             // const id1 = await pickupInfo.find((pickup, index) => {
+    //             //     if(pickup._id === id)
+    //             //     return id
+    //             // })
+    //             // console.log(id1)
+    //             pickupInfo.splice(0)
+    //             dispatch({
+    //                 type: PENDING_PICKUP_RETRIEVE_SUCCESS,
+    //                 payload: pickupInfo
+    //             })
+    //         })
+    //     }
+    // }, [socket, pickupInfo])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
