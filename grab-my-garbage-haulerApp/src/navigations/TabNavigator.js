@@ -7,8 +7,9 @@ import { colors } from '../global/styles'
 
 import Accountscreen from '../screens/accountScreens/accountScreen'
 import Homescreen from '../screens/homeScreen'
-import Prerequestscreen from '../screens/preRequestScreen'
 import Chatmenuscreen from '../screens/chatScreens/chatMenuScreen'
+import Topnavigator from './TopNavigator'
+import Schedulepickuprequestscreen from '../screens/schedulePickupScreens/schedulePickupRequestScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -61,6 +62,7 @@ const TabNavigator = () => {
             })
         }
     }, [socket, currentConvo])
+
     return (
         <Tab.Navigator
             screenOptions={{
@@ -97,8 +99,23 @@ const TabNavigator = () => {
             />
 
             <Tab.Screen
-                name = 'Pickup'
-                component = {Prerequestscreen}
+                name = 'Schedule'
+                component = {Schedulepickuprequestscreen}
+                options = {{
+                    tabBarIcon: ({ focused }) => (
+                        <Icon
+                            type = 'material'
+                            name = 'departure-board'
+                            color = {focused ? colors.darkBlue : colors.darkGrey }
+                            size = {30}
+                        />
+                    ),
+                }}
+            />
+
+            <Tab.Screen
+                name = 'Special'
+                component = {Topnavigator}
                 options = {{
                     tabBarIcon: ({ focused }) => (
                         <Icon
@@ -107,7 +124,7 @@ const TabNavigator = () => {
                             color = {focused ? colors.darkBlue : colors.darkGrey }
                             size = {30}
                         />
-                    ),
+                    )
                 }}
             />
 

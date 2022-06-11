@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable } from '
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Icon } from 'react-native-elements'
-import { useNavigationState } from '@react-navigation/native'
 
 import { receiverRead, addCurrentConvo } from '../../redux/actions/conversationActions'
 
@@ -18,8 +17,6 @@ const Chatmenuscreen = ({navigation}) => {
     const data = useRef([])
     
     const dispatch = useDispatch()
-    const routes = useNavigationState(state => state.routes)
-    const currentRoute = routes[routes.length - 1].name
 
     const [assigned, setAssigned] = useState(false)
     const [convoData, setConvoData] = useState([])
@@ -166,7 +163,7 @@ const Chatmenuscreen = ({navigation}) => {
                         <FlatList
                             data = {convoData}
                             extraData = {convoData}
-                            keyExtractor = {(item, index)=>item.conversation._id}
+                            keyExtractor = {(item)=>item.conversation._id}
                             renderItem = {({item}) => (
                                 <Pressable 
                                     style = {styles.card}
@@ -174,7 +171,7 @@ const Chatmenuscreen = ({navigation}) => {
                                         await messageRead(item.conversation._id)
                                         setAssigned(false)
                                         dispatch(addCurrentConvo(item.conversation.haulerId._id))
-                                        navigation.navigate('Message', {haulerid: item.conversation.haulerId})
+                                        navigation.navigate('Message', {haulerid: item.conversation.haulerId, message: item.totalMessage, id: item.conversation._id})
                                     }}
                                 >
                                     <View style = {styles.userInfo}>

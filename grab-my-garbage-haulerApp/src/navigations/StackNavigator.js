@@ -10,9 +10,7 @@ import { addSocket } from '../redux/actions/socketActions'
 import { addOrigin } from '../redux/actions/mapActions'
 import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
 
-import Topnavigator from './TopNavigator'
 import TabNavigator from './TabNavigator'
-import Schedulepickuprequestscreen from '../screens/schedulePickupScreens/schedulePickupRequestScreen'
 import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePickupDetailScreen'
 import Locationscreen from '../screens/schedulePickupScreens/locationScreen'
 import Prepickupscreen from '../screens/prePickupScreen'
@@ -80,23 +78,7 @@ const Stacknavigator = () => {
                 options = {{
                     headerShown: false
                 }}
-            />
-
-            <Stack.Screen
-                name = 'History'
-                component = {Topnavigator}
-                options = {{
-                    headerShown: false
-                }}
-            />  
-
-            <Stack.Screen
-                name = 'Schedule'
-                component = {Schedulepickuprequestscreen}
-                options = {{
-                    headerShown: false
-                }}
-            />
+            /> 
 
             <Stack.Screen
                 name = 'ScheduleDetail'

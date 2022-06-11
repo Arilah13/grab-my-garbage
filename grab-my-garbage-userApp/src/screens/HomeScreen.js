@@ -9,10 +9,11 @@ import { colors } from '../global/styles'
 import { menuData } from '../global/data'
 import { fromDate } from '../helpers/schedulepickupHelper'
 
-import { addOngoingPickupLocation, removeOngoingPickup, getAcceptedPickups, getCompletedPickups, getPendingPickups } from '../redux/actions/specialPickupActions'
-import { addOngoingSchedulePickupLocation, removeOngoingSchedulePickup, getScheduledPickups } from '../redux/actions/schedulePickupActions'
+import { addOngoingPickupLocation, removeOngoingPickup } from '../redux/actions/specialPickupActions'
+import { addOngoingSchedulePickupLocation, removeOngoingSchedulePickup } from '../redux/actions/schedulePickupActions'
 import { getPaymentIntent } from '../redux/actions/paymentActions'
 import { getConversations } from '../redux/actions/conversationActions'
+import { SCHEDULED_PICKUP_RETRIEVE_SUCCESS } from '../redux/constants/scheduledPickupConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -40,7 +41,6 @@ const Homescreen = ({navigation}) => {
     const { loading: scheduleLoading, pickupInfo: schedulePickup } = retrieveScheduledPickup
 
     const [expoPushToken, setExpoPushToken] = useState()
-    const [isSubscribed, setIsSubscribed] = useState(false)
     const [notification, setNotification] = useState()
     const [activeScheduleStatus, setActiveScheduleStatus] = useState(false)
     const [activeSpecialStatus, setActiveSpecialStatus] = useState(false)
@@ -119,15 +119,20 @@ const Homescreen = ({navigation}) => {
 
             socket.on('userPickup', async({pickup, hauler, time}) => {
                 dispatch(addOngoingPickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: pickup.haulerid, pickupid: pickup.pickupid, time: time}))
-                dispatch(getAcceptedPickups())
                 setActiveSpecialStatus(true)
                 setSpecialId(pickup.pickupid)
             })
             socket.on('userSchedulePickup', async({hauler, time, ongoingPickup, pickupid}) => {
                 dispatch(addOngoingSchedulePickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: time.haulerid, ongoingPickupid: ongoingPickup, pickupid: pickupid, time: time.time}))
-                dispatch(getScheduledPickups())
                 setActiveScheduleStatus(true)
                 setScheduleId(pickupid)
+                const pickup = await schedulePickup.splice(schedulePickup.findIndex(pickup => pickup._id === pickupid), 1)
+                pickup[0].active = 1
+                schedulePickup.push(pickup[0])
+                dispatch({
+                    type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
+                    payload: schedulePickup
+                })
             })
 
             socket.on('pickupDone', async({pickupid}) => {
@@ -137,13 +142,13 @@ const Homescreen = ({navigation}) => {
             socket.on('schedulePickupDone', async({pickupid}) => {
                 dispatch(removeOngoingSchedulePickup(pickupid))
                 setActiveScheduleStatus(false)
-                dispatch(getScheduledPickups())
-            })
-
-            socket.on('refreshDone', () => {
-                dispatch(getAcceptedPickups())
-                dispatch(getCompletedPickups())
-                dispatch(getPendingPickups())
+                const pickup = await schedulePickup.splice(schedulePickup.findIndex(pickup => pickup._id === pickupid), 1)
+                pickup[0].active = 0
+                schedulePickup.push(pickup[0])
+                dispatch({
+                    type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
+                    payload: schedulePickup
+                })
             })
         }
     }, [socket])

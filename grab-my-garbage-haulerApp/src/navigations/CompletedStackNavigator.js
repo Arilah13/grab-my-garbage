@@ -10,6 +10,8 @@ import CompletedPickupscreen from '../screens/specialPickupScreens/completedspec
 const Stack = createNativeStackNavigator()
 
 const Completedstacknavigator = ({navigation, route}) => {
+    const { navigation1 } = route.params
+
     const tabHiddenRoutes = ['PickupDetail']
 
     const routeName = getFocusedRouteNameFromRoute(route)
@@ -17,17 +19,28 @@ const Completedstacknavigator = ({navigation, route}) => {
     useLayoutEffect(() => {
         if(tabHiddenRoutes.includes(routeName)) {
             navigation.setOptions({tabBarStyle: {display: 'none'}, swipeEnabled: false})
+            navigation1.setOptions({tabBarStyle: {display: 'none'}})
         } else {
-            navigation.setOptions({tabBarStyle: {
-                elevation: 0,
-                backgroundColor: colors.blue1,
-                borderRadius: 15,
-                marginLeft: 20,
-                marginRight: 20,
-                height: 45,
-            },
-            swipeEnabled: true
-        })
+            navigation.setOptions({
+                tabBarStyle: {
+                    elevation: 0,
+                    backgroundColor: colors.blue1,
+                    borderRadius: 15,
+                    marginLeft: 20,
+                    marginRight: 20,
+                    marginTop: 20,
+                    height: 45,
+                },
+                swipeEnabled: true
+            })
+            navigation1.setOptions({
+                tabBarStyle: {
+                    position: 'absolute',
+                    elevation: 0,
+                    backgroundColor: colors.grey8,
+                    height: 50
+                }
+            })
         }
     })
 

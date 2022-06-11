@@ -39,28 +39,6 @@ export const retrieveCompletedPickupReducer = (state = {}, action) => {
     }
 }
 
-export const declinePickupReducer = (state = {}, action) => {
-    switch(action.type) {
-        case actionTypes.DECLINE_PICKUP_SUCCESS:
-            return { success: true }
-        case actionTypes.DECLINE_PICKUP_FAIL:
-            return { success: false, error: action.payload }
-        default:
-            return state
-    }
-}
-
-export const acceptPickupReducer = (state = {}, action) => {
-    switch(action.type) {
-        case actionTypes.ACCEPT_PICKUP_SUCCESS:
-            return { success: true }
-        case actionTypes.ACCEPT_PICKUP_FAIL:
-            return { success: false, error: action.payload }
-        default:
-            return state
-    }
-}
-
 export const completedPickupReducer = (state = {}, action) => {
     switch(action.type) {
         case actionTypes.PICKUP_COMPLETED_SUCCESS:

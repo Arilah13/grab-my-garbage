@@ -13,8 +13,6 @@ import {
     retrievePendingPickupReducer,
     retrieveUpcomingPickupReducer,
     retrieveCompletedPickupReducer,
-    declinePickupReducer,
-    acceptPickupReducer,
     completedPickupReducer,
     sendSMSReducer,
     activeSpecialPickupReducer
@@ -39,7 +37,6 @@ import {
 
 import {
     getConversationReducer,
-    getMessageReducer,
     sendMessageReducer,
     getAllConversationReducer,
     updateReadMessageReducer,
@@ -53,8 +50,6 @@ const reducer = combineReducers({
     pendingPickups: retrievePendingPickupReducer,
     upcomingPickups: retrieveUpcomingPickupReducer,
     completedPickups: retrieveCompletedPickupReducer,
-    declinePickup: declinePickupReducer,
-    acceptPickup: acceptPickupReducer,
     completedPickup: completedPickupReducer,
     sendSMS: sendSMSReducer,
     activeSpecialPickup: activeSpecialPickupReducer,
@@ -72,7 +67,6 @@ const reducer = combineReducers({
 
     getConversation: getConversationReducer,
     sendMessage: sendMessageReducer,
-    getMessage: getMessageReducer,
     getAllConversation: getAllConversationReducer,
     updateReadMessage: updateReadMessageReducer,
     currentConvo: currentConvoReducer

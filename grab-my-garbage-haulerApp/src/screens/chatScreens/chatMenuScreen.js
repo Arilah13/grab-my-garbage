@@ -161,7 +161,7 @@ const Chatmenuscreen = ({navigation}) => {
                         <FlatList
                             data = {convoData}
                             extraData = {convoData}
-                            keyExtractor = {(item, index)=>item.conversation._id}
+                            keyExtractor = {(item)=>item.conversation._id}
                             inverted
                             renderItem = {({item}) => (
                                 <Pressable 
@@ -170,7 +170,7 @@ const Chatmenuscreen = ({navigation}) => {
                                         await messageRead(item.conversation._id)
                                         dispatch(addCurrentConvo(item.conversation._id))
                                         setAssigned(false)
-                                        navigation.navigate('Message', {userid: item.conversation.userId})
+                                        navigation.navigate('Message', {userid: item.conversation.userId, message: item.totalMessage, id: item.conversation._id})
                                     }}
                                 >
                                     <View style = {styles.userInfo}>

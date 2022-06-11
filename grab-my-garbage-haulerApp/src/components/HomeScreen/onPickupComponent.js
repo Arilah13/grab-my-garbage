@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native'
 import { Button, Icon } from 'react-native-elements'
 import * as Linking from 'expo-linking'
@@ -11,9 +12,20 @@ import Chatcomponent from './chatComponent'
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Onpickupcomponent = ({navigation, handlePickupComplete, order, arrived}) => {
-
+const Onpickupcomponent = ({handlePickupComplete, order, arrived}) => {
     const [modalVisible, setModalVisible] = useState(false)
+    const [convo, setConvo] = useState()
+
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { conversation } = getAllConversation
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
+    useEffect(async() => {
+        const convo = await conversation.find((convo) => convo.conversation.haulerId._id === userInfo._id && convo.conversation.userId._id === order.customerId._id)
+        setConvo(convo)
+    }, [])
 
     return (
         <>
@@ -89,7 +101,7 @@ const Onpickupcomponent = ({navigation, handlePickupComplete, order, arrived}) =
             deviceWidth = {SCREEN_WIDTH}
         >
             <View style = {styles.view1}>
-                <Chatcomponent userid = {order.customerId} pickupid = {order._id} setModalVisible = {setModalVisible}/>
+                <Chatcomponent userid = {order.customerId} pickupid = {order._id} setModalVisible = {setModalVisible} convo = {convo} />
             </View>  
         </Modal>
         </>

@@ -10,6 +10,7 @@ import PendingPickupscreen from '../screens/specialPickupScreens/pendingspecialP
 const Stack = createNativeStackNavigator()
 
 const Pendingstacknavigator = ({route, navigation}) => {
+    const { navigation1 } = route.params
 
     const tabHiddenRoutes = ['PickupDetail']
 
@@ -17,20 +18,31 @@ const Pendingstacknavigator = ({route, navigation}) => {
 
     useLayoutEffect(() => {
         if(tabHiddenRoutes.includes(routeName)) {
-            navigation.setOptions({tabBarStyle: {display: 'none'}, swipeEnabled: false})
+            navigation.setOptions({tabBarStyle: {display: 'none', marginTop: 0}, swipeEnabled: false})
+            navigation1.setOptions({tabBarStyle: {display: 'none'}})
         } else {
-            navigation.setOptions({tabBarStyle: {
-                elevation: 0,
-                backgroundColor: colors.blue1,
-                borderRadius: 15,
-                marginLeft: 20,
-                marginRight: 20,
-                height: 45,
-            },
-            swipeEnabled: true
-        })
+            navigation.setOptions({
+                tabBarStyle: {
+                    elevation: 0,
+                    backgroundColor: colors.blue1,
+                    borderRadius: 15,
+                    marginLeft: 20,
+                    marginRight: 20,
+                    marginTop: 20,
+                    height: 45,
+                },
+                swipeEnabled: true
+            })
+            navigation1.setOptions({
+                tabBarStyle: {
+                    position: 'absolute',
+                    elevation: 0,
+                    backgroundColor: colors.grey8,
+                    height: 50
+                }
+            })
         }
-    })
+    }, [navigation, route])
 
     return (
         <Stack.Navigator>

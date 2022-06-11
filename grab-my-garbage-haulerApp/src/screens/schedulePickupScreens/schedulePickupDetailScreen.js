@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, ScrollView, Pressable, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon } from 'react-native-elements'
@@ -17,8 +18,20 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Scheduledpickupdetail = ({navigation, route}) => {
     const { item, from, to } = route.params
 
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { conversation } = getAllConversation
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
     const [modalVisible, setModalVisible] = useState(false)
     const [modalVisible1, setModalVisible1] = useState(false)
+    const [convo, setConvo] = useState()
+
+    useEffect(async() => {
+        const convo = await conversation.find((convo) => convo.conversation.haulerId._id === userInfo._id && convo.conversation.userId._id === item.customerId._id)
+        setConvo(convo)
+    }, [])
 
     return (
         <SafeAreaView>
@@ -141,7 +154,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                 deviceWidth = {SCREEN_WIDTH}
             >
                 <View style = {styles.view2}>
-                    <Chatcomponent userid = {item.customerId} pickupid = {item._id} setModalVisible = {setModalVisible1}/>
+                    <Chatcomponent userid = {item.customerId} pickupid = {item._id} setModalVisible = {setModalVisible1} convo = {convo} />
                 </View>                
             </Modal>
 

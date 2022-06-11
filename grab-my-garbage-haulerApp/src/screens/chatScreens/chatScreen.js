@@ -8,8 +8,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
-import { getConversation, sendMessage, getMessage, receiverRead } from '../../redux/actions/conversationActions'
-import { GET_CONVERSATION_RESET, GET_MESSAGE_RESET } from '../../redux/constants/conversationConstants'
+import { sendMessage, receiverRead } from '../../redux/actions/conversationActions'
+import { RESET_CURRENT_CONVO } from '../../redux/constants/conversationConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -17,19 +17,12 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Chatscreen = ({route, navigation}) => {
     const dispatch = useDispatch()
 
-    const { userid } = route.params
+    const { userid, message, id } = route.params
 
     const [messages, setMessages] = useState([])
-    const [first, setFirst] = useState(false)
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
-
-    const conversations = useSelector((state) => state.getConversation)
-    const { loading, conversation } = conversations
-
-    const Messages = useSelector((state) => state.getMessage)
-    const { loading: messageLoading,  message } = Messages
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
@@ -39,7 +32,7 @@ const Chatscreen = ({route, navigation}) => {
             text: message[0].text,
             createdAt: message[0].createdAt,
             sender: message[0].user,
-            conversationId: conversation[0]._id
+            conversationId: id
         }))
         socket.emit('sendMessage', ({
             senderid: userInfo._id,
@@ -48,59 +41,44 @@ const Chatscreen = ({route, navigation}) => {
             text: message[0].text,
             createdAt: message[0].createdAt,
             senderRole: 'hauler',
-            conversationId: conversation[0]._id
+            conversationId: id
         }))
     }
 
     useEffect(() => {
-        dispatch(getConversation({receiverid: userid._id, senderid: userInfo._id}))
-    }, [])
-
-    useEffect(() => {
-        if(loading === false) {
-            dispatch(getMessage({ conversationId: conversation[0]._id }))
-            setFirst(true)
-        }
-    }, [conversation])
-
-    useEffect(() => {
-        if(loading === false && first === false) {
-            socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
-                const message = [{text, user: sender, createdAt, _id: Date.now()}]
-                
-                if(senderid === userid._id) {
-                    onSend(message)
-                }
-                
-                if(conversationId === conversation[0]._id) {
-                    setTimeout(() => {
-                        dispatch(receiverRead(conversationId))
-                    }, 3000) 
-                }
-            })
-        }
-    }, [socket, conversation])
+        socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
+            const message = [{text, user: sender, createdAt, _id: Date.now()}]
+            
+            if(senderid === userid._id) {
+                onSend(message)
+            }
+            
+            if(conversationId === id) {
+                setTimeout(() => {
+                    dispatch(receiverRead(conversationId))
+                }, 3000) 
+            }
+        })
+    }, [socket])
 
     useEffect(async() => {
-        if(messageLoading === false) {
-            let array = []
-            if(message.length > 0) {
-                await message.slice(0).reverse().map((message) => {
-                    array.push({
-                        _id: message._id,
-                        text: message.text,
-                        createdAt: message.createdAt,
-                        user: {
-                            _id: message.sender[0],
-                            name: message.sender[1],
-                            avatar: message.sender[2]
-                        },
-                    })
+        let array = []
+        if(message.length > 0) {
+            await message.slice(0).reverse().map((message) => {
+                array.push({
+                    _id: message._id,
+                    text: message.text,
+                    createdAt: message.createdAt,
+                    user: {
+                        _id: message.sender[0],
+                        name: message.sender[1],
+                        avatar: message.sender[2]
+                    },
                 })
-                setMessages(array)
-            }
+            })
+            setMessages(array)
         }
-    }, [message])
+    }, [])
 
     const onSend = useCallback((messages = []) => {
         setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
@@ -112,10 +90,7 @@ const Chatscreen = ({route, navigation}) => {
                 <Pressable onPress = {() => {
                     navigation.goBack()
                     dispatch({
-                        type: GET_CONVERSATION_RESET
-                    })
-                    dispatch({
-                        type: GET_MESSAGE_RESET
+                        type: RESET_CURRENT_CONVO
                     })
                 }}>
                     <Icon 
@@ -156,7 +131,6 @@ const Chatscreen = ({route, navigation}) => {
                     renderInputToolbar = {renderInputToolbar}
                     renderComposer = {renderComposer}
                     renderMessage = {renderMessage}
-                    isLoadingEarlier = {messageLoading === true ? true : false}
                 />
                 {
                     Platform.OS === 'android' && <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {1.4*SCREEN_HEIGHT/10} />

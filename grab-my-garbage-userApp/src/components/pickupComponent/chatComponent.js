@@ -7,26 +7,19 @@ import { Icon } from 'react-native-elements'
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
-import { getConversation, sendMessage, getMessage, receiverRead } from '../../redux/actions/conversationActions'
+import { sendMessage, receiverRead } from '../../redux/actions/conversationActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
+const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
 
     const dispatch = useDispatch()
 
     const [messages, setMessages] = useState([])
-    const [first, setFirst] = useState(false)
 
     const userDetail = useSelector((state) => state.userDetail)
     const { user } = userDetail
-
-    const conversations = useSelector((state) => state.getConversation)
-    const { loading, conversation } = conversations
-
-    const Messages = useSelector((state) => state.getMessage)
-    const { loading: messageLoading,  message } = Messages
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
@@ -36,7 +29,7 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
             text: message[0].text,
             createdAt: message[0].createdAt,
             sender: message[0].user,
-            conversationId: conversation[0]._id
+            conversationId: convo.conversation._id
         }))
         socket.emit('sendMessage', ({
             senderid: user._id,
@@ -46,58 +39,43 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
             createdAt: message[0].createdAt,
             senderRole: 'user',
             receiver: haulerid,
-            conversationId: conversation[0]._id
+            conversationId: convo.conversation._id
         }))
     }
 
     useEffect(() => {
-        dispatch(getConversation({receiverid: haulerid._id, senderid: user._id}))
-    }, [])
-
-    useEffect(() => {
-        if(loading === false) {
-            dispatch(getMessage({ conversationId: conversation[0]._id }))
-            setFirst(true)
-        }
-    }, [conversation])
-
-    useEffect(() => {
-        if(loading === false && first === false) {
-            socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
-                const message = [{text, user: sender, createdAt, _id: Date.now()}]
-                if(senderid === haulerid._id) {
-                    onSend(message)
-                }       
-                
-                if(conversationId === conversation[0]._id) {
-                    setTimeout(() => {
-                        dispatch(receiverRead(conversationId))
-                    }, 3000) 
-                }
-            })
-        }    
-    }, [socket, conversation])
+        socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
+            const message = [{text, user: sender, createdAt, _id: Date.now()}]
+            if(senderid === haulerid._id) {
+                onSend(message)
+            }       
+            
+            if(conversationId === convo.conversation._id) {
+                setTimeout(() => {
+                    dispatch(receiverRead(conversationId))
+                }, 3000) 
+            }
+        }) 
+    }, [socket])
 
     useEffect(async() => {
-        if(messageLoading === false) {
-            let array = []
-            if(message.length > 0) {
-                await message.slice(0).reverse().map((message) => {
-                    array.push({
-                        _id: message._id,
-                        text: message.text,
-                        createdAt: message.createdAt,
-                        user: {
-                            _id: message.sender[0],
-                            name: message.sender[1],
-                            avatar: message.sender[2]
-                        },
-                    })
+        let array = []
+        if(convo.totalMessage.length > 0) {
+            await convo.totalMessage.slice(0).reverse().map((message) => {
+                array.push({
+                    _id: message._id,
+                    text: message.text,
+                    createdAt: message.createdAt,
+                    user: {
+                        _id: message.sender[0],
+                        name: message.sender[1],
+                        avatar: message.sender[2]
+                    },
                 })
-                setMessages(array)
-            }
+            })
+            setMessages(array)
         }
-    }, [message])
+    }, [])
 
     const onSend = useCallback((messages = []) => {
         setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
@@ -145,7 +123,6 @@ const Chatcomponent = ({haulerid, pickupid, setModalVisible}) => {
                     renderInputToolbar = {renderInputToolbar}
                     renderComposer = {renderComposer}
                     renderMessage = {renderMessage}
-                    isLoadingEarlier = {messageLoading === true ? true : false}
                 />
                 {
                     Platform.OS === 'android' && <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {2*SCREEN_HEIGHT/10} />

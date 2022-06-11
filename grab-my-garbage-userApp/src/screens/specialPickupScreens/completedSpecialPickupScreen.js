@@ -25,10 +25,10 @@ const Completedspecialpickupscreen = ({navigation}) => {
     const { loading, pickupInfo } = retrieveCompletedPickups
 
     useEffect(() => {
-        if(userInfo !== undefined) {
-            dispatch(getCompletedPickups())
+        if(loading === undefined) {
+            dispatch(getCompletedPickups(userInfo._id, userInfo.token))
         }
-    }, [userInfo])
+    }, [])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>

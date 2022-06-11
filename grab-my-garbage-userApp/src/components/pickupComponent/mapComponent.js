@@ -21,7 +21,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 
-const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalVisible}) => {
+const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalVisible, convo}) => {
 
     const dispatch = useDispatch()
 
@@ -366,7 +366,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
                                 deviceWidth = {SCREEN_WIDTH}
                             >
                                 <View style = {styles.view3}>
-                                    <Chatcomponent haulerid = {item.pickerId} pickupid = {pickup.pickupid} setModalVisible = {setModalVisible1}/>
+                                    <Chatcomponent haulerid = {item.pickerId} pickupid = {pickup.pickupid} setModalVisible = {setModalVisible1} convo = {convo}/>
                                 </View>  
                             </Modal>
                             </>     

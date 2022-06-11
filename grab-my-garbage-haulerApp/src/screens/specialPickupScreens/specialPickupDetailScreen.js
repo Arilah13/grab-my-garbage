@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { View, Text, StyleSheet, ScrollView, Dimensions, Pressable, Image, TouchableOpacity } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
 import Modal from 'react-native-modal'
 import axios from 'axios'
 
 import { colors } from '../../global/styles'
 
-import { declinePickup, acceptPickup, getUpcomingPickups } from '../../redux/actions/specialRequestActions'
+import { PENDING_PICKUP_RETRIEVE_SUCCESS, UPCOMING_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialRequestConstants'
 
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/mapComponent'
@@ -29,9 +28,19 @@ const Pickupdetailscreen = ({navigation, route}) => {
     const [active, setActive] = useState(true)
     const [loading, setLoading] = useState(false)
     const [disable, setDisable] = useState(false)
+    const [convo, setConvo] = useState()
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
+
+    const pendingPickups = useSelector((state) => state.pendingPickups)
+    const { pickupInfo } = pendingPickups
+
+    const upcomingPickups = useSelector((state) => state.upcomingPickups)
+    const { pickupInfo: upcoming } = upcomingPickups
+
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { conversation } = getAllConversation
 
     const config = {
         headers: {
@@ -45,19 +54,66 @@ const Pickupdetailscreen = ({navigation, route}) => {
             setLoading(true)
             const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/exclude/${id}`, config)
             if(res.status === 200) {
+                const pickup = await upcoming.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
+                pickup[0].inactive = 1
+                upcoming.push(pickup[0])
+                dispatch({
+                    type: UPCOMING_PICKUP_RETRIEVE_SUCCESS,
+                    payload: upcoming
+                })
                 setActive(false)
                 setLoading(false)
-                dispatch(getUpcomingPickups())
             }
         } else if(active === false) {
             setLoading(true)
             const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/include/${id}`, config)
             if(res.status === 200) {
+                const pickup = await upcoming.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
+                pickup[0].inactive = 0
+                upcoming.push(pickup[0])
+                dispatch({
+                    type: UPCOMING_PICKUP_RETRIEVE_SUCCESS,
+                    payload: upcoming
+                })
                 setActive(true)
                 setLoading(false)
-                dispatch(getUpcomingPickups())
             }
         }
+    }
+
+    const declinePickup = async(id) => {
+        setLoading2(true)
+        const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/declinePickup/${id}`, {id: userInfo._id}, config)
+
+        if(res.status === 200) {
+            await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
+            dispatch({
+                type: PENDING_PICKUP_RETRIEVE_SUCCESS,
+                payload: pickupInfo
+            })
+            setLoading2(false)
+            navigation.navigate('pendingPickupScreen')
+        }
+    }
+
+    const acceptPickup = async(id) => {
+        setLoading1(true)
+        const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/acceptPickup/${id}`, {haulerId: userInfo._id}, config)
+
+        if(res.status === 200) {
+            const pickup = await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
+            dispatch({
+                type: PENDING_PICKUP_RETRIEVE_SUCCESS,
+                payload: pickupInfo
+            })
+            upcoming.push(pickup[0])
+            dispatch({
+                type: UPCOMING_PICKUP_RETRIEVE_SUCCESS,
+                payload: upcoming
+            })
+            setLoading1(false)
+            navigation.navigate('pendingPickupScreen')
+        }  
     }
 
     useEffect(() => {
@@ -74,8 +130,15 @@ const Pickupdetailscreen = ({navigation, route}) => {
         }
     }, [])
 
+    useEffect(async() => {
+        if(name === 'Upcoming Pickups') {
+            const convo = await conversation.find((convo) => convo.conversation.haulerId._id === userInfo._id && convo.conversation.userId._id === item.customerId._id)
+            setConvo(convo)
+        }
+    }, [])
+
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+        <>
             <ScrollView 
                 showsVerticalScrollIndicator = {false}
                 stickyHeaderIndices = {[0]}
@@ -112,15 +175,19 @@ const Pickupdetailscreen = ({navigation, route}) => {
                             }}
                         />
                     </Pressable>
+
                     <View style = {{flex: 1, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30, padding: 15}}>
+
                         <View style = {styles.container3}>
                             <Text style = {styles.text3}>Pickup Scheduled on:</Text>
                             <Text style = {styles.text4}>{date1 + ' ' + time}</Text>
                         </View>
+
                         <View style = {{...styles.container5, paddingTop: 0}}>
                             <Text style = {styles.text3}>{name === 'Completed Pickups' ? 'Pickup Collected On:' : 'Collect Pickup Before:'}</Text>
                             <Text style = {styles.text4}>{name === 'Completed Pickups' ? date+' '+completedTime : date+' '+time}</Text>
                         </View>
+
                         <View style = {styles.container4}>
                             <Text style = {styles.text5}>Trash Categories:</Text>
                             <View style = {{position: 'absolute'}}>
@@ -139,46 +206,44 @@ const Pickupdetailscreen = ({navigation, route}) => {
                                 </View> : null
                             }
                         </View>
+
                         <View style = {styles.container5}>
                             <Text style = {styles.text3}>Weight:</Text>
                             <Text style = {styles.text4}>{item.weight} kg</Text>
                         </View>
-                        <View style = {{...styles.container5, paddingBottom: 5, paddingTop: 0}}>
-                            <Text style = {styles.text3}>Optional Images:</Text>
-                            {
-                                item.image === null ? 
-                                <Text style = {styles.text4}>No Images Attached</Text>
-                                : null
-                            }
+
+                        <View style = {{flexDirection: 'row'}}>
+                            <View style = {{...styles.container5, paddingBottom: 5, paddingTop: 0}}>
+                                <Text style = {styles.text3}>Optional Images:</Text>
+                                {
+                                    item.image === null &&
+                                    <Text style = {styles.text4}>No Images Attached</Text>
+                                }
+                            </View>
+                            <View style = {{alignSelf: 'center'}}>
+                                {
+                                    item.image !== null &&
+                                    <Image 
+                                        source = {{uri: item.image}}
+                                        resizeMode = 'contain'
+                                        style = {styles.image}
+                                    />
+                                }
+                            </View>
                         </View>
-                        <View style = {{alignSelf: 'center'}}>
-                            {
-                                item.image !== null ? 
-                                <Image 
-                                    source = {{uri: item.image}}
-                                    resizeMode = 'contain'
-                                    style = {styles.image}
-                                /> : null
-                            }
-                        </View>
+
                         {buttons === true ? 
-                        <View style = {{...styles.container5, flex: 1, flexWrap: 'wrap', alignSelf: 'center'}}>
+                        <View style = {{...styles.container5, flexWrap: 'wrap', alignSelf: 'center'}}>
                             <Button
                                 title = 'Accept'
                                 buttonStyle = {{
                                     width: 100,
                                     height: 40,
-                                    marginTop: 18,
+                                    marginTop: 15,
                                     borderRadius: 15,
                                     backgroundColor: colors.buttons
                                 }}
-                                onPress = {() => {
-                                    dispatch(acceptPickup(item._id, item.customerId._id))
-                                    setTimeout(() => {
-                                        navigation.navigate('pendingPickupScreen')
-                                    }, 100) 
-                                    setLoading1(true)                                       
-                                }}
+                                onPress = {() => acceptPickup(item._id)}                                                                                            
                                 loading = {loading1}
                                 disabled = {loading1}
                             />
@@ -187,25 +252,19 @@ const Pickupdetailscreen = ({navigation, route}) => {
                                 buttonStyle = {{
                                     width: 100,
                                     height: 40,
-                                    marginTop: 18,
+                                    marginTop: 15,
                                     borderRadius: 15,
                                     marginLeft: 30,
                                     backgroundColor: colors.buttons
                                 }}
-                                onPress = {async() => {
-                                    dispatch(declinePickup(item._id, item.customerId._id))
-                                    setTimeout(() => {
-                                        navigation.navigate('pendingPickupScreen')
-                                    }, 100)
-                                    setLoading2(true)
-                                }}
+                                onPress = {() => declinePickup(item._id)}
                                 loading = {loading2}
                                 disabled = {loading2}
                             />
                         </View> : 
                         name === 'Upcoming Pickups' ? 
                         <TouchableOpacity 
-                            style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
+                            style = {{...styles.container5, paddingTop: 25, justifyContent: 'center', paddingBottom: 15}}
                             onPress = {() => setModalVisible1(true)}
                         >
                             <Icon
@@ -218,12 +277,13 @@ const Pickupdetailscreen = ({navigation, route}) => {
                         </TouchableOpacity>
                         : null                           
                         }
+
                         {
                             name === 'Upcoming Pickups' &&
                             <View style = {{alignSelf: 'center', flexDirection: 'row'}}>
                                 <Button
                                     title = {active ? 'Exclude' : 'Include'}
-                                    buttonStyle = {{...styles.button, backgroundColor: active ? colors.darkBlue : colors.darkGrey}}
+                                    buttonStyle = {{...styles.button, backgroundColor: active ? colors.darkBlue : colors.darkGrey, marginTop: 0}}
                                     loading = {loading}
                                     disabled = {loading || disable}
                                     onPress = {() => handleActive(item._id)}
@@ -266,11 +326,11 @@ const Pickupdetailscreen = ({navigation, route}) => {
                 deviceWidth = {SCREEN_WIDTH}
             >
                 <View style = {styles.view1}>
-                    <Chatcomponent userid = {item.customerId} pickupid = {item._id} setModalVisible = {setModalVisible1}/>
+                    <Chatcomponent userid = {item.customerId} pickupid = {item._id} setModalVisible = {setModalVisible1} convo = {convo} />
                 </View>                
             </Modal>
 
-        </SafeAreaView>
+        </>
     );
 }
 
@@ -340,7 +400,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     image:{
-        height: 200,
+        height: 180,
         width: 200,
         //borderRadius: 500,
         alignContent: 'center'

@@ -5,6 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { uploadDetails } from '../redux/actions/userActions'
 import { addOrigin } from '../redux/actions/mapActions'
+import { getScheduledPickups } from '../redux/actions/scheduleRequestActions'
+import { getCompletedPickups, getPendingPickupsOffline, getUpcomingPickups } from '../redux/actions/specialRequestActions'
 
 import Splashscreen from '../screens/authScreens/splashScreen'
 import Rootnavigator from './RootNavigator'
@@ -20,12 +22,29 @@ const Splashnavigator = () => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket: skt } = socketHolder
 
+    const completedPickups = useSelector((state) => state.completedPickups)
+    const { loading: completed } = completedPickups
+
+    const pendingPickups = useSelector((state) => state.pendingPickups)
+    const { loading: pending } = pendingPickups
+
+    const upcomingPickups = useSelector((state) => state.upcomingPickups)
+    const { loading: upcoming } = upcomingPickups
+
+    const scheduledPickups = useSelector((state) => state.retrieveSchedulePickup)
+    const { loading: schedule } = scheduledPickups
+
     useEffect(async() => {
         const result = await AsyncStorage.getItem('haulerInfo')
         const location = await AsyncStorage.getItem('userLocation')
         
         if(result !== null) {
-            dispatch(uploadDetails(JSON.parse(result)))
+            const data = JSON.parse(result)
+            dispatch(uploadDetails(data))
+            dispatch(getCompletedPickups(data._id, data.token))
+            dispatch(getPendingPickupsOffline(data._id, data.token))
+            dispatch(getUpcomingPickups(data._id, data.token))
+            dispatch(getScheduledPickups(data._id, data.token))
         } else if(result === null) {
             setFirst(false)
         }
@@ -45,7 +64,8 @@ const Splashnavigator = () => {
     return (
         <NavigationContainer>
             {
-                first === true && (loading === true || loading === undefined) ? (
+                first === true && (loading === true || loading === undefined || upcoming === true || 
+                    pending === true || completed === true || schedule === true) ? (
                     <Splashscreen />
                 ) : (
                     <Rootnavigator setFirst = {setFirst} first = {first} />

@@ -1,5 +1,6 @@
 import React from 'react'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+import { StatusBar } from 'react-native'
 
 import Completedstacknavigator from './CompletedStackNavigator'
 import Pendingstacknavigator from './PendingStackNavigator'
@@ -9,7 +10,9 @@ import { colors } from '../global/styles'
 
 const Tab = createMaterialTopTabNavigator()
 
-const Topnavigator = () => {
+const Height = StatusBar.currentHeight
+
+const Topnavigator = ({navigation}) => {
     return (
         <>
             <Tab.Navigator
@@ -22,6 +25,7 @@ const Topnavigator = () => {
                         borderRadius: 15,
                         marginLeft: 20,
                         marginRight: 20,
+                        marginTop: 20,
                         height: 45,
                     },
                     tabBarLabelStyle: {
@@ -31,23 +35,26 @@ const Topnavigator = () => {
                     tabBarShowLabel: true,
                     headerShown: false,
                     tabBarIndicatorStyle: {
-                        height: 40,
+                        height: 45,
                         borderRadius: 15,
                     },
                     tabBarPressColor: colors.white,
                     swipeEnabled: false,
                 }}
                 style = {{
-                    paddingBottom: 30,
                     backgroundColor: colors.white,
+                    marginTop: Height,
                 }}
-                tabBarPosition = 'bottom'
+                tabBarPosition = 'top'
             >
                 <Tab.Screen 
                     name = "pendingPickup" 
                     component = {Pendingstacknavigator} 
                     options = {{
                         tabBarLabel: 'Pending'
+                    }}
+                    initialParams = {{
+                        navigation1: navigation
                     }}
                 />
                 <Tab.Screen 
@@ -56,12 +63,18 @@ const Topnavigator = () => {
                     options = {{
                         tabBarLabel: 'Upcoming'
                     }}
+                    initialParams = {{
+                        navigation1: navigation
+                    }}
                 />
                 <Tab.Screen 
                     name = "completedPickup" 
                     component = {Completedstacknavigator} 
                     options = {{
                         tabBarLabel: 'Completed'
+                    }}
+                    initialParams = {{
+                        navigation1: navigation
                     }}
                 />
             </Tab.Navigator>

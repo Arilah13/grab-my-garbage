@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, FlatList, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -18,28 +18,17 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Schedulepickuprequestscreen = ({navigation}) => {
     const dispatch = useDispatch()
 
-    const [completedId, setCompletedId] = useState(null)
-
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
-
-    const socketHolder = useSelector((state) => state.socketHolder)
-    const { socket } = socketHolder
 
     const retrieveScheduledPickup = useSelector(state => state.retrieveScheduledPickup)
     const { loading, pickupInfo } = retrieveScheduledPickup
 
     useEffect(() => {
-        if(userInfo !== undefined) {
-            dispatch(getScheduledPickups())
+        if(loading === undefined) {
+            dispatch(getScheduledPickups(userInfo._id, userInfo.token))
         }
-    }, [userInfo])
-
-    // useEffect(() => {
-    //     socket.on('schedulePickupDone', async({pickupid}) => {
-    //         setCompletedId(pickupid)
-    //     })
-    // }, [socket])
+    }, [])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>

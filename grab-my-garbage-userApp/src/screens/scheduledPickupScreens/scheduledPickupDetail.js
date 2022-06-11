@@ -9,7 +9,7 @@ import axios from 'axios'
 import { colors } from '../../global/styles'
 import { dayConverter } from '../../helpers/schedulepickupHelper'
 
-import { getScheduledPickups } from '../../redux/actions/schedulePickupActions'
+import { SCHEDULED_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/scheduledPickupConstants'
 
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/pickupComponent/mapComponent'
@@ -31,9 +31,13 @@ const Scheduledpickupdetail = ({navigation, route}) => {
     const [loading, setLoading] = useState(false)
     const [loadingCancel, setLoadingCancel] = useState(false)
     const [disable, setDisable] = useState(false)
+    const [convo, setConvo] = useState()
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
+
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { conversation } = getAllConversation
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
@@ -53,17 +57,29 @@ const Scheduledpickupdetail = ({navigation, route}) => {
             setLoading(true)
             const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/schedulepickup/inactive/${id}`, config)
             if(res.status === 200) {
+                const pickup = await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
+                pickup[0].inactive = 1
+                pickupInfo.push(pickup[0])
+                dispatch({
+                    type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
+                    payload: pickupInfo
+                })
                 setActive(false)
                 setLoading(false)
-                dispatch(getScheduledPickups())
             }
         } else if(active === false) {
             setLoading(true)
             const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/schedulepickup/active/${id}`, config)
             if(res.status === 200) {
+                const pickup = await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
+                pickup[0].inactive = 0
+                pickupInfo.push(pickup[0])
+                dispatch({
+                    type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
+                    payload: pickupInfo
+                })
                 setActive(true)
                 setLoading(false)
-                dispatch(getScheduledPickups())
             }
         }
     }
@@ -72,12 +88,13 @@ const Scheduledpickupdetail = ({navigation, route}) => {
         setLoadingCancel(true)
         const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/schedulepickup/${id}`, config)
         if(res.status === 200) {
-            setActive(true)
-            dispatch(getScheduledPickups())
-            setTimeout(() => {
-                setLoadingCancel(false)
-                navigation.navigate('ScheduleRequests')
-            }, 3000)
+            await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
+            dispatch({
+                type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
+                payload: pickupInfo
+            })
+            setLoadingCancel(false)
+            navigation.navigate('ScheduleRequests')
         }
     }
 
@@ -110,21 +127,20 @@ const Scheduledpickupdetail = ({navigation, route}) => {
         socket.on('schedulePickupDone', async({pickupid}) => {
             if(pickupid === item._id) {
                 setDisable(false)
-                item.active = 0
             }
         })
 
         socket.on('userSchedulePickup', async({pickupid}) => {
             if(pickupid === item._id) {
                 setDisable(true)
-                item.active = 1
             }
         })
     }, [socket])
 
-    // useEffect(() => {
-    //     console.log(item)
-    // }, [])
+    useEffect(async() => {
+        const convo = await conversation.find((convo) => convo.conversation.haulerId._id === item.pickerId._id && convo.conversation.userId._id === userInfo._id)
+        setConvo(convo)
+    }, [])
 
     return (
         <SafeAreaView>
@@ -267,6 +283,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                                 type = 'schedule' 
                                 navigation = {navigation} 
                                 modalVisible = {modalVisible}
+                                convo = {convo}
                             />
                         </View>                
                     </Modal>
@@ -287,7 +304,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         deviceWidth = {SCREEN_WIDTH}
                     >
                         <View style = {styles.view2}>
-                            <Chatcomponent haulerid = {item.pickerId} pickupid = {item._id} setModalVisible = {setModalVisible1} />
+                            <Chatcomponent haulerid = {item.pickerId} pickupid = {item._id} setModalVisible = {setModalVisible1} convo = {convo} />
                         </View>                
                     </Modal>
 

@@ -31,22 +31,20 @@ export const getPendingPickups = (latitude, longitude) => async(dispatch, getSta
     }
 }
 
-export const getPendingPickupsOffline = () => async(dispatch, getState) => {
+export const getPendingPickupsOffline = (id, token) => async(dispatch) => {
     try{
         dispatch({
             type: actionTypes.PENDING_PICKUP_RETRIEVE_REQUEST
         })
 
-        const { userLogin: { userInfo } } = getState()
-
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`
+                Authorization: `Bearer ${token}`
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialrequest/pendingOfflinePickup/${userInfo._id}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialrequest/pendingOfflinePickup/${id}`, 
         config)
 
         dispatch({
@@ -61,22 +59,20 @@ export const getPendingPickupsOffline = () => async(dispatch, getState) => {
     }
 }
 
-export const getUpcomingPickups = () => async(dispatch, getState) => {
+export const getUpcomingPickups = (id, token) => async(dispatch) => {
     try{
         dispatch({
             type: actionTypes.UPCOMING_PICKUP_RETRIEVE_REQUEST
         })
 
-        const { userLogin: { userInfo } } = getState()
-
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`
+                Authorization: `Bearer ${token}`
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialrequest/upcomingPickup/${userInfo._id}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialrequest/upcomingPickup/${id}`, 
         config)
 
         dispatch({
@@ -91,22 +87,20 @@ export const getUpcomingPickups = () => async(dispatch, getState) => {
     }
 }
 
-export const getCompletedPickups = () => async(dispatch, getState) => {
+export const getCompletedPickups = (id, token) => async(dispatch) => {
     try{
         dispatch({
             type: actionTypes.COMPLETED_PICKUP_RETRIEVE_REQUEST
         })
 
-        const { userLogin: { userInfo } } = getState()
-
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`
+                Authorization: `Bearer ${token}`
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialrequest/completedPickup/${userInfo._id}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialrequest/completedPickup/${id}`, 
         config)
 
         dispatch({
@@ -121,64 +115,63 @@ export const getCompletedPickups = () => async(dispatch, getState) => {
     }
 }
 
-export const declinePickup = (id, customerId) => async(dispatch, getState) => {
-    try{
-        const { userLogin: { userInfo } } = getState()
-        const { socketHolder: { socket } } = getState()
+// export const declinePickup = (id, customerId) => async(dispatch, getState) => {
+//     try{
+//         const { userLogin: { userInfo } } = getState()
+//         const { socketHolder: { socket } } = getState()
 
-        const config = {
-            headers: {
-                'Content-type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`
-            },
-        }
+//         const config = {
+//             headers: {
+//                 'Content-type': 'application/json',
+//                 Authorization: `Bearer ${userInfo.token}`
+//             },
+//         }
 
-        await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/declinePickup/${id}`, {id: userInfo._id},
-        config)
-        await socket.emit('refresh', {userid: customerId})
-        dispatch({
-            type: actionTypes.DECLINE_PICKUP_SUCCESS
-        })
-        dispatch(getPendingPickupsOffline())
-    } catch (err) {
-        dispatch({
-            type: actionTypes.DECLINE_PICKUP_FAIL,
-            payload: err.response.data.msg
-        })
-    }
-}
+//         await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/declinePickup/${id}`, {id: userInfo._id},
+//         config)
+//         //await socket.emit('refresh', {userid: customerId})
+//         dispatch({
+//             type: actionTypes.DECLINE_PICKUP_SUCCESS
+//         })
+//     } catch (err) {
+//         dispatch({
+//             type: actionTypes.DECLINE_PICKUP_FAIL,
+//             payload: err.response.data.msg
+//         })
+//     }
+// }
 
-export const acceptPickup = (id, customerId) => async(dispatch, getState) => {
-    try{
-        const { userLogin: { userInfo } } = getState()
-        const { socketHolder: { socket } } = getState()
+// export const acceptPickup = (id, customerId) => async(dispatch, getState) => {
+//     try{
+//         const { userLogin: { userInfo } } = getState()
+//         const { socketHolder: { socket } } = getState()
 
-        const config = {
-            headers: {
-                'Content-type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`
-            },
-        }
+//         const config = {
+//             headers: {
+//                 'Content-type': 'application/json',
+//                 Authorization: `Bearer ${userInfo.token}`
+//             },
+//         }
 
-        await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/acceptPickup/${id}`, {haulerId: userInfo._id},
-        config)
+//         await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/acceptPickup/${id}`, {haulerId: userInfo._id},
+//         config)
 
-        // await axios.put(`http://192.168.13.1:5000/specialrequest/acceptPickup/${id}`, {haulerId: userInfo._id},
-        // config)
+//         // await axios.put(`http://192.168.13.1:5000/specialrequest/acceptPickup/${id}`, {haulerId: userInfo._id},
+//         // config)
 
-        dispatch({
-            type: actionTypes.ACCEPT_PICKUP_SUCCESS,
-        })
-        await socket.emit('refresh', {userid: customerId})
-        dispatch(getPendingPickupsOffline())
-        dispatch(getUpcomingPickups())
-    } catch (err) {
-        dispatch({
-            type: actionTypes.ACCEPT_PICKUP_FAIL,
-            payload: err.response.data.msg
-        })
-    }
-}
+//         dispatch({
+//             type: actionTypes.ACCEPT_PICKUP_SUCCESS,
+//         })
+//         await socket.emit('refresh', {userid: customerId})
+//         dispatch(getPendingPickupsOffline())
+//         dispatch(getUpcomingPickups())
+//     } catch (err) {
+//         dispatch({
+//             type: actionTypes.ACCEPT_PICKUP_FAIL,
+//             payload: err.response.data.msg
+//         })
+//     }
+// }
 
 export const completedPickup = (id) => async(dispatch, getState) => {
     try {

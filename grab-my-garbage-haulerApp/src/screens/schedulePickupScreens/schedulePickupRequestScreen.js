@@ -10,23 +10,28 @@ import { fromDate } from '../../helpers/schedulePickuphelper'
 
 import { getScheduledPickups } from '../../redux/actions/scheduleRequestActions'
 
-import Headercomponent from '../../components/headerComponent'
-
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Schedulepickuprequestscreen = ({navigation}) => {
     const dispatch = useDispatch()
 
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
     const scheduledPickups = useSelector((state) => state.retrieveSchedulePickup)
     const { loading, pickupInfo } = scheduledPickups
 
     useEffect(() => {
-        dispatch(getScheduledPickups())
+        if(loading === undefined) {
+            dispatch(getScheduledPickups(userInfo._id, userInfo.token))
+        }
     }, [])
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <Headercomponent name = 'Pickup' />
+            <View style = {styles.container2}> 
+                <Text style = {styles.text}>Scheduled Pickups</Text>
+            </View>
 
             <View style = {styles.container}>
                 {loading === true ?
@@ -119,10 +124,24 @@ export default Schedulepickuprequestscreen
 const styles = StyleSheet.create({
 
     container:{
-        height: 9*SCREEN_HEIGHT/10,
+        height: 9.2*SCREEN_HEIGHT/10,
         backgroundColor: colors.white,
         padding: 20,
         borderRadius: 30
+    },
+    container2:{
+        backgroundColor: colors.blue1,
+        paddingLeft: 25, 
+        //marginBottom: 0,
+        height: 0.8*SCREEN_HEIGHT/10,
+    },
+    text:{
+        display: 'flex',
+        top: 26,
+        left: 15,
+        color: colors.blue2,
+        fontWeight: 'bold',
+        fontSize: 16
     },
     card:{
         width: SCREEN_WIDTH/1.15,

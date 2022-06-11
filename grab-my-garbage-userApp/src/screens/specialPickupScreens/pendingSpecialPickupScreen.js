@@ -6,10 +6,9 @@ import LottieView from 'lottie-react-native'
 import { Icon, Button } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
-import { dateHelper, timeHelper, date1Helper } from '../../helpers/pickupHelper'
+import { dateHelper, timeHelper } from '../../helpers/pickupHelper'
 
 import { getPendingPickups, getCompletedPickups } from '../../redux/actions/specialPickupActions'
-import { PENDING_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialPickupConstants'
 
 import Headercomponent from '../../components/headerComponent'
 
@@ -29,10 +28,10 @@ const Pendingspecialpickupscreen = ({navigation}) => {
     const { socket } = socketHolder
 
     useEffect(() => {
-        if(userInfo !== undefined) {
-            dispatch(getPendingPickups())
+        if(loading === undefined) {
+            dispatch(getPendingPickups(userInfo._id, userInfo.token))
         }
-    }, [userInfo])
+    }, [])
 
     // useEffect(() => {
     //     if(pickupInfo !== undefined) {

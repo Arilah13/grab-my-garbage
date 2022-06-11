@@ -25,10 +25,10 @@ const Acceptedspecialpickupscreen = ({navigation}) => {
     const { loading, pickupInfo } = retrieveAcceptedPickups
 
     useEffect(() => {
-        if(userInfo !== undefined) {
-            dispatch(getAcceptedPickups())
+        if(loading === undefined) {
+            dispatch(getAcceptedPickups(userInfo._id, userInfo.token))
         }
-    }, [userInfo])
+    }, [])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>

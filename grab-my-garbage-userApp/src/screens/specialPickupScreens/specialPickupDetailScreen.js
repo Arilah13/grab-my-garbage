@@ -9,7 +9,7 @@ import axios from 'axios'
 import { colors } from '../../global/styles'
 import { dateHelper, date1Helper, timeHelper } from '../../helpers/pickupHelper'
 
-import { getPendingPickups } from '../../redux/actions/specialPickupActions'
+import { PENDING_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialPickupConstants'
 
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/pickupComponent/mapComponent'
@@ -27,9 +27,16 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
     const [modalVisible1, setModalVisible1] = useState(false)
     const [loading, setLoading] = useState(false)
     const [disable, setDisable] = useState(false)
+    const [convo, setConvo] = useState()
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
+
+    const retrievePendingPickups = useSelector(state => state.retrievePendingPickups)
+    const { pickupInfo } = retrievePendingPickups
+
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { conversation } = getAllConversation
 
     const config = {
         headers: {
@@ -42,11 +49,13 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
         setLoading(true)
         const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialpickup/${id}`, config)
         if(res.status === 200) {
-            dispatch(getPendingPickups())
-            setTimeout(() => {
-                setLoading(false)
-                navigation.navigate('pendingPickup')
-            }, 3000)
+            await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
+            dispatch({
+                type: PENDING_PICKUP_RETRIEVE_SUCCESS,
+                payload: pickupInfo
+            })
+            setLoading(false)
+            navigation.navigate('pendingPickup')
         }  
     }
 
@@ -55,6 +64,13 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
             setDisable(true)
         } else if(item.active === 0) {
             setDisable(false)
+        }
+    }, [])
+
+    useEffect(async() => {
+        if(name === 'Accepted Pickups') {
+            const convo = await conversation.find((convo) => convo.conversation.haulerId._id === item.pickerId._id && convo.conversation.userId._id === userInfo._id)
+            setConvo(convo)
         }
     }, [])
 
@@ -94,15 +110,18 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                             }}
                         />
                     </Pressable>
+
                     <View style = {{flex: 1, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30, padding: 15}}>
                         <View style = {styles.container3}>
                             <Text style = {styles.text3}>Pickup Scheduled on:</Text>
                             <Text style = {styles.text4}>{date1Helper(item.datetime) + ' ' + timeHelper(item.datetime)}</Text>
                         </View>
+
                         <View style = {{...styles.container5, paddingTop: 0}}>
                             <Text style = {styles.text3}>{name === 'Completed Pickups' ? 'Pickup Collected On:' : 'Collect Pickup Before:'}</Text>
                             <Text style = {styles.text4}>{name === 'Completed Pickups' ? dateHelper(item.datetime)+' '+completedTime : dateHelper(item.datetime)+' '+timeHelper(item.datetime)}</Text>
                         </View>
+
                         <View style = {styles.container4}>
                             <Text style = {styles.text5}>Trash Categories:</Text>
                             <View style = {{position: 'absolute'}}>
@@ -121,43 +140,49 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                                 </View> : null
                             }
                         </View>
+
                         <View style = {{...styles.container5, paddingTop: 20}}>
                             <Text style = {styles.text3}>Weight:</Text>
                             <Text style = {styles.text4}>{item.weight} kg</Text>
                         </View>
+
                         <View style = {{...styles.container5, paddingBottom: 5, paddingTop: 0}}>
                             <Text style = {styles.text3}>Optional Images:</Text>
                             {
-                                item.image === null ? 
+                                item.image === null &&
                                 <Text style = {styles.text4}>No Images Attached</Text>
-                                : null
                             }
                         </View>
+
                         <View style = {{alignSelf: 'center'}}>
                             {
-                                item.image !== null ? 
+                                item.image !== null && 
                                 <Image 
                                     source = {{uri: item.image}}
                                     resizeMode = 'contain'
                                     style = {styles.image}
-                                /> : null
+                                />
                             }
                         </View>
-                        <View style = {{...styles.container5, paddingBottom: 0}}>
+
+                        <View style = {{...styles.container5, paddingBottom: 0, paddingTop: 0}}>
                             <Text style = {styles.text3}>Payment:</Text>
                             <Text style = {styles.text4}>Rs. {item.payment}</Text>
                         </View>
+
                         <View style = {styles.container5}>
                             <Text style = {styles.text3}>Payment Method:</Text>
                             <Text style = {styles.text4}>{item.paymentMethod}</Text>
                         </View>
+
                         {
-                            name === 'Accepted Pickups' ? 
+                            name === 'Accepted Pickups' &&
                             <>
                             <View style = {{...styles.container5, paddingTop: 0}}>
                                 <Text style = {styles.text3}>Hauler Name:</Text>
                                 <Text style = {styles.text4}>{item.pickerId.name}</Text>
                             </View> 
+
                             <TouchableOpacity 
                                 style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
                                 onPress = {() => setModalVisible1(true)}
@@ -171,8 +196,8 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                                 <Text style = {styles.text7}>Chat With Hauler</Text>
                             </TouchableOpacity>
                             </>
-                            : null
                         }
+
                         {
                             item.accepted === 0 && item.completed === 0 &&
                             <View style = {{alignSelf: 'center', flexDirection: 'row', marginTop: 20}}>
@@ -183,7 +208,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                                     disabled = {loading || disable}
                                     onPress = {() => handleCancel(item._id)}
                                 />
-                        </View>
+                            </View>
                         }
                     </View>
 
@@ -203,7 +228,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                         deviceWidth = {SCREEN_WIDTH}
                     >
                         <View style = {styles.view1}>
-                            <Mapcomponent location = {item.location[0]} item = {item} setModalVisible = {setModalVisible} type = 'special' navigation = {navigation} />
+                            <Mapcomponent location = {item.location[0]} item = {item} setModalVisible = {setModalVisible} type = 'special' navigation = {navigation} convo = {convo} />
                         </View>                
                     </Modal>
 
@@ -223,7 +248,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                         deviceWidth = {SCREEN_WIDTH}
                     >
                         <View style = {styles.view2}>
-                            <Chatcomponent haulerid = {item.pickerId} pickupid = {item._id} setModalVisible = {setModalVisible1}/>
+                            <Chatcomponent haulerid = {item.pickerId} pickupid = {item._id} setModalVisible = {setModalVisible1} convo = {convo}/>
                         </View>                
                     </Modal>
 
@@ -299,8 +324,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     image:{
-        height: 200,
-        width: 200,
+        height: 150,
+        width: 180,
         //borderRadius: 500,
         alignContent: 'center'
     },
