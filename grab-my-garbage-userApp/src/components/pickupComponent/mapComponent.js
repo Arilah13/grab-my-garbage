@@ -13,6 +13,8 @@ import { mapStyle } from '../../global/mapStyle'
 import { GOOGLE_MAPS_APIKEY } from '@env'
 
 import { getAcceptedPickups, getCompletedPickups } from '../../redux/actions/specialPickupActions'
+import { receiverRead } from '../../redux/actions/conversationActions'
+import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
 
 import Chatcomponent from './chatComponent'
 
@@ -22,7 +24,6 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 
 const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalVisible, convo}) => {
-
     const dispatch = useDispatch()
 
     const mapView = useRef()
@@ -46,6 +47,12 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
     const ongoingPickupLocation = useSelector((state) => state.ongoingPickupLocation)
     const { ongoingPickups: ongoingSpecialPickups } = ongoingPickupLocation
 
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { conversation } = getAllConversation
+
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
     const [redo, setRedo] = useState(true)
     const [pickup, setPickup] = useState(null)
     const [complete, setComplete] = useState(false)
@@ -68,6 +75,23 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
 
         const final = hour_12 + ':' + minutes + (hour >= 12 ? ' PM' : ' AM')  
         setTime(final)
+    }
+
+    const messageRead = async(haulerId) => {
+        const index = await conversation.findIndex((convo) => convo.conversation.haulerId._id === haulerId && convo.conversation.userId._id === userInfo._id)
+        
+        const element = await conversation.splice(index, 1)[0]
+        
+        if(element.conversation.receiverUserRead === false) {
+            element.conversation.receiverUserRead = true
+            dispatch(receiverRead(element.conversation._id))
+        }
+        
+        await conversation.splice(index, 0, element)
+        dispatch({
+            type: GET_ALL_CONVERSATIONS_SUCCESS,
+            payload: conversation
+        })
     }
 
     useEffect(() => {
@@ -339,7 +363,10 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
                                     style = {{
                                         flexDirection: 'row', 
                                     }}
-                                    onPress = {() => setModalVisible1(true)}
+                                    onPress = {() => {
+                                        messageRead(item.pickerId._id)
+                                        setModalVisible1(true)
+                                    }}
                                 >
                                     <Icon
                                         type = 'material'

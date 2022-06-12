@@ -9,134 +9,33 @@ import { colors } from '../../global/styles'
 import { date1Helper } from '../../helpers/specialPickuphelper'
 
 import { receiverRead, addCurrentConvo } from '../../redux/actions/conversationActions'
+import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Chatmenuscreen = ({navigation}) => {
-    const data = useRef([])
-
     const dispatch = useDispatch()
-
-    const [convoData, setConvoData] = useState([])
-    const [assigned, setAssigned] = useState(false)
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading, conversation } = getAllConversation
 
-    const socketHolder = useSelector((state) => state.socketHolder)
-    const { socket } = socketHolder
-
-    const currentConvo = useSelector((state) => state.currentConvo)
-
     const messageRead = async(id) => {
-        const index = data.current.findIndex((d, index) => {
-            if(d.conversation._id === id) {
-                return Promise.all(index)
-            }
-        })
-        Promise.all(index)
-        const element = data.current.splice(index, 1)[0]
-        Promise.all(element)
+        const index = await conversation.findIndex((convo) => convo.conversation._id === id)
+        
+        const element = await conversation.splice(index, 1)[0]
+        
         if(element.conversation.receiverHaulerRead === false) {
             element.conversation.receiverHaulerRead = true
             dispatch(receiverRead(id))
         }
-        data.current.splice(index, 0, element)
-        data.current = [...data.current]
-        setConvoData(data.current)
+        
+        await conversation.splice(index, 0, element)
+        dispatch({
+            type: GET_ALL_CONVERSATIONS_SUCCESS,
+            payload: conversation
+        })
     }
-
-    useEffect(async() => {
-        if(conversation !== undefined && assigned === false) {
-            setAssigned(true)
-            setConvoData(conversation)
-            data.current = conversation
-        }
-    }, [conversation])
-
-    useEffect(() => {
-        if(currentConvo.convo === undefined) {
-            socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
-                const index = data.current.findIndex((d, index) => {
-                    if(d.conversation.userId._id === senderid) {
-                        return Promise.all(index)
-                    }
-                })
-                Promise.all(index)
-                if(index >= 0) {
-                    const element = data.current.splice(index, 1)[0]
-                    Promise.all(element)
-                    element.message.text = text
-                    element.message.created = createdAt
-                    element.conversation.receiverHaulerRead = false
-                    data.current = [element, ...data.current]
-                    setConvoData(data.current)
-                }
-                else if(index === -1) {
-                    const element = {
-                        conversation: {
-                            _id: createdAt,
-                            userId: {
-                                _id: sender._id,
-                                image: sender.avatar,
-                                name: sender.name
-                            },
-                            receiverHaulerRead: false
-                        },
-                        message: {
-                            created: createdAt,
-                            text: text
-                        }
-                    }
-                    data.current = [element, ...data.current]
-                    setConvoData(data.current)
-                }
-            }) 
-        } else if (currentConvo.convo !== undefined) {
-            socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
-                const index = data.current.findIndex((d, index) => {
-                    if(d.conversation.userId._id === senderid) {
-                        return Promise.all(index)
-                    }
-                })
-                Promise.all(index)
-                if(index >= 0) {
-                    const element = data.current.splice(index, 1)[0]
-                    Promise.all(element)
-                    element.message.text = text
-                    element.message.created = createdAt
-                    if(currentConvo.convo === senderid) {
-                        element.conversation.receiverHaulerRead = true
-                    }
-                    if(currentConvo.convo !== senderid) {
-                        element.conversation.receiverHaulerRead = false
-                    }
-                    data.current = [element, ...data.current]
-                    setConvoData(data.current)
-                }
-                else if(index === -1) {
-                    const element = {
-                        conversation: {
-                            _id: createdAt,
-                            userId: {
-                                _id: sender._id,
-                                image: sender.avatar,
-                                name: sender.name
-                            },
-                            receiverHaulerRead: false
-                        },
-                        message: {
-                            created: createdAt,
-                            text: text
-                        }
-                    }
-                    data.current = [element, ...data.current]
-                    setConvoData(data.current)
-                }
-            }) 
-        }
-    }, [socket, currentConvo])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -144,7 +43,7 @@ const Chatmenuscreen = ({navigation}) => {
                 <Text style = {styles.title}>Chat</Text>
             </View>
             {
-                loading === true && conversation === undefined && assigned === false ?
+                loading === true && conversation === undefined ?
                 <LottieView 
                     source = {require('../../../assets/animation/truck_loader.json')}
                     style = {{
@@ -159,17 +58,16 @@ const Chatmenuscreen = ({navigation}) => {
                 <View style = {styles.container}>
                     <View style = {{alignItems: 'center'}}>
                         <FlatList
-                            data = {convoData}
-                            extraData = {convoData}
+                            data = {conversation}
+                            extraData = {conversation}
                             keyExtractor = {(item)=>item.conversation._id}
                             inverted
                             renderItem = {({item}) => (
                                 <Pressable 
                                     style = {styles.card}
-                                    onPress = {async() => {
-                                        await messageRead(item.conversation._id)
-                                        dispatch(addCurrentConvo(item.conversation._id))
-                                        setAssigned(false)
+                                    onPress = {() => {
+                                        messageRead(item.conversation._id)
+                                        dispatch(addCurrentConvo(item.conversation.userId._id))
                                         navigation.navigate('Message', {userid: item.conversation.userId, message: item.totalMessage, id: item.conversation._id})
                                     }}
                                 >
@@ -184,7 +82,7 @@ const Chatmenuscreen = ({navigation}) => {
                                         <View style = {styles.textSection}>
                                             <View style = {styles.userInfoText}>
                                                 <Text style = {styles.userName}>{item.conversation.userId.name}</Text>
-                                                <Text style = {styles.postTime}>{date1Helper(item.message.created)}</Text>
+                                                <Text style = {styles.postTime}>{date1Helper(item.conversation.updatedAt)}</Text>
                                             </View>
                                             <View style = {styles.userInfoText}>
                                                 <Text style = {styles.messageText}>{item.message.text}</Text>

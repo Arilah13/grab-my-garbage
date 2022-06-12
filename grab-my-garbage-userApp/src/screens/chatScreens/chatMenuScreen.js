@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Icon } from 'react-native-elements'
+import axios from 'axios'
 
-import { receiverRead, addCurrentConvo } from '../../redux/actions/conversationActions'
+import { addCurrentConvo, receiverRead } from '../../redux/actions/conversationActions'
+import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
 
 import { colors } from '../../global/styles'
 import { date1Helper } from '../../helpers/pickupHelper'
@@ -14,131 +16,27 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Chatmenuscreen = ({navigation}) => {
-    const data = useRef([])
-    
     const dispatch = useDispatch()
-
-    const [assigned, setAssigned] = useState(false)
-    const [convoData, setConvoData] = useState([])
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading, conversation } = getAllConversation
 
-    const currentConvo = useSelector((state) => state.currentConvo)
-
-    const socketHolder = useSelector((state) => state.socketHolder)
-    const { socket } = socketHolder
-
     const messageRead = async(id) => {
-        const index = data.current.findIndex((d, index) => {
-            if(d.conversation._id === id) {
-                return Promise.all(index)
-            }
-        })
-        Promise.all(index)
-        const element = data.current.splice(index, 1)[0]
-        Promise.all(element)
+        const index = await conversation.findIndex((convo) => convo.conversation._id === id)
+        
+        const element = await conversation.splice(index, 1)[0]
+        
         if(element.conversation.receiverUserRead === false) {
             element.conversation.receiverUserRead = true
             dispatch(receiverRead(id))
         }
-        data.current.splice(index, 0, element)
-        data.current = [...data.current]
-        setConvoData(data.current)
+        
+        await conversation.splice(index, 0, element)
+        dispatch({
+            type: GET_ALL_CONVERSATIONS_SUCCESS,
+            payload: conversation
+        })
     }
-
-    useEffect(async() => {
-        if(conversation !== undefined && assigned === false) {
-            setAssigned(true)
-            setConvoData(conversation)
-            data.current = conversation
-        }
-    }, [conversation])
-
-    useEffect(() => {
-        if(currentConvo.convo === undefined) {
-            socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
-                
-                const index = data.current.findIndex((d, index) => {
-                    if(d.conversation.haulerId._id === senderid) {
-                        return Promise.all(index)
-                    }
-                })
-                Promise.all(index)
-                if(index >= 0) {
-                    const element = data.current.splice(index, 1)[0]
-                    Promise.all(element)
-                    element.message.text = text
-                    element.message.created = createdAt
-                    element.conversation.receiverUserRead = false
-                    data.current = [element, ...data.current]
-                    setConvoData(data.current)
-                }
-                else if(index === -1) {
-                    const element = {
-                        conversation: {
-                            _id: createdAt,
-                            haulerId: {
-                                _id: sender._id,
-                                image: sender.avatar,
-                                name: sender.name
-                            },
-                            receiverUserRead: false
-                        },
-                        message: {
-                            created: createdAt,
-                            text: text
-                        }
-                    }
-                    data.current = [element, ...data.current]
-                    setConvoData(data.current)
-                }
-            })
-        } else if (currentConvo.convo !== undefined) {
-            socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
-                console.log(senderid)
-                const index = data.current.findIndex((d, index) => {
-                    if(d.conversation.haulerId._id === senderid) {
-                        return Promise.all(index)
-                    }
-                })
-                Promise.all(index)
-                if(index >= 0) {
-                    const element = data.current.splice(index, 1)[0]
-                    Promise.all(element)
-                    element.message.text = text
-                    element.message.created = createdAt
-                    if(currentConvo.convo === senderid) {
-                        element.conversation.receiverUserRead = true
-                    } 
-                    if(currentConvo.convo !== senderid) {
-                        element.conversation.receiverUserRead = false
-                    }
-                    data.current = [element, ...data.current]
-                    setConvoData(data.current)
-                }
-                else if(index === -1) {
-                    const element = {
-                        conversation: {
-                            _id: createdAt,
-                            haulerId: {
-                                _id: sender._id,
-                                image: sender.avatar,
-                                name: sender.name
-                            },
-                            receiverUserRead: false
-                        },
-                        message: {
-                            created: createdAt,
-                            text: text
-                        }
-                    }
-                    data.current = [element, ...data.current]
-                    setConvoData(data.current)
-                }
-            })
-        }
-    }, [socket, currentConvo])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -146,7 +44,7 @@ const Chatmenuscreen = ({navigation}) => {
                 <Text style = {styles.title}>Chat</Text>
             </View>
             {
-                loading === true && conversation === undefined && assigned === false ?
+                loading === true && conversation === undefined ?
                 <LottieView 
                     source = {require('../../../assets/animation/truck_loader.json')}
                     style = {{
@@ -161,15 +59,13 @@ const Chatmenuscreen = ({navigation}) => {
                 <View style = {styles.container}>
                     <View style = {{alignItems: 'center'}}>
                         <FlatList
-                            data = {convoData}
-                            extraData = {convoData}
+                            data = {conversation}
                             keyExtractor = {(item)=>item.conversation._id}
                             renderItem = {({item}) => (
                                 <Pressable 
                                     style = {styles.card}
-                                    onPress = {async() => {
-                                        await messageRead(item.conversation._id)
-                                        setAssigned(false)
+                                    onPress = {() => {
+                                        messageRead(item.conversation._id)
                                         dispatch(addCurrentConvo(item.conversation.haulerId._id))
                                         navigation.navigate('Message', {haulerid: item.conversation.haulerId, message: item.totalMessage, id: item.conversation._id})
                                     }}
@@ -185,7 +81,7 @@ const Chatmenuscreen = ({navigation}) => {
                                         <View style = {styles.textSection}>
                                             <View style = {styles.userInfoText}>
                                                 <Text style = {styles.userName}>{item.conversation.haulerId.name}</Text>
-                                                <Text style = {styles.postTime}>{date1Helper(item.message.created)}</Text>
+                                                <Text style = {styles.postTime}>{date1Helper(item.conversation.updatedAt)}</Text>
                                             </View>
                                             <View style = {styles.userInfoText}>
                                                 <Text style = {styles.messageText}>{item.message.text}</Text>

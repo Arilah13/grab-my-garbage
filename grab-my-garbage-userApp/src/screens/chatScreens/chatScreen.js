@@ -9,7 +9,7 @@ import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
 import { sendMessage, receiverRead } from '../../redux/actions/conversationActions'
-import { RESET_CURRENT_CONVO } from '../../redux/constants/conversationConstants'
+import { RESET_CURRENT_CONVO, GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -27,7 +27,30 @@ const Chatscreen = ({route, navigation}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
-    const sendMsg = (message) => {
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { conversation } = getAllConversation
+
+    const sendMsg = async(message) => {
+        const convo = await conversation.splice(conversation.findIndex(convo => convo.conversation._id === id), 1)[0]
+        const element = {
+            _id: Date.now(),
+            conversationId: id,
+            createdAt: message[0].createdAt,
+            created: message[0].createdAt,
+            sender: [
+                message[0].user._id,
+                message[0].user.name,
+                message[0].user.avatar
+            ],
+            text: message[0].text
+        }
+        await convo.totalMessage.splice(convo.totalMessage.length, 0, element)
+        convo.message = element
+        await conversation.splice(0, 0, convo)
+        dispatch({
+            type: GET_ALL_CONVERSATIONS_SUCCESS,
+            payload: conversation
+        })
         dispatch(sendMessage({
             text: message[0].text,
             createdAt: message[0].createdAt,

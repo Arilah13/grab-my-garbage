@@ -7,7 +7,8 @@ import { Icon } from 'react-native-elements'
 import { colors } from '../../global/styles'
 import { renderBubble, renderComposer, renderInputToolbar, renderMessage, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
 
-import { sendMessage, receiverRead } from '../../redux/actions/conversationActions'
+import { sendMessage, receiverRead, addCurrentConvo } from '../../redux/actions/conversationActions'
+import { GET_ALL_CONVERSATIONS_SUCCESS, RESET_CURRENT_CONVO } from '../../redux/constants/conversationConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -23,7 +24,30 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
-    const sendMsg = (message) => {
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { conversation } = getAllConversation
+
+    const sendMsg = async(message) => {
+        const convo = await conversation.splice(conversation.findIndex(convo => convo.conversation._id === id), 1)[0]
+        const element = {
+            _id: Date.now(),
+            conversationId: id,
+            createdAt: message[0].createdAt,
+            created: message[0].createdAt,
+            sender: [
+                message[0].user._id,
+                message[0].user.name,
+                message[0].user.avatar
+            ],
+            text: message[0].text
+        }
+        await convo.totalMessage.splice(convo.totalMessage.length, 0, element)
+        convo.message = element
+        await conversation.splice(0, 0, convo)
+        dispatch({
+            type: GET_ALL_CONVERSATIONS_SUCCESS,
+            payload: conversation
+        })
         dispatch(sendMessage({
             text: message[0].text,
             createdAt: message[0].createdAt,
@@ -60,6 +84,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
     }, [socket])
 
     useEffect(async() => {
+        dispatch(addCurrentConvo(userid._id))
         let array = []
         if(convo.totalMessage.length > 0) {
             await convo.totalMessage.slice(0).reverse().map((message) => {
@@ -85,7 +110,12 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
     return (
         <View style = {{backgroundColor: colors.white, borderTopRightRadius: 15, borderTopLeftRadius: 15, overflow: 'hidden', height: SCREEN_HEIGHT}}>
                 <View style = {{height: 1*SCREEN_HEIGHT/10, flexDirection: 'row', backgroundColor: colors.white}}>
-                    <Pressable onPress = {() => setModalVisible(false)}>
+                    <Pressable onPress = {() => {
+                        setModalVisible(false)
+                        dispatch({
+                            type: RESET_CURRENT_CONVO
+                        })
+                    }}>
                         <Icon 
                             type = 'font-awesome-5'
                             name = 'angle-left'

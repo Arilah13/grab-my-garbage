@@ -1,20 +1,22 @@
 import axios from 'axios'
 import * as actionTypes from '../constants/scheduleRequestConstants'
 
-export const getScheduledPickups = (id, token) => async(dispatch) => {
+export const getScheduledPickups = () => async(dispatch, getState) => {
     try{
         dispatch({
             type: actionTypes.SCHEDULED_PICKUP_RETRIEVE_REQUEST
         })
 
+        const { userLogin: { userInfo } } = getState()
+
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${userInfo.token}`
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/schedulerequest/scheduledPickup/${id}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/schedulerequest/scheduledPickup/${userInfo._id}`, 
         config)
 
         dispatch({

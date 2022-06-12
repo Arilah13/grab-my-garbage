@@ -8,7 +8,7 @@ import { Icon, Button } from 'react-native-elements'
 import { colors } from '../../global/styles'
 import { dateHelper, timeHelper } from '../../helpers/pickupHelper'
 
-import { getPendingPickups, getCompletedPickups } from '../../redux/actions/specialPickupActions'
+import { getPendingPickups } from '../../redux/actions/specialPickupActions'
 
 import Headercomponent from '../../components/headerComponent'
 
@@ -17,9 +17,6 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Pendingspecialpickupscreen = ({navigation}) => {
     const dispatch = useDispatch()
-    
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
 
     const retrievePendingPickups = useSelector(state => state.retrievePendingPickups)
     const { loading, pickupInfo } = retrievePendingPickups
@@ -29,7 +26,7 @@ const Pendingspecialpickupscreen = ({navigation}) => {
 
     useEffect(() => {
         if(loading === undefined) {
-            dispatch(getPendingPickups(userInfo._id, userInfo.token))
+            dispatch(getPendingPickups())
         }
     }, [])
 

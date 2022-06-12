@@ -8,6 +8,8 @@ import axios from 'axios'
 import { colors } from '../../global/styles'
 
 import { PENDING_PICKUP_RETRIEVE_SUCCESS, UPCOMING_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialRequestConstants'
+import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
+import { receiverRead } from '../../redux/actions/conversationActions'
 
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/mapComponent'
@@ -114,6 +116,23 @@ const Pickupdetailscreen = ({navigation, route}) => {
             setLoading1(false)
             navigation.navigate('pendingPickupScreen')
         }  
+    }
+
+    const messageRead = async(userId) => {
+        const index = await conversation.findIndex((convo) => convo.conversation.userId._id === userId && convo.conversation.haulerId._id === userInfo._id)
+        
+        const element = await conversation.splice(index, 1)[0]
+        
+        if(element.conversation.receiverHaulerRead === false) {
+            element.conversation.receiverHaulerRead = true
+            dispatch(receiverRead(element.conversation._id))
+        }
+        
+        await conversation.splice(index, 0, element)
+        dispatch({
+            type: GET_ALL_CONVERSATIONS_SUCCESS,
+            payload: conversation
+        })
     }
 
     useEffect(() => {
@@ -265,7 +284,10 @@ const Pickupdetailscreen = ({navigation, route}) => {
                         name === 'Upcoming Pickups' ? 
                         <TouchableOpacity 
                             style = {{...styles.container5, paddingTop: 25, justifyContent: 'center', paddingBottom: 15}}
-                            onPress = {() => setModalVisible1(true)}
+                            onPress = {() => {
+                                messageRead(item.customerId._id)
+                                setModalVisible1(true)
+                            }}
                         >
                             <Icon
                                 type = 'material'

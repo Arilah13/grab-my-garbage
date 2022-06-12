@@ -18,15 +18,12 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Schedulepickuprequestscreen = ({navigation}) => {
     const dispatch = useDispatch()
 
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
-
     const retrieveScheduledPickup = useSelector(state => state.retrieveScheduledPickup)
     const { loading, pickupInfo } = retrieveScheduledPickup
 
     useEffect(() => {
         if(loading === undefined) {
-            dispatch(getScheduledPickups(userInfo._id, userInfo.token))
+            dispatch(getScheduledPickups())
         }
     }, [])
 

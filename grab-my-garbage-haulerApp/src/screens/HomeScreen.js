@@ -11,7 +11,7 @@ import { getLatngDiffInMeters } from '../helpers/homehelper'
 import { sendSMS } from '../redux/actions/specialRequestActions'
 import { getScheduledPickupsToCollect, completeScheduledPickup, activeSchedulePickup, inactiveSchedulePickup } from '../redux/actions/scheduleRequestActions'
 import { getUpcomingPickups, completedPickup, activeSpecialPickup } from '../redux/actions/specialRequestActions'
-import { getConversations } from '../redux/actions/conversationActions'
+import { GET_ALL_CONVERSATIONS_SUCCESS } from '../redux/constants/conversationConstants'
 
 import Onlinecomponent from '../components/homeScreen/onlineComponent'
 import Mapcomponent from '../components/homeScreen/mapComponent'
@@ -179,10 +179,6 @@ const Homescreen = ({navigation}) => {
         if(pickupBtn === true)
             choice.current = null
     }, [pickupBtn])
-
-    useEffect(() => {
-        dispatch(getConversations())
-    }, [])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.grey8}}>

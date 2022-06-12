@@ -10,6 +10,8 @@ import { colors } from '../../global/styles'
 import { dayConverter } from '../../helpers/schedulepickupHelper'
 
 import { SCHEDULED_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/scheduledPickupConstants'
+import { receiverRead } from '../../redux/actions/conversationActions'
+import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
 
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/pickupComponent/mapComponent'
@@ -96,6 +98,23 @@ const Scheduledpickupdetail = ({navigation, route}) => {
             setLoadingCancel(false)
             navigation.navigate('ScheduleRequests')
         }
+    }
+
+    const messageRead = async(haulerId) => {
+        const index = await conversation.findIndex((convo) => convo.conversation.haulerId._id === haulerId && convo.conversation.userId._id === userInfo._id)
+        
+        const element = await conversation.splice(index, 1)[0]
+        
+        if(element.conversation.receiverUserRead === false) {
+            element.conversation.receiverUserRead = true
+            dispatch(receiverRead(element.conversation._id))
+        }
+        
+        await conversation.splice(index, 0, element)
+        dispatch({
+            type: GET_ALL_CONVERSATIONS_SUCCESS,
+            payload: conversation
+        })
     }
 
     // const findandActivePickups = () => {
@@ -217,7 +236,10 @@ const Scheduledpickupdetail = ({navigation, route}) => {
 
                         <TouchableOpacity 
                             style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
-                            onPress = {() => setModalVisible1(true)}
+                            onPress = {() => {
+                                messageRead(item.pickerId._id)
+                                setModalVisible1(true)
+                            }}
                         >
                             <Icon
                                 type = 'material'
@@ -304,7 +326,12 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         deviceWidth = {SCREEN_WIDTH}
                     >
                         <View style = {styles.view2}>
-                            <Chatcomponent haulerid = {item.pickerId} pickupid = {item._id} setModalVisible = {setModalVisible1} convo = {convo} />
+                            <Chatcomponent 
+                                haulerid = {item.pickerId} 
+                                pickupid = {item._id} 
+                                setModalVisible = {setModalVisible1} 
+                                convo = {convo} 
+                            />
                         </View>                
                     </Modal>
 

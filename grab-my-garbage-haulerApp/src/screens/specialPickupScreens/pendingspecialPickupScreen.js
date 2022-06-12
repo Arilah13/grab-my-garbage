@@ -15,9 +15,6 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const PendingPickupscreen = ({navigation}) => {
     const dispatch = useDispatch()
 
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
-
     const pendingPickups = useSelector((state) => state.pendingPickups)
     const { loading, pickupInfo } = pendingPickups
 
@@ -26,7 +23,7 @@ const PendingPickupscreen = ({navigation}) => {
 
     useEffect(() => {
         if(loading === undefined) {
-            dispatch(getPendingPickupsOffline(userInfo._id, userInfo.token))
+            dispatch(getPendingPickupsOffline())
         }
     }, [])
 

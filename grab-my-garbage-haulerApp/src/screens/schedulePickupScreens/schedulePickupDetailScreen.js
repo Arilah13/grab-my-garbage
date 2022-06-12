@@ -8,6 +8,9 @@ import Modal from 'react-native-modal'
 import { colors } from '../../global/styles'
 import { dayConverter } from '../../helpers/schedulePickuphelper'
 
+import { receiverRead } from '../../redux/actions/conversationActions'
+import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
+
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/mapComponent'
 import Chatcomponent from '../../components/homeScreen/chatComponent'
@@ -27,6 +30,23 @@ const Scheduledpickupdetail = ({navigation, route}) => {
     const [modalVisible, setModalVisible] = useState(false)
     const [modalVisible1, setModalVisible1] = useState(false)
     const [convo, setConvo] = useState()
+
+    const messageRead = async(userId) => {
+        const index = await conversation.findIndex((convo) => convo.conversation.userId._id === userId && convo.conversation.haulerId._id === userInfo._id)
+        
+        const element = await conversation.splice(index, 1)[0]
+        
+        if(element.conversation.receiverHaulerRead === false) {
+            element.conversation.receiverHaulerRead = true
+            dispatch(receiverRead(element.conversation._id))
+        }
+        
+        await conversation.splice(index, 0, element)
+        dispatch({
+            type: GET_ALL_CONVERSATIONS_SUCCESS,
+            payload: conversation
+        })
+    }
 
     useEffect(async() => {
         const convo = await conversation.find((convo) => convo.conversation.haulerId._id === userInfo._id && convo.conversation.userId._id === item.customerId._id)
@@ -105,7 +125,10 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         </View> 
                         <TouchableOpacity 
                             style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
-                            onPress = {() => setModalVisible1(true)}
+                            onPress = {() => {
+                                messageRead(item.customerId._id)
+                                setModalVisible1(true)
+                            }}
                         >
                             <Icon
                                 type = 'material'

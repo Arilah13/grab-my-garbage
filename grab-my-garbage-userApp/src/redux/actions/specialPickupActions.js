@@ -39,20 +39,22 @@ export const storeSpecialPickupTemp = (info) => (dispatch) => {
     })
 }
 
-export const getPendingPickups = (id, token) => async(dispatch) => {
+export const getPendingPickups = () => async(dispatch, getState) => {
     try{
         dispatch({
             type: actionTypes.PENDING_PICKUP_RETRIEVE_REQUEST
         })
 
+        const { userLogin: { userInfo } } = getState()
+
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${userInfo.token}`
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialpickup/pendingPickups/${id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialpickup/pendingPickups/${userInfo._id}`, config)
 
         dispatch({
             type: actionTypes.PENDING_PICKUP_RETRIEVE_SUCCESS,
@@ -66,20 +68,22 @@ export const getPendingPickups = (id, token) => async(dispatch) => {
     }
 }
 
-export const getCompletedPickups = (id, token) => async(dispatch) => {
+export const getCompletedPickups = () => async(dispatch, getState) => {
     try{
         dispatch({
             type: actionTypes.COMPLETED_PICKUP_RETRIEVE_REQUEST
         })
 
+        const { userLogin: { userInfo } } = getState()
+
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${userInfo.token}`
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialpickup/completedPickups/${id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialpickup/completedPickups/${userInfo._id}`, config)
 
         dispatch({
             type: actionTypes.COMPLETED_PICKUP_RETRIEVE_SUCCESS,
@@ -93,20 +97,22 @@ export const getCompletedPickups = (id, token) => async(dispatch) => {
     }
 }
 
-export const getAcceptedPickups = (id, token) => async(dispatch) => {
+export const getAcceptedPickups = () => async(dispatch, getState) => {
     try{
         dispatch({
             type: actionTypes.ACCEPTED_PICKUP_RETRIEVE_REQUEST
         })
 
+        const { userLogin: { userInfo } } = getState()
+
         const config = {
             headers: {
                 'Content-type': 'application/json',
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${userInfo.token}`
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialpickup/acceptedPickups/${id}`, config)
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/specialpickup/acceptedPickups/${userInfo._id}`, config)
 
         dispatch({
             type: actionTypes.ACCEPTED_PICKUP_RETRIEVE_SUCCESS,

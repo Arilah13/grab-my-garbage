@@ -6,7 +6,7 @@ import LottieView from 'lottie-react-native'
 import { Icon, Button } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
-import { dateHelper, timeHelper, date1Helper } from '../../helpers/pickupHelper'
+import { dateHelper, timeHelper } from '../../helpers/pickupHelper'
 
 import { getCompletedPickups } from '../../redux/actions/specialPickupActions'
 
@@ -17,16 +17,13 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Completedspecialpickupscreen = ({navigation}) => {
     const dispatch = useDispatch()
-    
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
 
     const retrieveCompletedPickups = useSelector(state => state.retrieveCompletedPickups)
     const { loading, pickupInfo } = retrieveCompletedPickups
 
     useEffect(() => {
         if(loading === undefined) {
-            dispatch(getCompletedPickups(userInfo._id, userInfo.token))
+            dispatch(getCompletedPickups())
         }
     }, [])
 

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Icon } from 'react-native-elements'
@@ -9,27 +9,122 @@ import Accountscreen from '../screens/accountScreens/accountScreen'
 import Homescreen from '../screens/homeScreen'
 import Chatmenuscreen from '../screens/chatScreens/chatMenuScreen'
 
+import { GET_ALL_CONVERSATIONS_SUCCESS } from '../redux/constants/conversationConstants'
+
 const Tab = createBottomTabNavigator()
 
 const TabNavigator = () => {
-    //const status = useRef(false)
     const [status, setStatus] = useState(false)
+    const [first, setFirst] = useState(true)
 
     const dispatch = useDispatch()
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
-    const { loading, conversation } = getAllConversation
+    const { conversation } = getAllConversation
 
     const currentConvo = useSelector((state) => state.currentConvo)
 
     const socketHolder = useSelector((state) => state.socketHolder)
-    const { socket } = socketHolder
+    const { loading: socketLoading, socket } = socketHolder
 
-    const updateReadMessage = useSelector((state) => state.updateReadMessage)
-    const { success } = updateReadMessage
+    useEffect(() => {
+        if(socketLoading === false && first === true && conversation !== undefined) {
+            setFirst(false)
+
+            socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
+                const index = await conversation.findIndex((convo) => convo.conversation.haulerId._id === senderid)
+               
+                if(index >= 0) {
+                    const element = await conversation.splice(index, 1)[0]
+                    await element
+
+                    element.message.text = text
+                    element.message.created = createdAt
+
+                    if(currentConvo.convo === undefined) {
+                        element.conversation.receiverUserRead = false
+                        setStatus(true)
+                    } else if(currentConvo.convo !== undefined) {
+                        if(currentConvo.convo === senderid) {
+                            element.conversation.receiverUserRead = true
+                        }
+                        if(currentConvo.convo !== senderid) {
+                            element.conversation.receiverUserRead = false
+                            setStatus(true)
+                        }
+                    }
+
+                    const message = {
+                        _id: Date.now(),
+                        conversationId: element.conversationId,
+                        createdAt: createdAt,
+                        created: createdAt,
+                        sender: [
+                            sender._id,
+                            sender.name,
+                            sender.avatar
+                        ],
+                        text: text
+                    }
+
+                    element.totalMessage.push(message)
+
+                    await conversation.splice(0, 0, element)
+                    dispatch({
+                        type: GET_ALL_CONVERSATIONS_SUCCESS,
+                        payload: conversation
+                    })
+                }
+                else if(index === -1) {
+                    const element = {
+                        conversation: {
+                            _id: createdAt,
+                            updatedAt: createdAt,
+                            createdAt: createdAt,
+                            haulerId: {
+                                _id: sender._id,
+                                image: sender.avatar,
+                                name: sender.name
+                            },
+                            receiverUserRead: false
+                        },
+                        message: {
+                            created: createdAt,
+                            createdAt: createdAt,
+                            text: text,
+                            _id: Date.now(),
+                            conversationId: element.conversationId,
+                            sender: [
+                                sender._id,
+                                sender.name,
+                                sender.avatar
+                            ]
+                        },
+                        lastMessage: [{
+                            created: createdAt,
+                            createdAt: createdAt,
+                            text: text,
+                            _id: Date.now(),
+                            conversationId: element.conversationId,
+                            sender: [
+                                sender._id,
+                                sender.name,
+                                sender.avatar
+                            ]
+                        }]
+                    }
+                    await conversation.splice(0, 0, element)
+                    dispatch({
+                        type: GET_ALL_CONVERSATIONS_SUCCESS,
+                        payload: conversation
+                    })
+                }
+            })
+        }
+    }, [socket, conversation])
 
     useEffect(async() => {
-        if(loading === false) {
+        if(conversation !== undefined) {
             const read = await conversation.filter((convo) => {
                 return convo.conversation.receiverUserRead === false
             })
@@ -40,35 +135,7 @@ const TabNavigator = () => {
                 setStatus(false)
             }
         }
-    }, [conversation])
-
-    useEffect(() => {
-        if(socket) {
-            if(currentConvo.convo === undefined) {
-                socket.on('getMessage', async() => {
-                    //status.current = true
-                    setStatus(true)
-                })
-            } else if (currentConvo.convo !== undefined) {
-                socket.on('getMessage', async({senderid}) => {
-                    if(currentConvo.convo === senderid) {
-                        setStatus(false)
-                    }
-                    if(currentConvo.convo !== senderid) {
-                        setStatus(true)
-                    }
-                    //status.current = true
-                    
-                })
-            }
-        }
-    }, [socket, currentConvo])
-
-    // useEffect(() => {
-    //     if(success && success === true) {
-    //         setStatus(false)
-    //     }
-    // }, [updateReadMessage])
+    }, [currentConvo])
 
     return (
         <Tab.Navigator

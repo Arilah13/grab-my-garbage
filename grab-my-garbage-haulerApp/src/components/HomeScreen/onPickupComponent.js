@@ -9,6 +9,9 @@ import { colors } from '../../global/styles'
 
 import Chatcomponent from './chatComponent'
 
+import { receiverRead } from '../../redux/actions/conversationActions'
+import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
+
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
@@ -21,6 +24,23 @@ const Onpickupcomponent = ({handlePickupComplete, order, arrived}) => {
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
+
+    const messageRead = async(userId) => {
+        const index = await conversation.findIndex((convo) => convo.conversation.userId._id === userId && convo.conversation.haulerId._id === userInfo._id)
+        
+        const element = await conversation.splice(index, 1)[0]
+        
+        if(element.conversation.receiverHaulerRead === false) {
+            element.conversation.receiverHaulerRead = true
+            dispatch(receiverRead(element.conversation._id))
+        }
+        
+        await conversation.splice(index, 0, element)
+        dispatch({
+            type: GET_ALL_CONVERSATIONS_SUCCESS,
+            payload: conversation
+        })
+    }
 
     useEffect(async() => {
         const convo = await conversation.find((convo) => convo.conversation.haulerId._id === userInfo._id && convo.conversation.userId._id === order.customerId._id)
@@ -62,7 +82,10 @@ const Onpickupcomponent = ({handlePickupComplete, order, arrived}) => {
                 style = {{
                     flexDirection: 'row', 
                 }}
-                onPress = {() => setModalVisible(true)}
+                onPress = {() => {
+                    messageRead(order.customerId._id)
+                    setModalVisible(true)
+                }}
             >
                 <Icon
                     type = 'material'

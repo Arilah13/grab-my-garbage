@@ -7,6 +7,7 @@ import { uploadDetails } from '../redux/actions/userActions'
 import { addOrigin } from '../redux/actions/mapActions'
 import { getScheduledPickups } from '../redux/actions/scheduleRequestActions'
 import { getCompletedPickups, getPendingPickupsOffline, getUpcomingPickups } from '../redux/actions/specialRequestActions'
+import { getConversations } from '../redux/actions/conversationActions'
 
 import Splashscreen from '../screens/authScreens/splashScreen'
 import Rootnavigator from './RootNavigator'
@@ -22,17 +23,8 @@ const Splashnavigator = () => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket: skt } = socketHolder
 
-    const completedPickups = useSelector((state) => state.completedPickups)
-    const { loading: completed } = completedPickups
-
-    const pendingPickups = useSelector((state) => state.pendingPickups)
-    const { loading: pending } = pendingPickups
-
-    const upcomingPickups = useSelector((state) => state.upcomingPickups)
-    const { loading: upcoming } = upcomingPickups
-
-    const scheduledPickups = useSelector((state) => state.retrieveSchedulePickup)
-    const { loading: schedule } = scheduledPickups
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { loading: conversations } = getAllConversation
 
     useEffect(async() => {
         const result = await AsyncStorage.getItem('haulerInfo')
@@ -41,10 +33,7 @@ const Splashnavigator = () => {
         if(result !== null) {
             const data = JSON.parse(result)
             dispatch(uploadDetails(data))
-            dispatch(getCompletedPickups(data._id, data.token))
-            dispatch(getPendingPickupsOffline(data._id, data.token))
-            dispatch(getUpcomingPickups(data._id, data.token))
-            dispatch(getScheduledPickups(data._id, data.token))
+            dispatch(getConversations(data._id, data.token))
         } else if(result === null) {
             setFirst(false)
         }
@@ -64,8 +53,7 @@ const Splashnavigator = () => {
     return (
         <NavigationContainer>
             {
-                first === true && (loading === true || loading === undefined || upcoming === true || 
-                    pending === true || completed === true || schedule === true) ? (
+                first === true && (loading === true || loading === undefined || conversations === true) ? (
                     <Splashscreen />
                 ) : (
                     <Rootnavigator setFirst = {setFirst} first = {first} />
