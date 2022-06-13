@@ -9,7 +9,7 @@ import Accountscreen from '../screens/accountScreens/accountScreen'
 import Homescreen from '../screens/homeScreen'
 import Chatmenuscreen from '../screens/chatScreens/chatMenuScreen'
 import Topnavigator from './TopNavigator'
-import Schedulepickuprequestscreen from '../screens/schedulePickupScreens/schedulePickupRequestScreen'
+import ScheduleTopNavigator from './ScheduleTopNavigator'
 
 import { GET_ALL_CONVERSATIONS_SUCCESS } from '../redux/constants/conversationConstants'
 
@@ -176,7 +176,7 @@ const TabNavigator = () => {
 
             <Tab.Screen
                 name = 'Schedule'
-                component = {Schedulepickuprequestscreen}
+                component = {ScheduleTopNavigator}
                 options = {{
                     tabBarIcon: ({ focused }) => (
                         <Icon

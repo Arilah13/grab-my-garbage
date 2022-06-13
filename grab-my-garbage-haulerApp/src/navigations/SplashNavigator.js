@@ -5,8 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { uploadDetails } from '../redux/actions/userActions'
 import { addOrigin } from '../redux/actions/mapActions'
-import { getScheduledPickups } from '../redux/actions/scheduleRequestActions'
-import { getCompletedPickups, getPendingPickupsOffline, getUpcomingPickups } from '../redux/actions/specialRequestActions'
 import { getConversations } from '../redux/actions/conversationActions'
 
 import Splashscreen from '../screens/authScreens/splashScreen'
@@ -19,9 +17,6 @@ const Splashnavigator = () => {
 
     const userLogin = useSelector((state) => state.userLogin)
     const { loading } = userLogin
-
-    const socketHolder = useSelector((state) => state.socketHolder)
-    const { socket: skt } = socketHolder
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading: conversations } = getAllConversation

@@ -23,7 +23,8 @@ import {
     completeSchedulePickupReducer,
     retrieveCollectSchedulePickupReducer,
     activeSchedulePickupReducer,
-    inactiveSchedulePickupReducer
+    inactiveSchedulePickupReducer,
+    allSchedulePickupReducer
 } from './reducers/scheduleRequestReducer'
 
 import {
@@ -59,6 +60,7 @@ const reducer = combineReducers({
     retrieveCollectSchedulePickup: retrieveCollectSchedulePickupReducer,
     activeSchedulePickup: activeSchedulePickupReducer,
     inactiveSchedulePickup: inactiveSchedulePickupReducer,
+    allSchedulePickup: allSchedulePickupReducer,
 
     socketHolder: socketHolderReducer,
 

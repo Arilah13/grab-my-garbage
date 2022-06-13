@@ -1,14 +1,28 @@
-import React, { useEffect, useRef } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import React, { useCallback } from 'react'
+import { Text, StyleSheet, BackHandler } from 'react-native'
 import LottieView from 'lottie-react-native'
 import { Button } from 'react-native-elements'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useFocusEffect } from '@react-navigation/native'
 
 import { colors } from '../../global/styles'
 
 const Paymentsuccessscreen = ({navigation, route}) => {
-
     const { name } = route.params
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                navigation.navigate('Home')
+                return true
+            }
+
+            BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+            return () => 
+                BackHandler.removeEventListener('hardwareBackPress', onBackPress)
+        }, [])
+    )
 
     return (
         <SafeAreaView style = {styles.container}>

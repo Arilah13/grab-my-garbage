@@ -2,17 +2,16 @@ import React from 'react'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { StatusBar } from 'react-native'
 
-import Completedstacknavigator from './CompletedStackNavigator'
-import Pendingstacknavigator from './PendingStackNavigator'
-import Upcomingstacknavigator from './UpcomingStackNavigator'
-
 import { colors } from '../global/styles'
+
+import TodayScheduleStackNavigator from './TodayScheduleStackNavigator'
+import Allscheduledetailscreen from '../screens/schedulePickupScreens/allScheduleDetailScreen'
 
 const Tab = createMaterialTopTabNavigator()
 
 const Height = StatusBar.currentHeight
 
-const Topnavigator = ({navigation}) => {
+const ScheduleTopNavigator = ({navigation}) => {
     return (
         <Tab.Navigator
             screenOptions = {{
@@ -47,30 +46,20 @@ const Topnavigator = ({navigation}) => {
             tabBarPosition = 'top'
         >
             <Tab.Screen 
-                name = "pendingPickup" 
-                component = {Pendingstacknavigator} 
+                name = "TodaySchedule" 
+                component = {TodayScheduleStackNavigator} 
                 options = {{
-                    tabBarLabel: 'Pending'
+                    tabBarLabel: 'Today'
                 }}
                 initialParams = {{
                     navigation1: navigation
                 }}
             />
             <Tab.Screen 
-                name = "upcomingPickup" 
-                component = {Upcomingstacknavigator} 
+                name = "AllSchedule" 
+                component = {Allscheduledetailscreen} 
                 options = {{
-                    tabBarLabel: 'Upcoming'
-                }}
-                initialParams = {{
-                    navigation1: navigation
-                }}
-            />
-            <Tab.Screen 
-                name = "completedPickup" 
-                component = {Completedstacknavigator} 
-                options = {{
-                    tabBarLabel: 'Completed'
+                    tabBarLabel: 'All'
                 }}
                 initialParams = {{
                     navigation1: navigation
@@ -80,4 +69,4 @@ const Topnavigator = ({navigation}) => {
     );
 }
 
-export default Topnavigator
+export default ScheduleTopNavigator

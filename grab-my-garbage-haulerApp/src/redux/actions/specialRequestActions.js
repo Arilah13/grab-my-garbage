@@ -204,7 +204,6 @@ export const completedPickup = (id) => async(dispatch, getState) => {
             type: actionTypes.PICKUP_COMPLETED_FAIL,
             payload: err.response.data.msg
         })
-        console.log(err)
     }
 }
 

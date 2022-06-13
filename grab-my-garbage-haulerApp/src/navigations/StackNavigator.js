@@ -12,7 +12,6 @@ import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
 
 import TabNavigator from './TabNavigator'
 import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePickupDetailScreen'
-import Locationscreen from '../screens/schedulePickupScreens/locationScreen'
 import Prepickupscreen from '../screens/prePickupScreen'
 import Changepasswordscreen from '../screens/accountScreens/changePasswordScreen'
 import Chatscreen from '../screens/chatScreens/chatScreen'
@@ -83,14 +82,6 @@ const Stacknavigator = () => {
             <Stack.Screen
                 name = 'ScheduleDetail'
                 component = {Scheduledpickupdetail}
-                options = {{
-                    headerShown: false
-                }}
-            />
-
-            <Stack.Screen
-                name = 'Location'
-                component = {Locationscreen}
                 options = {{
                     headerShown: false
                 }}

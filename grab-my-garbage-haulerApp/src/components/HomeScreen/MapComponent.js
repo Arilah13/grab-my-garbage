@@ -12,6 +12,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
+const AnimatedMarker = Animated.createAnimatedComponent(Marker)
 
 const Mapcomponent = ({end, redo, setLoading}) => {
 
@@ -101,7 +102,6 @@ const Mapcomponent = ({end, redo, setLoading}) => {
             }
             ref = {mapView}
             showsCompass = {true}
-            rotateEnabled = {false}
 
             onMapReady = {() => {
                 if(origin) {
@@ -126,7 +126,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
             }}
         >
             {origin ?
-                <Marker.Animated
+                <AnimatedMarker
                     coordinate = {origin}
                     identifier = 'Marker1'
                     ref = {marker}
@@ -145,7 +145,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                             }]
                         }}
                     />
-                </Marker.Animated>
+                </AnimatedMarker>
             : null}
             {
                 end !== null ?

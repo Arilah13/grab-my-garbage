@@ -60,3 +60,16 @@ export const inactiveSchedulePickupReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const allSchedulePickupReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.ALL_SCHEDULED_PICKUP_RETRIEVE_REQUEST:
+            return { loading: true }
+        case actionTypes.ALL_SCHEDULED_PICKUP_RETRIEVE_SUCCESS:
+            return { loading: false, allSchedule: action.payload }
+        case actionTypes.ALL_SCHEDULED_PICKUP_RETRIEVE_FAIL:
+            return { loading: false, error: action.payload }
+        default: 
+            return state
+    }
+}

@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, FlatList, Dimensions, RefreshControl } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
@@ -29,104 +28,97 @@ const Schedulepickuprequestscreen = ({navigation}) => {
         }
     }, [])
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <View style = {styles.container2}> 
-                <Text style = {styles.text}>Scheduled Pickups</Text>
-            </View>
-
-            <View style = {styles.container}>
-                {loading === true &&
-                    <LottieView 
-                        source = {require('../../../assets/animation/truck_loader.json')}
-                        style = {{
-                            width: 300,
-                            height: 400,
-                            alignSelf: 'center'
-                        }}
-                        loop = {true}
-                        autoPlay = {true}
-                    />
-                } 
-                {
-                    loading === false &&
-                    <FlatList
-                        numColumns = {1}
-                        showsHorizontalScrollIndicator = {false}
-                        showsVerticalScrollIndicator = {false}
-                        data = {pickupInfo}
-                        keyExtractor = {(item) => item._id}
-                        refreshControl = {
-                            <RefreshControl
-                                refreshing = {loading}
-                                onRefresh = {onRefresh}
-                            />
-                        }
-                        ListEmptyComponent = {() => (
-                            <Text style = {styles.text8}>No Pickup Available</Text>
-                        )}
-                        renderItem = {({item}) => (
+        <View style = {styles.container}>
+            {loading === true &&
+                <LottieView 
+                    source = {require('../../../assets/animation/truck_loader.json')}
+                    style = {{
+                        width: 300,
+                        height: 400,
+                        alignSelf: 'center'
+                    }}
+                    loop = {true}
+                    autoPlay = {true}
+                />
+            } 
+            {
+                loading === false &&
+                <FlatList
+                    numColumns = {1}
+                    showsHorizontalScrollIndicator = {false}
+                    showsVerticalScrollIndicator = {false}
+                    data = {pickupInfo}
+                    keyExtractor = {(item) => item._id}
+                    refreshControl = {
+                        <RefreshControl
+                            refreshing = {loading}
+                            onRefresh = {onRefresh}
+                        />
+                    }
+                    ListEmptyComponent = {() => (
+                        <Text style = {styles.text8}>No Pickup Available</Text>
+                    )}
+                    renderItem = {({item}) => (
+                        <View style = {styles.card}>
                             <View style = {styles.card}>
-                                <View style = {styles.card}>
-                                    <View style = {{flex: 1, flexWrap: 'wrap'}}>
-                                    <View>
-                                        <View style = {{...styles.view1, flexDirection: 'row', marginLeft: 10}}> 
-                                            <Icon
-                                                type = 'material'
-                                                name = 'place'
-                                                size = {18}
-                                                color = {colors.blue2}
-                                                style = {{
-                                                    marginTop: 5,
-                                                    marginRight: 5
-                                                }}
-                                            /> 
-                                            <Text style = {styles.text7}>
-                                                {item.location[0].city}
-                                            </Text>                                         
-                                        </View>
-                                        <View style = {{...styles.view1, flexDirection: 'row'}}> 
-                                            <Text style = {{...styles.text1, fontWeight: '600'}}>TimeSlot:</Text>   
-                                            <Text style = {{...styles.text1, fontSize: 14}}>{item.timeslot}</Text>                        
-                                        </View>
-                                        <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                            <Text style = {styles.text6}>Duration:</Text>
-                                            <Icon
-                                                type = 'material'
-                                                name = 'hourglass-empty'
-                                                size = {18}
-                                                color = {colors.blue2}
-                                                style = {{
-                                                    marginTop: 5,
-                                                    marginRight: 5
-                                                }}
-                                            />
-                                            <Text style = {styles.text4}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
-                                            <Text style = {styles.text5}></Text>
-                                        </View>
-                                    </View>
-                                    <View style = {{position: 'absolute'}}>
-                                        <Button
-                                            title = 'View'
-                                            buttonStyle = {{
-                                                width: 70,
-                                                height: 40,
-                                                marginTop: 18,
-                                                borderRadius: 15,
-                                                marginLeft: SCREEN_WIDTH/1.65,
-                                                backgroundColor: colors.buttons
+                                <View style = {{flex: 1, flexWrap: 'wrap'}}>
+                                <View>
+                                    <View style = {{...styles.view1, flexDirection: 'row', marginLeft: 10}}> 
+                                        <Icon
+                                            type = 'material'
+                                            name = 'place'
+                                            size = {18}
+                                            color = {colors.blue2}
+                                            style = {{
+                                                marginTop: 5,
+                                                marginRight: 5
                                             }}
-                                            onPress = {() => navigation.navigate('ScheduleDetail', {item, from: fromDate(item.from), to: fromDate(item.to)})}
-                                        />
+                                        /> 
+                                        <Text style = {styles.text7}>
+                                            {item.location[0].city}
+                                        </Text>                                         
                                     </View>
+                                    <View style = {{...styles.view1, flexDirection: 'row'}}> 
+                                        <Text style = {{...styles.text1, fontWeight: '600'}}>TimeSlot:</Text>   
+                                        <Text style = {{...styles.text1, fontSize: 14}}>{item.timeslot}</Text>                        
+                                    </View>
+                                    <View style = {{...styles.view1, flexDirection: 'row'}}>
+                                        <Text style = {styles.text6}>Duration:</Text>
+                                        <Icon
+                                            type = 'material'
+                                            name = 'hourglass-empty'
+                                            size = {18}
+                                            color = {colors.blue2}
+                                            style = {{
+                                                marginTop: 5,
+                                                marginRight: 5
+                                            }}
+                                        />
+                                        <Text style = {styles.text4}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
+                                        <Text style = {styles.text5}></Text>
                                     </View>
                                 </View>
-                            </View>                        
-                        )}
-                    /> 
-                }
-            </View>
-
-        </SafeAreaView>
+                                <View style = {{position: 'absolute'}}>
+                                    <Button
+                                        title = 'View'
+                                        buttonStyle = {{
+                                            width: 70,
+                                            height: 40,
+                                            marginTop: 18,
+                                            borderRadius: 15,
+                                            marginLeft: SCREEN_WIDTH/1.65,
+                                            backgroundColor: colors.buttons
+                                        }}
+                                        onPress = {() => navigation.navigate('ScheduleDetail', {item, from: fromDate(item.from), to: fromDate(item.to)})}
+                                    />
+                                </View>
+                                </View>
+                            </View>
+                        </View>                        
+                    )}
+                /> 
+            }
+        </View>
     );
 }
 
@@ -135,17 +127,11 @@ export default Schedulepickuprequestscreen
 const styles = StyleSheet.create({
 
     container:{
-        height: 9.2*SCREEN_HEIGHT/10,
+        display: 'flex',
         backgroundColor: colors.white,
-        padding: 20,
-        borderRadius: 30,
+        height: SCREEN_HEIGHT - 55,
         alignItems: 'center',
-    },
-    container2:{
-        backgroundColor: colors.blue1,
-        paddingLeft: 25, 
-        //marginBottom: 0,
-        height: 0.8*SCREEN_HEIGHT/10,
+        paddingTop: 20,
     },
     text:{
         display: 'flex',

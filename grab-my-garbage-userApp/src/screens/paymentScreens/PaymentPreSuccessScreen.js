@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, BackHandler } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
+import { useFocusEffect } from '@react-navigation/native'
 
 import { colors } from '../../global/styles'
 
@@ -41,6 +42,19 @@ const Paymentpresuccessscreen = ({navigation, route}) => {
             }, 3500)
         }    
     }, [loading])
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                return true
+            }
+
+            BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+            return () => 
+                BackHandler.removeEventListener('hardwareBackPress', onBackPress)
+        }, [])
+    )
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1, flex: 1}}>
