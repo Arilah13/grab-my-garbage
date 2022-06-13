@@ -67,17 +67,12 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
     }
 
     useEffect(() => {
-        socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
+        socket.on('getMessage', async({senderid, text, sender, createdAt, conversationId}) => {
             const message = [{text, user: sender, createdAt, _id: Date.now()}]
             if(senderid === haulerid._id) {
                 onSend(message)
+                dispatch(receiverRead(conversationId))
             }       
-            
-            if(conversationId === convo.conversation._id) {
-                setTimeout(() => {
-                    dispatch(receiverRead(conversationId))
-                }, 3000) 
-            }
         }) 
     }, [socket])
 

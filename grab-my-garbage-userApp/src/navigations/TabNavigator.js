@@ -40,19 +40,8 @@ const TabNavigator = () => {
 
                     element.message.text = text
                     element.message.created = createdAt
-
-                    if(currentConvo.convo === undefined) {
-                        element.conversation.receiverUserRead = false
-                        setStatus(true)
-                    } else if(currentConvo.convo !== undefined) {
-                        if(currentConvo.convo === senderid) {
-                            element.conversation.receiverUserRead = true
-                        }
-                        if(currentConvo.convo !== senderid) {
-                            element.conversation.receiverUserRead = false
-                            setStatus(true)
-                        }
-                    }
+                    element.conversation.receiverUserRead = false
+                    setStatus(true)
 
                     const message = {
                         _id: Date.now(),

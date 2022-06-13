@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, FlatList, RefreshControl } from 'react-native'
 import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
@@ -18,6 +18,10 @@ const CompletedPickupscreen = ({navigation}) => {
     const completedPickups = useSelector((state) => state.completedPickups)
     const { loading, pickupInfo } = completedPickups
 
+    const onRefresh = useCallback(() => {
+        dispatch(getCompletedPickups())
+    }, [])
+
     useEffect(() => {
         if(loading === undefined) {
             dispatch(getCompletedPickups())
@@ -26,7 +30,7 @@ const CompletedPickupscreen = ({navigation}) => {
 
     return (
         <View style = {styles.container}>
-            {loading === true ?
+            {loading === true &&
                 <LottieView 
                     source = {require('../../../assets/animation/truck_loader.json')}
                     style = {{
@@ -36,67 +40,78 @@ const CompletedPickupscreen = ({navigation}) => {
                     loop = {true}
                     autoPlay = {true}
                 />
-            : loading === false && pickupInfo.length > 0  ?
-            <FlatList
-                numColumns = {1}
-                showsHorizontalScrollIndicator = {false}
-                showsVerticalScrollIndicator = {false}
-                data = {pickupInfo}
-                keyExtractor = {(item) => item._id}
-                renderItem = {({item}) => (
-                    <View style = {styles.card}>
-                        <View style = {{flex: 1, flexWrap: 'wrap'}}>
-                        <View>
-                            <View style = {{...styles.view1, flexDirection: 'row'}}>  
-                                <Icon
-                                    type = 'material'
-                                    name = 'place'
-                                    size = {18}
-                                    color = {colors.blue2}
-                                    style = {{
-                                        marginTop: 5,
-                                        marginRight: 5
-                                    }}
-                                />  
-                                <Text style = {styles.text7}>{item.location[0].city}</Text>                        
+            }
+            {
+                loading === false &&
+                <FlatList
+                    numColumns = {1}
+                    showsHorizontalScrollIndicator = {false}
+                    showsVerticalScrollIndicator = {false}
+                    data = {pickupInfo}
+                    keyExtractor = {(item) => item._id}
+                    refreshControl = {
+                        <RefreshControl
+                            refreshing = {loading}
+                            onRefresh = {onRefresh}
+                        />
+                    }
+                    ListEmptyComponent = {() => (
+                        <Text style = {styles.text8}>No Pickup Available</Text>
+                    )}
+                    renderItem = {({item}) => (
+                        <View style = {styles.card}>
+                            <View style = {{flex: 1, flexWrap: 'wrap'}}>
+                            <View>
+                                <View style = {{...styles.view1, flexDirection: 'row'}}>  
+                                    <Icon
+                                        type = 'material'
+                                        name = 'place'
+                                        size = {18}
+                                        color = {colors.blue2}
+                                        style = {{
+                                            marginTop: 5,
+                                            marginRight: 5
+                                        }}
+                                    />  
+                                    <Text style = {styles.text7}>{item.location[0].city}</Text>                        
+                                </View>
+                                <View style = {{...styles.view1, flexDirection: 'row'}}>    
+                                    <Text style = {styles.text1}>{item.customerId.name}</Text>                        
+                                </View>
+                                <View style = {{...styles.view1, flexDirection: 'row'}}>
+                                    <Text style = {styles.text6}>completed: </Text>
+                                    <Icon
+                                        type = 'material'
+                                        name = 'schedule'
+                                        size = {18}
+                                        color = {colors.blue2}
+                                        style = {{
+                                            marginTop: 5,
+                                            marginRight: 5
+                                        }}
+                                    />
+                                    <Text style = {styles.text4}>{timeHelper(item.completedDate)}</Text>
+                                    <Text style = {styles.text5}>{date1Helper(item.completedDate)}</Text>
+                                </View>
                             </View>
-                            <View style = {{...styles.view1, flexDirection: 'row'}}>    
-                                <Text style = {styles.text1}>{item.customerId.name}</Text>                        
-                            </View>
-                            <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                <Text style = {styles.text6}>completed: </Text>
-                                <Icon
-                                    type = 'material'
-                                    name = 'schedule'
-                                    size = {18}
-                                    color = {colors.blue2}
-                                    style = {{
-                                        marginTop: 5,
-                                        marginRight: 5
+                            <View style = {{position: 'absolute'}}>
+                                <Button
+                                    title = 'View'
+                                    buttonStyle = {{
+                                        width: 70,
+                                        height: 40,
+                                        marginTop: 18,
+                                        borderRadius: 15,
+                                        marginLeft: SCREEN_WIDTH/1.65,
+                                        backgroundColor: colors.buttons
                                     }}
+                                    onPress = {() => navigation.navigate('PickupDetail', {item, time: timeHelper(item.datetime), completedTime: timeHelper(item.completedDate), date: date1Helper(item.completedDate), date1: date1Helper(item.datetime), buttons: false, name: 'Completed Pickups'})}
                                 />
-                                <Text style = {styles.text4}>{timeHelper(item.completedDate)}</Text>
-                                <Text style = {styles.text5}>{date1Helper(item.completedDate)}</Text>
+                            </View>
                             </View>
                         </View>
-                        <View style = {{position: 'absolute'}}>
-                            <Button
-                                title = 'View'
-                                buttonStyle = {{
-                                    width: 70,
-                                    height: 40,
-                                    marginTop: 18,
-                                    borderRadius: 15,
-                                    marginLeft: SCREEN_WIDTH/1.65,
-                                    backgroundColor: colors.buttons
-                                }}
-                                onPress = {() => navigation.navigate('PickupDetail', {item, time: timeHelper(item.datetime), completedTime: timeHelper(item.completedDate), date: date1Helper(item.completedDate), date1: date1Helper(item.datetime), buttons: false, name: 'Completed Pickups'})}
-                            />
-                        </View>
-                        </View>
-                    </View>
-                )} 
-            /> : <Text style = {styles.text8}>No Pickup Available</Text>
+                    )} 
+                />
             }
         </View>
     );
@@ -170,11 +185,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     text8:{
-        alignSelf: 'center',
-        marginTop: '50%',
         fontSize: 17,
         fontWeight: 'bold',
-        color: colors.darkBlue
+        color: colors.darkBlue,
+        marginTop: SCREEN_HEIGHT/3
     }
 
 })

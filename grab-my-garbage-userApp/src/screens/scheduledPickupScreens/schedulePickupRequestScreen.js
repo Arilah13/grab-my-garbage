@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, FlatList, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Dimensions, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
@@ -21,6 +21,10 @@ const Schedulepickuprequestscreen = ({navigation}) => {
     const retrieveScheduledPickup = useSelector(state => state.retrieveScheduledPickup)
     const { loading, pickupInfo } = retrieveScheduledPickup
 
+    const onRefresh = useCallback(() => {
+        dispatch(getScheduledPickups())
+    }, [])
+
     useEffect(() => {
         if(loading === undefined) {
             dispatch(getScheduledPickups())
@@ -35,7 +39,7 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                 <View style = {styles.view2}>
                     <Text style = {styles.text9}>Scheduled Pickup List</Text>
                 </View>
-                {loading === true ?
+                {loading === true &&
                     <LottieView 
                         source = {require('../../../assets/animation/truck_loader.json')}
                         style = {{
@@ -46,80 +50,89 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                         loop = {true}
                         autoPlay = {true}
                     />
-                : loading === false && pickupInfo.length > 0  ?
-                <FlatList
-                    numColumns = {1}
-                    showsHorizontalScrollIndicator = {false}
-                    showsVerticalScrollIndicator = {false}
-                    data = {pickupInfo}
-                    keyExtractor = {(item) => item._id}
-                    renderItem = {({item}) => (
-                        <View style = {styles.card}>
+                } 
+                {loading === false &&
+                    <FlatList
+                        numColumns = {1}
+                        showsHorizontalScrollIndicator = {false}
+                        showsVerticalScrollIndicator = {false}
+                        data = {pickupInfo}
+                        refreshControl = {
+                            <RefreshControl
+                                refreshing = {loading}
+                                onRefresh = {onRefresh}
+                            />
+                        }
+                        keyExtractor = {(item) => item._id}
+                        ListEmptyComponent = {() => (
+                            <Text style = {styles.text8}>No Pickup Available</Text>
+                        )}
+                        renderItem = {({item}) => (
                             <View style = {styles.card}>
-                                <View style = {{flex: 1, flexWrap: 'wrap'}}>
-                                <View>
-                                    <View style = {{...styles.view1, flexDirection: 'row', marginLeft: 10}}>  
+                                <View style = {styles.card}>
+                                    <View style = {{flex: 1, flexWrap: 'wrap'}}>
+                                    <View>
+                                        <View style = {{...styles.view1, flexDirection: 'row', marginLeft: 10}}>  
+                                            {
+                                                item.days.map((day) => {
+                                                    return (
+                                                        <Text 
+                                                            style = {styles.text7}
+                                                            key = {day}
+                                                        >
+                                                            {dayConverter(day) + ' '}
+                                                        </Text>       
+                                                    )  
+                                                })
+                                            } 
+                                        </View>
+                                        <View style = {{...styles.view1, flexDirection: 'row'}}> 
+                                            <Text style = {styles.text1}>TimeSlot:</Text>   
+                                            <Text style = {{...styles.text1, fontSize: 14}}>{item.timeslot}</Text>                        
+                                        </View>
+                                        <View style = {{...styles.view1, flexDirection: 'row'}}>
+                                            <Text style = {styles.text6}>Duration:</Text>
+                                            <Icon
+                                                type = 'material'
+                                                name = 'hourglass-empty'
+                                                size = {18}
+                                                color = {colors.blue2}
+                                                style = {{
+                                                    marginTop: 5,
+                                                    marginRight: 5
+                                                }}
+                                            />
+                                            <Text style = {styles.text4}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
+                                            <Text style = {styles.text5}></Text>
+                                        </View>
+                                    </View>
+                                    <View style = {{position: 'absolute'}}>
                                         {
-                                            item.days.map((day) => {
-                                                return (
-                                                    <Text 
-                                                        style = {styles.text7}
-                                                        key = {day}
-                                                    >
-                                                        {dayConverter(day) + ' '}
-                                                    </Text>       
-                                                )  
-                                            })
-                                        } 
-                                    </View>
-                                    <View style = {{...styles.view1, flexDirection: 'row'}}> 
-                                        <Text style = {styles.text1}>TimeSlot:</Text>   
-                                        <Text style = {{...styles.text1, fontSize: 14}}>{item.timeslot}</Text>                        
-                                    </View>
-                                    <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                        <Text style = {styles.text6}>Duration:</Text>
-                                        <Icon
-                                            type = 'material'
-                                            name = 'hourglass-empty'
-                                            size = {18}
-                                            color = {colors.blue2}
-                                            style = {{
-                                                marginTop: 5,
-                                                marginRight: 5
+                                            item.inactive === 1 &&
+                                            <Text style = {{color: colors.darkGrey, fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Inactive</Text>
+                                        }
+                                        {
+                                            item.active === 1 &&
+                                            <Text style = {{color: 'red', fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Active</Text>
+                                        }
+                                        <Button
+                                            title = 'View'
+                                            buttonStyle = {{
+                                                width: 70,
+                                                height: 40,
+                                                marginTop: item.active === 1 || item.inactive === 1 ? 5 : 18,
+                                                borderRadius: 15,
+                                                marginLeft: SCREEN_WIDTH/1.65,
+                                                backgroundColor: colors.buttons
                                             }}
+                                            onPress = {() => navigation.navigate('PickupScheduleDetail', {item, from: fromDate(item.from), to: fromDate(item.to)})}
                                         />
-                                        <Text style = {styles.text4}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
-                                        <Text style = {styles.text5}></Text>
                                     </View>
-                                </View>
-                                <View style = {{position: 'absolute'}}>
-                                    {
-                                        item.inactive === 1 &&
-                                        <Text style = {{color: colors.darkGrey, fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Inactive</Text>
-                                    }
-                                    {
-                                        item.active === 1 &&
-                                        <Text style = {{color: 'red', fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Active</Text>
-                                    }
-                                    <Button
-                                        title = 'View'
-                                        buttonStyle = {{
-                                            width: 70,
-                                            height: 40,
-                                            marginTop: item.active === 1 || item.inactive === 1 ? 5 : 18,
-                                            borderRadius: 15,
-                                            marginLeft: SCREEN_WIDTH/1.65,
-                                            backgroundColor: colors.buttons
-                                        }}
-                                        onPress = {() => navigation.navigate('PickupScheduleDetail', {item, from: fromDate(item.from), to: fromDate(item.to)})}
-                                    />
-                                </View>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    )}
-                />
-                : <Text style = {styles.text8}>No Pickup Available</Text>
+                        )}
+                    />
                 }
             </View>
         </SafeAreaView>
@@ -134,7 +147,8 @@ const styles = StyleSheet.create({
         height: 9*SCREEN_HEIGHT/10,
         backgroundColor: colors.white,
         padding: 20,
-        borderRadius: 30
+        borderRadius: 30,
+        alignItems: 'center',
     },
     card:{
         width: SCREEN_WIDTH/1.15,
@@ -193,11 +207,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     text8:{
-        alignSelf: 'center',
-        marginTop: '50%',
         fontSize: 17,
         fontWeight: 'bold',
-        color: colors.darkBlue
+        color: colors.darkBlue,
+        marginTop: SCREEN_HEIGHT/3
     },
     view2:{
         marginBottom: 20
