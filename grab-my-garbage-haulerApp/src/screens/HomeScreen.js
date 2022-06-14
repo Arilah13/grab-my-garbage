@@ -7,11 +7,11 @@ import { Button } from 'react-native-elements'
 
 import { colors } from '../global/styles'
 import { getLatngDiffInMeters } from '../helpers/homehelper'
+import { handleNotification, notificationChecker } from '../helpers/notificationHelper'
 
 import { sendSMS } from '../redux/actions/specialRequestActions'
-import { getScheduledPickupsToCollect, completeScheduledPickup, activeSchedulePickup, inactiveSchedulePickup } from '../redux/actions/scheduleRequestActions'
-import { getUpcomingPickups, completedPickup, activeSpecialPickup } from '../redux/actions/specialRequestActions'
-import { GET_ALL_CONVERSATIONS_SUCCESS } from '../redux/constants/conversationConstants'
+import { completeScheduledPickup, activeSchedulePickup, inactiveSchedulePickup } from '../redux/actions/scheduleRequestActions'
+import { completedPickup, activeSpecialPickup } from '../redux/actions/specialRequestActions'
 
 import Onlinecomponent from '../components/homeScreen/onlineComponent'
 import Mapcomponent from '../components/homeScreen/mapComponent'
@@ -27,6 +27,8 @@ const Homescreen = ({navigation}) => {
     const translation = useRef(new Animated.Value(2.8*SCREEN_HEIGHT/10)).current
     const choice = useRef(null)
     const first = useRef(true)
+    const responseListener = useRef()
+    const notificationListener = useRef()
 
     const [end, setEnd] = useState(null)
     const [online, setOnline] = useState(false)
@@ -69,13 +71,6 @@ const Homescreen = ({navigation}) => {
         }, 1000)
     }
 
-    const filterPickup = async(pickup) => {
-        const pickupOrder = await pickup.sort((pickup_1, pickup_2) => 
-            getLatngDiffInMeters(pickup_1.location[0].latitude, pickup_1.location[0].longitude, origin.latitude, origin.longitude) > 
-            getLatngDiffInMeters (pickup_2.location[0].latitude, pickup_2.location[0].longitude, origin.latitude, origin.longitude) ? 1 : -1)
-        return pickupOrder
-    }
-
     const setPickups = (pickupOrder) => {
         if(pickupOrder.length > 0) {
             setEnd({
@@ -100,22 +95,6 @@ const Homescreen = ({navigation}) => {
         } 
     }
 
-    const pickupHandler = async() => {
-        setLoading(true)
-        setRedo(true)
-        
-        if (choice.current === 'schedule') {
-            const pickupOrder = await filterPickup(pickupInfo)
-            setPickups(pickupOrder)
-        } else if (choice.current === 'special') {
-            const pickupOrder = await filterPickup(specialPickupInfo)
-            setPickups(pickupOrder)
-        }
-        
-        setLoading(false)
-        setRedo(false)
-    }
-
     const handlePickupComplete = async() => {
         if(arrived === false) {
             setArrived(true)
@@ -131,7 +110,7 @@ const Homescreen = ({navigation}) => {
             if (choice.current === 'schedule') {
                 socket.emit('schedulePickupArrived', {pickup: order})
             } else if(choice.current === 'special') {
-                await socket.emit('specialPickupArrived', {pickup: order})
+                socket.emit('specialPickupArrived', {pickup: order})
             }
 
         } else if(arrived === true) {
@@ -141,10 +120,18 @@ const Homescreen = ({navigation}) => {
                 dispatch(completeScheduledPickup({id: order._id, completedDate: new Date(), completedHauler: userInfo}))
                 dispatch(inactiveSchedulePickup(order._id))
                 socket.emit('schedulePickupCompleted', {pickupid: order._id, userid: order.customerId._id, haulerid: userInfo._id, pickup: order})
+                
+                await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === order._id), 1)
+                setPickups(pickupInfo)
+
                 setNextPickup(true)
             } else if(choice.current === 'special') {
                 dispatch(completedPickup(order._id))
                 await socket.emit('specialPickupCompleted', {pickupid: order._id, pickup: order})
+
+                await specialPickupInfo.splice(specialPickupInfo.findIndex(pickup => pickup._id === order._id), 1)
+                setPickups(specialPickupInfo)
+
                 setNextPickup(true)
             }
 
@@ -154,7 +141,6 @@ const Homescreen = ({navigation}) => {
     useEffect(async() => {
         if(nextPickup === true && specialPickupSuccess === true && specialPickupLoading === false && success === true && pickupLoading === false) {
             setArrived(false)
-            pickupHandler()
             setNextPickup(false)
         }
     }, [specialPickupInfo, pickupInfo])
@@ -162,23 +148,19 @@ const Homescreen = ({navigation}) => {
     useEffect(() => {
         if(socketLoading === false) {
             socket.emit('haulerJoined', { haulerid: userInfo._id })
-            socket.on('newOrder', () => {
-                //dispatch(getPendingPickups(latitude, longitude))
-            })
         }
     }, [socket])
 
     useEffect(() => {
-        if(online === true) {
-            dispatch(getScheduledPickupsToCollect())
-            dispatch(getUpcomingPickups())
+        if(pickupBtn === true) {
+            choice.current = null
         }
-    }, [online])
+    }, [pickupBtn])
 
     useEffect(() => {
-        if(pickupBtn === true)
-            choice.current = null
-    }, [pickupBtn])
+        handleNotification()
+        notificationChecker(responseListener, notificationListener)
+    }, [])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.grey8}}>

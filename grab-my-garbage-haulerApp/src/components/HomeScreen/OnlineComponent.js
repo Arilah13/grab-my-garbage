@@ -10,6 +10,8 @@ import { getLocation } from '../../helpers/homehelper'
 
 import { TASK_FETCH_LOCATION } from '../../redux/constants/mapConstants'
 import { addOrigin } from '../../redux/actions/mapActions'
+import { getScheduledPickupsToCollect } from '../../redux/actions/scheduleRequestActions'
+import { getUpcomingPickupsToCollect } from '../../redux/actions/specialRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -46,11 +48,13 @@ const Onlinecomponent = ({animation, online, setOnline, pickupBtn, choice, order
             })
 
             dispatch(addOrigin(latitude, longitude, heading))
+            dispatch(getScheduledPickupsToCollect(latitude, longitude))
+            dispatch(getUpcomingPickupsToCollect(latitude, longitude))
 
             setTimeout(() => {
                 Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
                     accuracy: Location.Accuracy.High,
-                    distanceInterval: 0.5,
+                    distanceInterval: 1,
                     deferredUpdatesInterval: 0,
                     showsBackgroundLocationIndicator: true,
                     foregroundService: {

@@ -15,7 +15,8 @@ import {
     retrieveCompletedPickupReducer,
     completedPickupReducer,
     sendSMSReducer,
-    activeSpecialPickupReducer
+    activeSpecialPickupReducer,
+    retrieveCollectSpecialPickupReducer
 } from './reducers/specialRequestReducers'
 
 import {
@@ -54,6 +55,7 @@ const reducer = combineReducers({
     completedPickup: completedPickupReducer,
     sendSMS: sendSMSReducer,
     activeSpecialPickup: activeSpecialPickupReducer,
+    retrieveCollectSpecialPickup: retrieveCollectSpecialPickupReducer,
 
     retrieveSchedulePickup: retrieveSchedulePickupReducer,
     completeSchedulePickup: completeSchedulePickupReducer,

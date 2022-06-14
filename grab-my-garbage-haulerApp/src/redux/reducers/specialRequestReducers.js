@@ -82,3 +82,16 @@ export const activeSpecialPickupReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const retrieveCollectSpecialPickupReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.COLLECT_SPECIAL_PICKUP_RETRIEVE_REQUEST:
+            return { loading: true }
+        case actionTypes.COLLECT_SPECIAL_PICKUP_RETRIEVE_SUCCESS:
+            return { loading: false, pickupInfo: action.payload, success: true }
+        case actionTypes.COLLECT_SPECIAL_PICKUP_RETRIEVE_FAIL:
+            return { loading: false, error: action.payload }
+        default:
+            return state
+    }
+}

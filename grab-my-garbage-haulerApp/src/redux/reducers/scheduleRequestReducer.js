@@ -28,11 +28,11 @@ export const completeSchedulePickupReducer = (state = {}, action) => {
 
 export const retrieveCollectSchedulePickupReducer = (state = {}, action) => {
     switch(action.type) {
-        case actionTypes.COLLECT_PICKUP_RETRIEVE_REQUEST:
+        case actionTypes.COLLECT_SCHEDULE_PICKUP_RETRIEVE_REQUEST:
             return { loading: true }
-        case actionTypes.COLLECT_PICKUP_RETRIEVE_SUCCESS:
+        case actionTypes.COLLECT_SCHEDULE_PICKUP_RETRIEVE_SUCCESS:
             return { loading: false, pickupInfo: action.payload, success: true }
-        case actionTypes.COLLECT_PICKUP_RETRIEVE_FAIL:
+        case actionTypes.COLLECT_SCHEDULE_PICKUP_RETRIEVE_FAIL:
             return { loading: false, error: action.payload }
         default:
             return state

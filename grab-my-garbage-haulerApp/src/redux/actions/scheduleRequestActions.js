@@ -53,7 +53,6 @@ export const completeScheduledPickup = ({id, completedDate, completedHauler}) =>
             type: actionTypes.SCHEDULED_PICKUP_COMPLETE_SUCCESS,
             payload: data
         })
-        dispatch(getScheduledPickupsToCollect())
     } catch (err) {
         dispatch({
             type: actionTypes.SCHEDULED_PICKUP_COMPLETE_FAIL,
@@ -62,10 +61,10 @@ export const completeScheduledPickup = ({id, completedDate, completedHauler}) =>
     }
 }
 
-export const getScheduledPickupsToCollect = () => async(dispatch, getState) => {
+export const getScheduledPickupsToCollect = (latitude, longitude) => async(dispatch, getState) => {
     try{
         dispatch({
-            type: actionTypes.COLLECT_PICKUP_RETRIEVE_REQUEST
+            type: actionTypes.COLLECT_SCHEDULE_PICKUP_RETRIEVE_REQUEST
         })
 
         const { userLogin: { userInfo } } = getState()
@@ -77,16 +76,16 @@ export const getScheduledPickupsToCollect = () => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/schedulerequest/${userInfo._id}`, 
+        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/schedulerequest/${userInfo._id}/${latitude}/${longitude}`, 
         config)
 
         dispatch({
-            type: actionTypes.COLLECT_PICKUP_RETRIEVE_SUCCESS,
+            type: actionTypes.COLLECT_SCHEDULE_PICKUP_RETRIEVE_SUCCESS,
             payload: data
         })
     } catch (err) {
         dispatch({
-            type: actionTypes.COLLECT_PICKUP_RETRIEVE_FAIL,
+            type: actionTypes.COLLECT_SCHEDULE_PICKUP_RETRIEVE_FAIL,
             payload: err.response.data.msg
         })
     }
