@@ -45,7 +45,7 @@ const conversationController = {
                 for(let i=0; i<conversation.length; i++) {
                     const message = await Messages.find({conversationId: conversation[i]._id})
                     if(message.length > 0) {
-                        endResult.push({conversation: conversation[i], message: message[message.length-1]})
+                        endResult.push({conversation: conversation[i], message: message[message.length-1], totalMessage: message})
                     }
                 }
                 if(endResult.length > 1 ) {

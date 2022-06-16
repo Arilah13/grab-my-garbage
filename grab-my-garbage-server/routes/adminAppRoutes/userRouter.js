@@ -1,17 +1,22 @@
 const router = require('express').Router()
 const userController = require('../../controllers/adminAppControllers/userController')
+const auth = require('../../middleware/auth')
 const authAdmin = require('../../middleware/authAdmin')
 
-router.get('/list', authAdmin, userController.returnUserList)
+router.get('/list', userController.returnUserList)
 
 router.route('/')
-        .post(authAdmin, userController.loginAdmin)
-        .get(authAdmin, userController.returnAdmin)
-        .put(authAdmin, userController.updateAdmin)
+        .post(userController.loginAdmin)
+        .get(userController.returnAdmin)
+        .put(userController.updateAdmin)
 
 router.route('/:id')
-        .get(authAdmin, userController.returnUserDetail)
-        .put(authAdmin, userController.updateUserDetail)
-        .delete(authAdmin, userController.deleteUser)
+        .get(userController.returnUserDetail)
+        .put(userController.updateUserDetail)
+        .delete(userController.deleteUser)
+
+router.post('/special', userController.addSpecialPickup)
+
+router.post('/schedule', userController.addScheduledPickup)
 
 module.exports = router

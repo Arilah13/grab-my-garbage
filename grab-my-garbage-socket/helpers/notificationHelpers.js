@@ -5,37 +5,52 @@ let expo = new Expo({})
 const notificationHelper = {
     notifySpecialPickup: async(pickup, type) => {
         let messages = []
-    
+        
         if(type === 'onProgress') {
-            messages.push({
-                to: pickup.customerId.pushId,
-                sound: 'default',
-                title: 'Special Pickup',
-                body: 'Your special pickup is on-progress',
-                data: { 
-                    screen: 'pickupDetail',
-                    item: pickup,
-                }
-            })    
+
+            pickup.customerId.pushId.map(push => {
+                messages.push({
+                    to: push,
+                    sound: 'default',
+                    title: 'Special Pickup',
+                    body: 'Your special pickup is on-progress',
+                    data: { 
+                        screen: 'pickupDetail',
+                        item: pickup,
+                    }
+                })    
+            })
+
         } else if(type === 'arrived') {
-            messages.push({
-                to: pickup.customerId.pushId,
-                sound: 'default',
-                title: 'Special Pickup',
-                body: 'Hauler has arrived to pick your special pickup'
-            }) 
+
+            pickup.customerId.pushId.map(push => {
+                messages.push({
+                    to: push,
+                    sound: 'default',
+                    title: 'Special Pickup',
+                    body: 'Hauler has arrived to pick your special pickup',
+                    data: { 
+                        screen: 'pickupDetail',
+                        item: pickup,
+                    }
+                }) 
+            })
+
         } else if(type === 'completed') {
-            messages.push({
-                to: pickup.customerId.pushId,
-                sound: 'default',
-                title: 'Special Pickup',
-                body: 'Your special pickup has been completed',
-                data: { 
-                    screen: 'pickupDetail',
-                    item: pickup,
-                }
-            })  
+
+            pickup.customerId.pushId.map(push => {
+                messages.push({
+                    to: push,
+                    sound: 'default',
+                    title: 'Special Pickup',
+                    body: 'Your special pickup has been completed',
+                    data: { 
+                        screen: 'completedPickup',
+                    }
+                })  
+            })
         }
+
     
         let chunks = expo.chunkPushNotifications(messages)
     
@@ -51,34 +66,48 @@ const notificationHelper = {
         let messages = []
     
         if(type === 'onProgress') {
-            messages.push({
-                to: pickup.customerId.pushId,
-                sound: 'default',
-                title: 'Schedule Pickup',
-                body: 'Your schedule pickup is on-progress',
-                data: { 
-                    screen: 'pickupDetail',
-                    item: pickup,
-                }
-            })    
+
+            pickup.customerId.pushId.map(push => {
+                messages.push({
+                    to: push,
+                    sound: 'default',
+                    title: 'Schedule Pickup',
+                    body: 'Your schedule pickup is on-progress',
+                    data: { 
+                        screen: 'PickupScheduleDetail',
+                        item: pickup,
+                    }
+                })   
+            })
+
         } else if(type === 'arrived') {
-            messages.push({
-                to: pickup.customerId.pushId,
-                sound: 'default',
-                title: 'Schedule Pickup',
-                body: 'Hauler has arrived to pick your schedule pickup'
-            }) 
+
+            pickup.customerId.pushId.map(push => {
+                messages.push({
+                    to: push,
+                    sound: 'default',
+                    title: 'Schedule Pickup',
+                    body: 'Hauler has arrived to pick your schedule pickup',
+                    data: { 
+                        screen: 'PickupScheduleDetail',
+                        item: pickup,
+                    }
+                }) 
+            })
+
         } else if(type === 'completed') {
-            messages.push({
-                to: pickup.customerId.pushId,
-                sound: 'default',
-                title: 'Schedule Pickup',
-                body: 'Your schedule pickup has been completed',
-                data: { 
-                    screen: 'pickupDetail',
-                    item: pickup,
-                }
-            })  
+
+            pickup.customerId.pushId.map(push => {
+                messages.push({
+                    to: push,
+                    sound: 'default',
+                    title: 'Schedule Pickup',
+                    body: 'Your schedule pickup has been completed',
+                    data: { 
+                        screen: 'ScheduleRequests'
+                    }
+                }) 
+            }) 
         }
     
         let chunks = expo.chunkPushNotifications(messages)
@@ -92,38 +121,19 @@ const notificationHelper = {
         }
     },
     notifyMessages: async(receiver) => {
-        let result
-
-        // if(conversationNotifications.length > 0) {
-        //     const ongoing = await conversationNotifications.find((converse) => converse.senderid === senderid && converse.receiverid === receiverid)
-        //     if(!ongoing) {
-        //         conversationNotifications.push({
-        //             senderid: senderid,
-        //             receiverid: receiverid
-        //         })
-        //         result = false
-        //     } else {
-        //         result = true
-        //     }
-        // } else {
-        //     conversationNotifications.push({
-        //         senderid: senderid,
-        //         receiverid: receiverid
-        //     })
-        //     result = false
-        // }
-
         let messages = []
         
-        messages.push({
-            to: receiver.pushId,
-            sound: 'default',
-            title: 'Message',
-            body: 'You have got new message',
-            // data: { 
-            //     screen: 'pickupDetail',
-            // }
-        })    
+        receiver.pushId.map(push => {
+            messages.push({
+                to: push,
+                sound: 'default',
+                title: 'Message',
+                body: 'You have got new message',
+                data: { 
+                    screen: 'Chat',
+                }
+            })    
+        })
     
         let chunks = expo.chunkPushNotifications(messages)
 

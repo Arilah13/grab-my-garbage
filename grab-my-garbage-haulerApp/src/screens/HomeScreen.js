@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { View, StyleSheet, Dimensions, Animated } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Button } from 'react-native-elements'
+import * as Notifications from 'expo-notifications'
 
 import { colors } from '../global/styles'
-import { getLatngDiffInMeters } from '../helpers/homehelper'
-import { handleNotification, notificationChecker } from '../helpers/notificationHelper'
+import { dateHelper, date1Helper, timeHelper } from '../helpers/specialPickuphelper'
 
 import { sendSMS } from '../redux/actions/specialRequestActions'
 import { completeScheduledPickup, activeSchedulePickup, inactiveSchedulePickup } from '../redux/actions/scheduleRequestActions'
@@ -37,22 +37,19 @@ const Homescreen = ({navigation}) => {
     const [order, setOrder] = useState(null)
     const [redo, setRedo] = useState(false)
     const [arrived, setArrived] = useState(false)
-    const [nextPickup, setNextPickup] = useState(false)
+    const [start, setStart] = useState(true)
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
     const retrieveCollectSchedulePickup = useSelector((state) => state.retrieveCollectSchedulePickup)
-    const { loading: pickupLoading, pickupInfo, success } = retrieveCollectSchedulePickup
+    const { loading: pickupLoading, pickupInfo } = retrieveCollectSchedulePickup
 
-    const upcomingPickups = useSelector((state) => state.upcomingPickups)
-    const { loading: specialPickupLoading, pickupInfo: specialPickupInfo, success: specialPickupSuccess } = upcomingPickups
+    const retrieveCollectSpecialPickup = useSelector((state) => state.retrieveCollectSpecialPickup)
+    const { loading: specialPickupLoading, pickupInfo: specialPickupInfo } = retrieveCollectSpecialPickup
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { loading: socketLoading, socket } = socketHolder
-
-    const map = useSelector((state) => state.map)
-    const { origin } = map
 
     const animation = (value, value1, delay) => {
         Animated.timing(translation, {
@@ -95,13 +92,13 @@ const Homescreen = ({navigation}) => {
         } 
     }
 
-    const handlePickupComplete = async() => {
+    const handlePickupComplete = useCallback(async() => {
         if(arrived === false) {
             setArrived(true)
-
+            
             let num
             num = String(order.customerId.phone).substring(1)
-
+            
             let receiver = '+94'.concat(num)
             const message = 'Your Hauler is at your doorstep, make sure garbage is collected'
 
@@ -115,7 +112,8 @@ const Homescreen = ({navigation}) => {
 
         } else if(arrived === true) {
             setLoading(true)
-
+            setArrived(false)
+            
             if (choice.current === 'schedule') {
                 dispatch(completeScheduledPickup({id: order._id, completedDate: new Date(), completedHauler: userInfo}))
                 dispatch(inactiveSchedulePickup(order._id))
@@ -123,8 +121,8 @@ const Homescreen = ({navigation}) => {
                 
                 await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === order._id), 1)
                 setPickups(pickupInfo)
-
-                setNextPickup(true)
+                
+                pickupHandler()
             } else if(choice.current === 'special') {
                 dispatch(completedPickup(order._id))
                 await socket.emit('specialPickupCompleted', {pickupid: order._id, pickup: order})
@@ -132,34 +130,91 @@ const Homescreen = ({navigation}) => {
                 await specialPickupInfo.splice(specialPickupInfo.findIndex(pickup => pickup._id === order._id), 1)
                 setPickups(specialPickupInfo)
 
-                setNextPickup(true)
+                pickupHandler()
             }
 
         }
-    }
+    }, [pickupInfo, specialPickupInfo, order, arrived])
+
+    const pickupHandler = useCallback(() => {
+        setLoading(true)
+        setRedo(true)
+        
+        if (choice.current === 'schedule') {
+            setPickups(pickupInfo)
+        } else if (choice.current === 'special') {
+            setPickups(specialPickupInfo)
+        }
+        
+        setLoading(false)
+        setRedo(false)
+    }, [pickupInfo, specialPickupInfo])
 
     useEffect(async() => {
-        if(nextPickup === true && specialPickupSuccess === true && specialPickupLoading === false && success === true && pickupLoading === false) {
-            setArrived(false)
-            setNextPickup(false)
-        }
-    }, [specialPickupInfo, pickupInfo])
-
-    useEffect(() => {
-        if(socketLoading === false) {
-            socket.emit('haulerJoined', { haulerid: userInfo._id })
+        if(socketLoading === false && start === true) {
+            await socket.emit('haulerJoined', { haulerid: userInfo._id })
+            setStart(false)
         }
     }, [socket])
 
-    useEffect(() => {
-        if(pickupBtn === true) {
-            choice.current = null
-        }
-    }, [pickupBtn])
+    const choiceCall = useCallback(() => {
+        choice.current = null
+    }, [choice.current])
 
     useEffect(() => {
-        handleNotification()
-        notificationChecker(responseListener, notificationListener)
+        Notifications.setNotificationHandler({
+            handleNotification: async() => ({
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+                shouldSetBadge: true
+            })
+        })
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+        const {notification: {request: {content: {data: {screen, item}}}}} = response
+
+        if(screen) {
+            if(screen === 'PickupDetail') {
+                navigation.navigate('HomeScreen', {
+                    screen: 'Special',
+                    params: {
+                        screen: 'upcomingPickup',
+                        params: {
+                            screen: 'PickupDetail',
+                            params: {item, time: timeHelper(item.datetime), date: dateHelper(item.datetime), date1: date1Helper(item.datetime), buttons: false, name: 'Upcoming Pickups'}
+                        }
+                    }
+                })
+            } else if(screen === 'Chat') {
+                navigation.navigate('HomeScreen', {
+                    screen: 'Chat'
+                })
+            } else {
+                navigation.navigate(screen)
+            }
+        }
+    })
+
+    // notificationListener.current = Notifications.addNotificationReceivedListener(response => {
+    //     const {notification: {request: {content: {data: {screen, item}}}}} = response
+
+    //     if(screen) {
+    //         navigation.navigate(screen)
+    //         if(screen === 'PickupDetail') {
+    //             navigation.navigate('Special', {
+    //                 screen: 'upcomingPickup',
+    //                 params: {
+    //                     screen: 'PickupDetail',
+    //                     params: {item, time: timeHelper(item.datetime), date: dateHelper(item.datetime), date1: date1Helper(item.datetime), buttons: false, name: 'Upcoming Pickups'}
+    //                 }
+    //             })
+    //         }
+    //     }
+    // })
+
+    return () => {
+        Notifications.removeNotificationSubscription(responseListener.current)
+    }
     }, [])
 
     return (
@@ -178,12 +233,15 @@ const Homescreen = ({navigation}) => {
             </View>
 
             <View style = {styles.container2}>
-                <Mapcomponent end = {end} redo = {redo} setLoading = {setLoading}/>        
+                <Mapcomponent 
+                    end = {end} 
+                    redo = {redo} 
+                    setLoading = {setLoading}
+                />        
                 <Animated.View style = {{...styles.view1, transform: [{translateY: translation}]}}>
                     <Animated.View style = {{...styles.view2, transform: [{translateY: translation}]}}>
                         {
                             (loading === true || pickupLoading === true || specialPickupLoading === true) ? 
-                            (
                                 <View style = {{alignItems: 'center', padding: 50, paddingTop: 30}}>
                                     <LottieView 
                                         source = {require('../../assets/animation/truck_loader.json')}
@@ -195,12 +253,13 @@ const Homescreen = ({navigation}) => {
                                         autoPlay = {true}
                                     />
                                 </View>
-                            ) :
+                            :
                             pickupBtn === true ?
-                            ( 
                                 <Button 
                                     title = 'Start Pickup'
                                     buttonStyle = {styles.button}
+                                    disabled = {pickupLoading || specialPickupLoading}
+                                    loading = {pickupLoading || specialPickupLoading}
                                     onPress = {() => {
                                         setTimeout(() => {
                                             setpickupBtn(false)
@@ -208,8 +267,8 @@ const Homescreen = ({navigation}) => {
                                         animation(2.8*SCREEN_HEIGHT/10, 2.8*SCREEN_HEIGHT/110)
                                     }}
                                 />
-                            ) : 
-                            pickupBtn === false && choice.current === null ? (
+                            : 
+                            pickupBtn === false && choice.current === null ? 
                                 <>
                                     <Button 
                                         title = 'Scheduled Pickup'
@@ -234,29 +293,24 @@ const Homescreen = ({navigation}) => {
                                         }}
                                     />
                                 </>
-                            ) :
-                            order !== null && pickupBtn === false && choice.current === 'schedule' ?
-                            (
+                            :
+                            order !== null && pickupBtn === false && choice.current !== null ?                       
                                 <Onpickupcomponent 
                                     navigation = {navigation} 
                                     handlePickupComplete = {handlePickupComplete} 
                                     order = {order} 
                                     arrived = {arrived}
                                 />
-                            ) :
-                            order !== null && pickupBtn === false && choice.current === 'special' ?
-                            (
-                                <Onpickupcomponent 
+                            :
+                            order === null && choice.current !== null ? 
+                                <Pickupcompletecomponent 
                                     navigation = {navigation} 
-                                    handlePickupComplete = {handlePickupComplete} 
-                                    order = {order} 
-                                    arrived = {arrived}
+                                    choice = {choice.current} 
+                                    setpickupBtn = {setpickupBtn} 
+                                    animate = {animation} 
+                                    choiceCall = {choiceCall}
                                 />
-                            ) :
-                            order === null && choice.current !== null && pickupLoading === false && success === true || specialPickupLoading === false && specialPickupSuccess === true ? 
-                            (
-                                <Pickupcompletecomponent navigation = {navigation} choice = {choice.current} setpickupBtn = {setpickupBtn} animate = {animation} />
-                            ) :
+                            :
                             null
                         }
                     </Animated.View>

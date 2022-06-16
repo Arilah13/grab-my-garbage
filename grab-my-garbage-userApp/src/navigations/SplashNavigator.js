@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { uploadDetails } from '../redux/actions/userActions'
 import { getUserDetails } from '../redux/actions/userActions'
 import { getConversations } from '../redux/actions/conversationActions'
+import { getScheduledPickups } from '../redux/actions/schedulePickupActions'
+import { getAcceptedPickups } from '../redux/actions/specialPickupActions'
 
 import Splashscreen from '../screens/authScreens/splashScreen'
 import Rootnavigator from './RootNavigator'
@@ -24,12 +26,16 @@ const Splashnavigator = () => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading: conversations } = getAllConversation
 
+    const retrieveAcceptedPickups = useSelector(state => state.retrieveAcceptedPickups)
+    const { loading: acceptedLoading } = retrieveAcceptedPickups
+
+    const retrieveScheduledPickup = useSelector(state => state.retrieveScheduledPickup)
+    const { loading: scheduleLoading } = retrieveScheduledPickup
+
     useEffect(async() => {
         const result = await AsyncStorage.getItem('userInfo')
         if(result !== null) {
-            const data = JSON.parse(result)
-            dispatch(uploadDetails(data))
-            dispatch(getConversations(data._id, data.token))
+            dispatch(uploadDetails(JSON.parse(result)))
         } else if(result === null) {
             setFirst(false)
         }
@@ -38,6 +44,9 @@ const Splashnavigator = () => {
     useEffect(() => {
         if(userInfo !== undefined) {
             dispatch(getUserDetails(userInfo._id))
+            dispatch(getConversations())
+            dispatch(getAcceptedPickups())
+            dispatch(getScheduledPickups())
         }
     }, [userInfo])
 
@@ -51,7 +60,8 @@ const Splashnavigator = () => {
         <NavigationContainer>
             {
                 first === true && (userDetailLoading === true || loading === true || userDetailLoading === undefined
-                    || loading === undefined ||  conversations === true) ? (
+                    || loading === undefined ||  conversations === true || scheduleLoading === true ||
+                    acceptedLoading === true) ? (
                     <Splashscreen />
                 ) : (
                     <Rootnavigator setFirst = {setFirst} first = {first} />

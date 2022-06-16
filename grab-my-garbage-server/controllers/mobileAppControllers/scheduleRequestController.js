@@ -58,6 +58,9 @@ const requestController = {
             let requests = []
 
             const pickerId = req.params.id
+            const lat = req.params.lat
+            const lng = req.params.lng
+
             const date = new Date()
             const day = dayFinder(date.getDay())
 
@@ -83,7 +86,12 @@ const requestController = {
                 }
             }
 
-            res.status(200).json(requests)
+            const pickupOrder = requests.sort((pickup_1, pickup_2) => 
+                getLatngDiffInMeters(pickup_1.location[0].latitude, pickup_1.location[0].longitude, lat, lng) > 
+                getLatngDiffInMeters (pickup_2.location[0].latitude, pickup_2.location[0].longitude, lat, lng) ? 
+                1 : -1)
+
+            res.status(200).json(pickupOrder)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -114,6 +122,19 @@ const requestController = {
             res.status(200).json({
                 message: 'success'
             })
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    getAllScheduledPickup: async(req, res) => {
+        try{
+            const pickerId = req.params.id
+            const date = new Date()
+
+            const request = await scheduledPickups.find({ pickerId, from: {$lte: date.toISOString()}, to: {$gte: date.toISOString()}, cancelled: 0, inactive: 0 }).populate('customerId')
+            if(!request) return res.status(400).json({msg: 'No Pickup is available.'}) 
+
+            res.status(200).json(request)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -163,6 +184,23 @@ const timeDiff = (time) => {
         return true
     else 
         return false
+}
+
+const getLatngDiffInMeters = (lat1, lng1, lat2, lng2) => {
+    let R = 6371 //Radius of earth
+    let diffLat = degtorad(lat2-lat1)
+    let diffLon = degtorad(lng1-lng2)
+    let a = Math.sin(diffLat/2) * Math.sin(diffLat/2) +
+            Math.cos(degtorad(lat1)) * Math.cos(degtorad(lat2)) *
+            Math.sin(diffLon/2) * Math.sin(diffLon/2)
+    
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    let d = R * c
+    return d
+}
+
+const degtorad = (deg) => {
+    return deg * (Math.PI/180)
 }
 
 module.exports = requestController

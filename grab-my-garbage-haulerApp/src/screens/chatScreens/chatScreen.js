@@ -30,7 +30,7 @@ const Chatscreen = ({route, navigation}) => {
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
 
-    const sendMsg = async(message) => {
+    const sendMsg = useCallback(async(message) => {
         const convo = await conversation.splice(conversation.findIndex(convo => convo.conversation._id === id), 1)[0]
         const element = {
             _id: Date.now(),
@@ -66,7 +66,7 @@ const Chatscreen = ({route, navigation}) => {
             senderRole: 'hauler',
             conversationId: id
         }))
-    }
+    }, [conversation])
 
     useEffect(() => {
         socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {

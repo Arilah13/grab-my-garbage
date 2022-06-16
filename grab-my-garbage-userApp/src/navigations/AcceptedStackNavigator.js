@@ -35,7 +35,7 @@ const Acceptedstacknavigator = ({navigation, route}) => {
         <Stack.Navigator>
 
             <Stack.Screen 
-                name = "acceptedPickup" 
+                name = 'acceptedPickup'
                 component = {Acceptedpickupscreen} 
                 options = {{
                     headerShown: false

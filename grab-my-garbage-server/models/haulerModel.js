@@ -34,10 +34,14 @@ const haulerSchema = new mongoose.Schema({
         required: true
     },
     pushId: {
-        type: String,
+        type: Array,
         required: false
     },
     scheduleNotification: {
+        type: Number,
+        default: 0
+    },
+    limit: {
         type: Number,
         default: 0
     }

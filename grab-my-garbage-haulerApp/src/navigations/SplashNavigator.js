@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { uploadDetails } from '../redux/actions/userActions'
 import { addOrigin } from '../redux/actions/mapActions'
 import { getConversations } from '../redux/actions/conversationActions'
+import { getScheduledPickups } from '../redux/actions/scheduleRequestActions'
+import { getUpcomingPickups } from '../redux/actions/specialRequestActions'
 
 import Splashscreen from '../screens/authScreens/splashScreen'
 import Rootnavigator from './RootNavigator'
@@ -21,6 +23,12 @@ const Splashnavigator = () => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading: conversations } = getAllConversation
 
+    const upcomingPickups = useSelector((state) => state.upcomingPickups)
+    const { loading: upcomingLoading } = upcomingPickups
+
+    const scheduledPickups = useSelector((state) => state.retrieveSchedulePickup)
+    const { loading: scheduleLoading } = scheduledPickups
+
     useEffect(async() => {
         const result = await AsyncStorage.getItem('haulerInfo')
         const location = await AsyncStorage.getItem('userLocation')
@@ -28,7 +36,6 @@ const Splashnavigator = () => {
         if(result !== null) {
             const data = JSON.parse(result)
             dispatch(uploadDetails(data))
-            dispatch(getConversations(data._id, data.token))
         } else if(result === null) {
             setFirst(false)
         }
@@ -42,13 +49,18 @@ const Splashnavigator = () => {
     useEffect(() => {
         if(loading === false) {
             setFirst(false)
+            dispatch(getConversations())
+            dispatch(getScheduledPickups())
+            dispatch(getUpcomingPickups())
         }
     }, [loading])
 
     return (
         <NavigationContainer>
             {
-                first === true && (loading === true || loading === undefined || conversations === true) ? (
+                first === true && (loading === true || loading === undefined || conversations === true ||
+                    scheduleLoading === true || upcomingLoading === true ||
+                    conversations === undefined || upcomingLoading === undefined || scheduleLoading === undefined) ? (
                     <Splashscreen />
                 ) : (
                     <Rootnavigator setFirst = {setFirst} first = {first} />

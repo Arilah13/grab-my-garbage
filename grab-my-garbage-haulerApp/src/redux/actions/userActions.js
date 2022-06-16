@@ -2,6 +2,10 @@ import axios from 'axios'
 import * as actionTypes from '../constants/userConstants'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+import { getScheduledPickups } from './scheduleRequestActions'
+import { getUpcomingPickups } from './specialRequestActions'
+import { getConversations } from './conversationActions'
+
 export const Login = ({email, password, pushId}) => async (dispatch) => {
     try {
         dispatch({
@@ -20,6 +24,9 @@ export const Login = ({email, password, pushId}) => async (dispatch) => {
             type: actionTypes.USER_LOGIN_SUCCESS,
             payload: data
         })
+        dispatch(getScheduledPickups())
+        dispatch(getUpcomingPickups())
+        dispatch(getConversations())
 
         AsyncStorage.setItem('haulerInfo', JSON.stringify(data))
     } catch (err) {

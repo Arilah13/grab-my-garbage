@@ -17,11 +17,10 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const initialValues = {email: '', password: ''}
 
-const Signinscreen = ({navigation}) => {
+const Signinscreen = () => {
     const dispatch = useDispatch()
 
     const [show, setShow] = useState(false)
-    const [status, setStatus] = useState(false)
 
     const formikRef = useRef()
     const password1 = useRef('password')
@@ -39,13 +38,8 @@ const Signinscreen = ({navigation}) => {
             .max(50, 'Password must not be more than 50 characters'),
     })
 
-    const handleVisibility = () => {
-        setShow(!show)
-    }
-
     const handleLogin = async(values) => {
         dispatch(Login({email: values.email, password: values.password, pushId: await getPushToken()}))
-        setTimeout(() => setStatus(true), 200)
     }
 
     useEffect(() => {
@@ -145,14 +139,14 @@ const Signinscreen = ({navigation}) => {
                                     show ? (
                                     <Icon
                                         name= 'visibility-off'
-                                        onPress = {handleVisibility}
+                                        onPress = {() => setShow(!show)}
                                         type = 'material'
                                         iconStyle = {{marginLeft: 10}}
                                         color = {colors.grey1}
                                     />) : (
                                     <Icon
                                         name= 'visibility'
-                                        onPress = {handleVisibility}
+                                        onPress = {() => setShow(!show)}
                                         type = 'material'
                                         iconStyle = {{marginLeft: 10}}
                                         color = {colors.grey1}

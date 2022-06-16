@@ -25,7 +25,7 @@ const Homescreen = ({navigation}) => {
     const { loading, user } = userDetail
 
     const userLogin = useSelector((state) => state.userLogin)
-    const { loading: userLoading, userInfo } = userLogin
+    const { userInfo } = userLogin
 
     const specialPickup = useSelector((state) => state.specialPickup)
     const { pickupInfo } = specialPickup
@@ -34,19 +34,19 @@ const Homescreen = ({navigation}) => {
     const { loading: socketLoading, socket } = socketHolder
 
     const retrieveAcceptedPickups = useSelector((state) => state.retrieveAcceptedPickups)
-    const { loading: specialLoading, pickupInfo: acceptedPickups} = retrieveAcceptedPickups
+    const { pickupInfo: acceptedPickups} = retrieveAcceptedPickups
 
     const retrieveScheduledPickup = useSelector((state) => state.retrieveScheduledPickup)
-    const { loading: scheduleLoading, pickupInfo: schedulePickup } = retrieveScheduledPickup
+    const { pickupInfo: schedulePickup } = retrieveScheduledPickup
 
-    const [expoPushToken, setExpoPushToken] = useState()
-    const [notification, setNotification] = useState()
     const [activeScheduleStatus, setActiveScheduleStatus] = useState(false)
     const [activeSpecialStatus, setActiveSpecialStatus] = useState(false)
     const [scheduleId, setScheduleId] = useState(null)
     const [specialId, setSpecialId] = useState(null)
+    const [firstSpecialStart, setFirstSpecialStart] = useState(true)
+    const [firstScheduleStart, setFirstScheduleStart] = useState(true)
+    const [first, setFirst] = useState(true)
 
-    const notificationListener = useRef()
     const responseListener = useRef()
 
     const handleSchedulePress = async() => {
@@ -55,7 +55,7 @@ const Homescreen = ({navigation}) => {
     }
 
     const handleSpecialPress = async() => {
-        const pickup = await acceptedPickups.find((pickup) => pickup._id === '6281ab1009937b9ae0049e2a')
+        const pickup = await acceptedPickups.find((pickup) => pickup._id === specialId)
         navigation.navigate('SpecialRequests', {
             screen: 'acceptedStack',
             params: {
@@ -78,27 +78,46 @@ const Homescreen = ({navigation}) => {
     }, [])
 
     useEffect(async() => {
-        if(loading === false) {
-            setExpoPushToken(user.pushId)
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            const {notification: {request: {content: {data: {screen, item}}}}} = response
 
-            notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-                setNotification(notification)
-            })
-            responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-                const {notification: {request: {content: {data: {screen}}}}} = response
-
-                if(screen) {
-                    navigation.navigate(screen)
-                }
-            })
-
-            return () => {
-                Notifications.removeNotificationSubscription(notificationListener.current)
-
-                Notifications.removeNotificationSubscription(responseListener.current)
+            if(screen === 'pickupDetail') {
+                navigation.navigate('SpecialRequests', {
+                    screen: 'acceptedStack',
+                    params: {
+                        screen: 'pickupDetail',
+                        params: {
+                            item, name: 'Accepted Pickups'
+                        }
+                    }
+                })
+            } else if(screen === 'completedPickup') {
+                navigation.navigate('SpecialRequests', {
+                    screen: 'completedStack',
+                    params: {
+                        screen: 'completedPickup',
+                    }
+                })
+            } else if(screen === 'PickupScheduleDetail') {
+                navigation.navigate('ScheduleRequests', {
+                    screen: 'PickupScheduleDetail',
+                    params: {
+                        item, from: fromDate(item.from), to: fromDate(item.to)
+                    }
+                })
+            } else if(screen === 'ScheduleRequests') {
+                navigation.navigate('ScheduleRequests')
+            } else if(screen === 'Chat') {
+                navigation.navigate('Home', {
+                    screen: 'Chat'
+                })
             }
+        })
+
+        return () => {
+            Notifications.removeNotificationSubscription(responseListener.current)
         }
-    }, [user, loading])
+    }, [])
 
     const summation = () => {
         let sum = 0
@@ -112,58 +131,83 @@ const Homescreen = ({navigation}) => {
     }
 
     useEffect(async() => {
-        if(socketLoading === false) {
+        if(socketLoading === false && first === true) {
             await socket.emit('userJoined', { userid: user._id })
+            setFirst(false)
+        }
+    }, [socket])
+
+    useEffect(async() => {
+        if(socketLoading === false) {
 
             socket.on('userPickup', async({pickup, hauler, time}) => {
                 dispatch(addOngoingPickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: pickup.haulerid, pickupid: pickup.pickupid, time: time}))
                 setActiveSpecialStatus(true)
                 setSpecialId(pickup.pickupid)
-                const pickup1 = await acceptedPickups.splice(acceptedPickups.findIndex(pickup => pickup._id === pickup.pickupid), 1)
-                pickup1[0].active = 1
-                acceptedPickups.push(pickup1[0])
-                dispatch({
-                    type: ACCEPTED_PICKUP_RETRIEVE_SUCCESS,
-                    payload: acceptedPickups
-                })
+
+                if(firstSpecialStart === true) {
+                    const index = await acceptedPickups.findIndex(pickup => pickup._id === pickup.pickupid)
+                    const pickup = await acceptedPickups.splice(index, 1)[0]
+                    pickup.active = 1
+                    await acceptedPickups.splice(index, 0, pickup)
+                    dispatch({
+                        type: ACCEPTED_PICKUP_RETRIEVE_SUCCESS,
+                        payload: acceptedPickups
+                    })
+                    setFirstSpecialStart(false)
+                }
+
             })
             socket.on('userSchedulePickup', async({hauler, time, ongoingPickup, pickupid}) => {
                 dispatch(addOngoingSchedulePickupLocation({latitude: hauler.latitude, longitude: hauler.longitude, heading: hauler.heading, haulerid: time.haulerid, ongoingPickupid: ongoingPickup, pickupid: pickupid, time: time.time}))
                 setActiveScheduleStatus(true)
                 setScheduleId(pickupid)
-                const pickup = await schedulePickup.splice(schedulePickup.findIndex(pickup => pickup._id === pickupid), 1)
-                pickup[0].active = 1
-                schedulePickup.push(pickup[0])
-                dispatch({
-                    type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
-                    payload: schedulePickup
-                })
+
+                if(firstScheduleStart === true) {
+                    const index = await schedulePickup.findIndex(pickup => pickup._id === pickupid)
+                    const pickup = await schedulePickup.splice(index, 1)[0]
+                    pickup.active = 1
+                    await schedulePickup.splice(index, 0, pickup)
+                    dispatch({
+                        type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
+                        payload: schedulePickup
+                    })
+                    setFirstScheduleStart(false)
+                }
             })
 
             socket.on('pickupDone', async({pickupid}) => {
                 dispatch(removeOngoingPickup(pickupid))
                 setActiveSpecialStatus(false)
-                const pickup = await acceptedPickups.splice(acceptedPickups.findIndex(pickup => pickup._id === pickupid), 1)
-                pickup[0].active = 0
-                acceptedPickups.push(pickup[0])
+
+                const index = await acceptedPickups.findIndex(pickup => pickup._id === pickupid)
+                const pickup = await acceptedPickups.splice(index, 1)[0]
+                pickup.active = 0
+                await acceptedPickups.splice(index, 0, pickup)
                 dispatch({
                     type: ACCEPTED_PICKUP_RETRIEVE_SUCCESS,
                     payload: acceptedPickups
                 })
+
+                setFirstSpecialStart(true)
             })
             socket.on('schedulePickupDone', async({pickupid}) => {
                 dispatch(removeOngoingSchedulePickup(pickupid))
                 setActiveScheduleStatus(false)
-                const pickup = await schedulePickup.splice(schedulePickup.findIndex(pickup => pickup._id === pickupid), 1)
-                pickup[0].active = 0
-                schedulePickup.push(pickup[0])
+
+                const index = await schedulePickup.findIndex(pickup => pickup._id === pickupid)
+                const pickup = await schedulePickup.splice(index, 1)[0]
+                pickup.active = 0
+                await schedulePickup.splice(index, 0, pickup)
                 dispatch({
                     type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
                     payload: schedulePickup
                 })
+
+                setFirstScheduleStart(true)
             })
         }
-    }, [socket])
+    }, [socket, acceptedPickups, schedulePickup])
 
     return (
         <SafeAreaView>

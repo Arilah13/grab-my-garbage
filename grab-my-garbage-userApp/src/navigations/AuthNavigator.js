@@ -6,7 +6,7 @@ import Signinscreen from '../screens/authScreens/signInScreen'
 
 const Stack = createNativeStackNavigator()
 
-const Authnavigator = ({setFirst}) => {
+const Authnavigator = () => {
     return (
         <Stack.Navigator> 
             <Stack.Screen

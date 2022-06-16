@@ -6,7 +6,7 @@ router.post('/', auth, conversationController.newConversation)
 
 router.get('/:id1/:id2', auth, conversationController.findConversation)
 
-router.get('/:id', auth, conversationController.getConversation)
+router.get('/:id', conversationController.getConversation)
 
 router.put('/user/:id', auth, conversationController.markReadUser)
 

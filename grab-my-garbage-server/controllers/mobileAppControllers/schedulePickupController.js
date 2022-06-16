@@ -13,6 +13,16 @@ const scheduledPickupController = {
             const service_city = await isPointInPolygon(pickupInfo.location.latitude, pickupInfo.location.longitude, polygonData)
 
             const hauler = await Haulers.find({service_city: service_city})
+            
+            // const data = await hauler.find(async(haulers) => {
+            //     const pickup = await ScheduledPickups.find({pickerId: haulers._id})
+            //     if(pickup.length > 0) {
+            //         const final = [haulers, pickup]
+            //         return final
+            //     }
+            // })
+
+            // console.log(data)
    
             const newPickup = new ScheduledPickups({
                 location: pickupInfo.location,

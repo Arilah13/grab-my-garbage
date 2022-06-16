@@ -7,7 +7,7 @@ import { colors } from '../../global/styles'
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Pickupcompletecomponent = ({navigation, choice, setpickupBtn, animate}) => {
+const Pickupcompletecomponent = ({navigation, choice, setpickupBtn, animate, choiceCall}) => {
     return (
         <View style = {{alignItems: 'center', padding: 50, paddingTop: 35}}>
             <Text style = {{fontWeight: 'bold', fontSize: 15, color: colors.blue2}}>No Pickups Available For Now</Text>
@@ -24,6 +24,7 @@ const Pickupcompletecomponent = ({navigation, choice, setpickupBtn, animate}) =>
             />
             <Pressable
                 onPress = {() => {
+                    choiceCall()
                     setTimeout(() => {
                         setpickupBtn(true)
                     }, 500) 

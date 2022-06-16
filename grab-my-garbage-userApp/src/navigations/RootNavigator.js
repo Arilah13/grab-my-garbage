@@ -8,6 +8,15 @@ const Rootnavigator = ({first, setFirst}) => {
     const userDetail = useSelector((state) => state.userDetail)
     const { loading } = userDetail
 
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { loading: conversations } = getAllConversation
+
+    const retrieveAcceptedPickups = useSelector(state => state.retrieveAcceptedPickups)
+    const { loading: acceptedLoading } = retrieveAcceptedPickups
+
+    const retrieveScheduledPickup = useSelector(state => state.retrieveScheduledPickup)
+    const { loading: scheduleLoading } = retrieveScheduledPickup
+
     useEffect(() => {
         if(first === true && loading === false) {
             setFirst(false)
@@ -17,7 +26,8 @@ const Rootnavigator = ({first, setFirst}) => {
     return (
         <>
             {
-                loading === false && userDetail.user !== undefined ? (
+                loading === false && userDetail.user !== undefined && (conversations === false || 
+                    acceptedLoading === false || scheduleLoading === false) ? (
                     <StackNavigator />
                 ) : (
                     <Authnavigator />

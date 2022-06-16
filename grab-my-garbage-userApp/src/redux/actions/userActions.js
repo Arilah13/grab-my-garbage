@@ -3,7 +3,11 @@ import * as actionTypes from '../constants/userConstants'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Facebook from 'expo-facebook'
 
-export const Login = (email, password) => async (dispatch) => {
+import { getScheduledPickups } from './schedulePickupActions'
+import { getAcceptedPickups } from './specialPickupActions'
+import { getConversations } from './conversationActions'
+
+export const Login = (email, password, notification_token) => async (dispatch) => {
     try {
         dispatch({
             type: actionTypes.USER_LOGIN_REQUEST
@@ -15,12 +19,16 @@ export const Login = (email, password) => async (dispatch) => {
             },
         }
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/login', { email, password }, config )
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/login', { email, password, notification_token }, config )
 
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,
             payload: data
         })
+
+        dispatch(getScheduledPickups())
+        dispatch(getAcceptedPickups())
+        dispatch(getConversations())
 
         AsyncStorage.setItem('userInfo', JSON.stringify(data))
     } catch (err) {
@@ -56,6 +64,10 @@ export const specialLogin = (info) => async(dispatch) => {
             payload: data
         })
 
+        dispatch(getScheduledPickups())
+        dispatch(getAcceptedPickups())
+        dispatch(getConversations())
+
         AsyncStorage.setItem('userInfo', JSON.stringify(data))
     } catch (err) {
         dispatch({
@@ -86,6 +98,10 @@ export const specialLoginFB = (email, name, id, token, notification_token) => as
             type: actionTypes.USER_LOGIN_SUCCESS,
             payload: data
         })
+
+        dispatch(getScheduledPickups())
+        dispatch(getAcceptedPickups())
+        dispatch(getConversations())
 
         AsyncStorage.setItem('userInfo', JSON.stringify(data))
     } catch (err) {

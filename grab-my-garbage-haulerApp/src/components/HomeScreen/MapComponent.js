@@ -15,7 +15,6 @@ const AnimatedImage = Animated.createAnimatedComponent(Image)
 const AnimatedMarker = Animated.createAnimatedComponent(Marker)
 
 const Mapcomponent = ({end, redo, setLoading}) => {
-
     const map = useSelector((state) => state.map)
     const { origin } = map
 
@@ -48,14 +47,14 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                 }))
                 first.current = false
             }
-            if(mapView.current) {
-                mapView.current.animateToRegion({
-                    latitude: origin.latitude,
-                    longitude: origin.longitude,
-                    latitudeDelta: 0.0005,
-                    longitudeDelta: 0.00025
-                }, 2000)
-            }
+            // if(mapView.current) {
+            //     mapView.current.animateToRegion({
+            //         latitude: origin.latitude,
+            //         longitude: origin.longitude,
+            //         latitudeDelta: 0.0005,
+            //         longitudeDelta: 0.00025
+            //     }, 2000)
+            // }
             // mapView.current.animateCamera({
             //     center: {
             //         latitude: origin.latitude,

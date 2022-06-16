@@ -14,8 +14,10 @@ const userController = {
             if(user) {
                 const accesstoken = createAccessToken(user._id)
 
-                if(user.pushId !== notification_token) {
-                    user.pushId = notification_token
+                const noti = await user.pushId.find(id => id === notification_token)
+                   
+                if(!noti) {
+                    user.pushId.push(notification_token)
                     await user.save()
                 }
 
@@ -177,6 +179,13 @@ const userController = {
 
             const isMatch = await bcrypt.compare(password, user.password)
             if(!isMatch) return res.status(400).json({msg: 'Incorrect password'})
+
+            const noti = await user.pushId.find(id => id === notification_token)
+             
+            if(!noti) {
+                user.pushId.push(notification_token)
+                await user.save()
+            }
 
             const accesstoken = createAccessToken(user._id)
             const refreshtoken = createRefreshToken(user._id)

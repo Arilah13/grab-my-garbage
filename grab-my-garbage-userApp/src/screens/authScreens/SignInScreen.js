@@ -20,7 +20,6 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const initialValues = {email: '', password: ''}
 
 const Signinscreen = ({navigation}) => {
-
     const dispatch = useDispatch()
 
     const [show, setShow] = useState(false)
@@ -32,11 +31,16 @@ const Signinscreen = ({navigation}) => {
     const password1 = useRef('password')
 
     const userLogin = useSelector(state => state.userLogin)
-    const {success, error} = userLogin
+    const {error} = userLogin
 
-    const handleVisibility = () => {
-        setShow(!show)
-    }
+    const getAllConversation = useSelector((state) => state.getAllConversation)
+    const { loading: conversations } = getAllConversation
+
+    const retrieveAcceptedPickups = useSelector(state => state.retrieveAcceptedPickups)
+    const { loading: acceptedLoading } = retrieveAcceptedPickups
+
+    const retrieveScheduledPickup = useSelector(state => state.retrieveScheduledPickup)
+    const { loading: scheduleLoading } = retrieveScheduledPickup
 
     const signInSchema = Yup.object().shape({
         email: Yup.string()
@@ -48,8 +52,8 @@ const Signinscreen = ({navigation}) => {
             .max(50, 'Password must not be more than 50 characters'),
     })
 
-    const handleLogin = (values) => {
-        dispatch(Login(values.email, values.password))
+    const handleLogin = async(values) => {
+        dispatch(Login(values.email, values.password, await getPushToken()))
         setTimeout(() => setStatus(true), 200)
     }
 
@@ -67,12 +71,8 @@ const Signinscreen = ({navigation}) => {
 
                 dispatch(specialLogin({user, notification_token: await getPushToken()}))
 
-                if(type === 'success') 
-                {          
-                    setGoogleSubmitting(false)  
-                }
-                else
-                {
+                if(type !== 'success') 
+                {      
                     setGoogleSubmitting(false)
                     Alert.alert('Google SignIn UnSuccessful',
                     [
@@ -83,7 +83,7 @@ const Signinscreen = ({navigation}) => {
                     {
                         cancelable: true
                     }
-                    )
+                    )    
                 }
             })
             .catch(error => {
@@ -115,29 +115,31 @@ const Signinscreen = ({navigation}) => {
     useEffect(() => {
         if(status)
         {
-            if(success === true)
-            {  
-                setStatus(false)
-                formikRef.current.setSubmitting(false)
-                formikRef.current.resetForm()
-            }
-            else
+            if(error)
             {
                 setStatus(false)
                 formikRef.current.setSubmitting(false)
-                // Alert.alert(error,
-                //     [
-                //         {
-                //             text: 'Ok',
-                //         }
-                //     ],
-                //     {
-                //         cancelable: true
-                //     }
-                // )
+                Alert.alert(error,
+                    [
+                        {
+                            text: 'Ok',
+                        }
+                    ],
+                    {
+                        cancelable: true
+                    }
+                )
             }
         }
     }, [userLogin])
+
+    useEffect(() => {
+        if(conversations === false && acceptedLoading === false && scheduleLoading === false) {
+            setGoogleSubmitting(false)
+            setFbSubmitting(false)
+            formikRef.current.setSubmitting(false)
+        }
+    }, [conversations, acceptedLoading, scheduleLoading])
 
     return (
         <SafeAreaView style = {{backgroundColor: colors.blue1}}>
@@ -217,14 +219,14 @@ const Signinscreen = ({navigation}) => {
                                     show ? (
                                     <Icon
                                         name= 'visibility-off'
-                                        onPress = {handleVisibility}
+                                        onPress = {() => setShow(!show)}
                                         type = 'material'
                                         iconStyle = {{marginLeft: 10}}
                                         color = {colors.grey1}
                                     />) : (
                                     <Icon
                                         name= 'visibility'
-                                        onPress = {handleVisibility}
+                                        onPress = {() => setShow(!show)}
                                         type = 'material'
                                         iconStyle = {{marginLeft: 10}}
                                         color = {colors.grey1}

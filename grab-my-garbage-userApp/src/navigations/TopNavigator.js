@@ -44,21 +44,21 @@ const Topnavigator = () => {
                 tabBarPosition = 'bottom'
             >
                 <Tab.Screen 
-                    name = "pendingStack" 
+                    name = 'pendingStack'
                     component = {Pendingstacknavigator} 
                     options = {{
                         tabBarLabel: 'Pending'
                     }}
                 />
                 <Tab.Screen 
-                    name = "acceptedStack" 
+                    name = 'acceptedStack'
                     component = {Acceptedstacknavigator} 
                     options = {{
                         tabBarLabel: 'Accepted'
                     }}
                 />
                 <Tab.Screen 
-                    name = "completedStack" 
+                    name = 'completedStack'
                     component = {Completedstacknavigator} 
                     options = {{
                         tabBarLabel: 'Completed'

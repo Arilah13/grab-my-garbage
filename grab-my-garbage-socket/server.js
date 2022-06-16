@@ -118,7 +118,7 @@ io.on('connection', socket => {
         const userSocketid = await pickupSocket.completeSpecialPickup({pickupid})
 
         notificationHelper.notifySpecialPickup(pickup, 'completed')
-
+    
         if(userSocketid) {
             socket.to(userSocketid.id).emit('pickupDone', {pickupid})
         }
@@ -130,16 +130,14 @@ io.on('connection', socket => {
         pickup.map((pickup) => {
             const socketId = pickupSocket.returnUserSocketid({userid: pickup.customerId._id})
             
-            messages.push({
-                to: pickup.customerId.pushId,
-                sound: 'default',
-                title: 'Schedule Pickup',
-                body: 'Hauler has started collecting pickups',
-                data: { 
-                    screen: 'pickupDetail',
-                    item: pickup,
-                }
-            })   
+            pickup.customerId.pushId.map(push => {
+                messages.push({
+                    to: push,
+                    sound: 'default',
+                    title: 'Schedule Pickup',
+                    body: 'Hauler has started collecting pickups',
+                })   
+            })
         })
 
         let chunks = expo.chunkPushNotifications(messages)
@@ -174,7 +172,7 @@ io.on('connection', socket => {
     })
 
     socket.on('schedulePickupArrived', async({pickup}) => {
-        notificationHelper.notifySpecialPickup(pickup, 'arrived')
+        notificationHelper.notifySchedulePickup(pickup, 'arrived')
     })
 
     socket.on('schedulePickupCompleted', async({pickupid, userid, haulerid, pickup}) => {

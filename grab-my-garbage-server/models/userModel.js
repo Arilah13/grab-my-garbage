@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
         required: false
     },
     pushId: {
-        type: String,
+        type: Array,
         required: false
     }
 }, {

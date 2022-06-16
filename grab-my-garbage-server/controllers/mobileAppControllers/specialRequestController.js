@@ -108,15 +108,15 @@ const requestController = {
             const year = (request.datetime.split('T')[0]).split('-')[0]
             const month = (request.datetime.split('T')[0]).split('-')[1]
             const day = (request.datetime.split('T')[0]).split('-')[2]
-            console.log(hour)
+
             const month1 = parseInt(month) - 1
-            const day1 = parseInt(day) + 1
-            const hour1 = parseInt(hour) - 19
-            const minute1 = parseInt(minute) + 47
-            //const date = new Date(year, parseInt(month) + 1, day, parent(hour) - 1, minute, 0)
+            const day1 = parseInt(day)
+            const hour1 = parseInt(hour) - 3
+            const minute1 = parseInt(minute) - 14
+
             const date = new Date(year,  month1, day1, hour1, minute1, 0)
-            console.log(date)
-            specialPickupNotify(date, hauler.pushId)
+ 
+            specialPickupNotify(date, hauler.pushId, request)
 
             await request.save()
 
@@ -135,6 +135,7 @@ const requestController = {
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             request.completed = 1
+            request.active = 0
             request.completedDate = date
             await request.save()
 
@@ -189,21 +190,51 @@ const requestController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
-    }
+    },
+    getUpcomingPickupsToCollect: async(req, res) => {
+        try{
+            let requests = []
+
+            const id = req.params.id
+            const lat = req.params.lat
+            const lng = req.params.lng
+ 
+            const request = await Pickups.find({accepted: 1, cancelled: 0, completed: 0, pickerId: id}).populate('customerId')
+            if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            for(let i=0; i<request.length; i++){
+                if(new Date(request[i].datetime).getTime() <= new Date().getTime() && new Date(new Date(request[i].datetime).getTime() + 24*60*60*1000).getTime() >= new Date().getTime()) {
+                    requests.push(request[i])
+                }
+            }
+
+            const pickupOrder = requests.sort((pickup_1, pickup_2) => 
+                getLatngDiffInMeters(pickup_1.location[0].latitude, pickup_1.location[0].longitude, lat, lng) > 
+                getLatngDiffInMeters (pickup_2.location[0].latitude, pickup_2.location[0].longitude, lat, lng) ? 
+                1 : -1)
+
+            res.status(200).json(pickupOrder)
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
 }
 
-const specialPickupNotify = (date, pushId) => {
+const specialPickupNotify = (date, pushId, pickup) => {
     schedule.scheduleJob(date, async() => {
         let messages = []
-        messages.push({
-            to: pushId,
-            sound: 'default',
-            title: 'Schedule Pickup',
-            body: 'Check your schedule for Special Pickup',
-            // data: { 
-            //     screen: 'pickupDetail',
-            //     item: pickup,
-            // }
+
+        pushId.map(push => {
+            messages.push({
+                to: push,
+                sound: 'default',
+                title: 'Schedule Pickup',
+                body: 'Check your schedule for Special Pickup',
+                data: { 
+                    screen: 'PickupDetail',
+                    item: pickup,
+                }
+            })
         })
 
         let chunks = expo.chunkPushNotifications(messages)

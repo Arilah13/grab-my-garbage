@@ -19,8 +19,11 @@ const haulerController = {
             const isMatch = await bcrypt.compare(password, hauler.password)
             if(!isMatch) return res.status(400).json({msg: "Incorrect password"})
 
-            if(hauler.pushId !== pushId) {
-                hauler.pushId = pushId
+            const noti = await hauler.pushId.find(id => id === pushId)
+                   
+            if(!noti) {
+                hauler.pushId.push(pushId)
+                hauler.scheduleNotification = 0
                 await hauler.save()
             }
 
@@ -28,10 +31,10 @@ const haulerController = {
             const refreshtoken = createRefreshToken(hauler._id)
 
             if(hauler.scheduleNotification === 0) {
-                schedulePickupNotify(1, 30, pushId)
-                schedulePickupNotify(2, 00, pushId)
-                schedulePickupNotify(7, 30, pushId)
-                schedulePickupNotify(8, 00, pushId)
+                schedulePickupNotify(1, 30, hauler.pushId)
+                schedulePickupNotify(2, 00, hauler.pushId)
+                schedulePickupNotify(7, 30, hauler.pushId)
+                schedulePickupNotify(8, 00, hauler.pushId)
                 
                 hauler.scheduleNotification = 1
                 await hauler.save()
@@ -111,15 +114,17 @@ const schedulePickupNotify = (hour, minute, pushId) => {
 
     schedule.scheduleJob(rule, async() => {
         let messages = []
-        messages.push({
-            to: pushId,
-            sound: 'default',
-            title: 'Schedule Pickup',
-            body: 'Check your schedule for Schedule Pickup',
-            // data: { 
-            //     screen: 'pickupDetail',
-            //     item: pickup,
-            // }
+
+        pushId.map(push => {
+            messages.push({
+                to: push,
+                sound: 'default',
+                title: 'Schedule Pickup',
+                body: 'Check your schedule for Schedule Pickup',
+                data: { 
+                    screen: 'Schedule'
+                }
+            })
         })
 
         let chunks = expo.chunkPushNotifications(messages)

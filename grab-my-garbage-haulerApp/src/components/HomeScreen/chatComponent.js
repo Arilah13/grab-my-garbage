@@ -27,11 +27,11 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { conversation } = getAllConversation
 
-    const sendMsg = async(message) => {
-        const convo = await conversation.splice(conversation.findIndex(convo => convo.conversation._id === id), 1)[0]
+    const sendMsg = useCallback(async(message) => {
+        const conv = await conversation.splice(conversation.findIndex(conv => conv.conversation._id === convo.conversation._id), 1)[0]
         const element = {
             _id: Date.now(),
-            conversationId: id,
+            conversationId: convo.conversation._id,
             createdAt: message[0].createdAt,
             created: message[0].createdAt,
             sender: [
@@ -41,9 +41,9 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
             ],
             text: message[0].text
         }
-        await convo.totalMessage.splice(convo.totalMessage.length, 0, element)
-        convo.message = element
-        await conversation.splice(0, 0, convo)
+        await conv.totalMessage.splice(conv.totalMessage.length, 0, element)
+        conv.message = element
+        await conversation.splice(0, 0, conv)
         dispatch({
             type: GET_ALL_CONVERSATIONS_SUCCESS,
             payload: conversation
@@ -64,7 +64,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
             receiver: userid,
             conversationId: convo.conversation._id
         }))
-    }
+    }, [conversation])
 
     useEffect(() => {
         socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
