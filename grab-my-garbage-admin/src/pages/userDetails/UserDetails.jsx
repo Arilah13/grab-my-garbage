@@ -6,20 +6,21 @@ import { Publish } from "@mui/icons-material"
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import Swal from 'sweetalert2'
+import axios from 'axios'
 
-import { getUserScheduledPickups, getUserSpecialPickups, getUserInfo, updateUserDetail } from '../../redux/actions/userActions'
-import { USER_DETAIL_UPDATE_RESET } from '../../redux/constants/userConstants'
+import { RETRIEVE_USER_LIST_SUCCESS } from '../../redux/constants/userConstants'
 
 import { returnPerMonthPickup, moneyreturn } from '../../helpers/userDetailsHelpers'
 
 import './UserDetails.css'
 import Chart from '../../components/chart/Chart'
 import Loader from '../../components/loader/loader'
+import AddSchedule from '../../components/addSchedule/AddSchedule'
+import AddSpecial from '../../components/addSpecial/AddSpecial'
 
-const UserDetails = ({ match }) => {
+const UserDetails = ({ match, location }) => {
     const dispatch = useDispatch()
 
-    const first = useRef(true)
     const formik = useRef()
 
     const [pickupList, setPickupList] = useState(null)
@@ -30,17 +31,10 @@ const UserDetails = ({ match }) => {
     const [image, setImage] = useState('')
     const [pic, setPic] = useState('')
 
-    const userSchedulePickup = useSelector((state) => state.userSchedulePickup)
-    const { loading: scheduleLoading, userScheduleList } = userSchedulePickup
+    const userList = useSelector((state) => state.userList)
+    const { userList: users } = userList
 
-    const userSpecialPickup = useSelector((state) => state.userSpecialPickup)
-    const { loading: specialLoading, userSpecialList } = userSpecialPickup
-
-    const userDetail = useSelector((state) => state.userDetail)
-    const { loading: userLoading, userDetail: user } = userDetail
-
-    const userDetailUpdate = useSelector((state) => state.userDetailUpdate)
-    const { loading: updateLoading, success, error } = userDetailUpdate
+    //const { userLogin: { userInfo } } = getState()
 
     const initialValues = {email: email, name: name, phone: phone, image: image, pic: pic}
 
@@ -77,69 +71,59 @@ const UserDetails = ({ match }) => {
         setPic(base64)
     }
 
-    useEffect(() => {
-        if(userScheduleList === undefined || (userScheduleList.length > 0 && userScheduleList[0].customerId !== match.params.userId)) {
-            dispatch(getUserScheduledPickups(match.params.userId))
+    const handleUpdate = async() => {
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                //Authorization: `Bearer ${userInfo.token}`
+            }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userScheduleList])
 
-    useEffect(() => {
-        if(userSpecialList === undefined || (userSpecialList.length > 0 && userSpecialList[0].customerId !== match.params.userId)) {
-            dispatch(getUserSpecialPickups(match.params.userId))
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userSpecialList])
+        const image = pic
 
-    useEffect(() => {
-        if(user === undefined || user._id !== match.params.userId) {
-            dispatch(getUserInfo(match.params.userId))
-        }
-        else if(user !== undefined) {
-            setEmail(user.email)
-            setName(user.name)
-            setImage(user.image)
-            setPhone(user.phone)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user])
-
-    useEffect(() => {
-        if(userSpecialList !== undefined && userScheduleList !== undefined) {
-            const list = returnPerMonthPickup(userScheduleList, userSpecialList)
-            setPickupList(list)
-            const list1 = moneyreturn(userScheduleList, userSpecialList)
-            setPaymentList(list1)
-            first.current = false
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userSpecialList, userScheduleList])
-
-    useEffect(() => {
-        if(success) {
+        const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/admin/users/${location.state._id}`, 
+        {email, name, phone, image}, config)
+        
+        if(res.status === 200) {
             Swal.fire({
                 icon: 'success',
                 title: 'User Update Success',
                 text: 'User Details have been successfully updated'
             })
             formik.current.setSubmitting(false)
+            const Data = [...users]
+            const index = await users.findIndex(user => user._id === location.state._id)
+            const data = await Data.splice(index, 1)[0]
+            data.email = res.data.email
+            data.name = res.data.name
+            data.phone = res.data.phone
+            data.image = res.data.image
+            Data.splice(index, 0, data)
             dispatch({
-                type: USER_DETAIL_UPDATE_RESET
+                type: RETRIEVE_USER_LIST_SUCCESS,
+                payload: Data
             })
-        }
-        else if(error) {
+        } else {
             Swal.fire({
                 icon: 'error',
                 title: 'User Update Fail',
-                text: error
-            })
-            dispatch({
-                type: USER_DETAIL_UPDATE_RESET
+                text: res.data.msg
             })
             formik.current.setSubmitting(false)
         }
+    }
+
+    useEffect(() => {
+        setName(location.state.name)
+        setEmail(location.state.email)
+        setImage(location.state.image)
+        setPhone(location.state.phone)
+        const list = returnPerMonthPickup(location.state.schedulePickups, location.state.specialPickups)
+        setPickupList(list)
+        const list1 = moneyreturn(location.state.schedulePickups, location.state.specialPickups)
+        setPaymentList(list1)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [updateLoading])
+    }, [])
  
     return (
         <div className = 'user'>
@@ -147,7 +131,7 @@ const UserDetails = ({ match }) => {
                 <h1 className = 'userTitle'>User</h1>
             </div>
             {
-                scheduleLoading === true && specialLoading === true && pickupList === null && paymentList === null && userLoading === true && first.current === true ?
+                pickupList === null && paymentList === null ?
                 <Loader /> :
                 <> 
                 <div className = 'userTop'>
@@ -182,9 +166,7 @@ const UserDetails = ({ match }) => {
                             validateOnBlur = {true}
                             onSubmit = {(values, actions) => {
                                 if(actions.validateForm) {
-                                    setTimeout(() => {
-                                        dispatch(updateUserDetail(user._id, values))
-                                    }, 400)
+                                    handleUpdate()
                                 } else {
                                     actions.setSubmitting(false)
                                 }
@@ -287,6 +269,26 @@ const UserDetails = ({ match }) => {
                         }
                         </Formik>
                     </div>    
+
+                </div>
+                
+                <div className = 'userTop'>
+                    <div className = 'userBottom1'>
+                        <h3>Add Special Pickup</h3>
+                        <div className = 'userDetails1'>
+                            <AddSpecial id = {match.params.userId}/>
+                        </div>
+                    </div>
+
+                    <div className = 'userBottom1'>
+                        <h3>Add Schedule Pickup</h3>
+                        <div className = 'userDetails1'>
+                            <div className = ''>
+                                <AddSchedule id = {match.params.userId}/>
+                            </div>
+                            
+                        </div>
+                    </div>
                 </div>
                 </>   
             }

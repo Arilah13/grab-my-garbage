@@ -6,9 +6,9 @@ import { Publish } from "@mui/icons-material"
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import Swal from 'sweetalert2'
+import axios from 'axios'
 
-import { getHaulerScheduledPickups, getHaulerSpecialPickups, getHaulerInfo, updateHaulerDetail } from '../../redux/actions/haulerActions'
-import { HAULER_DETAIL_UPDATE_RESET } from '../../redux/constants/haulerConstants'
+import { RETRIEVE_HAULER_LIST_SUCCESS } from '../../redux/constants/haulerConstants'
 
 import { returnPerMonthPickup, moneyreturn } from '../../helpers/userDetailsHelpers'
 
@@ -16,10 +16,9 @@ import './HaulerDetails.css'
 import Chart from '../../components/chart/Chart'
 import Loader from '../../components/loader/loader'
 
-const HaulerDetails = ({match}) => {
+const HaulerDetails = ({location}) => {
     const dispatch = useDispatch()
 
-    const first = useRef(true)
     const formik = useRef()
 
     const [pickupList, setPickupList] = useState(null)
@@ -33,17 +32,8 @@ const HaulerDetails = ({match}) => {
     const [password, setPassword] = useState('')
     const [password1, setPassword1] = useState('')
 
-    const haulerSchedulePickup = useSelector((state) => state.haulerSchedulePickup)
-    const { loading: scheduleLoading, haulerScheduleList } = haulerSchedulePickup
-
-    const haulerSpecialPickup = useSelector((state) => state.haulerSpecialPickup)
-    const { loading: specialLoading, haulerSpecialList } = haulerSpecialPickup
-
-    const haulerDetail = useSelector((state) => state.haulerDetail)
-    const { loading: haulerLoading, haulerDetail: hauler } = haulerDetail
-
-    const haulerDetailUpdate = useSelector((state) => state.haulerDetailUpdate)
-    const { loading: updateLoading, success, error } = haulerDetailUpdate
+    const haulerList = useSelector((state) => state.haulerList)
+    const { haulerList: haulers } = haulerList
 
     const initialValues = {email: email, name: name, phone: phone, image: image, pic: pic, 
                            service_city: service_city, password: password, password1: password1 }
@@ -96,70 +86,63 @@ const HaulerDetails = ({match}) => {
         setPic(base64)
     }
 
-    useEffect(() => {
-        if(haulerScheduleList === undefined || (haulerScheduleList.length > 0 && haulerScheduleList[0].pickerId !== match.params.haulerId)) {
-            dispatch(getHaulerScheduledPickups(match.params.haulerId))
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [haulerScheduleList])
+    const handleUpdate = async() => {
+        //const { userLogin: { userInfo } } = getState()
 
-    useEffect(() => {
-        if(haulerSpecialList === undefined || (haulerSpecialList.length > 0 && haulerSpecialList[0].pickerId !== match.params.haulerId)) {
-            dispatch(getHaulerSpecialPickups(match.params.haulerId))
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                //Authorization: `Bearer ${userInfo.token}`
+            }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [haulerSpecialList])
 
-    useEffect(() => {
-        if(hauler === undefined || hauler._id !== match.params.haulerId) {
-            dispatch(getHaulerInfo(match.params.haulerId))
-        }
-        else if(hauler !== undefined) {
-            setEmail(hauler.email)
-            setName(hauler.name)
-            setImage(hauler.image)
-            setPhone(hauler.phone)
-            setService_city(hauler.service_city)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [hauler])
+        const image = pic
 
-    useEffect(() => {
-        if(haulerSpecialList !== undefined && haulerScheduleList !== undefined) {
-            const list = returnPerMonthPickup(haulerScheduleList, haulerSpecialList)
-            setPickupList(list)
-            const list1 = moneyreturn(haulerScheduleList, haulerSpecialList)
-            setPaymentList(list1)
-            first.current = false
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [haulerSpecialList, haulerScheduleList])
+        const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/admin/haulers/${location.state._id}`, 
+        {email, name, phone, image, password, service_city}, config)
 
-    useEffect(() => {
-        if(success) {
+        if(res.status === 200) {
             Swal.fire({
                 icon: 'success',
                 title: 'Hauler Update Success',
                 text: 'Hauler Details have been successfully updated'
             })
             formik.current.setSubmitting(false)
+            const Data = [...haulers]
+            const index = await haulers.findIndex(hauler => hauler._id === location.state._id)
+            const data = await Data.splice(index, 1)[0]
+            data.email = res.data.email
+            data.name = res.data.name
+            data.phone = res.data.phone
+            data.image = res.data.image
+            data.service_city = res.data.service_city
+            Data.splice(index, 0, data)
             dispatch({
-                type: HAULER_DETAIL_UPDATE_RESET
+                type: RETRIEVE_HAULER_LIST_SUCCESS,
+                payload: Data
             })
-        }
-        else if(error) {
+        } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Hauler Update Fail',
-                text: error
-            })
-            dispatch({
-                type: HAULER_DETAIL_UPDATE_RESET
+                text: res.data.msg
             })
             formik.current.setSubmitting(false)
         }
+    }
+
+    useEffect(() => {
+        setEmail(location.state.email)
+        setName(location.state.name)
+        setImage(location.state.image)
+        setPhone(location.state.phone)
+        setService_city(location.state.service_city)
+        const list = returnPerMonthPickup(location.state.schedulePickups, location.state.specialPickups)
+        setPickupList(list)
+        const list1 = moneyreturn(location.state.schedulePickups, location.state.specialPickups)
+        setPaymentList(list1)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [updateLoading])
+    }, [])
 
     return (
         <div className = 'hauler'>
@@ -168,7 +151,7 @@ const HaulerDetails = ({match}) => {
             </div>
 
             {
-                scheduleLoading === true && specialLoading === true && pickupList === null && paymentList === null && haulerLoading === true && first.current === true ?
+                pickupList === null && paymentList === null ?
                 <Loader /> :
                 <>
                 <div className = 'haulerTop'>
@@ -202,9 +185,7 @@ const HaulerDetails = ({match}) => {
                             validateOnBlur = {true}
                             onSubmit = {(values, actions) => {
                                 if(actions.validateForm) {
-                                    setTimeout(() => {
-                                        dispatch(updateHaulerDetail(hauler._id, values))
-                                    }, 400)
+                                    handleUpdate()
                                 } else {
                                     actions.setSubmitting(false)
                                 }

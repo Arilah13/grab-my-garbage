@@ -84,9 +84,7 @@ const requestController = {
             request.declinedHaulers.push(haulerId)
             await request.save()
 
-            res.status(200).json({
-                message: 'success'
-            })
+            res.status(200).json({msg: 'Specialpickup Declined'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -120,9 +118,7 @@ const requestController = {
 
             await request.save()
 
-            res.status(200).json({
-                message: 'success'
-            })
+            res.status(200).json({msg: 'Specialpickup Accepted'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -139,9 +135,7 @@ const requestController = {
             request.completedDate = date
             await request.save()
 
-            res.status(200).json({
-                message: 'success'
-            })
+            res.status(200).json({msg: 'Specialpickup Completed'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -154,9 +148,7 @@ const requestController = {
             pickups.inactive = 1
             await pickups.save()
 
-            res.status(200).json({
-                message: 'success'
-            })
+            res.status(200).json({msg: 'Specialpickup Exclude'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -169,9 +161,7 @@ const requestController = {
             pickups.inactive = 0
             await pickups.save()
 
-            res.status(200).json({
-                message: 'success'
-            })
+            res.status(200).json({msg: 'Specialpickup Include'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -184,9 +174,7 @@ const requestController = {
             pickups.active = 1
             await pickups.save()
 
-            res.status(200).json({
-                message: 'success'
-            })
+            res.status(200).json({msg: 'Specialpickup Active'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

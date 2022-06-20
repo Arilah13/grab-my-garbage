@@ -3,11 +3,14 @@ import { useSelector, useDispatch } from 'react-redux'
 import './SchedulePickupList.css'
 import { DataGrid } from '@mui/x-data-grid'
 import { Link } from 'react-router-dom'
+import { Backdrop, Slide, Modal, Box } from '@mui/material'
+import Swal from 'sweetalert2'
 
 import { getSchedulePickups } from '../../redux/actions/schedulePickupActions'
 import { fromDate } from '../../helpers/timeHelpers'
 
 import Loader from '../../components/loader/loader'
+import AddSchedule from '../../components/addSchedule/AddSchedule'
 
 const SchedulePickupList = () => {
     const dispatch = useDispatch()
@@ -16,6 +19,7 @@ const SchedulePickupList = () => {
     const { loading, schedulePickupList: schedulePickup } = schedulePickupList
 
     const [data, setData] = useState(null)
+    const [open, setOpen] = useState(false)
 
     const Button = ({ type }) => {
         return <button className = {'button ' + type}>{type}</button>
@@ -27,7 +31,7 @@ const SchedulePickupList = () => {
                 return (
                 <div className = 'pickupListUser'>
                     <img className = 'pickupListImg' src = {params.row.customerId.image !== undefined ? params.row.customerId.image : require('../../assets/user.png')} alt = '' />
-                    {params.row.customerId.name}
+                    {params.row.customerId.name && params.row.customerId.name}
                 </div>
                 );
             },
@@ -36,7 +40,7 @@ const SchedulePickupList = () => {
             renderCell: (params) => {
                 return (
                     <>
-                        {fromDate(params.row.from) + ' - ' + fromDate(params.row.to)}
+                        {params.row.from && fromDate(params.row.from) + ' - ' + fromDate(params.row.to)}
                     </>
                 );
             }
@@ -56,7 +60,20 @@ const SchedulePickupList = () => {
         { field: 'action', headerName: 'Action', width: 200, headerAlign: 'center', align: 'center',
             renderCell: (params) => {
                 return (
-                    <Link to = {'/schedulepickups/' + params.row._id}>
+                    <Link to = {{
+                        pathname: '/schedulepickups/' + params.row._id,
+                        state: {
+                            from: params.row.from,
+                            to: params.row.to,
+                            timeslot: params.row.timeslot,
+                            days: params.row.days,
+                            payment: params.row.payment,
+                            paymentMethod: params.row.paymentMethod,
+                            customerId: params.row.customerId,
+                            pickerId: params.row.pickerId,
+                            loc: params.row.location
+                        }
+                    }}>
                         <button className = 'pickupListEdit'>View</button>
                     </Link>
                 );
@@ -67,12 +84,7 @@ const SchedulePickupList = () => {
     useEffect(() => {
         if(schedulePickup === undefined) {
             dispatch(getSchedulePickups())
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [schedulePickup])
-
-    useEffect(() => {
-        if(schedulePickup !== undefined) {
+        } else if(schedulePickup !== undefined) {
             setData(schedulePickup)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -80,7 +92,9 @@ const SchedulePickupList = () => {
 
     return (
         <div className = 'schedulePickupList'>
-            <div className = 'pageHeading'>Schedule Pickup List</div>
+            <div className = 'titleContainer'>
+                <div className = 'pageHeading'>Schedule Pickup List</div>
+            </div>
             <div className = 'breadcrumb'>
                 <span className = 'main'>Dashboard&nbsp;</span>
                 <span className = 'active'>/&nbsp;SchedulePickupList</span>
@@ -101,8 +115,38 @@ const SchedulePickupList = () => {
                 />
             }
 
+        <Modal
+            aria-labelledby = 'transition-modal-title'
+            aria-describedby = 'transition-modal-description'
+            open = {open}
+            onClose = {() => setOpen(false)}
+            closeAfterTransition
+            BackdropComponent = {Backdrop}
+            BackdropProps = {{
+              timeout: 500,
+            }}
+        >
+            <Slide in = {open}>
+                <Box sx={style}>
+                    <AddSchedule setOpen = {setOpen} />
+                </Box>
+            </Slide>
+        </Modal>
+
         </div>
     )
 }
+
+const style = {
+    position: 'absolute',
+    top: 50,
+    left: 550,
+    transform: 'translate(-50%, -50%)',
+    width: 580,
+    height: 600,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    borderRadius: 5
+};
 
 export default SchedulePickupList

@@ -27,7 +27,7 @@ const SpecialPickupList = () => {
                 return (
                 <div className = 'pickupListUser'>
                     <img className = 'pickupListImg' src = {params.row.customerId.image !== undefined ? params.row.customerId.image : require('../../assets/user.png')} alt = '' />
-                    {params.row.customerId.name}
+                    {params.row.customerId.name && params.row.customerId.name}
                 </div>
                 );
             },
@@ -36,7 +36,7 @@ const SpecialPickupList = () => {
             renderCell: (params) => {
                 return (
                     <>
-                        {dateHelper(params.row.datetime) + ' - ' + timeHelper(params.row.datetime)}
+                        {params.row.datetime && dateHelper(params.row.datetime) + ' - ' + timeHelper(params.row.datetime)}
                     </>
                 )
             }
@@ -57,7 +57,22 @@ const SpecialPickupList = () => {
         { field: 'action', headerName: 'Action', width: 200, headerAlign: 'center', align: 'center',
             renderCell: (params) => {
                 return (
-                    <Link to = {'/specialpickups/' + params.row._id}>
+                    <Link to = {{
+                        pathname: '/specialpickups/' + params.row._id,
+                        state: {
+                            datetime: params.row.datetime,
+                            category: params.row.category,
+                            weight: params.row.weight,
+                            image: params.row.image,
+                            payment: params.row.payment,
+                            paymentMethod: params.row.paymentMethod,
+                            customerId: params.row.customerId,
+                            pickerId: params.row.pickerId,
+                            loc: params.row.location,
+                            completed: params.row.completed,
+                            accepted: params.row.accepted
+                        }
+                    }}>
                         <button className = 'pickupListEdit'>View</button>
                     </Link>
                 )
@@ -68,14 +83,10 @@ const SpecialPickupList = () => {
     useEffect(() => {
         if(specialPickup === undefined) {
             dispatch(getSpecialPickups())
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [specialPickup])
-
-    useEffect(() => {
-        if(specialPickup !== undefined) {
+        } else if(specialPickup !== undefined) {
             setData(specialPickup)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [specialPickup])
 
     return (

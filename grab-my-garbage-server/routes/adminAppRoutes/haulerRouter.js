@@ -9,7 +9,6 @@ router.route('/')
 
 router.route('/:id')
         .put(haulerController.updateHaulerDetail)
-        .get(haulerController.returnHaulerDetail)
         .delete(haulerController.deleteHauler)
 
 module.exports = router

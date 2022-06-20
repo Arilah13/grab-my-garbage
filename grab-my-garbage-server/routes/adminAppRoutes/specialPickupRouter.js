@@ -4,14 +4,9 @@ const auth = require('../../middleware/auth')
 const authAdmin = require('../../middleware/authAdmin')
 
 router.route('/')
-        .get(specialPickupController.returnspecialPickupList)
+        .get(specialPickupController.returnSpecialPickupList)
 
 router.route('/:id')
-        .get(specialPickupController.returnSpecialPickupDetail)
-        .delete(specialPickupController.deleteSpecialPickup)
-
-router.get('/user/:id', specialPickupController.returnSpecialPickupUser)
-
-router.get('/hauler/:id', specialPickupController.returnSpecialPickupHauler)
+        .delete(specialPickupController.cancelSpecialPickup)
 
 module.exports = router

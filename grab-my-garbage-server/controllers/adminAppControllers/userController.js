@@ -2,28 +2,45 @@ const Users = require('../../models/userModel')
 const Haulers = require('../../models/haulerModel')
 const SpecialPickup = require('../../models/specialPickupModel')
 const SchedulePickup = require('../../models/scheduledPickupModel')
+
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary')
 const bcrypt = require('bcrypt')
-const polygonData = require('../../helpers/polygonData')
 const turf = require('@turf/turf')
+
+const polygonData = require('../../helpers/polygonData')
 
 const userController = {
     returnUserList: async(req, res) => {
         try{
+            let result = []
+
             const users = await Users.find({role: {$ne: 2}}).select('-password')
 
-            res.status(200).json(users)
-        } catch(err) {
-            return res.status(500).json({msg: err.message})
-        }
-    },
-    returnUserDetail: async(req, res) => {
-        try{
-            const user = await Users.findById(req.params.id).select('-password')
-            if(!user) return res.status(400).json({msg: 'User does not exists.'})
+            if(users.length > 0) {
+                for(let n=0; n<users.length; n++) {
+                    const specialPickups = await SpecialPickup.find({ customerId: users[n]._id })
+                    const schedulePickups = await SchedulePickup.find({ customerId: users[n]._id })
 
-            res.status(200).json(user)
+                    result.push({
+                        _id: users[n]._id,
+                        name: users[n].name,
+                        email: users[n].email,
+                        role: users[n].role,
+                        image: users[n].image,
+                        createdAt: users[n].createdAt,
+                        updatedAt: users[n].updatedAt,
+                        __v: users[n].__v,
+                        phone: users[n].phone,
+                        paymentId: users[n].paymentId,
+                        pushId: users[n].pushId,
+                        specialPickups: specialPickups,
+                        schedulePickups: schedulePickups
+                    })
+                }
+            }
+
+            res.status(200).json(result)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -56,9 +73,24 @@ const userController = {
 
             await user.save()
 
+            const specialPickups = await SpecialPickup.find({ customerId: user._id })
+            const schedulePickups = await SchedulePickup.find({ customerId: user._id })
+
             res.status(200).json({
-                message: 'User updated'
-            }) 
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                image: user.image,
+                phone: user.phone,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+                __v: user.__v,
+                paymentId: user.paymentId,
+                pushId: user.pushId,
+                specialPickups: specialPickups,
+                schedulePickups: schedulePickups
+            })
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -71,7 +103,7 @@ const userController = {
                 return res.status(400).json({msg: 'The user does not exist.'})
 
             await user.remove()
-            res.status(200).json({msg: 'User removed'})
+            res.status(200).json({msg: 'User Removed'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -199,7 +231,7 @@ const userController = {
     addSpecialPickup: async(req, res) => {
         try{
             const {pickupInfo, id, result} = req.body
-            console.log(pickupInfo)
+
             let photo
 
             if(pickupInfo.image !== null && pickupInfo.image !== '') {
@@ -219,9 +251,6 @@ const userController = {
                 photo = null
             }
 
-            const service_city = await isPointInPolygon(result.latitude, result.longitude, polygonData)
-            const hauler = await Haulers.find({service_city: service_city})
-
             let locations = []
             locations.push(result)
 
@@ -234,10 +263,11 @@ const userController = {
                 payment: '320',
                 paymentMethod: 'Cash',
                 customerId: id,
-                pickerId: hauler[0]._id
             })
 
             await newPickup.save()
+
+            const user = await Users.findById(id)
 
             res.status(201).json({
                 _id: newPickup._id,
@@ -248,6 +278,7 @@ const userController = {
                 image: newPickup.image,
                 payment: newPickup.payment,
                 paymentMethod: newPickup.paymentMethod,
+                customerId: user
             })
 
         } catch(err) {
@@ -256,16 +287,58 @@ const userController = {
     },
     addScheduledPickup: async(req, res) => {
         try{
+            let requests = []
+            let results
+
             const {pickupInfo, id, result} = req.body
             const date1 = pickupInfo.from.split('T')[0]
             const date2 = pickupInfo.to.split('T')[0]
-            console.log(result)
             const service_city = await isPointInPolygon(result.latitude, result.longitude, polygonData)
 
             const hauler = await Haulers.find({service_city: service_city})
+            const user = await Users.findById(id)
 
             let locations = []
             locations.push(result)
+
+            if(hauler.length > 0) {
+                for(let n=0; n<hauler.length; n++) {
+                    const pickup = await SchedulePickup.find({pickerId: hauler[n]._id, cancelled: 0, days: {$in: pickupInfo.days}, completed: 0})
+                    if(pickup.length > 0) {
+                        for(let i=0; i<pickup.length; i++){
+                            if(pickup[i].timeslot === pickupInfo.time) {
+                                const index = await requests.find(pick => pick.hauler === hauler[n]._id)
+                                const pick = await requests.splice((pick => pick.hauler === hauler[n]._id), 1)[0]
+                                if(index) {
+                                    pick.pickup.push(pickup[i])
+                                    pick.on += 1
+                                    requests.push(pick)
+                                } else {
+                                    requests.push({
+                                        hauler: hauler[n]._id,
+                                        limit: hauler[n].limit,
+                                        pickup: [pickup[i]],
+                                        on: 1
+                                    })
+                                }                   
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(!results) {
+                const item = hauler[Math.floor(Math.random()*hauler.length)]
+                results = item._id
+            }
+
+            if(requests.length > 0) {
+                for(let n=0; n<requests.length; n++) {
+                    if(requests[n].pickup.length <= requests[n].limit) {
+                        results = requests[n].hauler
+                    }
+                }
+            }
    
             const newPickup = new SchedulePickup({
                 location: locations,
@@ -276,7 +349,7 @@ const userController = {
                 payment: '400',
                 paymentMethod: 'Cash',
                 customerId: id,
-                pickerId: hauler[0]._id
+                pickerId: results
             })
 
             await newPickup.save()
@@ -287,9 +360,11 @@ const userController = {
                 from: newPickup.from,
                 to: newPickup.to,
                 days: newPickup.days,
-                time: newPickup.timeslot,
+                timeslot: newPickup.timeslot,
                 payment: newPickup.payment,
                 paymentMethod: newPickup.paymentMethod,
+                pickerId: newPickup.pickerId,
+                customerId: user
             })
 
         } catch(err) {

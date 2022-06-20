@@ -68,7 +68,7 @@ const userController = {
                     email: newUser.email,
                     role: newUser.role,
                     image: newUser.image,
-                        count: count,
+                    count: count,
                     schedule: schedule,
                     special: special,
                     pushId: newUser.pushId,
@@ -275,9 +275,7 @@ const userController = {
 
             await user.save()
 
-            res.status(200).json({
-                message: 'User updated'
-            })                   
+            res.status(200).json({msg: 'User Updated'})                   
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }
@@ -336,9 +334,7 @@ const userController = {
 
             await user.save()
 
-            res.status(200).json({
-                message: 'User updated'
-            })  
+            res.status(200).json({msg: 'User Updated'})  
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }

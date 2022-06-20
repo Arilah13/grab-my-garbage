@@ -132,7 +132,7 @@ const pickupController = {
             pickups.cancelled = 1
             await pickups.save()
 
-            res.status(200).json({message: 'success'})
+            res.status(200).json({message: 'Specialpickup Cancel'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

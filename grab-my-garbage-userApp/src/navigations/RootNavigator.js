@@ -27,7 +27,8 @@ const Rootnavigator = ({first, setFirst}) => {
         <>
             {
                 loading === false && userDetail.user !== undefined && (conversations === false || 
-                    acceptedLoading === false || scheduleLoading === false) ? (
+                    acceptedLoading === false || scheduleLoading === false || conversations !== undefined || 
+                    acceptedLoading !== undefined || scheduleLoading !== undefined) ? (
                     <StackNavigator />
                 ) : (
                     <Authnavigator />

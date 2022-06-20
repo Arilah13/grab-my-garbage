@@ -11,7 +11,6 @@ router.route('/')
         .put(userController.updateAdmin)
 
 router.route('/:id')
-        .get(userController.returnUserDetail)
         .put(userController.updateUserDetail)
         .delete(userController.deleteUser)
 

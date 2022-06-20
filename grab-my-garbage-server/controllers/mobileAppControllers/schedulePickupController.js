@@ -6,23 +6,55 @@ const turf = require('@turf/turf')
 const scheduledPickupController = {
     addScheduledPickup: async(req, res) => {
         try{
+            let requests = []
+            let results
+
             const {pickupInfo, total, method, id} = req.body
             const date1 = pickupInfo.from.split('T')[0]
             const date2 = pickupInfo.to.split('T')[0]
 
             const service_city = await isPointInPolygon(pickupInfo.location.latitude, pickupInfo.location.longitude, polygonData)
-
+            
             const hauler = await Haulers.find({service_city: service_city})
             
-            // const data = await hauler.find(async(haulers) => {
-            //     const pickup = await ScheduledPickups.find({pickerId: haulers._id})
-            //     if(pickup.length > 0) {
-            //         const final = [haulers, pickup]
-            //         return final
-            //     }
-            // })
+            if(hauler.length > 0) {
+                for(let n=0; n<hauler.length; n++) {
+                    const pickup = await ScheduledPickups.find({pickerId: hauler[n]._id, cancelled: 0, days: {$in: pickupInfo.days}, completed: 0})
+                    if(pickup.length > 0) {
+                        for(let i=0; i<pickup.length; i++){
+                            if(pickup[i].timeslot === pickupInfo.time) {
+                                const index = await requests.find(pick => pick.hauler === hauler[n]._id)
+                                const pick = await requests.splice((pick => pick.hauler === hauler[n]._id), 1)[0]
+                                if(index) {
+                                    pick.pickup.push(pickup[i])
+                                    pick.on += 1
+                                    requests.push(pick)
+                                } else {
+                                    requests.push({
+                                        hauler: hauler[n]._id,
+                                        limit: hauler[n].limit,
+                                        pickup: [pickup[i]],
+                                        on: 1
+                                    })
+                                }                   
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if(requests.length > 0) {
+                for(let n=0; n<requests.length; n++) {
+                    if(requests[n].pickup.length <= requests[n].limit) {
+                        results = requests[n].hauler
+                    }
+                }
+            }
 
-            // console.log(data)
+            if(!results) {
+                const item = hauler[Math.floor(Math.random()*hauler.length)]
+                results = item._id
+            }
    
             const newPickup = new ScheduledPickups({
                 location: pickupInfo.location,
@@ -33,7 +65,7 @@ const scheduledPickupController = {
                 payment: total,
                 paymentMethod: method,
                 customerId: id,
-                pickerId: hauler[0]._id
+                pickerId: results
             })
 
             await newPickup.save()
@@ -72,7 +104,7 @@ const scheduledPickupController = {
             pickups.inactive = 1
             await pickups.save()
 
-            res.status(200).json({msg: 'success'})
+            res.status(200).json({msg: 'Schedulepickup Inactive'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -85,7 +117,7 @@ const scheduledPickupController = {
             pickups.inactive = 0
             await pickups.save()
 
-            res.status(200).json({msg: 'success'})
+            res.status(200).json({msg: 'Schedulepickup Active'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -98,7 +130,7 @@ const scheduledPickupController = {
             pickups.cancelled = 1
             await pickups.save()
 
-            res.status(200).json({msg: 'success'})
+            res.status(200).json({msg: 'SchedulePickup Cancel'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

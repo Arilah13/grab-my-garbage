@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { TextField, InputLabel, Select, MenuItem, FormControl, Button } from '@mui/material'
 import { Publish } from '@mui/icons-material'
@@ -6,20 +6,18 @@ import { Formik } from 'formik'
 import * as Yup from 'yup'
 import Swal from 'sweetalert2'
 import { LoadingButton } from '@mui/lab'
+import axios from 'axios'
 
 import './AddHauler.css'
-import OverLay from '../map/OverLay'
-import polygonData from '../../helpers/polygonData'
-import { addHauler } from '../../redux/actions/haulerActions'
-import { HAULER_ADD_RESET } from '../../redux/constants/haulerConstants'
+import { RETRIEVE_HAULER_LIST_SUCCESS } from '../../redux/constants/haulerConstants'
 
 const AddHauler = ({setOpen}) => {
     const dispatch = useDispatch()
 
     const formik = useRef()
 
-    const haulerAdd = useSelector((state) => state.haulerAdd)
-    const { loading, success, error } = haulerAdd
+    const haulerList = useSelector((state) => state.haulerList)
+    const { haulerList: haulers } = haulerList
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -77,39 +75,58 @@ const AddHauler = ({setOpen}) => {
         setPic(base64)
     }
 
-    const polygon = polygonData.map((polygondata) => {
-        return({
-            area: polygondata.coordinates,
-            id: polygondata.id,
-            name: polygondata.name
-        })
-    })
+    const handleAdd = async(values) => {
+        //const { userLogin: { userInfo } } = getState()
 
-    useEffect(() => {
-        if(success === true) {
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                //Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        const { name, email, password, phone, pic: image, service_city } = values
+
+        const res = await axios.post('https://grab-my-garbage-server.herokuapp.com/admin/haulers/', 
+        {email, name, phone, password, image, service_city, role: 1}, config)
+        
+        if(res.status === 201) {
             Swal.fire({
                 icon: 'success',
                 title: 'Hauler Registration Success',
                 text: 'Hauler Details have been successfully added'
             })
             formik.current.setSubmitting(false)
+            const Data = [...haulers]
+            const data = {
+                _id: res.data._id,
+                name: res.data.name,
+                email: res.data.email,
+                role: res.data.role,
+                image: res.data.image,
+                phone: res.data.phone,
+                location: res.data.location,
+                service_city: res.data.service_city,
+                limit: res.data.limit,
+                specialPickups: [],
+                schedulePickups: [],
+                pushId: []
+            }
+            Data.push(data)
             dispatch({
-                type: HAULER_ADD_RESET
+                type: RETRIEVE_HAULER_LIST_SUCCESS,
+                payload: Data
             })
             setOpen(false)
-        }
-        else if(error) {
+        } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Hauler Registration Fail',
-                text: error
-            })
-            dispatch({
-                type: HAULER_ADD_RESET
+                text: res.data.msg
             })
             formik.current.setSubmitting(false)
         }
-    }, [loading])
+    }
 
     return (
         <div style = {{padding: '30px'}}>
@@ -128,9 +145,7 @@ const AddHauler = ({setOpen}) => {
                 validateOnBlur = {true}
                 onSubmit = {(values, actions) => {
                     if(actions.validateForm) {
-                        setTimeout(() => {
-                            dispatch(addHauler(values))
-                        }, 400)
+                        handleAdd(values)
                     } else {
                         actions.setSubmitting(false)
                     }

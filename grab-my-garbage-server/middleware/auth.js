@@ -4,6 +4,7 @@ const Users = require('../models/userModel')
 const auth = async (req, res, next) => {
     try{ 
         let token, decoded
+
         if (
             req.headers.authorization &&
             req.headers.authorization.startsWith('Bearer')
@@ -20,9 +21,7 @@ const auth = async (req, res, next) => {
                 res.status(401)
                 throw new Error(`Not authorized, token failed`)
             }
-        }
-
-        if (!token) {
+        } else {
             res.status(401)
             throw new Error('Not authorized, no token')
         }

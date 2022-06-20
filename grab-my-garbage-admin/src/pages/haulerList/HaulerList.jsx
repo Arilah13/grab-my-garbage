@@ -6,12 +6,13 @@ import { DeleteOutline } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import { Backdrop, Slide, Modal, Box } from '@mui/material'
 import Swal from 'sweetalert2'
+import axios from 'axios'
 
-import { getHaulers, deleteHauler } from '../../redux/actions/haulerActions'
+import { getHaulers } from '../../redux/actions/haulerActions'
+import { RETRIEVE_HAULER_LIST_SUCCESS } from '../../redux/constants/haulerConstants'
 
 import AddHauler from '../../components/addHauler/AddHauler'
 import Loader from '../../components/loader/loader'
-import { HAULER_DELETE_RESET } from '../../redux/constants/haulerConstants'
 
 const HaulerList = () => {
     const dispatch = useDispatch()
@@ -19,11 +20,17 @@ const HaulerList = () => {
     const haulerList = useSelector((state) => state.haulerList)
     const { loading, haulerList: haulers } = haulerList
 
-    const haulerDelete = useSelector((state) => state.haulerDelete)
-    const { success, error } = haulerDelete
-
     const [data, setData] = useState()
     const [open, setOpen] = useState(false)
+
+    //const { userLogin: { userInfo } } = getState()
+
+    const config = {
+        headers: {
+            'Content-type': 'application/json',
+            //Authorization: `Bearer ${userInfo.token}`
+        }
+    }
 
     const handleDelete = (id) => {
         Swal.fire({
@@ -33,9 +40,29 @@ const HaulerList = () => {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes'
-        }).then((result) => {
+        }).then(async(result) => {
             if (result.isConfirmed) {
-                dispatch(deleteHauler(id))
+                const res = await axios.delete(`https://grab-my-garbage-server.herokuapp.com/admin/haulers/${id}`, config)
+                if(res.status === 200) {
+                    const Data = [...haulers]
+                    await Data.splice(Data.findIndex(hauler => hauler._id === id), 1)[0]
+                    dispatch({
+                        type: RETRIEVE_HAULER_LIST_SUCCESS,
+                        payload: Data
+                    })
+                    //setData(Data)
+                    Swal.fire(
+                        'Hauler Deleted',
+                        'Hauler details has been deleted.',
+                        'success'
+                    )
+                } else {
+                    Swal.fire(
+                        'Error',
+                        res.data.msg,
+                        'error'
+                    )
+                }
             }
         })
     }
@@ -58,7 +85,23 @@ const HaulerList = () => {
             renderCell: (params) => {
                 return (
                 <>
-                    <Link to = {'/haulers/' + params.row._id}>
+                    <Link to = {{
+                        pathname: '/haulers/' + params.row._id,
+                        state: {
+                            _id: params.row._id,
+                            name: params.row.name,
+                            email: params.row.email,
+                            role: params.row.role,
+                            image: params.row.image,
+                            phone: params.row.phone,
+                            pushId: params.row.pushId,
+                            limit: params.row.limit,
+                            location: params.row.location,
+                            service_city: params.row.service_city,
+                            specialPickups: params.row.specialPickups,
+                            schedulePickups: params.row.schedulePickups
+                        }
+                    }}>
                         <button className = 'haulerListEdit'>View</button>
                     </Link>
                     <DeleteOutline
@@ -79,29 +122,6 @@ const HaulerList = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [haulers])
-
-    useEffect(() => {
-        if(success === true) {
-            Swal.fire(
-                'Hauler Deleted',
-                'Hauler details has been deleted.',
-                'success'
-            )
-            dispatch({
-                type: HAULER_DELETE_RESET
-            })
-            dispatch(getHaulers())
-        } else if(success === false) {
-            Swal.fire(
-                'Error',
-                error,
-                'error'
-            )
-            dispatch({
-                type: HAULER_DELETE_RESET
-            })
-        }
-    }, [haulerDelete])
 
     return (
         <>

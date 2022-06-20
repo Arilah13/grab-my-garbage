@@ -26,7 +26,9 @@ const app = express()
 app.use(express.urlencoded({extended: false, limit: '50mb'}))
 app.use(express.json({limit: '50mb'}))
 app.use(cookieParser())
-app.use(cors())
+app.use(cors({
+    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
+}))
 
 connectDB()
 

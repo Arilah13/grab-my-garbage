@@ -304,34 +304,3 @@ const sixMonthsPrior = (date, value) => {
         }
     }
 }
-
-const monthConvert = (date) => {
-    let month 
-    if(date === 1) {
-        month = 'Jan'
-    } else if(date === 2) {
-        month = 'Feb'
-    } else if(date === 3) {
-        month = 'Mar'
-    } else if(date === 4) {
-        month = 'Apr'
-    } else if(date === 5) {
-        month = 'May'
-    } else if(date === 6) {
-        month = 'Jun'
-    } else if(date === 7) {
-        month = 'Jul'
-    } else if(date === 8) {
-        month = 'Aug'
-    } else if(date === 9) {
-        month = 'Sep'
-    } else if(date === 10) {
-        month = 'Oct'
-    } else if(date === 11) {
-        month = 'Nov'
-    } else if(date === 12) {
-        month = 'Dec'
-    }
-
-    return month
-}

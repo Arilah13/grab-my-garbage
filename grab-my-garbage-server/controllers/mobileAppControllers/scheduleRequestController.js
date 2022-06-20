@@ -44,11 +44,10 @@ const requestController = {
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
             
             request.completedPickups.push({date, completedHauler})
+
             await request.save()
 
-            res.status(200).json({
-                message: 'pickup completed'
-            })
+            res.status(200).json({msg: 'Schedulepickup Completed'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -104,9 +103,7 @@ const requestController = {
             pickups.active = 1
             await pickups.save()
 
-            res.status(200).json({
-                message: 'success'
-            })
+            res.status(200).json({msg: 'Schedulepickup Active'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -119,9 +116,7 @@ const requestController = {
             pickups.active = 0
             await pickups.save()
 
-            res.status(200).json({
-                message: 'success'
-            })
+            res.status(200).json({msg: 'Schedulepickup Inactive'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

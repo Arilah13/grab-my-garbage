@@ -8,7 +8,7 @@ router.get('/:id1/:id2', auth, conversationController.findConversation)
 
 router.get('/:id', conversationController.getConversation)
 
-router.put('/user/:id', auth, conversationController.markReadUser)
+router.put('/user/:id', conversationController.markReadUser)
 
 router.put('/hauler/:id', auth, conversationController.markReadHauler)
 

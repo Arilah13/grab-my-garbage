@@ -6,7 +6,7 @@ router.post('/', auth, scheduledPickupController.addScheduledPickup)
 
 router.get('/getPickup/:id', auth, scheduledPickupController.getSchedulePickup)
 
-router.put('/:id', auth, scheduledPickupController.cancelSchedulePickup)
+router.put('/:id', scheduledPickupController.cancelSchedulePickup)
 
 router.put('/inactive/:id', auth, scheduledPickupController.inactiveSchedulePickup)
 

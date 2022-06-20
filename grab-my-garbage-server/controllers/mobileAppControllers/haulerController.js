@@ -97,9 +97,7 @@ const haulerController = {
 
             await hauler.save()
 
-            res.status(200).json({
-                message: 'Hauler updated'
-            })  
+            res.status(200).json({msg: 'Hauler updated'})  
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }

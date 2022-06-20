@@ -5,9 +5,10 @@ import { DataGrid } from '@mui/x-data-grid'
 import { DeleteOutline } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import axios from 'axios'
 
-import { getUsers, deleteUser } from '../../redux/actions/userActions'
-import { USER_DELETE_RESET } from '../../redux/constants/userConstants'
+import { getUsers } from '../../redux/actions/userActions'
+import { RETRIEVE_USER_LIST_SUCCESS } from '../../redux/constants/userConstants'
 
 import Loader from '../../components/loader/loader'
 
@@ -17,10 +18,16 @@ const UserList = () => {
     const userList = useSelector((state) => state.userList)
     const { loading, userList: users } = userList
 
-    const userDelete = useSelector((state) => state.userDelete)
-    const { success, error } = userDelete
-
     const [data, setData] = useState()
+
+    //const { userLogin: { userInfo } } = getState()
+
+    const config = {
+        headers: {
+            'Content-type': 'application/json',
+            //Authorization: `Bearer ${userInfo.token}`
+        }
+    }
 
     const handleDelete = (id) => {
         Swal.fire({
@@ -30,9 +37,30 @@ const UserList = () => {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes'
-        }).then((result) => {
+        }).then(async(result) => {
             if (result.isConfirmed) {
-                dispatch(deleteUser(id))
+                const res = await axios.delete(`https://grab-my-garbage-server.herokuapp.com/admin/users/${id}`, config)
+    
+                if(res.status === 200) {
+                    const Data = [...users]
+                    await Data.splice(Data.findIndex(user => user._id === id), 1)[0]
+                    dispatch({
+                        type: RETRIEVE_USER_LIST_SUCCESS,
+                        payload: Data
+                    })
+                    //setData(users)
+                    Swal.fire(
+                        'User Deleted',
+                        'User details has been deleted.',
+                        'success'
+                    )
+                } else {
+                    Swal.fire(
+                        'Error',
+                        res.data.msg,
+                        'error'
+                    )
+                }
             }
         })
     }
@@ -55,7 +83,21 @@ const UserList = () => {
             renderCell: (params) => {
                 return (
                 <>
-                    <Link to = {'/users/' + params.row._id}>
+                    <Link to = {{
+                        pathname: '/users/' + params.row._id,
+                        state: {
+                            _id: params.row._id,
+                            name: params.row.name,
+                            email: params.row.email,
+                            role: params.row.role,
+                            image: params.row.image,
+                            phone: params.row.phone,
+                            paymentId: params.row.paymentId,
+                            pushId: params.row.pushId,
+                            specialPickups: params.row.specialPickups,
+                            schedulePickups: params.row.schedulePickups
+                        }
+                    }}>
                         <button className = 'userListEdit'>View</button>
                     </Link>
                     <DeleteOutline
@@ -77,29 +119,6 @@ const UserList = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [users])
-
-    useEffect(() => {
-        if(success === true) {
-            Swal.fire(
-                'User Deleted',
-                'User details has been deleted.',
-                'success'
-            )
-            dispatch({
-                type: USER_DELETE_RESET
-            })
-            dispatch(getUsers())
-        } else if(success === false) {
-            Swal.fire(
-                'Error',
-                error,
-                'error'
-            )
-            dispatch({
-                type: USER_DELETE_RESET
-            })
-        }
-    }, [userDelete])
 
     return (
         <div className = 'userList'>

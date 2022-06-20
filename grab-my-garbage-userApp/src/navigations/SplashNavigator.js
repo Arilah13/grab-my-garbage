@@ -61,7 +61,7 @@ const Splashnavigator = () => {
             {
                 first === true && (userDetailLoading === true || loading === true || userDetailLoading === undefined
                     || loading === undefined ||  conversations === true || scheduleLoading === true ||
-                    acceptedLoading === true) ? (
+                    acceptedLoading === true || conversations === undefined || scheduleLoading === undefined || acceptedLoading === undefined) ? (
                     <Splashscreen />
                 ) : (
                     <Rootnavigator setFirst = {setFirst} first = {first} />

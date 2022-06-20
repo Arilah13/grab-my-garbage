@@ -66,7 +66,7 @@ const conversationController = {
 
             await conversation.save()
 
-            res.status(200).json({msg: 'updated'})
+            res.status(200).json({msg: 'Message Updated'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -79,7 +79,7 @@ const conversationController = {
 
             await conversation.save()
 
-            res.status(200).json({msg: 'updated'})
+            res.status(200).json({msg: 'Message Updated'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
