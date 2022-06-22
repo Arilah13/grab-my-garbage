@@ -84,16 +84,8 @@ io.on('connection', socket => {
         await chatSocket.haulerJoin({id: socket.id, haulerid})
     })
 
-    socket.on('lookingPickup', async({latitude, longitude}) => {
-        let haulers = []
-        
-        haulers = await pickupSocket.findHaulers({latitude, longitude})
-        
-        if(haulers.length > 0) {
-            haulers.map((hauler) => {
-                socket.to(hauler).emit('newOrder')
-            })
-        } 
+    socket.on('adminJoined', async({adminid}) => {
+        await pickupSocket.adminJoin({id: socket.id, adminid})
     })
 
     socket.on('specialPickupOnProgress', async({haulerid, pickupid, userid, pickup}) => {
@@ -103,10 +95,17 @@ io.on('connection', socket => {
         const location = {latitude: pickup.location[0].latitude, longitude: pickup.location[0].longitude}
         const time = await pickupSocket.returnTime({latitude: hauler.latitude, longitude: hauler.longitude}, location)
 
+        const admin = await pickupSocket.findAdmin()
+
         notificationHelper.notifySpecialPickup(pickup, 'onProgress')
         
         if(userSocketid) {
             socket.to(userSocketid).emit('userPickup', {pickup: ongoingPickup, hauler: hauler, time: time})
+        }
+        if(admin) {
+            admin.map(admin => {
+                socket.to(admin).emit('userPickup', {pickup: ongoingPickup, hauler: hauler, time: time})
+            })
         }
     })
 
@@ -117,10 +116,17 @@ io.on('connection', socket => {
     socket.on('specialPickupCompleted', async({pickupid, pickup}) => {
         const userSocketid = await pickupSocket.completeSpecialPickup({pickupid})
 
+        const admin = await pickupSocket.findAdmin()
+
         notificationHelper.notifySpecialPickup(pickup, 'completed')
     
         if(userSocketid) {
             socket.to(userSocketid.id).emit('pickupDone', {pickupid})
+        }
+        if(admin) {
+            admin.map(admin => {
+                socket.to(admin).emit('pickupDone', {pickupid})
+            })
         }
     })
 
@@ -157,11 +163,19 @@ io.on('connection', socket => {
         
         const userSchedulePickup = await pickupSocket.returnUserSchedulePickupDetails({haulerid, hauler})
 
+        const admin = await pickupSocket.findAdmin()
+
         userSchedulePickup.map((user, index) => {
             setTimeout(() => {
                 if(user.socketId !== false) {
                     socket.to(user.socketId).emit('userSchedulePickup', {hauler, time: user, ongoingPickup: ongoingPickup._id, pickupid: user.id})
                 } 
+
+                if(admin) {
+                    admin.map(admin => {
+                        socket.to(admin).emit('userSchedulePickup', {hauler, time: user, ongoingPickup: ongoingPickup._id, pickupid: user.id})
+                    })
+                }
 
                 if(ongoingPickup.customerId._id === user.userid) {
                     notificationHelper.notifySchedulePickup(ongoingPickup, 'onProgress')
@@ -178,10 +192,19 @@ io.on('connection', socket => {
     socket.on('schedulePickupCompleted', async({pickupid, userid, haulerid, pickup}) => {
         const userSocketid = await pickupSocket.returnUserSocketid({userid})
         await pickupSocket.completeSchedulePickup({haulerid})
+
+        const admin = await pickupSocket.findAdmin()
         
         if(userSocketid) {
             socket.to(userSocketid).emit('schedulePickupDone', {pickupid})
         } 
+
+        if(admin) {
+            admin.map(admin => {
+                socket.to(admin).emit('schedulePickupDone', {pickupid})
+            })
+        }
+
         notificationHelper.notifySchedulePickup(pickup, 'completed')
     })
 

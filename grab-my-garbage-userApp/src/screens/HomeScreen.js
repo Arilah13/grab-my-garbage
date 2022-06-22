@@ -21,11 +21,8 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Homescreen = ({navigation}) => {
     const dispatch = useDispatch()
 
-    const userDetail = useSelector((state) => state.userDetail)
-    const { loading, user } = userDetail
-
     const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
+    const { userInfo, loading } = userLogin
 
     const specialPickup = useSelector((state) => state.specialPickup)
     const { pickupInfo } = specialPickup
@@ -132,7 +129,7 @@ const Homescreen = ({navigation}) => {
 
     useEffect(async() => {
         if(socketLoading === false && first === true) {
-            await socket.emit('userJoined', { userid: user._id })
+            await socket.emit('userJoined', { userid: userInfo._id })
             setFirst(false)
         }
     }, [socket])
@@ -243,10 +240,10 @@ const Homescreen = ({navigation}) => {
                         </Pressable>
                     }
                     <View style = {styles.view1}>
-                        <Text style = {styles.text1}>Hi {user.name}</Text>
+                        <Text style = {styles.text1}>Hi {userInfo.name}</Text>
                         <Text style = {styles.text2}>Have you taken out the trash today?</Text>
                         <Image
-                            source = {user.image ? {uri: user.image} : require('../../assets/user.png')}
+                            source = {userInfo.image ? {uri: userInfo.image} : require('../../assets/user.png')}
                             style = {styles.image1}
                         />
                     </View>

@@ -21,7 +21,6 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Paymentscreen = ({route, navigation}) => {
-
     const dispatch = useDispatch()
 
     const webView = useRef()
@@ -48,14 +47,6 @@ const Paymentscreen = ({route, navigation}) => {
 
     const paymentSheet = useSelector((state) => state.paymentSheet)
     const {loading, paymentSheet: sheet} = paymentSheet
-
-    // const requestPickup = async() => {
-    //     const socket = socketIO.connect('http://192.168.13.1:5000')
-        
-    //     const latitude = pickupInfo.location.latitude
-    //     const longitude = pickupInfo.location.longitude
-    //     socket.emit('lookingPickup', {latitude, longitude})
-    // }
 
     const initializeStripe = async() => {
         const publishableKey = await paymentInfo.publishable_key

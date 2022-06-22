@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as actionTypes from '../constants/specialPickupConstants'
 
-export const getSpecialPickups = () => async (dispatch, getState) => {
+export const getSpecialPickups = () => async(dispatch, getState) => {
     try{
         dispatch({
             type: actionTypes.RETRIEVE_SPECIAL_PICKUP_LIST_REQUEST

@@ -11,8 +11,8 @@ const Topbar = ({setLogin}) => {
     const dispatch = useDispatch()
     const history = useHistory()
 
-    const adminDetail = useSelector((state) => state.adminDetail)
-    const { admin } = adminDetail
+    const adminLogin = useSelector((state) => state.adminLogin)
+    const { admin } = adminLogin
 
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl)
@@ -39,16 +39,19 @@ const Topbar = ({setLogin}) => {
                     <span className = 'logo'>grab-my-garbage</span>    
                 </div>
                 <div className = 'topRight'>
-                    <img 
-                        src = {admin && admin.admin.image}
-                        alt = 'admin' 
-                        className = 'topAvatar'
-                        id = 'fade-button'
-                        aria-controls = {open ? 'fade-menu' : undefined}
-                        aria-haspopup = 'true'
-                        aria-expanded = {open ? 'true' : undefined}
-                        onClick = {handleClick} 
-                    />
+                    {
+                        admin &&
+                        <img 
+                            src = {admin.admin.image}
+                            alt = 'admin' 
+                            className = 'topAvatar'
+                            id = 'fade-button'
+                            aria-controls = {open ? 'fade-menu' : undefined}
+                            aria-haspopup = 'true'
+                            aria-expanded = {open ? 'true' : undefined}
+                            onClick = {handleClick} 
+                        />
+                    }
                 </div>
             </div>
             <Menu

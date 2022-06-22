@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import './Home.css'
+import socketIO from 'socket.io-client'
 
 import FeaturedInfo from '../../components/featuredInfo/FeaturedInfo'
 import Chart from '../../components/chart/Chart'
@@ -13,6 +14,9 @@ import { getUsers } from '../../redux/actions/userActions'
 import { getHaulers } from '../../redux/actions/haulerActions'
 import { getSchedulePickups } from '../../redux/actions/schedulePickupActions'
 import { getSpecialPickups } from '../../redux/actions/specialPickupActions'
+import { addSocket } from '../../redux/actions/socketActions'
+import { ADD_ONGOING_SCHEDULE_PICKUP, REMOVE_ONGOING_SCHEDULE_PICKUP } from '../../redux/constants/schedulePickupConstants'
+import { ADD_ONGOING_SPECIAL_PICKUP, REMOVE_ONGOING_SPECIAL_PICKUP } from '../../redux/constants/specialPickupConstants'
 
 const Home = () => {
     const dispatch = useDispatch()
@@ -37,6 +41,9 @@ const Home = () => {
     const specialPickupList = useSelector((state) => state.specialPickupList)
     const { specialPickupList: specialPickup } = specialPickupList
 
+    const socketHolder = useSelector(state => state.socketHolder)
+    const { socket } = socketHolder
+
     useEffect(async() => {
         if(admin !== undefined && first.current === true) {
             const list = await returnAdminUsers(admin.users)
@@ -47,20 +54,64 @@ const Home = () => {
         }
     }, [admin])
 
+    useEffect(async() => {
+        if(admin) {
+            if(users === undefined) {
+                dispatch(getUsers())
+            }
+
+            if(haulers === undefined) {
+                dispatch(getHaulers())
+            }
+
+            if(schedulePickup === undefined) {
+                dispatch(getSchedulePickups())
+            }
+
+            if(specialPickup === undefined) {
+                dispatch(getSpecialPickups())
+            }
+
+            if(socket === undefined) {
+                const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/', {
+                    reconnection: true
+                })
+                socket.emit('adminJoined', { adminid: admin._id })
+                dispatch(addSocket(socket))
+            }
+        }
+    }, [admin])
+
     useEffect(() => {
-        if(users === undefined) {
-            dispatch(getUsers())
+        if(socket) {
+            socket.on('userPickup', async({pickup, hauler, time}) => {
+                const data = {pickup, hauler, time}
+                dispatch({
+                    type: ADD_ONGOING_SPECIAL_PICKUP,
+                    payload: data
+                })
+            })
+            socket.on('pickupDone', async({pickupid}) => {
+                dispatch({
+                    type: REMOVE_ONGOING_SPECIAL_PICKUP,
+                    payload: pickupid
+                })
+            })
+            socket.on('userSchedulePickup', async({hauler, time, ongoingPickup, pickupid}) => {
+                const data = {hauler, time, ongoingPickup, pickupid}
+                dispatch({
+                    type: ADD_ONGOING_SCHEDULE_PICKUP,
+                    payload: data
+                })
+            })
+            socket.on('schedulePickupCompleted', async({pickupid}) => {
+                dispatch({
+                    type: REMOVE_ONGOING_SCHEDULE_PICKUP,
+                    payload: pickupid
+                })
+            })
         }
-        if(haulers === undefined) {
-            dispatch(getHaulers())
-        }
-        if(schedulePickup === undefined) {
-            dispatch(getSchedulePickups())
-        }
-        if(specialPickup === undefined) {
-            dispatch(getSpecialPickups())
-        }
-    }, [])
+    }, [socket])
 
     return (
       <div className="home">

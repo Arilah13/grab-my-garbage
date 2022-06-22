@@ -7,6 +7,6 @@ router.route('/')
         .get(specialPickupController.returnSpecialPickupList)
 
 router.route('/:id')
-        .delete(specialPickupController.cancelSpecialPickup)
+        .put(specialPickupController.cancelSpecialPickup)
 
 module.exports = router

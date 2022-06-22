@@ -180,35 +180,6 @@ export const uploadDetails = (info) => async (dispatch) => {
     }
 }
 
-export const getUserDetails = (id) => async (dispatch, getState) => {
-    try {
-        dispatch({
-            type: actionTypes.USER_DETAILS_REQUEST,
-        })
-
-        const { userLogin: { userInfo } } = getState()
-
-        const config = {
-            headers: {
-                'Content-type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`
-            },
-        }
-
-        const { data } = await axios.get(`https://grab-my-garbage-server.herokuapp.com/users/${id}`, config)
-
-        dispatch({
-            type: actionTypes.USER_DETAILS_SUCCESS,
-            payload: data
-        })
-    } catch (err) {
-        dispatch({
-            type: actionTypes.USER_DETAILS_FAIL,
-            payload: err.response.data.msg
-        })
-    }
-}
-
 export const updateUserProfile = (user) => async (dispatch, getState) => {
     try {
         

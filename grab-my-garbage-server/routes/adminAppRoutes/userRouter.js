@@ -7,7 +7,6 @@ router.get('/list', userController.returnUserList)
 
 router.route('/')
         .post(userController.loginAdmin)
-        .get(userController.returnAdmin)
         .put(userController.updateAdmin)
 
 router.route('/:id')

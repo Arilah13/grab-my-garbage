@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as actionTypes from '../constants/schedulePickupConstants'
 
-export const getSchedulePickups = () => async (dispatch, getState) => {
+export const getSchedulePickups = () => async(dispatch, getState) => {
     try{
         dispatch({
             type: actionTypes.RETRIEVE_SCHEDULE_PICKUP_LIST_REQUEST

@@ -10,8 +10,8 @@ import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
 
-import { getUserDetails, updateUserProfile } from '../../redux/actions/userActions'
-import { USER_UPDATE_PROFILE_RESET, USER_DETAILS_SUCCESS } from '../../redux/constants/userConstants'
+import { updateUserProfile } from '../../redux/actions/userActions'
+import { USER_UPDATE_PROFILE_RESET, USER_LOGIN_SUCCESS } from '../../redux/constants/userConstants'
 
 import Headercomponent from '../../components/headerComponent'
 
@@ -19,9 +19,8 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Editprofilescreen = ({navigation}) => {
-
-    const userDetail = useSelector((state) => state.userDetail)
-    const { user } = userDetail
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
 
     const userUpdateProfile = useSelector((state) => state.userUpdateProfile)
     const { userInfo: info, success } = userUpdateProfile
@@ -38,8 +37,8 @@ const Editprofilescreen = ({navigation}) => {
     const email1 = useRef('email')
     const formikRef = useRef()
 
-    const initialValues = {name: user.name ? user.name : '', phone_number: user.phone ? user.phone : '',
-                             email: user.email ? user.email : '', image : imageSet ? image2 : user.image}
+    const initialValues = {name: userInfo.name ? userInfo.name : '', phone_number: userInfo.phone ? userInfo.phone : '',
+                             email: userInfo.email ? userInfo.email : '', image : imageSet ? image2 : userInfo.image}
 
     const selectGallery = async() => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -100,15 +99,15 @@ const Editprofilescreen = ({navigation}) => {
             formikRef.current.setSubmitting(false)
             // dispatch(getUserDetails(user._id))
             dispatch({ type: USER_UPDATE_PROFILE_RESET })
-            user.name = Values.name
-            user.email = Values.email
+            userInfo.name = Values.name
+            userInfo.email = Values.email
             if(image1 !== null) {
-                user.image = image1
+                userInfo.image = image1
             }
-            user.phone = Values.phone
+            userInfo.phone = Values.phone
             dispatch({
-                type: USER_DETAILS_SUCCESS,
-                payload: user
+                type: USER_LOGIN_SUCCESS,
+                payload: userInfo
             })
 
             Alert.alert('Profile Update Successful', 'Profile Details have been updated successfully',
@@ -134,7 +133,7 @@ const Editprofilescreen = ({navigation}) => {
                     <Pressable onPress = {() => setModalVisible(true)} >
                         <ImageBackground 
                             style = {styles.image} 
-                            source = {imageSet ? {uri: image1} : user.image ? {uri: user.image} : require('../../../assets/user.png')}
+                            source = {imageSet ? {uri: image1} : userInfo.image ? {uri: userInfo.image} : require('../../../assets/user.png')}
                         >
                             <Icon
                                 type = 'material'

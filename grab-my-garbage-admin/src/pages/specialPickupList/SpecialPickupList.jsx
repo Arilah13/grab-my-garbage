@@ -3,8 +3,11 @@ import { useSelector, useDispatch } from 'react-redux'
 import './SpecialPickupList.css'
 import { DataGrid } from '@mui/x-data-grid'
 import { Link } from 'react-router-dom'
+import Swal from 'sweetalert2'
+import axios from 'axios'
 
 import { getSpecialPickups } from '../../redux/actions/specialPickupActions'
+import { RETRIEVE_SPECIAL_PICKUP_LIST_SUCCESS } from '../../redux/constants/specialPickupConstants'
 import { timeHelper, dateHelper } from '../../helpers/timeHelpers'
 
 import Loader from '../../components/loader/loader'
@@ -19,6 +22,51 @@ const SpecialPickupList = () => {
 
     const Button = ({ type }) => {
         return <button className = {'button ' + type}>{type}</button>
+    }
+
+    const handleCancel = (id) => {
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                //Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        Swal.fire({
+            title: 'Are you sure?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then(async(result) => {
+            if (result.isConfirmed) {
+                const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/admin/specialpickup/${id}`, config)
+
+                if(res.status === 200) {
+                    const Data = [...specialPickup]
+                    const index = await specialPickup.findIndex(pickup => pickup._id === id)
+                    const data = await Data.splice(index, 1)[0]
+                    data.cancelled = 1
+                    Data.splice(index, 0, data)
+                    dispatch({
+                        type: RETRIEVE_SPECIAL_PICKUP_LIST_SUCCESS,
+                        payload: Data
+                    })
+                    Swal.fire(
+                        'Pickup Cancelled',
+                        'Special pickup has been cancelled.',
+                        'success'
+                    )
+                } else {
+                    Swal.fire(
+                        'Error',
+                        res.data.msg,
+                        'error'
+                    )
+                }
+            }
+        })
     }
 
     const columns = [
@@ -46,9 +94,21 @@ const SpecialPickupList = () => {
                 return (
                     <div>
                         {
-                            params.row.accepted === 0 ? <Button type = 'Pending'/>  :
-                            params.row.accepted === 1 && params.row.completed === 0 ? <Button type = 'Accepted'/> :
+                            params.row.accepted === 0 && params.row.cancelled === 0 && <Button type = 'Pending'/> 
+                        }
+                        {
+                            params.row.accepted === 1 && params.row.completed === 0 && 
+                            params.row.cancelled === 0 &&
+                            <Button type = 'Accepted'/>
+                        }
+                        {
+                            params.row.accepted === 1 && params.row.completed === 1 &&
+                            params.row.cancelled === 0 &&
                             <Button type = 'Completed'/>
+                        }
+                        {
+                            params.row.cancelled === 1 &&
+                            <Button type = 'Cancelled'/>
                         }
                     </div>
                 )
@@ -57,24 +117,35 @@ const SpecialPickupList = () => {
         { field: 'action', headerName: 'Action', width: 200, headerAlign: 'center', align: 'center',
             renderCell: (params) => {
                 return (
-                    <Link to = {{
-                        pathname: '/specialpickups/' + params.row._id,
-                        state: {
-                            datetime: params.row.datetime,
-                            category: params.row.category,
-                            weight: params.row.weight,
-                            image: params.row.image,
-                            payment: params.row.payment,
-                            paymentMethod: params.row.paymentMethod,
-                            customerId: params.row.customerId,
-                            pickerId: params.row.pickerId,
-                            loc: params.row.location,
-                            completed: params.row.completed,
-                            accepted: params.row.accepted
+                    <>
+                        <Link to = {{
+                            pathname: '/specialpickups/' + params.row._id,
+                            state: {
+                                datetime: params.row.datetime,
+                                category: params.row.category,
+                                weight: params.row.weight,
+                                image: params.row.image,
+                                payment: params.row.payment,
+                                paymentMethod: params.row.paymentMethod,
+                                customerId: params.row.customerId,
+                                pickerId: params.row.pickerId,
+                                loc: params.row.location,
+                                completed: params.row.completed,
+                                accepted: params.row.accepted
+                            }
+                        }}>
+                            <button className = 'pickupListEdit'>View</button>
+                        </Link>
+                        <>
+                        {
+                            params.row.completed === 0 && params.row.cancelled === 0 &&
+                            <button 
+                                className = 'pickupListCancel'
+                                onClick = {() => handleCancel(params.row._id)}
+                            >Cancel</button> 
                         }
-                    }}>
-                        <button className = 'pickupListEdit'>View</button>
-                    </Link>
+                        </>
+                    </>
                 )
             },
         },

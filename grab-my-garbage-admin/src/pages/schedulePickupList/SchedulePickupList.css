@@ -53,6 +53,18 @@
     margin-left: 30px;
 }
 
+.pickupListCancel {
+    border: none;
+    border-radius: 10px;
+    padding: 5px 10px;
+    background-color: #f04441;
+    color: white;
+    cursor: pointer;
+    margin-right: 20px;
+    width: 60px;
+    margin-left: 30px;
+}
+
 .button {
     padding: 5px 7px;
     border: none;
@@ -67,6 +79,21 @@
 .button.Completed{
     background-color: #cbdcdf;
     color: #3960e0;
+}
+
+.button.Cancelled{
+    background-color: #b3922f65;
+    color: #fb440d;
+}
+
+.button.Inactive{
+    background-color: #cbdcdf;
+    color: #e3cfc5;
+}
+
+.button.Active{
+    background-color: #cbdcdf;
+    color: #19e850;
 }
 
 .haulerAddButton {

@@ -2,6 +2,7 @@ const axios = require('axios')
 
 let haulers = []
 let users = []
+let admins = []
 let ongoingSpecialPickups = []
 let ongoingScheduledPickups = []
 
@@ -29,6 +30,10 @@ const pickupSocket = {
             users.splice(users.findIndex(user => user.userid === userid), 1)
             users.push(user)
         }
+    },
+    adminJoin: async({id, adminid}) => {
+        const admin = {id, adminid}
+        admins.push(admin)
     },
     findHaulers: async({latitude, longitude}) => {
         let nearbyhaulers = []
@@ -150,11 +155,14 @@ const pickupSocket = {
     removeUser: async({id}) => {
         const usersList = await users.find((user) => user.id === id)
         const haulerList = await haulers.find((hauler) => hauler.id === id)
+        const adminList = await admins.find(admin => admin.id === id)
         
         if(usersList) {
             users = users.filter(user => user.id !== id)
         } else if(haulerList) {
             haulers = haulers.filter(hauler => hauler.id !== id)
+        } else if(adminList) {
+            admins = admins.filter(admin => admin.id !== id)
         }
     },
     returnTime: async(hauler, location) => {
@@ -162,6 +170,11 @@ const pickupSocket = {
 
         return time
     },
+    findAdmin: async() => {
+        if(admins.length > 0) {
+            return admins
+        }
+    }
 }
 
 const getLatngDiffInMeters = (lat1, lng1, lat2, lng2) => {

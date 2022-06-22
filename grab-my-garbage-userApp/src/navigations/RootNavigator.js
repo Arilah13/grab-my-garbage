@@ -5,8 +5,8 @@ import StackNavigator from './StackNavigator'
 import Authnavigator from './AuthNavigator'
 
 const Rootnavigator = ({first, setFirst}) => {
-    const userDetail = useSelector((state) => state.userDetail)
-    const { loading } = userDetail
+    const userLogin = useSelector((state) => state.userLogin)
+    const { loading } = userLogin
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading: conversations } = getAllConversation
@@ -26,7 +26,7 @@ const Rootnavigator = ({first, setFirst}) => {
     return (
         <>
             {
-                loading === false && userDetail.user !== undefined && (conversations === false || 
+                loading === false && userLogin.userInfo !== undefined && (conversations === false || 
                     acceptedLoading === false || scheduleLoading === false || conversations !== undefined || 
                     acceptedLoading !== undefined || scheduleLoading !== undefined) ? (
                     <StackNavigator />

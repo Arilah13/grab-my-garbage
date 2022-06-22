@@ -148,35 +148,6 @@ const userController = {
             return res.status(500).json({msg: err.message})
         }
     },
-    returnAdmin: async(req, res) => {
-        try{
-            const admin = await Users.findOne({role: 2}).select('-password')
-
-            const users = await Users.find({role: {$ne: 2}}).select('-password')
-
-            const haulers = await Haulers.find({role: 1}).select('-password')
-
-            const scheduleCount = await SchedulePickup.countDocuments({cancelled: 0})
-
-            const specialCount = await SpecialPickup.countDocuments({cancelled: 0})
-
-            const schedule = await SchedulePickup.find({cancelled: 0})
-
-            const special = await SpecialPickup.find({cancelled: 0})
-
-            res.status(200).json({
-                admin: admin,
-                users: users,
-                haulers: haulers,
-                scheduleCount: scheduleCount,
-                specialCount: specialCount,
-                schedule: schedule,
-                special: special
-            })
-        } catch(err) {
-            return res.status(500).json({msg: err.message})
-        }
-    },
     updateAdmin: async(req, res) => {
         try{
             const admin = await Users.findOne({role: 2})

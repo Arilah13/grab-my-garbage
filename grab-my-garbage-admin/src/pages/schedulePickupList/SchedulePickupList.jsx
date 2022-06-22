@@ -5,8 +5,10 @@ import { DataGrid } from '@mui/x-data-grid'
 import { Link } from 'react-router-dom'
 import { Backdrop, Slide, Modal, Box } from '@mui/material'
 import Swal from 'sweetalert2'
+import axios from 'axios'
 
 import { getSchedulePickups } from '../../redux/actions/schedulePickupActions'
+import { RETRIEVE_SCHEDULE_PICKUP_LIST_SUCCESS } from '../../redux/constants/schedulePickupConstants'
 import { fromDate } from '../../helpers/timeHelpers'
 
 import Loader from '../../components/loader/loader'
@@ -23,6 +25,51 @@ const SchedulePickupList = () => {
 
     const Button = ({ type }) => {
         return <button className = {'button ' + type}>{type}</button>
+    }
+
+    const handleCancel = (id) => {
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                //Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        Swal.fire({
+            title: 'Are you sure?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then(async(result) => {
+            if (result.isConfirmed) {
+                const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/admin/schedulepickup/${id}`, config)
+
+                if(res.status === 200) {
+                    const Data = [...schedulePickup]
+                    const index = await schedulePickup.findIndex(pickup => pickup._id === id)
+                    const data = await Data.splice(index, 1)[0]
+                    data.cancelled = 1
+                    Data.splice(index, 0, data)
+                    dispatch({
+                        type: RETRIEVE_SCHEDULE_PICKUP_LIST_SUCCESS,
+                        payload: Data
+                    })
+                    Swal.fire(
+                        'Pickup Cancelled',
+                        'Schedule pickup has been cancelled.',
+                        'success'
+                    )
+                } else {
+                    Swal.fire(
+                        'Error',
+                        res.data.msg,
+                        'error'
+                    )
+                }
+            }
+        })
     }
 
     const columns = [
@@ -50,8 +97,27 @@ const SchedulePickupList = () => {
                 return (
                     <div>
                         {
-                            params.row.completed === 0 ? <Button type = 'Ongoing'/> :
+                            params.row.completed === 0 && params.row.cancelled === 0 && 
+                            params.row.active === 0 && params.row.inactive === 0 &&
+                            <Button type = 'Ongoing'/>
+                        }
+                        {
+                            params.row.completed === 1 && params.row.cancelled === 0 &&
                             <Button type = 'Completed'/>
+                        }
+                        {
+                            params.row.completed === 0 && params.row.cancelled === 1 &&
+                            <Button type = 'Cancelled'/>
+                        }
+                        {
+                            params.row.completed === 0 && params.row.cancelled === 0 &&
+                            params.row.active === 1 &&
+                            <Button type = 'Active'/>
+                        }
+                        {
+                            params.row.completed === 0 && params.row.cancelled === 0 &&
+                            params.row.inactive === 1 &&
+                            <Button type = 'Inactive'/>
                         }
                     </div>
                 );
@@ -60,22 +126,33 @@ const SchedulePickupList = () => {
         { field: 'action', headerName: 'Action', width: 200, headerAlign: 'center', align: 'center',
             renderCell: (params) => {
                 return (
-                    <Link to = {{
-                        pathname: '/schedulepickups/' + params.row._id,
-                        state: {
-                            from: params.row.from,
-                            to: params.row.to,
-                            timeslot: params.row.timeslot,
-                            days: params.row.days,
-                            payment: params.row.payment,
-                            paymentMethod: params.row.paymentMethod,
-                            customerId: params.row.customerId,
-                            pickerId: params.row.pickerId,
-                            loc: params.row.location
+                    <>
+                        <Link to = {{
+                            pathname: '/schedulepickups/' + params.row._id,
+                            state: {
+                                from: params.row.from,
+                                to: params.row.to,
+                                timeslot: params.row.timeslot,
+                                days: params.row.days,
+                                payment: params.row.payment,
+                                paymentMethod: params.row.paymentMethod,
+                                customerId: params.row.customerId,
+                                pickerId: params.row.pickerId,
+                                loc: params.row.location
+                            }
+                        }}>
+                            <button className = 'pickupListEdit'>View</button>     
+                        </Link>
+                        <>
+                        {
+                            params.row.completed === 0 && params.row.cancelled === 0 &&
+                            <button 
+                                className = 'pickupListCancel'
+                                onClick = {() => handleCancel(params.row._id)}
+                            >Cancel</button> 
                         }
-                    }}>
-                        <button className = 'pickupListEdit'>View</button>
-                    </Link>
+                        </>
+                    </>
                 );
             },
         },

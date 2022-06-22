@@ -22,14 +22,14 @@ const UserList = () => {
 
     //const { userLogin: { userInfo } } = getState()
 
-    const config = {
-        headers: {
-            'Content-type': 'application/json',
-            //Authorization: `Bearer ${userInfo.token}`
-        }
-    }
-
     const handleDelete = (id) => {
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                //Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+        
         Swal.fire({
             title: 'Are you sure?',
             icon: 'warning',

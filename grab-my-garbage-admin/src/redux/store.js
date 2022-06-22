@@ -6,8 +6,6 @@ import { ADMIN_LOGOUT } from './constants/userConstants'
 
 import {
     userListReducer,
-    adminDetailReducer,
-    adminDetailUpdateReducer,
     adminLoginReducer,
 } from './reducers/userReducers'
 
@@ -17,34 +15,32 @@ import {
 
 import {
     schedulePickupListReducer,
+    addOngoingSchedulePickupReducer
 } from './reducers/schedulePickupReducers'
 
 import {
     specialPickupListReducer,
+    addOngoingSpecialPickupReducer
 } from './reducers/specialPickupReducers'
+
+import {
+    socketHolderReducer
+} from './reducers/socketReducer'
 
 const reducer = combineReducers({
     userList: userListReducer,
-    adminDetail: adminDetailReducer,
-    adminDetailUpdate: adminDetailUpdateReducer,
     adminLogin: adminLoginReducer,
 
     haulerList: haulerListReducer,
 
+    socketHolder: socketHolderReducer,
+
     schedulePickupList: schedulePickupListReducer,
+    addOngoingSchedulePickup: addOngoingSchedulePickupReducer,
 
     specialPickupList: specialPickupListReducer,
+    addOngoingSpecialPickup: addOngoingSpecialPickupReducer
 })
-
-const adminInfoFromStorage = localStorage.getItem('admingarbage')
-    ? JSON.parse(localStorage.getItem('admingarbage'))
-    : null
-
-const initialState = {
-    adminLogin: {
-        admin: adminInfoFromStorage
-    }
-}
 
 const middleware = [thunk]
 
@@ -57,7 +53,6 @@ const rootReducer = (state, action) => {
 
 const store = createStore(
     rootReducer,
-    initialState,
     composeWithDevTools(applyMiddleware(...middleware))
 )
 

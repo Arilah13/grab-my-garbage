@@ -8,49 +8,55 @@ const notificationHelper = {
         
         if(type === 'onProgress') {
 
-            pickup.customerId.pushId.map(push => {
-                messages.push({
-                    to: push,
-                    sound: 'default',
-                    title: 'Special Pickup',
-                    body: 'Your special pickup is on-progress',
-                    data: { 
-                        screen: 'pickupDetail',
-                        item: pickup,
-                    }
-                })    
-            })
+            if(pickup.customerId.pushId.length > 0) {
+                for(let i=0; i<pickup.customerId.pushId.length; i++) {
+                    messages.push({
+                        to: pickup.customerId.pushId[i],
+                        sound: 'default',
+                        title: 'Special Pickup',
+                        body: 'Your special pickup is on-progress',
+                        data: { 
+                            screen: 'pickupDetail',
+                            item: pickup,
+                        }
+                    })
+                }
+            }
 
         } else if(type === 'arrived') {
 
-            pickup.customerId.pushId.map(push => {
-                messages.push({
-                    to: push,
-                    sound: 'default',
-                    title: 'Special Pickup',
-                    body: 'Hauler has arrived to pick your special pickup',
-                    data: { 
-                        screen: 'pickupDetail',
-                        item: pickup,
-                    }
-                }) 
-            })
+            if(pickup.customerId.pushId.length > 0) {
+                for(let i=0; i<pickup.customerId.pushId.length; i++) {
+                    messages.push({
+                        to: pickup.customerId.pushId[i],
+                        sound: 'default',
+                        title: 'Special Pickup',
+                        body: 'Hauler has arrived to pick your special pickup',
+                        data: { 
+                            screen: 'pickupDetail',
+                            item: pickup,
+                        }
+                    })
+                } 
+            }
 
         } else if(type === 'completed') {
 
-            pickup.customerId.pushId.map(push => {
-                messages.push({
-                    to: push,
-                    sound: 'default',
-                    title: 'Special Pickup',
-                    body: 'Your special pickup has been completed',
-                    data: { 
-                        screen: 'completedPickup',
-                    }
-                })  
-            })
-        }
+            if(pickup.customerId.pushId.length > 0) {
+                for(let i=0; i<pickup.customerId.pushId.length; i++) {
+                    messages.push({
+                        to: pickup.customerId.pushId[i],
+                        sound: 'default',
+                        title: 'Special Pickup',
+                        body: 'Your special pickup has been completed',
+                        data: { 
+                            screen: 'completedPickup',
+                        }
+                    })  
+                }
+            }
 
+        }
     
         let chunks = expo.chunkPushNotifications(messages)
     
@@ -67,47 +73,54 @@ const notificationHelper = {
     
         if(type === 'onProgress') {
 
-            pickup.customerId.pushId.map(push => {
-                messages.push({
-                    to: push,
-                    sound: 'default',
-                    title: 'Schedule Pickup',
-                    body: 'Your schedule pickup is on-progress',
-                    data: { 
-                        screen: 'PickupScheduleDetail',
-                        item: pickup,
-                    }
-                })   
-            })
+            if(pickup.customerId.pushId.length > 0) {
+                for(let i=0; i<pickup.customerId.pushId.length; i++) {
+                    messages.push({
+                        to: pickup.customerId.pushId[i],
+                        sound: 'default',
+                        title: 'Schedule Pickup',
+                        body: 'Your schedule pickup is on-progress',
+                        data: { 
+                            screen: 'PickupScheduleDetail',
+                            item: pickup,
+                        }
+                    }) 
+                }  
+            }
 
         } else if(type === 'arrived') {
 
-            pickup.customerId.pushId.map(push => {
-                messages.push({
-                    to: push,
-                    sound: 'default',
-                    title: 'Schedule Pickup',
-                    body: 'Hauler has arrived to pick your schedule pickup',
-                    data: { 
-                        screen: 'PickupScheduleDetail',
-                        item: pickup,
-                    }
-                }) 
-            })
+            if(pickup.customerId.pushId.length > 0) {
+                for(let i=0; i<pickup.customerId.pushId.length; i++) {
+                    messages.push({
+                        to: pickup.customerId.pushId[i],
+                        sound: 'default',
+                        title: 'Schedule Pickup',
+                        body: 'Hauler has arrived to pick your schedule pickup',
+                        data: { 
+                            screen: 'PickupScheduleDetail',
+                            item: pickup,
+                        }
+                    }) 
+                }
+            }
 
         } else if(type === 'completed') {
 
-            pickup.customerId.pushId.map(push => {
-                messages.push({
-                    to: push,
-                    sound: 'default',
-                    title: 'Schedule Pickup',
-                    body: 'Your schedule pickup has been completed',
-                    data: { 
-                        screen: 'ScheduleRequests'
-                    }
-                }) 
-            }) 
+            if(pickup.customerId.pushId.length > 0) {
+                for(let i=0; i<pickup.customerId.pushId.length; i++) {
+                    messages.push({
+                        to: pickup.customerId.pushId[i],
+                        sound: 'default',
+                        title: 'Schedule Pickup',
+                        body: 'Your schedule pickup has been completed',
+                        data: { 
+                            screen: 'ScheduleRequests'
+                        }
+                    }) 
+                }
+            }
+
         }
     
         let chunks = expo.chunkPushNotifications(messages)
@@ -123,17 +136,19 @@ const notificationHelper = {
     notifyMessages: async(receiver) => {
         let messages = []
         
-        receiver.pushId.map(push => {
-            messages.push({
-                to: push,
-                sound: 'default',
-                title: 'Message',
-                body: 'You have got new message',
-                data: { 
-                    screen: 'Chat',
-                }
-            })    
-        })
+        if(receiver.pushId.length > 0) {
+            for(let i=0; i<receiver.pushId.length; i++) {
+                messages.push({
+                    to: receiver.pushId[i],
+                    sound: 'default',
+                    title: 'Message',
+                    body: 'You have got new message',
+                    data: { 
+                        screen: 'Chat',
+                    }
+                })    
+            }
+        }
     
         let chunks = expo.chunkPushNotifications(messages)
 

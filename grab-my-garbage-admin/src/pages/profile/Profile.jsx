@@ -6,11 +6,10 @@ import { LoadingButton } from '@mui/lab'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import Swal from 'sweetalert2'
+import axios from 'axios'
 
-import { getAdminDetails, updateAdminDetails } from '../../redux/actions/userActions'
-import { ADMIN_DETAIL_UPDATE_RESET } from '../../redux/constants/userConstants'
+import { ADMIN_LOGIN_SUCCESS } from '../../redux/constants/userConstants'
 
-import Loader from '../../components/loader/loader'
 import './Profile.css'
 
 const Profile = () => {
@@ -24,11 +23,8 @@ const Profile = () => {
     const [image, setImage] = useState('')
     const [pic, setPic] = useState('')
 
-    const adminDetail = useSelector((state) => state.adminDetail)
-    const { loading, admin } = adminDetail
-
-    const adminDetailUpdate = useSelector((state) => state.adminDetailUpdate)
-    const { loading: updateLoading, success, error } = adminDetailUpdate
+    const adminLogin = useSelector((state) => state.adminLogin)
+    const { admin } = adminLogin
 
     const initialValues = {email: email, password: password, confirm_password: confirm_password, image: image, pic: pic}
 
@@ -71,18 +67,22 @@ const Profile = () => {
         setPic(base64)
     }
 
-    useEffect(() => {
-        if(admin.admin === undefined) {
-            dispatch(getAdminDetails())
-        } else if(admin.admin !== undefined) {
-            setEmail(admin.admin.email)
-            setImage(admin.admin.image)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [admin])
+    const handleUpdate = async() => {
+        //const { userLogin: { userInfo } } = getState()
 
-    useEffect(() => {
-        if(success) {
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                //Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        const image = pic
+
+        const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/admin/users`,
+        {email, password, image}, config)
+
+        if(res.status === 200) {
             Swal.fire({
                 icon: 'success',
                 title: 'Admin Update Success',
@@ -90,22 +90,23 @@ const Profile = () => {
             })
             formik.current.setSubmitting(false)
             dispatch({
-                type: ADMIN_DETAIL_UPDATE_RESET
+                type: ADMIN_LOGIN_SUCCESS,
+                payload: res.data
             })
-        }
-        else if(error) {
+        } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Admin Update Fail',
-                text: error
-            })
-            dispatch({
-                type: ADMIN_DETAIL_UPDATE_RESET
+                text: res.data.msg
             })
             formik.current.setSubmitting(false)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [updateLoading])
+    }
+
+    useEffect(() => {
+        setEmail(admin.admin.email)
+        setImage(admin.admin.image)
+    }, [])
 
     return (
         <div className = 'profile'>
@@ -113,12 +114,8 @@ const Profile = () => {
                 <h1 className = 'userTitle'>Profile</h1>
             </div>
 
-            {
-                loading === true && admin === undefined &&
-                <Loader /> 
-            }
             {   
-                loading === false && admin !== undefined &&
+                admin !== undefined &&
                     <div className = 'profileTop'>
 
                     <Formik
@@ -131,7 +128,7 @@ const Profile = () => {
                         onSubmit = {(values, actions) => {
                             if(actions.validateForm) {
                                 setTimeout(() => {
-                                    dispatch(updateAdminDetails(values))
+                                    handleUpdate()
                                 }, 400)
                             } else {
                                 actions.setSubmitting(false)

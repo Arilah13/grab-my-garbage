@@ -53,7 +53,6 @@ const reducer = combineReducers({
     userLogin: googleUserLoginReducer,
     userRegister: userRegisterReducer,
     userLogin:  userLoginReducer,
-    userDetail: userDetailsReducer,
     userUpdateProfile: userUpdateProfileReducer,
 
     paymentIntent: paymentIntentReducer,

@@ -55,12 +55,12 @@ const Login = ({setLogin}) => {
     }, [loading])
 
     useEffect(() => {
-        if(admin && admin !== undefined) {
-          setLogin(true)
-        } else {
-          setLogin(false)
+        const adminInfoFromStorage = JSON.parse(localStorage.getItem('admingarbage'))
+        if(adminInfoFromStorage) {
+            setLogin(true)
+            dispatch(adminLogin(adminInfoFromStorage))
         }
-    }, [admin])
+    }, [])
 
     return (
         <Grid>

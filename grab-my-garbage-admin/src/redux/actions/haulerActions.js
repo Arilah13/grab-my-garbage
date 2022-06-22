@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as actionTypes from '../constants/haulerConstants'
 
-export const getHaulers = () => async (dispatch, getState) => {
+export const getHaulers = () => async(dispatch, getState) => {
     try{
         dispatch({
             type: actionTypes.RETRIEVE_HAULER_LIST_REQUEST

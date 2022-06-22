@@ -12,14 +12,10 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Accountscreen = ({navigation}) => {
-
     const dispatch = useDispatch()
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
-
-    const userDetail = useSelector((state) => state.userDetail)
-    const { user } = userDetail
 
     const handleClick = (path, name) => {
         if(path !== 'Logout') {
@@ -34,9 +30,9 @@ const Accountscreen = ({navigation}) => {
             <View style = {styles.container1}>
                 <View>
                     <Pressable onPress = {() => navigation.navigate('Editprofile')} style = {styles.view1} >
-                            <Text style = {styles.text1}>{user.name && user.name}</Text>
+                            <Text style = {styles.text1}>{userInfo.name && userInfo.name}</Text>
                             <Image
-                                source = {user.image ? {uri: user.image} : require('../../../assets/user.png')}
+                                source = {userInfo.image ? {uri: userInfo.image} : require('../../../assets/user.png')}
                                 resizeMode = 'contain'
                                 style = {styles.image1}
                             />
