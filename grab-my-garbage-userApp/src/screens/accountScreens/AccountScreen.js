@@ -72,7 +72,7 @@ export default Accountscreen
 const styles = StyleSheet.create({
 
     container1:{
-        backgroundColor: colors.blue1,
+        backgroundColor: colors.grey8,
     },
     container2:{
         backgroundColor: colors.blue2,
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     },
     view3:{
         height: 7*SCREEN_HEIGHT/7,
-        backgroundColor: colors.white,
+        backgroundColor: colors.grey9,
         borderTopRightRadius: 30,
         borderTopLeftRadius: 30,
         padding: 30
@@ -134,10 +134,10 @@ const styles = StyleSheet.create({
     view4:{
         paddingBottom: 15,
         paddingTop: 15,
-        borderRadius: 10,
-        backgroundColor: colors.grey9,
-        alignItems: 'flex-start',
-        flexDirection: 'row'
+        borderRadius: 20,
+        backgroundColor: colors.white,
+        flexDirection: 'row',
+        elevation: 5
     },
     view5:{
         marginTop: 5

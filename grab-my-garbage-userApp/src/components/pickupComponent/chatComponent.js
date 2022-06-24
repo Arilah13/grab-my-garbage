@@ -18,8 +18,8 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
 
     const [messages, setMessages] = useState([])
 
-    const userDetail = useSelector((state) => state.userDetail)
-    const { user } = userDetail
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
@@ -27,7 +27,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { conversation } = getAllConversation
 
-    const sendMsg = async(message) => {
+    const sendMsg = useCallback(async(message) => {
         const conv = await conversation.splice(conversation.findIndex(conv => conv.conversation._id === convo.conversation._id), 1)[0]
         const element = {
             _id: Date.now(),
@@ -55,7 +55,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
             conversationId: convo.conversation._id
         }))
         socket.emit('sendMessage', ({
-            senderid: user._id,
+            senderid: userInfo._id,
             sender: message[0].user,
             receiverid: haulerid._id,
             text: message[0].text,
@@ -64,7 +64,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
             receiver: haulerid,
             conversationId: convo.conversation._id
         }))
-    }
+    }, [conversation])
 
     useEffect(() => {
         socket.on('getMessage', async({senderid, text, sender, createdAt, conversationId}) => {
@@ -135,9 +135,9 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                         sendMsg(messages)
                     }}
                     user = {{
-                        _id: user._id,
-                        name: user.name,
-                        avatar: user.image
+                        _id: userInfo._id,
+                        name: userInfo.name,
+                        avatar: userInfo.image
                     }}
                     renderBubble = {renderBubble}
                     alwaysShowSend = {true}

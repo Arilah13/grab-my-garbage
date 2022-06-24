@@ -21,8 +21,8 @@ const Chatscreen = ({route, navigation}) => {
 
     const [messages, setMessages] = useState([])
 
-    const userDetail = useSelector((state) => state.userDetail)
-    const { user } = userDetail
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { socket } = socketHolder
@@ -30,7 +30,7 @@ const Chatscreen = ({route, navigation}) => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { conversation } = getAllConversation
 
-    const sendMsg = async(message) => {
+    const sendMsg = useCallback(async(message) => {
         const convo = await conversation.splice(conversation.findIndex(convo => convo.conversation._id === id), 1)[0]
         const element = {
             _id: Date.now(),
@@ -59,7 +59,7 @@ const Chatscreen = ({route, navigation}) => {
         }))
         
         socket.emit('sendMessage', ({
-            senderid: user._id,
+            senderid: userInfo._id,
             sender: message[0].user,
             receiverid: haulerid._id,
             text: message[0].text,
@@ -67,7 +67,7 @@ const Chatscreen = ({route, navigation}) => {
             senderRole: 'user',
             conversationId: id
         }))
-    }
+    }, [conversation])
 
     useEffect(() => {
         socket.on('getMessage', async({senderid, text, sender, createdAt, conversationId}) => {
@@ -138,9 +138,9 @@ const Chatscreen = ({route, navigation}) => {
                         sendMsg(messages)
                     }}
                     user = {{
-                        _id: user._id,
-                        name: user.name,
-                        avatar: user.image
+                        _id: userInfo._id,
+                        name: userInfo.name,
+                        avatar: userInfo.image
                     }}
                     renderBubble = {renderBubble}
                     alwaysShowSend = {true}

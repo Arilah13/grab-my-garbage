@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { View, Text, StyleSheet } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Icon } from 'react-native-elements'
@@ -14,8 +15,8 @@ import { GET_ALL_CONVERSATIONS_SUCCESS } from '../redux/constants/conversationCo
 const Tab = createBottomTabNavigator()
 
 const TabNavigator = () => {
-    const [status, setStatus] = useState(false)
     const [first, setFirst] = useState(true)
+    const [number, setNumber] = useState(0)
 
     const dispatch = useDispatch()
 
@@ -23,25 +24,45 @@ const TabNavigator = () => {
     const { conversation } = getAllConversation
 
     const currentConvo = useSelector((state) => state.currentConvo)
+    const { convo } = currentConvo
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { loading: socketLoading, socket } = socketHolder
 
+    const checkCurrentConvo = useCallback((id) => {
+        console.log(convo)
+        if(convo) {
+            if(convo === id) {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return false
+        }
+    }, [convo])
+
     useEffect(() => {
         if(socketLoading === false && first === true && conversation !== undefined) {
-            setFirst(false)
+            if(first === true) {
+                setFirst(false)
+            }
 
             socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
                 const index = await conversation.findIndex((convo) => convo.conversation.haulerId._id === senderid)
                
                 if(index >= 0) {
                     const element = await conversation.splice(index, 1)[0]
-                    await element
 
                     element.message.text = text
                     element.message.created = createdAt
-                    element.conversation.receiverUserRead = false
-                    setStatus(true)
+                    element.conversation.userVisible = true
+
+                    if(checkCurrentConvo(senderid) === true) {
+                        element.conversation.receiverUserRead = true
+                    } else {
+                        element.conversation.receiverUserRead = false
+                    }   
 
                     const message = {
                         _id: Date.now(),
@@ -63,6 +84,12 @@ const TabNavigator = () => {
                         type: GET_ALL_CONVERSATIONS_SUCCESS,
                         payload: conversation
                     })
+
+                    const read = await conversation.filter((convo) => {
+                        return convo.conversation.receiverUserRead === false
+                    })
+
+                    setNumber(read.length)
                 }
                 else if(index === -1) {
                     const element = {
@@ -107,6 +134,12 @@ const TabNavigator = () => {
                         type: GET_ALL_CONVERSATIONS_SUCCESS,
                         payload: conversation
                     })
+
+                    const read = await conversation.filter((convo) => {
+                        return convo.conversation.receiverUserRead === false
+                    })
+
+                    setNumber(read.length)
                 }
             })
         }
@@ -118,13 +151,9 @@ const TabNavigator = () => {
                 return convo.conversation.receiverUserRead === false
             })
 
-            if(read.length > 0) {
-                setStatus(true)
-            } else {
-                setStatus(false)
-            }
+            setNumber(read.length)
         }
-    }, [currentConvo])
+    }, [currentConvo, conversation])
 
     return (
         <Tab.Navigator
@@ -168,13 +197,20 @@ const TabNavigator = () => {
                 component = {Chatmenuscreen}
                 options = {{
                     tabBarIcon: ({ focused }) => (
-                        <Icon
-                            type = 'material-icons'
-                            name = 'chat-bubble-outline'
-                            color = {status === true ? 'red' :
-                                    (focused ? colors.darkBlue : colors.darkGrey) }
-                            size = {26}
-                        />
+                        <View style = {{flex:1, alignItems: 'center',  justifyContent:'center'}}>
+                            <Icon
+                                type = 'material-icons'
+                                name = 'chat-bubble-outline'
+                                color = {focused ? colors.darkBlue : colors.darkGrey}
+                                size = {26}
+                            />
+                            {
+                                number > 0 &&
+                                <View style = {styles.unread}>
+                                    <Text style = {styles.textUnread}>{number}</Text>
+                                </View>
+                            }
+                        </View>
                     )
                 }}
             />
@@ -197,4 +233,26 @@ const TabNavigator = () => {
     );
 }
 
-export default TabNavigator;
+export default TabNavigator
+
+const styles = StyleSheet.create({
+
+    unread: {
+        position: 'absolute',
+        backgroundColor: 'red',
+        width: 14,
+        height: 14,
+        borderRadius: 15 / 2,
+        left: 15,
+        top: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    textUnread:{
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: "#FFFFFF",
+        fontSize: 8,
+    }
+
+})

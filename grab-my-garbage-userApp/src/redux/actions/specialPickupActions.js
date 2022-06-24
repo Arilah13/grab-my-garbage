@@ -8,6 +8,7 @@ export const getSpecialPickupInfo = ({pickupInfo, total, method}) => async (disp
         })
 
         const { userLogin: { userInfo } } = getState()
+        const { retrievePendingPickups: { pickupInfo: pick } } = getState()
 
         const config = {
             headers: {
@@ -20,9 +21,37 @@ export const getSpecialPickupInfo = ({pickupInfo, total, method}) => async (disp
 
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/specialpickup/', {pickupInfo, total, method, id}, config)
 
+        const Data = {
+            _id: data._id,
+            location: data.location,
+            datetime: data.datetime,
+            category: data.category,
+            weight: data.weight,
+            image: data.image,
+            payment: data.payment,
+            paymentMethod: data.paymentMethod,
+            areaHaulers: data.areaHaulers,
+            customerId: data.customerId,
+            accepted: data.accepted,
+            cancelled: data.cancelled,
+            completed: data.completed,
+            pickerId: data.pickerId,
+            declinedHaulers: data.declinedHaulers,
+            inactive: data.inactive,
+            active: data.active,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+            __v: data.__v
+        }
+
         dispatch({
             type: actionTypes.SPECIAL_PICKUP_ADD_SUCCESS,
             payload: data
+        })
+        pick.push(Data)
+        dispatch({
+            type: actionTypes.PENDING_PICKUP_RETRIEVE_SUCCESS,
+            payload: pick
         })
     } catch (err) {
         dispatch({

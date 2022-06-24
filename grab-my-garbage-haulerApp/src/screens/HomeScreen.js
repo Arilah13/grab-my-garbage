@@ -325,7 +325,7 @@ export default Homescreen
 const styles = StyleSheet.create({
 
     container1:{
-        backgroundColor: colors.white,
+        backgroundColor: colors.grey8,
         //paddingLeft: 25, 
         marginBottom: 0,
         height: 60,

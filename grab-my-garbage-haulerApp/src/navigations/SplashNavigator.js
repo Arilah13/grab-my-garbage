@@ -18,7 +18,7 @@ const Splashnavigator = () => {
     const [first, setFirst] = useState(true)
 
     const userLogin = useSelector((state) => state.userLogin)
-    const { loading } = userLogin
+    const { loading, userInfo } = userLogin
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading: conversations } = getAllConversation
@@ -49,9 +49,11 @@ const Splashnavigator = () => {
     useEffect(() => {
         if(loading === false) {
             setFirst(false)
-            dispatch(getConversations())
-            dispatch(getScheduledPickups())
-            dispatch(getUpcomingPickups())
+            if(userInfo !== undefined) {
+                dispatch(getConversations())
+                dispatch(getScheduledPickups())
+                dispatch(getUpcomingPickups())
+            }
         }
     }, [loading])
 

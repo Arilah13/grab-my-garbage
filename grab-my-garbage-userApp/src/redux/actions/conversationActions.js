@@ -137,7 +137,6 @@ export const receiverRead = (id) => async(dispatch, getState) => {
         }
 
         const { data } = await axios.put(`https://grab-my-garbage-server.herokuapp.com/conversation/user/${id}`, config)
-        //const { data } = await axios.put(`http://192.168.13.1:5000/conversation/user/${id}`, config)
 
         dispatch({
             type: actionTypes.UPDATE_READ_MESSAGE_SUCCESS

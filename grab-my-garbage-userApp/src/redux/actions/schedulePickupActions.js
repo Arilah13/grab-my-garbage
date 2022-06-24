@@ -8,6 +8,7 @@ export const getScheduledPickupInfo = ({pickupInfo, total, method}) => async (di
         })
 
         const { userLogin: { userInfo } } = getState()
+        const { retrieveScheduledPickup: { pickupInfo: pick } } = getState()
 
         const config = {
             headers: {
@@ -23,6 +24,32 @@ export const getScheduledPickupInfo = ({pickupInfo, total, method}) => async (di
         dispatch({
             type: actionTypes.SCHEDULED_PICKUP_ADD_SUCCESS,
             payload: data
+        })
+
+        const Data = {
+            _id: data._id,
+            location: data.location,
+            from: data.from,
+            to: data.to,
+            days: data.days,
+            timeslot: data.timeslot,
+            payment: data.payment,
+            paymentMethod: data.paymentMethod,
+            customerId: data.customerId,
+            pickerId: data.pickerId,
+            completed: data.completed,
+            completedPickups: data.completedPickups,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+            __v: data.__v,
+            cancelled: data.cancelled,
+            inactive: data.inactive,
+            active: data.active
+        }
+        pick.push(Data)
+        dispatch({
+            type: actionTypes.SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
+            payload: pick
         })
 
         dispatch({

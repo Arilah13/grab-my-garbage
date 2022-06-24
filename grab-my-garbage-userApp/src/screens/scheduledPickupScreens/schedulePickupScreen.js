@@ -150,7 +150,10 @@ const Schedulepickupscreen = ({navigation}) => {
                     <>
                     <View style = {{backgroundColor: colors.grey8, borderTopRightRadius: 30, borderTopLeftRadius: 30, height: 11*SCREEN_HEIGHT/10}}>
                         <View style = {styles.container2}>
-                            <Pressable onPress = {() => navigation.navigate('Destination', {destination: 'Schedule Pickup'})}>
+                            <Pressable 
+                                onPress = {() => navigation.navigate('Destination', {destination: 'Schedule Pickup'})}
+                                style = {{flexDirection: 'row'}}
+                            >
                                 <Icon 
                                     type = 'feather'
                                     name = 'map-pin'
@@ -161,39 +164,43 @@ const Schedulepickupscreen = ({navigation}) => {
                                         alignSelf: 'flex-start'
                                     }}
                                 />
-                                <Text style = {styles.text2}>Pick Up Location</Text>
-                                <Text style = {styles.text3}>{address === ('Current Location' || 'Home') ? address : address_new}</Text>
-                                <Icon 
+                                <View style = {{marginTop: 25}}>
+                                    <Text style = {styles.text2}>Pick Up Location</Text>
+                                    <Text style = {styles.text3}>{address === 'Current Location' ? address : address_new}</Text>
+                                </View>                               
+                                {/* <Icon 
                                     type = 'material-community'
                                     name = 'dots-vertical'
                                     color = {colors.blue5}
                                     size = {25}
                                     style = {{
-                                        //alignSelf: 'flex-end',
-                                        //marginRight: 5,
-                                        //bottom: 15,
-                                        position: 'absolute'
+                                        alignSelf: 'flex-end',
+                                        marginRight: 5,
+                                        bottom: 15,
+                                        //position: 'absolute'
                                     }}
-                                />
+                                /> */}
                             </Pressable>               
                         </View>
 
                         <View style = {styles.container3} >
                             <Text style = {styles.text4}>Schedule Service</Text>
                             <View style = {styles.view1}>
-                                <Icon
-                                    type = 'material'
-                                    name = 'schedule'
-                                    color = {colors.blue5}
-                                    size = {20}
-                                    style = {{
-                                        alignSelf: 'flex-start',
-                                        marginTop: 15,
-                                        marginLeft: 10,
-                                        display: 'flex'
-                                    }}
-                                />
-                                <Text style = {styles.text5}>Select Service Time</Text>
+                                <View style = {{flexDirection: 'row'}}>
+                                    <Icon
+                                        type = 'material'
+                                        name = 'schedule'
+                                        color = {colors.blue5}
+                                        size = {20}
+                                        style = {{
+                                            alignSelf: 'flex-start',
+                                            marginTop: 15,
+                                            marginLeft: 10,
+                                            display: 'flex'
+                                        }}
+                                    />
+                                    <Text style = {{...styles.text5, marginLeft: 10, marginTop: 15}}>Select Service Time</Text>
+                                </View>
 
                                 <Text style = {styles.text6}>From</Text>
                                 <Pressable onPress = {() => setShowDate1(true)}>
@@ -222,9 +229,9 @@ const Schedulepickupscreen = ({navigation}) => {
                                     </View>
                                 </Pressable>
 
-                                <Text style = {{...styles.text6, top: 15}}>To</Text>
+                                <Text style = {{...styles.text6, marginTop: 0}}>To</Text>
                                 <Pressable onPress = {() => setShowDate2(true)}>
-                                    <View style = {{...styles.view2, top: 5}}>
+                                    <View style = {{...styles.view2}}>
                                         <Icon
                                             type = 'material'
                                             name = 'date-range'
@@ -264,39 +271,42 @@ const Schedulepickupscreen = ({navigation}) => {
                                             display: 'flex' 
                                         }}
                                     />
-                                    <Text style = {{...styles.text5, top: 15, left: 10}}>Select Collection Day</Text>
+                                    <Text style = {{...styles.text5, marginTop: 15, marginLeft: 10, marginBottom: 0}}>Select Collection Day</Text>
                                 </View>
-                                <View style = {{...styles.container4, top: 10}}>
-                                    <MultiselectDropdown
-                                        label = 'Select Day'
-                                        data = {dayData}
-                                        enableSearch = {false}
-                                        enableAvatar = {false}
-                                        chipType = "outlined"
-                                        value = {days}
-                                        onChange = {onChangeDays}
-                                        floating = {false}
-                                        primaryColor = {colors.blue2}
-                                        underlineColor = 'transparent'
-                                        selectedItemTextStyle = {{ fontWeight: 'bold' }}
-                                        textInputStyle = {{ 
-                                            backgroundColor: colors.white,
-                                            borderTopRightRadius: 20,
-                                            borderTopLeftRadius: 20,
-                                            borderRadius: 20,
-                                            height: 55,
-                                            marginLeft: 10,
-                                        }}
-                                        disabledItemTextStyle = {{
-                                            color: colors.black
-                                        }}
-                                        chipTextStyle = {{
-                                            color: colors.blue2
-                                        }}       
-                                        paperTheme = {DefaultTheme}  
-                                        disableSort = {true}                      
-                                    />
-                                </View>
+                                
+                                <MultiselectDropdown
+                                    label = 'Select Day'
+                                    data = {dayData}
+                                    enableSearch = {false}
+                                    enableAvatar = {false}
+                                    chipType = "outlined"
+                                    value = {days}
+                                    onChange = {onChangeDays}
+                                    floating = {false}
+                                    primaryColor = {colors.blue2}
+                                    underlineColor = 'transparent'
+                                    selectedItemTextStyle = {{ fontWeight: 'bold' }}
+                                    textInputStyle = {{ 
+                                        backgroundColor: colors.white,
+                                        borderTopRightRadius: 20,
+                                        borderTopLeftRadius: 20,
+                                        borderRadius: 20,
+                                        height: 55,
+                                        marginLeft: 10,
+                                    }}
+                                    disabledItemTextStyle = {{
+                                        color: colors.black
+                                    }}
+                                    chipTextStyle = {{
+                                        color: colors.blue2
+                                    }}       
+                                    paperTheme = {DefaultTheme}  
+                                    disableSort = {true}   
+                                    mainContainerStyle = {{
+                                        marginTop: 10,
+                                        paddingHorizontal: 20
+                                    }}                   
+                                />
                             </View>
                             
                             <View style = {{...styles.view1, marginTop: 20, height: 115, backgroundColor: colors.grey8}}>
@@ -313,35 +323,43 @@ const Schedulepickupscreen = ({navigation}) => {
                                             display: 'flex'                               
                                         }}
                                     />
-                                    <Text style = {{...styles.text5, top: 15, left: 10}}>Select Time Slot</Text>
+                                    <Text style = {{...styles.text5, marginTop: 15, marginLeft: 10, marginBottom: 0}}>Select Time Slot</Text>
                                 </View>
-                                <View style = {{...styles.container4, top: 10}}>
-                                    <Dropdown
-                                        label = 'Select Time Slot'
-                                        enableSearch = {false}
-                                        enableAvatar = {false}
-                                        floating = {false}
-                                        data = {timeIntervalData}
-                                        value = {timeInterval}
-                                        onChange = {onChangeTime}
-                                        primaryColor = {colors.blue2}
-                                        underlineColor = 'transparent'
-                                        selectedItemTextStyle = {{ fontWeight: 'bold' }}
-                                        textInputStyle = {{ 
-                                            backgroundColor: colors.white,
-                                            borderTopRightRadius: 20,
-                                            borderTopLeftRadius: 20,
-                                            borderRadius: 20,
-                                            height: 45,
-                                            marginLeft: 10,
-                                        }}
-                                        disabledItemTextStyle = {{
-                                            color: colors.black
-                                        }}
-                                        paperTheme = {DefaultTheme}
-                                        disableSort = {true}
-                                    />
-                                </View>
+
+                                <Dropdown
+                                    label = 'Select Time Slot'
+                                    enableSearch = {false}
+                                    enableAvatar = {false}
+                                    floating = {false}
+                                    data = {timeIntervalData}
+                                    value = {timeInterval}
+                                    onChange = {onChangeTime}
+                                    primaryColor = {colors.blue2}
+                                    underlineColor = 'transparent'
+                                    selectedItemTextStyle = {{ fontWeight: 'bold' }}
+                                    textInputStyle = {{ 
+                                        backgroundColor: colors.white,
+                                        borderTopRightRadius: 20,
+                                        borderTopLeftRadius: 20,
+                                        borderRadius: 20,
+                                        height: 45,
+                                        marginLeft: 10,
+                                    }}
+                                    disabledItemTextStyle = {{
+                                        color: colors.black
+                                    }}
+                                    parentDDContainerStyle = {{
+                                        position: 'absolute',
+                                        marginTop: 215,
+                                        width: SCREEN_WIDTH/1.15,
+                                    }}
+                                    paperTheme = {DefaultTheme}
+                                    disableSort = {true}
+                                    mainContainerStyle = {{
+                                        marginTop: 10,
+                                        paddingHorizontal: 20
+                                    }}
+                                />
                             </View>
 
                             <View style = {{top: SCREEN_HEIGHT/1.23, position: 'absolute', width: SCREEN_WIDTH, padding: 15}}>
@@ -377,13 +395,12 @@ const styles = StyleSheet.create({
     },
     text2:{
         color: colors.blue7,
-        left: 40,
-        bottom: 30
+        marginLeft: 15,
     },
     text3:{
         color: colors.blue2,
-        left: 40,
-        bottom: 30,
+        marginLeft: 15,
+        //marginBottom: 30,
         fontWeight: 'bold'
     },
     container3:{
@@ -407,11 +424,11 @@ const styles = StyleSheet.create({
     view2:{
         width: "82%",
         height: 45,
-        left: 43,
-        bottom: 10,
+        marginLeft: 43,
+        marginBottom: 10,
         backgroundColor: colors.white,
         borderRadius: 20,
-        marginTop: SCREEN_HEIGHT/45
+        marginTop: 5
     },
     button:{
         backgroundColor: colors.buttons,
@@ -419,15 +436,15 @@ const styles = StyleSheet.create({
         height: 50,
     },
     text5:{
-        left: 40,
-        bottom: 21,
+        marginLeft: 40,
+        marginBottom: 21,
         color: colors.blue2,
         fontSize: 14,
         fontWeight: 'bold'
     },
     text6:{
-        left: SCREEN_WIDTH/8.2,
-        marginTop: -SCREEN_HEIGHT/40,
+        marginLeft: SCREEN_WIDTH/8.2,
+        marginTop: -SCREEN_HEIGHT/60,
         color: colors.blue4
     },
     text7:{
@@ -437,7 +454,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     container4:{
-        top: 30,
+        marginTop: 30,
         marginLeft: 35,
         marginRight: 20,
         flex: 1,

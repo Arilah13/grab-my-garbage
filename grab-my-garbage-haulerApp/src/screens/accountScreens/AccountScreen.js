@@ -73,7 +73,7 @@ export default Accountscreen
 const styles = StyleSheet.create({
 
     container1:{
-        backgroundColor: colors.blue1,
+        backgroundColor: colors.grey8,
     },
     container2:{
         backgroundColor: colors.blue2,
@@ -136,9 +136,10 @@ const styles = StyleSheet.create({
         paddingBottom: 15,
         paddingTop: 15,
         borderRadius: 10,
-        backgroundColor: colors.grey9,
+        backgroundColor: colors.white,
         alignItems: 'flex-start',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        elevation: 5
     },
     view5:{
         marginTop: 5

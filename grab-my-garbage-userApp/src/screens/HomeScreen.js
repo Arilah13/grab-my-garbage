@@ -219,7 +219,7 @@ const Homescreen = ({navigation}) => {
                     autoPlay = {true}
                 />
             :
-            <View style={{backgroundColor: colors.blue1}}>
+            <View style={{backgroundColor: colors.grey8}}>
                 <View style = {styles.container}>
                     {
                         activeScheduleStatus &&
@@ -303,7 +303,7 @@ export default Homescreen
 const styles = StyleSheet.create({
 
     container:{
-        backgroundColor: colors.blue1,
+        backgroundColor: colors.grey8,
         //marginBottom: 0,
         height: SCREEN_HEIGHT/3.5
     },
@@ -332,17 +332,18 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
     container1:{
-        backgroundColor: colors.white,
+        backgroundColor: colors.grey9,
         borderRadius: 30,
         height: "75%",
         padding: 15
     },
     container2:{
-        backgroundColor: colors.blue2,
+        backgroundColor: colors.white,
         height: SCREEN_HEIGHT/6.5,
         padding: 10,
         borderRadius: 25,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        elevation: 5
     },
     card:{
         flex: 1,
@@ -392,13 +393,14 @@ const styles = StyleSheet.create({
     text4:{
         fontSize: 16,
         fontWeight: 'bold',
-        color: 'grey',
+        color: colors.grey2,
         marginTop: 5
     },
     text5:{
         marginTop: 20,
-        color: 'white',
-        fontSize: 15
+        color: colors.darkGrey,
+        fontSize: 17,
+        fontWeight: 'bold'
     }
 
 })

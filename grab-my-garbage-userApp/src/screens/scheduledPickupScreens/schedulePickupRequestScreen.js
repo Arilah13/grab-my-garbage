@@ -36,9 +36,6 @@ const Schedulepickuprequestscreen = ({navigation}) => {
             <Headercomponent name = 'Home' destination = 'Home'/>
 
             <View style = {styles.container}>
-                <View style = {styles.view2}>
-                    <Text style = {styles.text9}>Scheduled Pickup List</Text>
-                </View>
                 {loading === true &&
                     <LottieView 
                         source = {require('../../../assets/animation/truck_loader.json')}
