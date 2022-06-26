@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, StyleSheet, Text, Image, Dimensions, TouchableOpacity, Pressable, ScrollView, Alert } from 'react-native'
+import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Pressable, ScrollView, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
 import { MultiselectDropdown } from 'sharingan-rn-modal-dropdown'
@@ -21,8 +21,8 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Specialpickupscreen = ({navigation}) => {
-
     const formikRef = useRef()
+
     const dispatch = useDispatch()
 
     const [categories, setCategories] = useState([])
@@ -83,11 +83,13 @@ const Specialpickupscreen = ({navigation}) => {
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [4,5],
-                quality: 0,
+                quality: 1,
                 base64: true
             })
             setModalVisible(false)
-            setImage(image.base64)
+            if(!image.cancelled) {
+                setImage(image.base64)
+            }   
         }
     }
     const selectCamera = async() => {
@@ -99,11 +101,13 @@ const Specialpickupscreen = ({navigation}) => {
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [4,5],
-                quality: 0,
+                quality: 1,
                 base64: true
             })
             setModalVisible(false)
-            setImage(image.base64)
+            if(!image.cancelled) {
+                setImage(image.base64)
+            }
         }
     }
 

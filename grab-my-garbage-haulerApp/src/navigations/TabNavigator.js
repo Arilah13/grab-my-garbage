@@ -46,16 +46,23 @@ const TabNavigator = () => {
         if(socketLoading === false && first === true && conversation !== undefined) {
             setFirst(false)
             
-            socket.on('getMessage', async({senderid, text, sender, createdAt}) => {
+            socket.on('getMessage', async({senderid, text, sender, createdAt, image}) => {
                 const index = await conversation.findIndex((convo) => convo.conversation.userId._id === senderid)
 
                 if(index >= 0) {
                     const element = await conversation.splice(index, 1)[0]
-                    await element
 
-                    element.message.text = text
                     element.message.created = createdAt
                     element.conversation.haulerVisible = true
+
+                    if(text) {
+                        element.message.text = text
+                        element.message.image = null
+                    }
+                    if(image) {
+                        element.message.image = image
+                        element.message.text = null
+                    }
 
                     if(checkCurrentConvo(senderid) === true) {
                         element.conversation.receiverHaulerRead = true
@@ -73,7 +80,8 @@ const TabNavigator = () => {
                             sender.name,
                             sender.avatar
                         ],
-                        text: text
+                        text: text && text,
+                        image: image && image
                     }
 
                     element.totalMessage.push(message)
@@ -106,7 +114,8 @@ const TabNavigator = () => {
                         message: {
                             created: createdAt,
                             createdAt: createdAt,
-                            text: text,
+                            text: text && text,
+                            image: image && image,
                             _id: Date.now(),
                             conversationId: element.conversationId,
                             sender: [
@@ -118,7 +127,8 @@ const TabNavigator = () => {
                         lastMessage: [{
                             created: createdAt,
                             createdAt: createdAt,
-                            text: text,
+                            text: text && text,
+                            image: image && image,
                             _id: Date.now(),
                             conversationId: element.conversationId,
                             sender: [

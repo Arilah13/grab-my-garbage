@@ -1,8 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, KeyboardAvoidingView, Dimensions, Image, Pressable } from 'react-native'
+import { 
+    View, Text, StyleSheet, 
+    KeyboardAvoidingView, Dimensions, 
+    Image, Pressable, ActivityIndicator,
+    TouchableOpacity 
+} from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
+import Modal from 'react-native-modal'
+import * as ImagePicker from 'expo-image-picker'
 
 import { colors } from '../../global/styles'
 import { renderBubble, renderComposer, renderInputToolbar, renderMessage, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
@@ -39,7 +46,8 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                 message[0].user.name,
                 message[0].user.avatar
             ],
-            text: message[0].text
+            text: message[0].text && message[0].text,
+            image: message[0].image && message[0].image
         }
         await conv.totalMessage.splice(conv.totalMessage.length, 0, element)
         conv.message = element
@@ -49,16 +57,18 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
             payload: conversation
         })
         dispatch(sendMessage({
-            text: message[0].text,
+            text: message[0].text && message[0].text,
             createdAt: message[0].createdAt,
             sender: message[0].user,
-            conversationId: convo.conversation._id
+            conversationId: convo.conversation._id,
+            image: message[0].image && message[0].image,
         }))
         socket.emit('sendMessage', ({
             senderid: userInfo._id,
             sender: message[0].user,
             receiverid: userid._id,
-            text: message[0].text,
+            text: message[0].text && message[0].text,
+            image: message[0].image && message[0].image,
             createdAt: message[0].createdAt,
             senderRole: 'hauler',
             receiver: userid,
@@ -66,20 +76,99 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
         }))
     }, [conversation])
 
+    const selectGallery = async() => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+        if (status !== 'granted') {
+          setModalVisible(false)
+        }else{
+            let image = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4,5],
+                quality: 1,
+                base64: true
+            })
+            setModalVisible(false)
+            if(!image.cancelled) {
+                const msg = [{
+                    _id: new Date(),
+                    createdAt: new Date(),
+                    image: image.base64,
+                    user: {
+                        _id: userInfo._id,
+                        avatar: userInfo.image,
+                        name: userInfo.name
+                    }
+                }]
+                const msg1 = [{
+                    _id: new Date(),
+                    createdAt: new Date(),
+                    image: 'data:image/png;base64,' + image.base64,
+                    user: {
+                        _id: userInfo._id,
+                        avatar: userInfo.image,
+                        name: userInfo.name
+                    }
+                }]
+                onSend(undefined, msg1)
+                sendMsg(msg)
+            }
+        }
+    }
+
+    const selectCamera = async() => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync()
+        if (status !== 'granted') {
+          setModalVisible(false)
+        }else{
+            let image = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4,5],
+                quality: 1,
+                base64: true
+            })
+            setModalVisible(false)
+            if(!image.cancelled) {
+                const msg = [{
+                    _id: new Date(),
+                    createdAt: new Date(),
+                    image: image.base64,
+                    user: {
+                        _id: userInfo._id,
+                        avatar: userInfo.image,
+                        name: userInfo.name
+                    }
+                }]
+                const msg1 = [{
+                    _id: new Date(),
+                    createdAt: new Date(),
+                    image: 'data:image/png;base64,' + image.base64,
+                    user: {
+                        _id: userInfo._id,
+                        avatar: userInfo.image,
+                        name: userInfo.name
+                    }
+                }]
+                onSend(undefined, msg1)
+                sendMsg(msg)
+            }
+        }
+    }
+
     useEffect(() => {
-        socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId}) => {
-            const message = [{text, user: sender, createdAt, _id: Date.now()}]
-
+        socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId, image, sender: userid}) => {
             if(senderid === userid._id) {
-                onSend(message)
+                if(text) {
+                    const message = [{text, user: sender, createdAt, _id: Date.now()}]
+                    onSend(message)
+                }
+                if(image) {
+                    const message = [{image, user: sender, createdAt, _id: Date.now()}]
+                    onSend(undefined, message)
+                }
+                dispatch(receiverRead(conversationId))
             }
-
-            if(conversationId === convo.conversation._id) {
-                setTimeout(() => {
-                    dispatch(receiverRead(conversationId))
-                }, 3000) 
-            }
-                
         })
     }, [socket])
 
@@ -103,63 +192,125 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
         }
     }, [])
 
-    const onSend = useCallback((messages = []) => {
-        setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
+    const onSend = useCallback((messages = [], image) => {
+        if(image) {
+            setMessages(previousMessages => GiftedChat.append(previousMessages, image))
+        } 
+        if(messages) {
+            setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
+        }
     }, [])
 
     return (
         <View style = {{backgroundColor: colors.white, borderTopRightRadius: 15, borderTopLeftRadius: 15, overflow: 'hidden', height: SCREEN_HEIGHT}}>
-                <View style = {{height: 1*SCREEN_HEIGHT/10, flexDirection: 'row', backgroundColor: colors.white}}>
-                    <Pressable onPress = {() => {
-                        setModalVisible(false)
-                        dispatch({
-                            type: RESET_CURRENT_CONVO
-                        })
-                    }}>
-                        <Icon 
-                            type = 'font-awesome-5'
-                            name = 'angle-left'
-                            size = {32}
-                            color = {colors.darkBlue}
+            <View style = {{height: 1*SCREEN_HEIGHT/10, flexDirection: 'row', backgroundColor: colors.white}}>
+                <Pressable onPress = {() => {
+                    setModalVisible(false)
+                    dispatch({
+                        type: RESET_CURRENT_CONVO
+                    })
+                }}>
+                    <Icon 
+                        type = 'font-awesome-5'
+                        name = 'angle-left'
+                        size = {32}
+                        color = {colors.darkBlue}
+                        style = {{
+                            marginLeft: 15,
+                            marginTop: 17,
+                            marginRight: 45
+                        }}
+                    />
+                </Pressable>
+                <Image 
+                    source = {{uri: userid.image}}
+                    style = {styles.image}
+                />
+                <Text style = {styles.text}>{userid.name}</Text>
+            </View>
+            <View style = {{backgroundColor: colors.grey9, height: 8*SCREEN_HEIGHT/10, paddingBottom: 10}}>
+                <GiftedChat
+                    messages = {messages}
+                    onSend = {messages => {
+                        onSend(messages)
+                        sendMsg(messages)
+                    }}
+                    user = {{
+                        _id: userInfo._id,
+                        name: userInfo.name,
+                        avatar: userInfo.image
+                    }}
+                    renderBubble = {renderBubble}
+                    alwaysShowSend = {true}
+                    renderSend = {renderSend}
+                    renderLoading = {() => <ActivityIndicator />}
+                    scrollToBottom = {true}
+                    scrollToBottomComponent = {scrollToBottomComponent}
+                    renderInputToolbar = {renderInputToolbar}
+                    renderComposer = {renderComposer}
+                    renderMessage = {renderMessage}
+                    renderActions = {() => (
+                        <Pressable onPress = {() => setModalVisible(true)}>
+                            <Icon
+                                type = 'material'
+                                name = 'photo-camera'
+                                color = {colors.darkBlue}
+                                size = {26}
+                                style = {{
+                                    marginLeft: 5,
+                                    marginBottom: 7
+                                }}
+                            />
+                        </Pressable>
+                    )}
+                />
+                {
+                    Platform.OS === 'android' && <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {2*SCREEN_HEIGHT/10} />
+                }
+            </View>
+
+            <Modal 
+                isVisible = {modalVisible}
+                swipeDirection = {'down'}
+                style = {{ justifyContent: 'flex-end', margin: 0 }}
+                onBackButtonPress = {() => setModalVisible(false)}
+                onBackdropPress = {() => setModalVisible(false)}
+                useNativeDriver = {true}
+                useNativeDriverForBackdrop = {true}
+            >
+                <View style = {styles.view1}>
+                    <Text style = {styles.text2}>Choose from</Text>
+                    <TouchableOpacity onPress = {() => selectGallery()}>
+                        <Icon
+                            type = 'material'
+                            name = 'collections'
+                            color = {colors.blue5}
+                            size = {20}
                             style = {{
-                                marginLeft: 15,
-                                marginTop: 17,
-                                marginRight: 45
+                                alignSelf: 'flex-start',
+                                marginTop: '6%',
+                                marginLeft: '8%',
                             }}
                         />
-                    </Pressable>
-                    <Image 
-                        source = {{uri: userid.image}}
-                        style = {styles.image}
-                    />
-                    <Text style = {styles.text}>{userid.name}</Text>
-                </View>
-                <View style = {{backgroundColor: colors.grey9, height: 8*SCREEN_HEIGHT/10, paddingBottom: 10}}>
-                    <GiftedChat
-                        messages = {messages}
-                        onSend = {messages => {
-                            onSend(messages)
-                            sendMsg(messages)
-                        }}
-                        user = {{
-                            _id: userInfo._id,
-                            name: userInfo.name,
-                            avatar: userInfo.image
-                        }}
-                        renderBubble = {renderBubble}
-                        alwaysShowSend = {true}
-                        renderSend = {renderSend}
-                        scrollToBottom = {true}
-                        scrollToBottomComponent = {scrollToBottomComponent}
-                        renderInputToolbar = {renderInputToolbar}
-                        renderComposer = {renderComposer}
-                        renderMessage = {renderMessage}
-                    />
-                    {
-                        Platform.OS === 'android' && <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {2*SCREEN_HEIGHT/10} />
-                    }
-                </View>
-            </View>
+                        <Text style = {{...styles.button, color: colors.blue5, position: 'absolute'}}>Gallery</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress = {() => selectCamera()}>
+                        <Icon
+                            type = 'material'
+                            name = 'photo-camera'
+                            color = {colors.blue5}
+                            size = {20}
+                            style = {{
+                                alignSelf: 'flex-start',
+                                marginTop: '6%',
+                                marginLeft: '8%',
+                            }}
+                        />
+                        <Text style = {{...styles.button, color: colors.blue5, position: 'absolute'}}>Camera</Text>
+                    </TouchableOpacity>
+                </View>                
+            </Modal>
+        </View>
     );
 }
 
@@ -181,6 +332,23 @@ const styles = StyleSheet.create({
         borderColor: colors.blue2,
         borderWidth: 1,
         borderRadius: 50,
+    },
+    view1:{
+        backgroundColor: colors.white,
+        height: '25%',
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20
+    },
+    text2:{
+        marginTop: '8%',
+        marginLeft: '8%',
+        fontWeight: 'bold',
+        color: colors.blue2,
+        fontSize: 15
+    },
+    button:{
+        marginTop: '6%',
+        marginLeft: '18%',
     }
 
 })

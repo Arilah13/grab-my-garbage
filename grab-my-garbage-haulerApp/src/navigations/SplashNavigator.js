@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { NavigationContainer } from '@react-navigation/native'
+import * as TaskManager from 'expo-task-manager'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { uploadDetails } from '../redux/actions/userActions'
@@ -8,6 +9,7 @@ import { addOrigin } from '../redux/actions/mapActions'
 import { getConversations } from '../redux/actions/conversationActions'
 import { getScheduledPickups } from '../redux/actions/scheduleRequestActions'
 import { getUpcomingPickups } from '../redux/actions/specialRequestActions'
+import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
 
 import Splashscreen from '../screens/authScreens/splashScreen'
 import Rootnavigator from './RootNavigator'
@@ -56,6 +58,20 @@ const Splashnavigator = () => {
             }
         }
     }, [loading])
+
+    TaskManager.defineTask(TASK_FETCH_LOCATION, async({data, err}) => {
+        if(err) {
+            console.log(err)
+            return
+        }
+        if(data) {
+            const { locations } = data
+            const [location] = await locations
+            
+            dispatch(addOrigin(location.coords.latitude, location.coords.longitude, location.coords.heading))
+            AsyncStorage.setItem('userLocation', JSON.stringify(location.coords))
+        }
+    })
 
     return (
         <NavigationContainer>

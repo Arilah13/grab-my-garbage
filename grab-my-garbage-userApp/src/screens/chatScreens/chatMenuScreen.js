@@ -155,7 +155,7 @@ const Chatmenuscreen = ({navigation}) => {
                                                     <Text style = {styles.postTime}>{date1Helper(item.conversation.updatedAt)}</Text>
                                                 </View>
                                                 <View style = {styles.userInfoText}>
-                                                    <Text style = {styles.messageText}>{item.message.text}</Text>
+                                                    <Text style = {styles.messageText}>{item.message.text ? item.message.text : 'Photo'}</Text>
                                                     {
                                                         item.conversation.receiverUserRead === false &&
                                                             <Icon

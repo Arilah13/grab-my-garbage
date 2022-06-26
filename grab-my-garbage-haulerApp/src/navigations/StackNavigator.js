@@ -2,13 +2,8 @@ import React, { useEffect } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useDispatch, useSelector } from 'react-redux'
 import socketIO from 'socket.io-client'
-import * as TaskManager from 'expo-task-manager'
-import * as BackgroundFetch from 'expo-background-fetch'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { addSocket } from '../redux/actions/socketActions'
-import { addOrigin } from '../redux/actions/mapActions'
-import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
 
 import TabNavigator from './TabNavigator'
 import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePickupDetailScreen'
@@ -27,29 +22,17 @@ const Stacknavigator = () => {
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
-    TaskManager.defineTask(TASK_FETCH_LOCATION, async({data, err}) => {
-        if(err) {
-            console.log(err)
-            return
-        }
-        if(data) {
-            const { locations } = data
-            const [location] = await locations
-            
-            dispatch(addOrigin(location.coords.latitude, location.coords.longitude, location.coords.heading))
-            AsyncStorage.setItem('userLocation', JSON.stringify(location.coords))
+    const map = useSelector((state) => state.map)
+    const { origin } = map
+
+    useEffect(() => {
+        if(skt) {
             skt.emit('online', {haulerid: userInfo._id, 
-                latitude: location.coords.latitude, longitude: location.coords.longitude,
-                heading: location.coords.heading
+                latitude: origin.latitude, longitude: origin.longitude,
+                heading: origin.heading
             })
         }
-    })
-
-    // BackgroundFetch.registerTaskAsync(TASK_FETCH_LOCATION, {
-    //     minimumInterval: 20,
-    //     startOnBoot: false,
-    //     stopOnTerminate: true
-    // })
+    }, [origin])
 
     useEffect(async() => {   
         const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/', {
