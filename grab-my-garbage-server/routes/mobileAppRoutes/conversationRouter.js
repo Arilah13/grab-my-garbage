@@ -10,6 +10,10 @@ router.get('/:id', conversationController.getConversation)
 
 router.put('/user/:id', conversationController.markReadUser)
 
-router.put('/hauler/:id', auth, conversationController.markReadHauler)
+router.put('/hauler/:id', conversationController.markReadHauler)
+
+router.put('/user/:id/remove', conversationController.deleteUser)
+
+router.put('/hauler/:id/remove', conversationController.deleteHauler)
 
 module.exports = router

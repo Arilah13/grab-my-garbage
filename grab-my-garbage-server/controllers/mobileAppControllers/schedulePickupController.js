@@ -32,6 +32,7 @@ const scheduledPickupController = {
                                 } else {
                                     requests.push({
                                         hauler: hauler[n]._id,
+                                        haulerDetail: hauler[n],
                                         limit: hauler[n].limit,
                                         pickup: [pickup[i]],
                                         on: 1
@@ -46,14 +47,14 @@ const scheduledPickupController = {
             if(requests.length > 0) {
                 for(let n=0; n<requests.length; n++) {
                     if(requests[n].pickup.length <= requests[n].limit) {
-                        results = requests[n].hauler
+                        results = requests[n].haulerDetail
                     }
                 }
             }
 
             if(!results) {
                 const item = hauler[Math.floor(Math.random()*hauler.length)]
-                results = item._id
+                results = item
             }
    
             const newPickup = new ScheduledPickups({
@@ -76,9 +77,19 @@ const scheduledPickupController = {
                 from: newPickup.from,
                 to: newPickup.to,
                 days: newPickup.days,
-                time: newPickup.timeslot,
+                timeslot: newPickup.timeslot,
                 payment: newPickup.payment,
                 paymentMethod: newPickup.paymentMethod,
+                customerId: newPickup.customerId,
+                pickerId: newPickup.pickerId,
+                completed: newPickup.completed,
+                completedPickups: newPickup.completedPickups,
+                createdAt: newPickup.createdAt,
+                updatedAt: newPickup.updatedAt,
+                __v: newPickup.__v,
+                cancelled: newPickup.cancelled,
+                inactive: newPickup.inactive,
+                active: newPickup.active
             })
 
         } catch(err) {

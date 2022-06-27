@@ -18,8 +18,9 @@ const pickupController = {
     addSpecialPickup: async(req, res) => {
         try{
             const {pickupInfo, total, method, id} = req.body
-
+            
             let photo
+            let Haulers = []
 
             if(pickupInfo.photo !== null && pickupInfo.photo !== '') {
                 cloudinary.config({
@@ -40,7 +41,13 @@ const pickupController = {
 
             const service_city = await isPointInPolygon(pickupInfo.location.latitude, pickupInfo.location.longitude, polygonData)
             const hauler = await haulers.find({service_city: service_city})
-
+            
+            for(let n=0; n<hauler.length; n++) {
+                Haulers.push({
+                    _id: hauler[n]._id.toString()
+                })
+            }
+            
             const newPickup = new Pickups({
                 location: pickupInfo.location,
                 datetime: pickupInfo.date,
@@ -50,7 +57,7 @@ const pickupController = {
                 payment: total,
                 paymentMethod: method,
                 customerId: id,
-                pickerId: hauler[0]._id
+                areaHaulers: Haulers
             })
 
             const hour = (pickupInfo.date.split('T')[1]).split(':')[0]
@@ -85,6 +92,18 @@ const pickupController = {
                 image: newPickup.image,
                 payment: newPickup.payment,
                 paymentMethod: newPickup.paymentMethod,
+                areaHaulers: newPickup.areaHaulers,
+                customerId: newPickup.customerId,
+                accepted: newPickup.accepted,
+                cancelled: newPickup.cancelled,
+                completed: newPickup.completed,
+                pickerId: newPickup.pickerId,
+                declinedHaulers: newPickup.declinedHaulers,
+                inactive: newPickup.inactive,
+                active: newPickup.active,
+                createdAt: newPickup.createdAt,
+                updatedAt: newPickup.updatedAt,
+                __v: newPickup.__v
             })
 
         } catch(err) {

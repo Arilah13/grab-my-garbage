@@ -264,7 +264,7 @@ const userController = {
                         api_secret: process.env.CLOUD_API_SECRET
                     })
                     
-                    await cloudinary.v2.uploader.upload('data:image/gif;base64,' + req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
+                    await cloudinary.v2.uploader.upload('data:image/png;base64,' + req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
                         if(err) 
                             throw err
                         else
@@ -335,6 +335,19 @@ const userController = {
             await user.save()
 
             res.status(200).json({msg: 'User Updated'})  
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    removePushToken: async(req, res) => {
+        try{
+            const user = await Users.findById(req.params.id)
+            if(!user) return res.status(400).json({msg: 'User does not exists.'})
+
+            await user.pushId.filter(pushId => pushId !== req.body.id)
+            user.save()
+
+            res.status(200).json({msg: 'Pushtoken removed'})
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }

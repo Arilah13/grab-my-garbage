@@ -2,8 +2,6 @@ const router = require('express').Router()
 const requestController = require('../../controllers/mobileAppControllers/specialRequestController')
 const auth = require('../../middleware/auth')
 
-router.get('/pendingPickup/:lat/:lng/:id', auth, requestController.getPendingPickups)
-
 router.get('/pendingOfflinePickup/:id', auth, requestController.getPendingOfflinePickups)
 
 router.get('/upcomingPickup/:id', auth, requestController.getUpcomingPickups)

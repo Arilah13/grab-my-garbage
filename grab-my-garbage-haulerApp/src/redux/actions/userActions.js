@@ -6,6 +6,8 @@ import { getScheduledPickups } from './scheduleRequestActions'
 import { getUpcomingPickups } from './specialRequestActions'
 import { getConversations } from './conversationActions'
 
+import { getPushToken } from '../../helpers/notificationHelper'
+
 export const Login = ({email, password, pushId}) => async (dispatch) => {
     try {
         dispatch({
@@ -96,7 +98,20 @@ export const updateUserPassword = (password) => async (dispatch, getState) => {
     }
 }
 
-export const logout = () => async (dispatch) => {
+export const logout = () => async (dispatch, getState) => {
+    const { userLogin: { userInfo }} = getState()
+        
+    const config = {
+        headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`
+        },
+    }
+
+    const pushId = await getPushToken()
+
+    const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/haulers/pushtoken/${userInfo._id}`, {id: pushId}, config)
+
     AsyncStorage.removeItem('haulerInfo')
 
     dispatch({ type: actionTypes.USER_LOGOUT })

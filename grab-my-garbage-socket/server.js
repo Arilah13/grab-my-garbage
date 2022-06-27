@@ -212,23 +212,22 @@ io.on('connection', socket => {
         pickupSocket.haulerDisconnect({id: socket.id})
     })
 
-    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid, senderRole, conversationId}) => {
-        
+    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid, senderRole, conversationId, image, receiver}) => {
         if(senderRole === 'hauler') {
             const user = await chatSocket.returnUserSocketid({userid: receiverid})
             
             if(user !== false) {
-                socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid, conversationId: conversationId})
+                socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid, conversationId: conversationId, image: 'data:image/png;base64,' + image})
             } else {
-                notificationHelper.notifyMessages(receiverid)
+                notificationHelper.notifyMessages(receiver)
             }
         } else {
             const hauler = await chatSocket.returnHaulerSocketid({haulerid: receiverid})
 
             if(hauler !== false) {
-                socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid, conversationId: conversationId})
+                socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid, conversationId: conversationId, image: 'data:image/png;base64,' + image})
             } else {
-                notificationHelper.notifyMessages(receiverid)
+                notificationHelper.notifyMessages(receiver)
             }
         }
         

@@ -101,7 +101,20 @@ const haulerController = {
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }
-    } 
+    },
+    removePushToken: async(req, res) => {
+        try{
+            const hauler = await Haulers.findById(req.params.id)
+            if(!hauler) return res.status(400).json({msg: 'Hauler does not exists.'})
+
+            await hauler.pushId.filter(pushId => pushId !== req.body.id)
+            hauler.save()
+
+            res.status(200).json({msg: 'Pushtoken removed'})
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    }  
 }
 
 const schedulePickupNotify = (hour, minute, pushId) => {

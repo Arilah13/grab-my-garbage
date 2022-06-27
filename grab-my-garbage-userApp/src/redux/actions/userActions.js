@@ -7,6 +7,8 @@ import { getScheduledPickups } from './schedulePickupActions'
 import { getAcceptedPickups } from './specialPickupActions'
 import { getConversations } from './conversationActions'
 
+import { getPushToken } from '../../helpers/notificationHelper'
+
 export const Login = (email, password, notification_token) => async (dispatch) => {
     try {
         dispatch({
@@ -240,8 +242,6 @@ export const updateUserPassword = (password) => async (dispatch, getState) => {
 }
 
 export const logout = () => async (dispatch, getState) => {
-    AsyncStorage.removeItem('userInfo')
-
     const { userLogin: { userInfo }} = getState()
     // if(userInfo.fbid !== '' && userInfo.fbid !== null) {
     //     await Facebook.initializeAsync({
@@ -250,6 +250,19 @@ export const logout = () => async (dispatch, getState) => {
     //     var IParams = `access_token=${userInfo.fbtoken}`
     //     await fetch(`https://graph.facebook.com/${userInfo.fbid}/permissions`,{method: 'DELETE', body: IParams})
     // }
+
+    const config = {
+        headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`
+        },
+    }
+
+    const pushId = await getPushToken()
+
+    const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/users/pushtoken/${userInfo._id}`, {id: pushId}, config)
+
+    AsyncStorage.removeItem('userInfo')
 
     dispatch({ type: actionTypes.USER_LOGOUT })
 }

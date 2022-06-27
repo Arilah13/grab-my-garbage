@@ -66,6 +66,10 @@ const pickupSchema = new mongoose.Schema({
     active:{
         type: Number,
         default: 0
+    },
+    areaHaulers:{
+        type: Array,
+        required: false
     }
 }, {
     timestamps: true

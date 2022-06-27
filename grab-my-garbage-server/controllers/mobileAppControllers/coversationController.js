@@ -83,6 +83,32 @@ const conversationController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
+    },
+    deleteHauler: async(req, res) => {
+        try{
+            const conversation = await Conversations.findById(req.params.id)
+
+            conversation.haulerVisible = false
+
+            await conversation.save()
+
+            res.status(200).json({msg: 'Message Removed'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    deleteUser: async(req, res) => {
+        try{
+            const conversation = await Conversations.findById(req.params.id)
+
+            conversation.userVisible = false
+
+            await conversation.save()
+
+            res.status(200).json({msg: 'Message Removed'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
     }
 }
 

@@ -6,46 +6,14 @@ const { Expo } = require('expo-server-sdk')
 let expo = new Expo({})
 
 const requestController = {
-    getPendingPickups: async(req, res) => {
-        try{
-            const lat = req.params.lat
-            const lng = req.params.lng
-            const id = req.params.id
-
-            let pendingPickups = []
-
-            const request = await Pickups.find({accepted: 0, cancelled: 0, completed: 0, declinedHaulers: {$nin:{id: id}}}).populate('customerId')
-            if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
-
-            request.map(pickup => {
-                if(getLatngDiffInMeters(lat, lng, pickup.location[0].latitude, pickup.location[0].longitude) <= 25)
-                    pendingPickups.push(pickup)  
-            })
-
-            res.status(200).json(pendingPickups)
-        } catch(err) {
-            return res.status(500).json({msg: err.message})
-        }
-    },
     getPendingOfflinePickups: async(req, res) => {
         try{
             const id = req.params.id
 
-            let pendingPickups = []
-
-            const haulers = await Haulers.findById(id)
-            const lat = haulers.location[0].latitude
-            const lng = haulers.location[0].longitude
-
-            const request = await Pickups.find({accepted: 0, cancelled: 0, completed: 0, declinedHaulers: {$nin:{id: id}}}).populate('customerId')
+            const request = await Pickups.find({accepted: 0, cancelled: 0, completed: 0, declinedHaulers: {$nin: {id: id}}, areaHaulers: {$in: {_id: id}} }).populate('customerId')
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
-            request.map(pickup => {
-                if(getLatngDiffInMeters(lat, lng, pickup.location[0].latitude, pickup.location[0].longitude) <= 25)
-                    pendingPickups.push(pickup)  
-            })
-
-            res.status(200).json(pendingPickups)
+            res.status(200).json(request)
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

@@ -16,6 +16,14 @@ const conversationSchema = new mongoose.Schema({
     },
     receiverHaulerRead: {
         type: Boolean
+    },
+    userVisible: {
+        type: Boolean,
+        default: true
+    },
+    haulerVisible: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true

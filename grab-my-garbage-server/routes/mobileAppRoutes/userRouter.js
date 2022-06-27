@@ -20,4 +20,6 @@ router.route('/:id').get(auth, userController.getUserById).put(auth, userControl
 
 router.route('/password/:id').put(auth, userController.updateUserPassword)
 
+router.put('/pushtoken/:id', userController.removePushToken)
+
 module.exports = router
