@@ -166,9 +166,8 @@ export const uploadDetails = (info) => async (dispatch) => {
 
         const { email } = info
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/',
-            {email}, config, 
-        )
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/', {email}, config)
+        //const { data } = await axios.post('http://192.168.13.1:5000/users/', {email}, config)
 
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,

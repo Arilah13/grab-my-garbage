@@ -15,32 +15,27 @@ const ScheduleTopNavigator = ({navigation}) => {
     return (
         <Tab.Navigator
             screenOptions = {{
-                tabBarActiveTintColor: colors.white,
-                tabBarInactiveTintColor: colors.blue6,
+                tabBarActiveTintColor: colors.darkBlue,
+                tabBarInactiveTintColor: colors.darkGrey,
                 tabBarStyle: {
                     elevation: 0,
-                    backgroundColor: colors.blue1,
-                    borderRadius: 15,
-                    marginLeft: 20,
-                    marginRight: 20,
-                    marginTop: 20,
+                    backgroundColor: colors.grey9,
                     height: 45,
                 },
                 tabBarLabelStyle: {
                     fontSize: 13,
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
                 },
                 tabBarShowLabel: true,
                 headerShown: false,
                 tabBarIndicatorStyle: {
-                    height: 45,
-                    borderRadius: 15,
+                    height: 2,
                 },
-                tabBarPressColor: colors.white,
+                tabBarPressColor: colors.grey9,
                 swipeEnabled: false,
             }}
             style = {{
-                backgroundColor: colors.white,
+                backgroundColor: colors.grey9,
                 marginTop: Height,
             }}
             tabBarPosition = 'top'

@@ -45,6 +45,10 @@ import {
     currentConvoReducer
 } from './reducers/conversationReducer'
 
+import {
+    addNotificationReducer
+} from './reducers/notificationReducer'
+
 const reducer = combineReducers({
     userLogin: userLoginReducer,
     userUpdateProfile: userUpdateProfileReducer,
@@ -73,7 +77,9 @@ const reducer = combineReducers({
     sendMessage: sendMessageReducer,
     getAllConversation: getAllConversationReducer,
     updateReadMessage: updateReadMessageReducer,
-    currentConvo: currentConvoReducer
+    currentConvo: currentConvoReducer,
+
+    addNotification: addNotificationReducer
 })
 
 const rootReducer = (state, action) => {

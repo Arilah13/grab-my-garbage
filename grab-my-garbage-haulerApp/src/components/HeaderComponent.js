@@ -9,7 +9,6 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Headercomponent = ({name, destination}) => {
-
     const navigation = useNavigation()
 
     return (

@@ -11,6 +11,7 @@ import Homescreen from '../screens/homeScreen'
 import Chatmenuscreen from '../screens/chatScreens/chatMenuScreen'
 
 import { GET_ALL_CONVERSATIONS_SUCCESS } from '../redux/constants/conversationConstants'
+import NotificationScreen from '../screens/notificationScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -171,9 +172,7 @@ const TabNavigator = () => {
                 tabBarInactiveTintColor: colors.blue6,
                 tabBarStyle: {
                     position: 'absolute',
-                    elevation: 0,
                     backgroundColor: colors.grey8,
-                    //borderRadius: 15,
                     height: 50
                 },
                 tabBarLabelStyle: {
@@ -194,7 +193,7 @@ const TabNavigator = () => {
                         <Icon
                             type = 'material-community'
                             name = 'home'
-                            color = {focused ? colors.darkBlue : colors.darkGrey }
+                            color = {focused ? colors.darkBlue : colors.darkGrey}
                             size = {30}
                         />
                     ),
@@ -225,6 +224,23 @@ const TabNavigator = () => {
             />
 
             <Tab.Screen
+                name = 'Notification'
+                component = {NotificationScreen}
+                options = {{
+                    tabBarIcon: ({ focused }) => (
+                        <View>
+                            <Icon
+                            type = 'material'
+                            name = 'notifications'
+                            color = {focused ? colors.darkBlue : colors.darkGrey}
+                            size = {30}
+                        />
+                        </View>
+                    )
+                }}
+            />
+
+            <Tab.Screen
                 name = 'Account'
                 component = {Accountscreen}
                 options = {{
@@ -232,7 +248,7 @@ const TabNavigator = () => {
                         <Icon
                             type = 'material-icons'
                             name = 'account-circle'
-                            color = {focused ? colors.darkBlue : colors.darkGrey }
+                            color = {focused ? colors.darkBlue : colors.darkGrey}
                             size = {30}
                         />
                     )

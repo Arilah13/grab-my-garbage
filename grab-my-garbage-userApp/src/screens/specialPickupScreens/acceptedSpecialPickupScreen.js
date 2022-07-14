@@ -32,7 +32,7 @@ const Acceptedspecialpickupscreen = ({navigation}) => {
     }, [])
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+        <SafeAreaView style = {{backgroundColor: colors.grey8}}>
             <Headercomponent name = 'Home' destination = 'Home' />
 
             <View style = {styles.container}>   
@@ -128,8 +128,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         backgroundColor: colors.grey9,
         height: 7.8*SCREEN_HEIGHT/10,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
         paddingTop: 10,
         alignItems: 'center',
     },

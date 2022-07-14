@@ -12,7 +12,6 @@ import {
     googleUserLoginReducer,
     userRegisterReducer,
     userLoginReducer,
-    userDetailsReducer,
     userUpdateProfileReducer
 } from './reducers/userReducers'
 
@@ -73,7 +72,7 @@ const reducer = combineReducers({
     sendMessage: sendMessageReducer,
     getAllConversation: getAllConversationReducer,
     updateReadMessage: updateReadMessageReducer,
-    currentConvo: currentConvoReducer
+    currentConvo: currentConvoReducer,
 })
 
 const rootReducer = (state, action) => {

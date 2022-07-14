@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, StyleSheet, Dimensions, Animated } from 'react-native'
+import { View, StyleSheet, Dimensions, Animated, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Button } from 'react-native-elements'
 import * as Notifications from 'expo-notifications'
+import { Icon } from 'react-native-elements'
 
 import { colors } from '../global/styles'
 import { dateHelper, date1Helper, timeHelper } from '../helpers/specialPickuphelper'
@@ -218,17 +219,31 @@ const Homescreen = ({navigation}) => {
     }, [])
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.grey8}}>
+        <SafeAreaView style = {{backgroundColor: colors.grey9}}>
             <View style = {styles.container1}>
-                <View style = {{flexDirection: 'row'}}>
-                    <Onlinecomponent 
-                        animation = {animation} 
-                        online = {online} 
-                        setOnline = {setOnline} 
-                        pickupBtn = {pickupBtn}
-                        choice = {choice.current}
-                        order = {order}
-                    />
+                <View style = {{flexDirection: 'row', alignItems: 'center'}}>
+                    <View style = {{position: 'absolute', marginLeft: SCREEN_WIDTH/3.8}}>
+                        <Onlinecomponent 
+                            animation = {animation} 
+                            online = {online} 
+                            setOnline = {setOnline} 
+                            pickupBtn = {pickupBtn}
+                            choice = {choice.current}
+                            order = {order}
+                        />
+                    </View>
+                    
+                    <Pressable onPress = {() => navigation.navigate('Notifications')}>
+                        <Icon
+                            type = 'material'
+                            name = 'notifications'
+                            color = {colors.darkGrey }
+                            size = {30}
+                            style = {{
+                                marginLeft: SCREEN_WIDTH/1.2
+                            }}
+                        />
+                    </Pressable>
                 </View>
             </View>
 
@@ -325,7 +340,7 @@ export default Homescreen
 const styles = StyleSheet.create({
 
     container1:{
-        backgroundColor: colors.grey8,
+        backgroundColor: colors.grey9,
         //paddingLeft: 25, 
         marginBottom: 0,
         height: 60,

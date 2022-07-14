@@ -7,9 +7,9 @@ import { addSocket } from '../redux/actions/socketActions'
 
 import TabNavigator from './TabNavigator'
 import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePickupDetailScreen'
-import Prepickupscreen from '../screens/prePickupScreen'
 import Changepasswordscreen from '../screens/accountScreens/changePasswordScreen'
 import Chatscreen from '../screens/chatScreens/chatScreen'
+import NotificationScreen from '../screens/notificationScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -53,14 +53,6 @@ const Stacknavigator = () => {
                     headerShown: false
                 }}
             />
-            
-            <Stack.Screen 
-                name = 'PrePickup' 
-                component = {Prepickupscreen} 
-                options = {{
-                    headerShown: false
-                }}
-            /> 
 
             <Stack.Screen
                 name = 'ScheduleDetail'
@@ -86,6 +78,13 @@ const Stacknavigator = () => {
                 }}
             />
 
+            <Stack.Screen
+                name = 'Notifications'
+                component = {NotificationScreen}
+                options = {{
+                    headerShown: false
+                }}
+            />
         </Stack.Navigator>
     );
 }

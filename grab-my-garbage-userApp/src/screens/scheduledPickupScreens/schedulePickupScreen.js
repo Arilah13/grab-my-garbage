@@ -348,11 +348,11 @@ const Schedulepickupscreen = ({navigation}) => {
                                     disabledItemTextStyle = {{
                                         color: colors.black
                                     }}
-                                    parentDDContainerStyle = {{
-                                        position: 'absolute',
-                                        marginTop: 215,
-                                        width: SCREEN_WIDTH/1.15,
-                                    }}
+                                    // parentDDContainerStyle = {{
+                                    //     position: 'absolute',
+                                    //     marginTop: 215,
+                                    //     width: SCREEN_WIDTH/1.15,
+                                    // }}
                                     paperTheme = {DefaultTheme}
                                     disableSort = {true}
                                     mainContainerStyle = {{

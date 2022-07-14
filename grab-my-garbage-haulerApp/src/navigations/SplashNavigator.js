@@ -6,9 +6,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { uploadDetails } from '../redux/actions/userActions'
 import { addOrigin } from '../redux/actions/mapActions'
-import { getConversations } from '../redux/actions/conversationActions'
-import { getScheduledPickups } from '../redux/actions/scheduleRequestActions'
-import { getUpcomingPickups } from '../redux/actions/specialRequestActions'
 import { TASK_FETCH_LOCATION } from '../redux/constants/mapConstants'
 
 import Splashscreen from '../screens/authScreens/splashScreen'
@@ -51,11 +48,6 @@ const Splashnavigator = () => {
     useEffect(() => {
         if(loading === false) {
             setFirst(false)
-            if(userInfo !== undefined) {
-                dispatch(getConversations())
-                dispatch(getScheduledPickups())
-                dispatch(getUpcomingPickups())
-            }
         }
     }, [loading])
 

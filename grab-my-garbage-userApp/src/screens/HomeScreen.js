@@ -219,7 +219,7 @@ const Homescreen = ({navigation}) => {
                     autoPlay = {true}
                 />
             :
-            <View style={{backgroundColor: colors.grey8}}>
+            <View style={{backgroundColor: colors.grey9}}>
                 <View style = {styles.container}>
                     {
                         activeScheduleStatus &&
@@ -303,7 +303,7 @@ export default Homescreen
 const styles = StyleSheet.create({
 
     container:{
-        backgroundColor: colors.grey8,
+        backgroundColor: colors.grey9,
         //marginBottom: 0,
         height: SCREEN_HEIGHT/3.5
     },
@@ -314,14 +314,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     text1:{
-        color: colors.blue2,
+        color: colors.grey2,
         fontSize: 21,
         //paddingBottom:5,
         paddingTop: 55,
         fontWeight: 'bold'
     },
     text2:{
-        color: colors.blue2,
+        color: colors.grey1,
         fontSize: 14
     },
     image1:{
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
     container1:{
-        backgroundColor: colors.grey9,
+        backgroundColor: colors.white,
         borderRadius: 30,
         height: "75%",
         padding: 15
@@ -366,13 +366,13 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start'
     },
     title:{
-        color: colors.blue2,
+        color: colors.grey2,
         marginLeft: 10,
         fontSize: 15,
         fontWeight: 'bold'
     },
     description:{
-        color: colors.grey2,
+        color: colors.grey1,
         marginLeft: 10,
         fontSize: 13
     },
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     },
     text5:{
         marginTop: 20,
-        color: colors.darkGrey,
+        color: colors.grey1,
         fontSize: 17,
         fontWeight: 'bold'
     }

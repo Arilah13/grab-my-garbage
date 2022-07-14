@@ -103,6 +103,7 @@ const Pickupdetailscreen = ({navigation, route}) => {
         const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/acceptPickup/${id}`, {haulerId: userInfo._id}, config)
 
         if(res.status === 200) {
+            await axios.post('https://grab-my-garbage-server.herokuapp.com/users/notification', {}, config)
             const pickup = await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
             dispatch({
                 type: PENDING_PICKUP_RETRIEVE_SUCCESS,

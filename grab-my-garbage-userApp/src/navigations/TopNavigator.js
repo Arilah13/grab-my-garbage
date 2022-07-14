@@ -14,16 +14,8 @@ const Topnavigator = () => {
         <> 
             <Tab.Navigator
                 screenOptions = {{
-                    tabBarActiveTintColor: colors.white,
-                    tabBarInactiveTintColor: colors.blue6,
-                    tabBarStyle: {
-                        elevation: 0,
-                        backgroundColor: colors.blue1,
-                        borderRadius: 15,
-                        marginLeft: 20,
-                        marginRight: 20,
-                        height: 45,
-                    },
+                    tabBarActiveTintColor: colors.darkBlue,
+                    tabBarInactiveTintColor: colors.darkGrey,
                     tabBarLabelStyle: {
                         fontSize: 13,
                         fontWeight: 'bold'
@@ -31,15 +23,18 @@ const Topnavigator = () => {
                     tabBarShowLabel: true,
                     headerShown: false,
                     tabBarIndicatorStyle: {
-                        height: 40,
-                        borderRadius: 15,
+                        height: 2,
                     },
-                    tabBarPressColor: colors.white,
+                    tabBarPressColor: colors.grey9,
                     swipeEnabled: false,
+                    tabBarStyle: {
+                        elevation: 0,
+                        backgroundColor: colors.grey9,
+                        height: 45,
+                    }
                 }}
                 style = {{ 
-                    paddingBottom: 30,
-                    backgroundColor: colors.white,
+                    backgroundColor: colors.grey9,
                 }}
                 tabBarPosition = 'bottom'
             >

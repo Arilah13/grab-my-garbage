@@ -68,7 +68,7 @@ const Chatmenuscreen = ({navigation}) => {
     }
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.grey8}}>
+        <SafeAreaView style = {{backgroundColor: colors.grey9}}>
             <View style = {{height: 0.6*SCREEN_HEIGHT/10}}>
                 <Text style = {styles.title}>Chats</Text>
             </View>
@@ -132,7 +132,7 @@ const Chatmenuscreen = ({navigation}) => {
                                         }
                                     ]}
                                     style = {{
-                                        backgroundColor: colors.grey9,
+                                        backgroundColor: colors.white,
                                     }}
                                 >
                                     <Pressable 
@@ -157,7 +157,20 @@ const Chatmenuscreen = ({navigation}) => {
                                                     <Text style = {styles.postTime}>{date1Helper(item.conversation.updatedAt)}</Text>
                                                 </View>
                                                 <View style = {styles.userInfoText}>
-                                                    <Text style = {styles.messageText}>{item.message.text ? item.message.text : 'Photo'}</Text>
+                                                    {
+                                                        item.message.text ?
+                                                        <Text style = {styles.messageText}>{item.message.text}</Text> :
+                                                        <View style = {{flexDirection: 'row'}}>
+                                                            <Icon
+                                                                type = 'material'
+                                                                name = 'image'
+                                                                color = {colors.darkGrey}
+                                                                size = {20}
+                                                                style = {{marginRight: 3}}
+                                                            />
+                                                            <Text style = {styles.messageText}>Photo</Text>
+                                                        </View>
+                                                    }
                                                     {
                                                         item.conversation.receiverHaulerRead === false &&
                                                             <Icon
@@ -191,19 +204,22 @@ export default Chatmenuscreen
 const styles = StyleSheet.create({
 
     container:{
-        backgroundColor: colors.grey9,
+        backgroundColor: colors.white,
         height: 9.4*SCREEN_HEIGHT/10 - 50,
+        width: SCREEN_WIDTH
     },
     card:{
-        width: '100%'
+        width: SCREEN_WIDTH,
+        height: 70
     },
     userInfo:{
         flexDirection: 'row',    
-        justifyContent: 'space-between',
     },
     userImgWrapper:{
         paddingTop: 15,
-        paddingBottom: 15
+        paddingBottom: 15,
+        paddingLeft: 20,
+        marginRight: 0
     },
     userImg:{
         width: 50,
@@ -215,7 +231,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 15,
         paddingLeft: 0,
-        marginLeft: 10,
+        marginLeft: 20,
         width: 300,
     },
     userInfoText:{
@@ -226,6 +242,7 @@ const styles = StyleSheet.create({
     userName:{
         fontSize: 14,
         fontWeight: 'bold',
+        color: colors.black
     },
     postTime: {
         fontSize: 12,
@@ -233,14 +250,14 @@ const styles = StyleSheet.create({
     },
     messageText: {
         fontSize: 14,
-        color: '#333333'
+        color: colors.grey2
     },
     title:{
         fontSize: 18, 
         alignSelf: 'center', 
         marginTop: 10, 
         fontWeight: 'bold',
-        color: colors.blue2
+        color: colors.darkGrey
     }
 
 })

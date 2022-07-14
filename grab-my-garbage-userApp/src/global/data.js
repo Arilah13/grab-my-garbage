@@ -73,20 +73,20 @@ export const timeIntervalData = [
 
 export const accountData = [
   {
-    name: 'Edit Profile',
-    image: require('../../assets/profile/edit_profile.png'), 
+    name: 'My Profile',
+    image: 'account-circle', 
     id: '0', 
     destination: 'Editprofile'
   },
   {
     name: 'Change Password',
-    image: require('../../assets/profile/lock.png'),
+    image: 'lock',
     id: '1',
     destination: 'Changepassword'
   },
   {
     name: 'Signout',
-    image: require('../../assets/profile/logout.png'), 
+    image: 'logout', 
     id: '2', 
     destination: 'Logout'
   },

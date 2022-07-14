@@ -61,6 +61,9 @@ export const uploadDetails = (info) => async (dispatch) => {
             type: actionTypes.USER_LOGIN_SUCCESS,
             payload: data
         })
+        dispatch(getScheduledPickups())
+        dispatch(getUpcomingPickups())
+        dispatch(getConversations())
     } catch (err){
         dispatch({
             type: actionTypes.USER_LOGIN_FAIL,

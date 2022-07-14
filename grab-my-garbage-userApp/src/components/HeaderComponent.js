@@ -43,7 +43,7 @@ export default Headercomponent
 const styles = StyleSheet.create({
 
     container:{
-        backgroundColor: colors.blue1,
+        backgroundColor: colors.grey8,
         paddingLeft: 25, 
         //marginBottom: 0,
         height: SCREEN_HEIGHT/10,
