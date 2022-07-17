@@ -10,6 +10,7 @@ import { GiftedChat } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
 import Modal from 'react-native-modal'
 import * as ImagePicker from 'expo-image-picker'
+import NetInfo from '@react-native-community/netinfo'
 
 import { colors } from '../../global/styles'
 import { renderBubble, renderComposer, renderInputToolbar, renderMessage, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
@@ -34,7 +35,13 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { conversation } = getAllConversation
 
+    const testConnection = async() => {
+        const status = NetInfo.fetch()
+        return status
+    }
+
     const sendMsg = useCallback(async(message) => {
+        const status = await testConnection()
         const conv = await conversation.splice(conversation.findIndex(conv => conv.conversation._id === convo.conversation._id), 1)[0]
         const element = {
             _id: Date.now(),
@@ -47,7 +54,12 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                 message[0].user.avatar
             ],
             text: message[0].text && message[0].text,
-            image: message[0].image && message[0].image
+            image: message[0].image && message[0].image,
+            pending: status.isConnected === true ? false : true,
+            sent: status.isConnected === true ? true : false,
+            received: false,
+            userSeen: false,
+            haulerSeen: true
         }
         await conv.totalMessage.splice(conv.totalMessage.length, 0, element)
         conv.message = element
@@ -56,12 +68,18 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
             type: GET_ALL_CONVERSATIONS_SUCCESS,
             payload: conversation
         })
+
         dispatch(sendMessage({
             text: message[0].text && message[0].text,
             createdAt: message[0].createdAt,
             sender: message[0].user,
             conversationId: convo.conversation._id,
             image: message[0].image && message[0].image,
+            pending: status.isConnected === true ? false : true,
+            sent: status.isConnected === true ? true : false,
+            received: false,
+            userSeen: false,
+            haulerSeen: true
         }))
         socket.emit('sendMessage', ({
             senderid: userInfo._id,
@@ -77,6 +95,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
     }, [conversation])
 
     const selectGallery = async() => {
+        const state = await testConnection()
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
         if (status !== 'granted') {
           setModalVisible(false)
@@ -98,7 +117,12 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: false,
+                    haulerSeen: true
                 }]
                 const msg1 = [{
                     _id: new Date(),
@@ -108,7 +132,12 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: false,
+                    haulerSeen: true
                 }]
                 onSend(undefined, msg1)
                 sendMsg(msg)
@@ -117,6 +146,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
     }
 
     const selectCamera = async() => {
+        const state = await testConnection()
         const { status } = await ImagePicker.requestCameraPermissionsAsync()
         if (status !== 'granted') {
           setModalVisible(false)
@@ -138,7 +168,12 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: false,
+                    haulerSeen: true
                 }]
                 const msg1 = [{
                     _id: new Date(),
@@ -148,7 +183,12 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: false,
+                    haulerSeen: true
                 }]
                 onSend(undefined, msg1)
                 sendMsg(msg)
@@ -163,7 +203,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                     const message = [{text, user: sender, createdAt, _id: Date.now()}]
                     onSend(message)
                 }
-                if(image) {
+                if(image && image !== 'data:image/png;base64,undefined') {
                     const message = [{image, user: sender, createdAt, _id: Date.now()}]
                     onSend(undefined, message)
                 }
@@ -171,6 +211,17 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
             }
         })
     }, [socket])
+
+    useEffect(() => {
+        if(messages.length > 0) {
+            socket.on('messageReceived', ({conversationId}) => {
+                if(conversationId === id) {
+                    messages.map(msg => msg.received = true)
+                    setMessages(messages)
+                }     
+            })
+        }
+    }, [socket, messages])
 
     useEffect(async() => {
         dispatch(addCurrentConvo(userid._id))
@@ -186,6 +237,11 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                         name: message.sender[1],
                         avatar: message.sender[2]
                     },
+                    pending: message.pending,
+                    userSeen: message.userSeen,
+                    haulerSeen: message.haulerSeen,
+                    received: message.received,
+                    sent: message.sent
                 })
             })
             setMessages(array)
@@ -196,7 +252,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
         if(image) {
             setMessages(previousMessages => GiftedChat.append(previousMessages, image))
         } 
-        if(messages) {
+        if(messages.length > 0) {
             setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
         }
     }, [])
@@ -231,7 +287,13 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
             <View style = {{backgroundColor: colors.grey9, height: 8*SCREEN_HEIGHT/10, paddingBottom: 10}}>
                 <GiftedChat
                     messages = {messages}
-                    onSend = {messages => {
+                    onSend = {async(messages) => {
+                        const status = await testConnection()
+                        messages[0].pending = status.isConnected === true ? false : true
+                        messages[0].sent = status.isConnected === true ? true : false
+                        messages[0].received = false
+                        messages[0].userSeen = false
+                        messages[0].haulerSeen = true
                         onSend(messages)
                         sendMsg(messages)
                     }}

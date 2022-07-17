@@ -102,7 +102,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
             >
                 <Headercomponent name = {name} />    
 
-                <View style = {{height: 9*SCREEN_HEIGHT/10, backgroundColor: colors.grey8, borderTopLeftRadius: 30, borderTopRightRadius: 30}}>
+                <View style = {{height: SCREEN_HEIGHT - 45, backgroundColor: colors.grey9}}>
                     <Pressable style = {styles.container2} onPress = {() => setModalVisible(true) }>
                         <Icon 
                             type = 'feather'
@@ -130,7 +130,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                         />
                     </Pressable>
 
-                    <View style = {{flex: 1, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30, padding: 15}}>
+                    <View style = {{backgroundColor: colors.grey9, padding: 15, elevation: 5, height: '88%'}}>
                         <View style = {styles.container3}>
                             <Text style = {styles.text3}>Pickup Scheduled on:</Text>
                             <Text style = {styles.text4}>{date1Helper(item.datetime) + ' ' + timeHelper(item.datetime)}</Text>
@@ -286,17 +286,13 @@ const styles = StyleSheet.create({
 
     container:{
         display: 'flex',
-        backgroundColor: colors.blue1,
-        //paddingLeft: 10,
-        //paddingTop: 10,
+        backgroundColor: colors.white,
     },
     container2:{
-        backgroundColor: colors.grey8,
+        backgroundColor: colors.grey9,
         paddingLeft: 25, 
         marginBottom: 10,
-        height: SCREEN_HEIGHT/9,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
+        height: '12%',
     },
     text1:{
         color: colors.blue7,
@@ -310,7 +306,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     container3:{
-        backgroundColor: colors.white,
+        backgroundColor: colors.grey9,
         padding: 25,
         borderTopRightRadius: 30,
         borderTopLeftRadius: 30,
@@ -331,7 +327,7 @@ const styles = StyleSheet.create({
         marginBottom: 8
     },
     container4:{
-        backgroundColor: colors.white,
+        backgroundColor: colors.grey9,
         paddingLeft: 25,
     },
     text6:{
@@ -341,7 +337,7 @@ const styles = StyleSheet.create({
         marginTop: 5
     },
     container5:{
-        backgroundColor: colors.white,
+        backgroundColor: colors.grey9,
         padding: 25,
         flexDirection: 'row'
     },

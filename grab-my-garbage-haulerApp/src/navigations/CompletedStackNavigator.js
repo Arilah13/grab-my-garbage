@@ -24,7 +24,7 @@ const Completedstacknavigator = ({navigation, route}) => {
             navigation.setOptions({
                 tabBarStyle: {
                     elevation: 0,
-                    backgroundColor: colors.grey9,
+                    backgroundColor: colors.white,
                     height: 45,
                 },
                 swipeEnabled: true

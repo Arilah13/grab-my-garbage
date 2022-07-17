@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 import { Bubble, Send, InputToolbar, Composer, Message } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
 
@@ -86,3 +86,21 @@ export const renderMessage = (props) => {
         />
     )
 }
+
+const renderTick = (props) => {
+    return(
+        <Text>
+            {props.currentMessage.sent && '✓'}
+            {props.currentMessage.received &&  '✓'}
+        </Text>
+    )
+}
+
+export const renderMessageText = (props) => (
+    <View>
+      <Text>
+        {props.currentMessage.text}
+      </Text>
+      {renderTick(props)}
+    </View>
+)

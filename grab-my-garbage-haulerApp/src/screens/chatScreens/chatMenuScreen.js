@@ -24,6 +24,9 @@ const Chatmenuscreen = ({navigation}) => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading, conversation } = getAllConversation
 
+    const userLogin = useSelector((state) => state.userLogin)
+    const { userInfo } = userLogin
+
     const messageRead = async(id) => {
         const index = await conversation.findIndex((convo) => convo.conversation._id === id)
         
@@ -156,7 +159,20 @@ const Chatmenuscreen = ({navigation}) => {
                                                     <Text style = {styles.userName}>{item.conversation.userId.name}</Text>
                                                     <Text style = {styles.postTime}>{date1Helper(item.conversation.updatedAt)}</Text>
                                                 </View>
-                                                <View style = {styles.userInfoText}>
+                                                <View style = {styles.userInfoText1}>
+                                                    {
+                                                        item.message.sender[0] === userInfo._id && (item.message.pending ? 
+                                                        <Icon
+                                                            type = 'material'
+                                                            name = 'image'
+                                                            color = {colors.darkGrey}
+                                                            size = {20}
+                                                            style = {{marginRight: 3}}
+                                                        /> : item.message.userSeen ?
+                                                        <Text style = {styles.text1}>✓✓</Text> : item.message.received ?
+                                                        <Text style = {styles.text}>✓✓</Text> : 
+                                                        <Text style = {styles.text}>✓</Text> )
+                                                    }
                                                     {
                                                         item.message.text ?
                                                         <Text style = {styles.messageText}>{item.message.text}</Text> :
@@ -239,6 +255,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 5,
     },
+    userInfoText1:{
+        flexDirection: 'row',
+        marginBottom: 5,
+    },
     userName:{
         fontSize: 14,
         fontWeight: 'bold',
@@ -258,6 +278,14 @@ const styles = StyleSheet.create({
         marginTop: 10, 
         fontWeight: 'bold',
         color: colors.darkGrey
+    },
+    text:{
+        marginRight: 5,
+        color: colors.grey
+    },
+    text1:{
+        marginRight: 5,
+        color: colors.darkBlue
     }
 
 })

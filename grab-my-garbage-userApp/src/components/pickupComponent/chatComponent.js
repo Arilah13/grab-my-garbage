@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
+import NetInfo from '@react-native-community/netinfo'
 
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
@@ -33,7 +34,13 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { conversation } = getAllConversation
 
+    const testConnection = async() => {
+        const status = NetInfo.fetch()
+        return status
+    }
+
     const sendMsg = useCallback(async(message) => {
+        const status = await testConnection()
         const conv = await conversation.splice(conversation.findIndex(conv => conv.conversation._id === convo.conversation._id), 1)[0]
         const element = {
             _id: Date.now(),
@@ -61,9 +68,14 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
             createdAt: message[0].createdAt,
             sender: message[0].user,
             image: message[0].image && message[0].image,
-            conversationId: convo.conversation._id
+            conversationId: convo.conversation._id,
+            pending: status.isConnected === true ? false : true,
+            sent: status.isConnected === true ? true : false,
+            received: false,
+            userSeen: true,
+            haulerSeen: false
         }))
-
+        
         socket.emit('sendMessage', ({
             senderid: userInfo._id,
             sender: message[0].user,
@@ -78,6 +90,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
     }, [conversation])
 
     const selectGallery = async() => {
+        const state = await testConnection()
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
         if (status !== 'granted') {
           setModalVisible(false)
@@ -99,7 +112,12 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: true,
+                    haulerSeen: false
                 }]
                 const msg1 = [{
                     _id: new Date(),
@@ -109,7 +127,12 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: true,
+                    haulerSeen: false
                 }]
                 onSend(undefined, msg1)
                 sendMsg(msg)
@@ -118,6 +141,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
     }
 
     const selectCamera = async() => {
+        const state = await testConnection()
         const { status } = await ImagePicker.requestCameraPermissionsAsync()
         if (status !== 'granted') {
           setModalVisible(false)
@@ -139,7 +163,12 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: true,
+                    haulerSeen: false
                 }]
                 const msg1 = [{
                     _id: new Date(),
@@ -149,7 +178,12 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: true,
+                    haulerSeen: false
                 }]
                 onSend(undefined, msg1)
                 sendMsg(msg)
@@ -164,7 +198,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                     const message = [{text, user: sender, createdAt, _id: Date.now()}]
                     onSend(message)
                 } 
-                if(image) {
+                if(image && image !== 'data:image/png;base64,undefined') {
                     const message = [{image, user: sender, createdAt, _id: Date.now()}]
                     onSend(undefined, message)
                 } 
@@ -187,7 +221,12 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                         name: message.sender[1],
                         avatar: message.sender[2]
                     },
-                    image: message.image && message.image
+                    image: message.image && message.image,
+                    pending: message.pending,
+                    userSeen: message.userSeen,
+                    haulerSeen: message.haulerSeen,
+                    received: message.received,
+                    sent: message.sent
                 })
             })
             setMessages(array)
@@ -198,7 +237,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
         if(image) {
             setMessages(previousMessages => GiftedChat.append(previousMessages, image))
         } 
-        if(messages) {
+        if(messages.length > 0) {
             setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
         }
     }, [])
@@ -233,7 +272,13 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
             <View style = {{backgroundColor: colors.grey9, height: 8*SCREEN_HEIGHT/10, paddingBottom: 10}}>
                 <GiftedChat
                     messages = {messages}
-                    onSend = {messages => {
+                    onSend = {async(messages) => {
+                        const status = await testConnection()
+                        messages[0].pending = status.isConnected === true ? false : true
+                        messages[0].sent = status.isConnected === true ? true : false
+                        messages[0].received = false
+                        messages[0].userSeen = true
+                        messages[0].haulerSeen = false
                         onSend(messages)
                         sendMsg(messages)
                     }}

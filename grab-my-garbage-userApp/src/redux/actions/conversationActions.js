@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as actionTypes from '../constants/conversationConstants'
 
-export const sendMessage = ({conversationId, sender, text, createdAt, image}) => async(dispatch, getState) => {
+export const sendMessage = ({conversationId, sender, text, createdAt, image, pending, sent, received, userSeen, haulerSeen}) => async(dispatch, getState) => {
     try{
         const { userLogin: { userInfo } } = getState()
 
@@ -13,7 +13,7 @@ export const sendMessage = ({conversationId, sender, text, createdAt, image}) =>
         }
 
         await axios.post('https://grab-my-garbage-server.herokuapp.com/message/user', 
-        { conversationId: conversationId, text, createdAt, sender, image },
+        { conversationId: conversationId, text, createdAt, sender, image, pending, received, sent, userSeen, haulerSeen },
         config)
 
         dispatch({
@@ -90,6 +90,30 @@ export const addCurrentConvo = (id) => async(dispatch) => {
         dispatch({
             type: actionTypes.ADD_CURRENT_CONVO_FAIL,
             payload: err
+        })
+    }
+}
+
+export const conversationReceived = (id) => async(dispatch, getState) => {
+    try{
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            },
+        }
+
+        await axios.put(`https://grab-my-garbage-server.herokuapp.com/message/${id}`, config)
+
+        dispatch({
+            type: actionTypes.CONVERSATION_RECEIVED_SUCCESS
+        })
+    } catch(err) {
+        dispatch({
+            type: actionTypes.CONVERSATION_RECEIVED_FAIL,
+            payload: err.response.data.msg
         })
     }
 }

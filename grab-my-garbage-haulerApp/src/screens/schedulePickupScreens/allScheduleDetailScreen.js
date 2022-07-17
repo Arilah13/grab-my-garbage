@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, Image, Animated, Pressable, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, Image, Animated, Pressable, ScrollView, StatusBar } from 'react-native'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import { Icon } from 'react-native-elements'
 
@@ -15,6 +15,8 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 const AnimatedMarker = Animated.createAnimatedComponent(Marker)
+
+const Height = StatusBar.currentHeight
 
 const Allscheduledetailscreen = () => {
     const dispatch = useDispatch()
@@ -201,15 +203,12 @@ const styles = StyleSheet.create({
     container:{
         display: 'flex',
         backgroundColor: colors.grey9,
-        paddingTop: 10,
-        height: SCREEN_HEIGHT - 135,
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
+        height: SCREEN_HEIGHT - (95 + Height),
         overflow: 'hidden'
     },
     map:{
-        height:"100%",
-        width:"100%",
+        height: '100%',
+        width: '100%',
         zIndex: -1,
     },  
     view1:{

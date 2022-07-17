@@ -159,6 +159,19 @@ const Chatmenuscreen = ({navigation}) => {
                                                 </View>
                                                 <View style = {styles.userInfoText}>
                                                     {
+                                                        item.message.sender[0] === userInfo._id && (item.message.pending ? 
+                                                        <Icon
+                                                            type = 'material'
+                                                            name = 'image'
+                                                            color = {colors.darkGrey}
+                                                            size = {20}
+                                                            style = {{marginRight: 3}}
+                                                        /> : item.message.haulerSeen ?
+                                                        <Text style = {styles.text1}>✓✓</Text> : item.message.received ?
+                                                        <Text style = {styles.text}>✓✓</Text> : 
+                                                        <Text style = {styles.text}>✓</Text> )
+                                                    }
+                                                    {
                                                         item.message.text ?
                                                         <Text style = {styles.messageText}>{item.message.text}</Text> :
                                                         <View style = {{flexDirection: 'row'}}>
@@ -240,6 +253,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 5,
     },
+    userInfoText1:{
+        flexDirection: 'row',
+        marginBottom: 5,
+    },
     userName:{
         fontSize: 14,
         fontWeight: 'bold',
@@ -260,5 +277,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: colors.grey2
     },
+    text:{
+        marginRight: 5,
+        color: colors.grey
+    },
+    text1:{
+        marginRight: 5,
+        color: colors.darkBlue
+    }
 
 })

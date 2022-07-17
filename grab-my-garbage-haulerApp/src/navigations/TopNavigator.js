@@ -20,7 +20,7 @@ const Topnavigator = ({navigation}) => {
                 tabBarInactiveTintColor: colors.darkGrey,
                 tabBarStyle: {
                     elevation: 0,
-                    backgroundColor: colors.grey9,
+                    backgroundColor: colors.white,
                     height: 45,
                 },
                 tabBarLabelStyle: {
@@ -36,7 +36,7 @@ const Topnavigator = ({navigation}) => {
                 swipeEnabled: false,
             }}
             style = {{
-                backgroundColor: colors.grey9,
+                backgroundColor: colors.white,
                 marginTop: Height,
             }}
             tabBarPosition = 'top'

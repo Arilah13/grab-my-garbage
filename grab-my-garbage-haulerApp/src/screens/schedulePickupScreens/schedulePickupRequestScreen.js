@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { View, Text, StyleSheet, FlatList, Dimensions, RefreshControl } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Dimensions, RefreshControl, StatusBar } from 'react-native'
 import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
@@ -11,6 +11,8 @@ import { getScheduledPickups } from '../../redux/actions/scheduleRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
+
+const Height = StatusBar.currentHeight
 
 const Schedulepickuprequestscreen = ({navigation}) => {
     const dispatch = useDispatch()
@@ -56,14 +58,14 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                         />
                     }
                     ListEmptyComponent = {() => (
-                        <Text style = {styles.text8}>No Pickup Available</Text>
+                        <Text style = {styles.text6}>No Pickup Available</Text>
                     )}
                     renderItem = {({item}) => (
                         <View style = {styles.card}>
                             <View style = {styles.card}>
                                 <View style = {{flex: 1, flexWrap: 'wrap'}}>
                                 <View>
-                                    <View style = {{...styles.view1, flexDirection: 'row', marginLeft: 10}}> 
+                                    <View style = {{...styles.view1, flexDirection: 'row'}}> 
                                         <Icon
                                             type = 'material'
                                             name = 'place'
@@ -79,23 +81,35 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                         </Text>                                         
                                     </View>
                                     <View style = {{...styles.view1, flexDirection: 'row'}}> 
-                                        <Text style = {{...styles.text1, fontWeight: '600'}}>TimeSlot:</Text>   
-                                        <Text style = {{...styles.text1, fontSize: 14}}>{item.timeslot}</Text>                        
+                                        <Text style = {styles.text1}>TimeSlot:</Text>   
+                                        <Icon
+                                            type = 'material'
+                                            name = 'schedule'
+                                            size = {17}
+                                            color = {colors.blue2}
+                                            style = {{
+                                                marginTop: 8,
+                                                marginRight: 3,
+                                                marginLeft: 3
+                                            }}
+                                        />  
+                                        <Text style = {styles.text1}>{item.timeslot}</Text>                        
                                     </View>
                                     <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                        <Text style = {styles.text6}>Duration:</Text>
+                                        <Text style = {styles.text4}>Duration:</Text>
                                         <Icon
                                             type = 'material'
                                             name = 'hourglass-empty'
-                                            size = {18}
+                                            size = {16}
                                             color = {colors.blue2}
                                             style = {{
-                                                marginTop: 5,
-                                                marginRight: 5
+                                                marginTop: 6,
+                                                marginRight: 3,
+                                                marginLeft: 3
                                             }}
                                         />
-                                        <Text style = {styles.text4}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
-                                        <Text style = {styles.text5}></Text>
+                                        <Text style = {styles.text2}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
+                                        <Text style = {styles.text3}></Text>
                                     </View>
                                 </View>
                                 <View style = {{position: 'absolute'}}>
@@ -106,7 +120,7 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                             height: 40,
                                             marginTop: 18,
                                             borderRadius: 15,
-                                            marginLeft: SCREEN_WIDTH/1.65,
+                                            marginLeft: SCREEN_WIDTH/1.3,
                                             backgroundColor: colors.buttons
                                         }}
                                         onPress = {() => navigation.navigate('ScheduleDetail', {item, from: fromDate(item.from), to: fromDate(item.to)})}
@@ -128,18 +142,10 @@ const styles = StyleSheet.create({
 
     container:{
         display: 'flex',
-        backgroundColor: colors.white,
-        height: SCREEN_HEIGHT - 55,
+        height: SCREEN_HEIGHT - (95 + Height),
+        backgroundColor: colors.grey9,
+        paddingTop: 10,
         alignItems: 'center',
-        paddingTop: 20,
-    },
-    text:{
-        display: 'flex',
-        top: 26,
-        left: 15,
-        color: colors.blue2,
-        fontWeight: 'bold',
-        fontSize: 16
     },
     card:{
         width: SCREEN_WIDTH/1.15,
@@ -154,62 +160,44 @@ const styles = StyleSheet.create({
     },
     view1:{
         justifyContent: 'flex-start',
+        marginLeft: 30
     },
     text1:{
         color: colors.blue2,
         fontWeight: 'bold',
         marginTop: 8,
-        marginLeft: 7,
+        fontSize: 14
     },
     text2:{
-        color: colors.blue2,
-        marginLeft: 35,
-        marginTop: 15,
-        fontWeight: 'bold'
+        color: colors.blue6,
+        marginTop: 5,
+        marginRight: 10,
+        fontSize: 13
     },
     text3:{
-        color: colors.blue2,
-        marginRight: 40,
-        marginLeft: 35,
-        marginTop: 15,
-        fontWeight: 'bold'
+        marginTop: 5,
+        color: colors.blue6,
+        marginLeft: 0,
+        fontSize: 13
     },
     text4:{
-        color: colors.blue2,
-        fontWeight: 'bold',
-        marginTop: 5,
-        marginRight: 10
-    },
-    text5:{
-        marginTop: 5,
-        color: colors.blue2,
-        marginLeft: 0,
-    },
-    text6:{
         marginTop: 6,
         fontSize: 12,
-        color: colors.blue2,
-        marginLeft: 7,
+        color: colors.blue6,
+        fontSize: 13
     },
-    text7:{
+    text5:{
         marginTop: 7,
         fontSize: 12,
         color: colors.blue2,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontSize: 14
     },
-    text8:{
+    text6:{
         fontSize: 17,
         fontWeight: 'bold',
         color: colors.darkBlue,
         marginTop: SCREEN_HEIGHT/3
-    },
-    view2:{
-        marginBottom: 20
-    },
-    text9:{
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: colors.blue2,
     }
 
 })

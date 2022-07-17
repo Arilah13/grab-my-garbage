@@ -10,6 +10,7 @@ import { Icon } from 'react-native-elements'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Modal from 'react-native-modal'
 import * as ImagePicker from 'expo-image-picker'
+import NetInfo from '@react-native-community/netinfo'
 
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
@@ -37,7 +38,13 @@ const Chatscreen = ({route, navigation}) => {
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { conversation } = getAllConversation
 
+    const testConnection = async() => {
+        const status = NetInfo.fetch()
+        return status
+    }
+
     const sendMsg = useCallback(async(message) => {
+        const status = await testConnection()
         const convo = await conversation.splice(conversation.findIndex(convo => convo.conversation._id === id), 1)[0]
         const element = {
             _id: Date.now(),
@@ -50,7 +57,12 @@ const Chatscreen = ({route, navigation}) => {
                 message[0].user.avatar
             ],
             text: message[0].text && message[0].text,
-            image: message[0].image && message[0].image
+            image: message[0].image && message[0].image,
+            pending: status.isConnected === true ? false : true,
+            sent: status.isConnected === true ? true : false,
+            received: false,
+            userSeen: true,
+            haulerSeen: false
         }
         await convo.totalMessage.splice(convo.totalMessage.length, 0, element)
         convo.message = element
@@ -59,12 +71,18 @@ const Chatscreen = ({route, navigation}) => {
             type: GET_ALL_CONVERSATIONS_SUCCESS,
             payload: conversation
         })
+        
         dispatch(sendMessage({
             text: message[0].text && message[0].text,
             createdAt: message[0].createdAt,
             sender: message[0].user,
             image: message[0].image && message[0].image,
-            conversationId: id
+            conversationId: id,
+            pending: status.isConnected === true ? false : true,
+            sent: status.isConnected === true ? true : false,
+            received: false,
+            userSeen: true,
+            haulerSeen: false
         }))
         
         socket.emit('sendMessage', ({
@@ -76,11 +94,12 @@ const Chatscreen = ({route, navigation}) => {
             createdAt: message[0].createdAt,
             senderRole: 'user',
             conversationId: id,
-            receiver: haulerid
+            receiver: haulerid,
         }))
     }, [conversation])
 
     const selectGallery = async() => {
+        const state = await testConnection()
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
         if (status !== 'granted') {
           setModalVisible(false)
@@ -102,7 +121,12 @@ const Chatscreen = ({route, navigation}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: true,
+                    haulerSeen: false
                 }]
                 const msg1 = [{
                     _id: new Date(),
@@ -112,7 +136,12 @@ const Chatscreen = ({route, navigation}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: true,
+                    haulerSeen: false
                 }]
                 onSend(undefined, msg1)
                 sendMsg(msg)
@@ -121,6 +150,7 @@ const Chatscreen = ({route, navigation}) => {
     }
 
     const selectCamera = async() => {
+        const state = await testConnection()
         const { status } = await ImagePicker.requestCameraPermissionsAsync()
         if (status !== 'granted') {
           setModalVisible(false)
@@ -142,7 +172,12 @@ const Chatscreen = ({route, navigation}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: true,
+                    haulerSeen: false
                 }]
                 const msg1 = [{
                     _id: new Date(),
@@ -152,7 +187,12 @@ const Chatscreen = ({route, navigation}) => {
                         _id: userInfo._id,
                         avatar: userInfo.image,
                         name: userInfo.name
-                    }
+                    },
+                    pending: state.isConnected === true ? false : true,
+                    sent: state.isConnected === true ? true : false,
+                    received: false,
+                    userSeen: true,
+                    haulerSeen: false
                 }]
                 onSend(undefined, msg1)
                 sendMsg(msg)
@@ -165,9 +205,9 @@ const Chatscreen = ({route, navigation}) => {
             if(senderid === haulerid._id) {
                 if(text) {
                     const message = [{text, user: sender, createdAt, _id: Date.now()}]
-                    onSend(message)
+                    onSend(message, undefined)
                 } 
-                if(image) {
+                if(image && image !== 'data:image/png;base64,undefined') {
                     const message = [{image, user: sender, createdAt, _id: Date.now()}]
                     onSend(undefined, message)
                 }     
@@ -189,7 +229,12 @@ const Chatscreen = ({route, navigation}) => {
                         name: message.sender[1],
                         avatar: message.sender[2]
                     },
-                    image: message.image && message.image
+                    image: message.image && message.image,
+                    pending: message.pending,
+                    userSeen: message.userSeen,
+                    haulerSeen: message.haulerSeen,
+                    received: message.received,
+                    sent: message.sent
                 })
             })
             setMessages(array)
@@ -200,7 +245,7 @@ const Chatscreen = ({route, navigation}) => {
         if(image) {
             setMessages(previousMessages => GiftedChat.append(previousMessages, image))
         } 
-        if(messages) {
+        if(messages.length > 0) {
             setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
         }
     }, [])
@@ -235,7 +280,13 @@ const Chatscreen = ({route, navigation}) => {
             <View style = {{backgroundColor: colors.grey9, height: 8.6*SCREEN_HEIGHT/10}}>
                 <GiftedChat
                     messages = {messages}
-                    onSend = {messages => {
+                    onSend = {async(messages) => {
+                        const status = await testConnection()
+                        messages[0].pending = status.isConnected === true ? false : true
+                        messages[0].sent = status.isConnected === true ? true : false
+                        messages[0].received = false
+                        messages[0].userSeen = true
+                        messages[0].haulerSeen = false
                         onSend(messages)
                         sendMsg(messages)
                     }}

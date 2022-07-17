@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, Text, StyleSheet, Dimensions, FlatList, RefreshControl } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, FlatList, RefreshControl, StatusBar } from 'react-native'
 import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
@@ -11,6 +11,8 @@ import { getCompletedPickups } from '../../redux/actions/specialRequestActions'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
+
+const Height = StatusBar.currentHeight
 
 const CompletedPickupscreen = ({navigation}) => {
     const dispatch = useDispatch()
@@ -56,7 +58,7 @@ const CompletedPickupscreen = ({navigation}) => {
                         />
                     }
                     ListEmptyComponent = {() => (
-                        <Text style = {styles.text8}>No Pickup Available</Text>
+                        <Text style = {styles.text6}>No Pickup Available</Text>
                     )}
                     renderItem = {({item}) => (
                         <View style = {styles.card}>
@@ -66,31 +68,44 @@ const CompletedPickupscreen = ({navigation}) => {
                                     <Icon
                                         type = 'material'
                                         name = 'place'
-                                        size = {18}
+                                        size = {16}
                                         color = {colors.blue2}
                                         style = {{
-                                            marginTop: 5,
-                                            marginRight: 5
+                                            marginTop: 7,
+                                            marginRight: 3,
+                                            marginLeft: 3
                                         }}
                                     />  
-                                    <Text style = {styles.text7}>{item.location[0].city}</Text>                        
+                                    <Text style = {styles.text5}>{item.location[0].city}</Text>                        
                                 </View>
                                 <View style = {{...styles.view1, flexDirection: 'row'}}>    
                                     <Text style = {styles.text1}>{item.customerId.name}</Text>                        
                                 </View>
                                 <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                    <Text style = {styles.text6}>completed: </Text>
+                                    <Text style = {styles.text4}>completed: </Text>
                                     <Icon
                                         type = 'material'
                                         name = 'schedule'
-                                        size = {18}
+                                        size = {16}
                                         color = {colors.blue2}
                                         style = {{
-                                            marginTop: 5,
-                                            marginRight: 5
+                                            marginTop: 7,
+                                            marginRight: 3,
+                                            marginLeft: 3
                                         }}
                                     />
                                     <Text style = {styles.text4}>{timeHelper(item.completedDate)}</Text>
+                                    <Icon
+                                        type = 'material'
+                                        name = 'calendar-today'
+                                        size = {16}
+                                        color = {colors.blue2}
+                                        style = {{
+                                            marginTop: 5,
+                                            marginRight: 5,
+                                            marginLeft: 3
+                                        }}
+                                    />
                                     <Text style = {styles.text5}>{date1Helper(item.completedDate)}</Text>
                                 </View>
                             </View>
@@ -102,8 +117,8 @@ const CompletedPickupscreen = ({navigation}) => {
                                         height: 40,
                                         marginTop: 18,
                                         borderRadius: 15,
-                                        marginLeft: SCREEN_WIDTH/1.65,
-                                        backgroundColor: colors.buttons
+                                        marginLeft: SCREEN_WIDTH/1.3,
+                                        backgroundColor: colors.darkBlue
                                     }}
                                     onPress = {() => navigation.navigate('PickupDetail', {item, time: timeHelper(item.datetime), completedTime: timeHelper(item.completedDate), date: date1Helper(item.completedDate), date1: date1Helper(item.datetime), buttons: false, name: 'Completed Pickups'})}
                                 />
@@ -123,17 +138,15 @@ const styles = StyleSheet.create({
 
     container:{
         display: 'flex',
-        backgroundColor: colors.white,
-        height: SCREEN_HEIGHT - 55,
+        backgroundColor: colors.grey9,
+        height: SCREEN_HEIGHT - (95 + Height),
         alignItems: 'center',
         paddingTop: 20,
     },
     card:{
-        width: SCREEN_WIDTH/1.2,
+        width: SCREEN_WIDTH,
         height: 80,
-        marginBottom: 20,
-        backgroundColor: colors.blue1,
-        borderRadius: 20,
+        backgroundColor: colors.white,
         shadowColor: '#171717',
         elevation: 5,
         shadowOpacity: 0.7,
@@ -141,50 +154,40 @@ const styles = StyleSheet.create({
     },
     view1:{
         justifyContent: 'flex-start',
+        marginLeft: 30
     },
     text1:{
         color: colors.blue2,
         fontWeight: 'bold',
         marginTop: 8,
-        marginLeft: 7,
+        fontSize: 14
     },
     text2:{
-        color: colors.blue2,
-        marginLeft: 35,
-        marginTop: 15,
-        fontWeight: 'bold'
+        color: colors.blue6,
+        marginTop: 5,
+        marginRight: 10,
+        fontSize: 13
     },
     text3:{
-        color: colors.blue2,
-        marginRight: 40,
-        marginLeft: 35,
-        marginTop: 15,
-        fontWeight: 'bold'
+        marginTop: 5,
+        color: colors.blue6,
+        marginLeft: 0,
+        fontSize: 13
     },
     text4:{
-        color: colors.blue2,
-        fontWeight: 'bold',
-        marginTop: 5,
-        marginRight: 10
-    },
-    text5:{
-        marginTop: 5,
-        color: colors.blue2,
-        marginLeft: 0,
-    },
-    text6:{
         marginTop: 6,
         fontSize: 12,
-        color: colors.blue2,
-        marginLeft: 7,
+        color: colors.blue6,
+        fontSize: 13
     },
-    text7:{
+    text5:{
         marginTop: 7,
         fontSize: 12,
         color: colors.blue2,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontSize: 14
     },
-    text8:{
+    text6:{
         fontSize: 17,
         fontWeight: 'bold',
         color: colors.darkBlue,

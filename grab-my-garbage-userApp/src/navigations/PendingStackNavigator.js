@@ -14,17 +14,21 @@ const Pendingstacknavigator = ({navigation, route}) => {
 
     const routeName = getFocusedRouteNameFromRoute(route)
 
+    const { setView } = route.params
+
     useLayoutEffect(() => {
         if(tabHiddenRoutes.includes(routeName)) {
             navigation.setOptions({tabBarStyle: {display: 'none'}, swipeEnabled: false})
+            setView(false)
         } else {
             navigation.setOptions({tabBarStyle: {
-                elevation: 0,
-                backgroundColor: colors.grey9,
-                height: 45,
-            },
-            swipeEnabled: true
-        })
+                    elevation: 0,
+                    backgroundColor: colors.white,
+                    height: 45,
+                },
+                swipeEnabled: true
+            })
+            setView(true)
         }
     })
 

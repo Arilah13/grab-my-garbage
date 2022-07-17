@@ -60,3 +60,14 @@ export const currentConvoReducer = (state = {}, action) => {
             return state
     }
 }
+
+export const receiveMessageReducer = (state = {}, action) => {
+    switch(action.type) {
+        case actionTypes.CONVERSATION_RECEIVED_SUCCESS:
+            return { success: true }
+        case actionTypes.CONVERSATION_RECEIVED_FAIL:
+            return { success: false, error: action.payload }
+        default:
+            return state
+    }
+}

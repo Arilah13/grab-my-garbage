@@ -13,6 +13,7 @@ import Topnavigator from './TopNavigator'
 import ScheduleTopNavigator from './ScheduleTopNavigator'
 
 import { GET_ALL_CONVERSATIONS_SUCCESS } from '../redux/constants/conversationConstants'
+import { conversationReceived } from '../redux/actions/conversationActions'
 
 const Tab = createBottomTabNavigator()
 
@@ -59,7 +60,7 @@ const TabNavigator = () => {
                         element.message.text = text
                         element.message.image = null
                     }
-                    if(image) {
+                    if(image && image !== 'data:image/png;base64,undefined') {
                         element.message.image = image
                         element.message.text = null
                     }
@@ -81,7 +82,7 @@ const TabNavigator = () => {
                             sender.avatar
                         ],
                         text: text && text,
-                        image: image && image
+                        image: image && image !== 'data:image/png;base64,undefined' && image
                     }
 
                     element.totalMessage.push(message)
@@ -115,7 +116,7 @@ const TabNavigator = () => {
                             created: createdAt,
                             createdAt: createdAt,
                             text: text && text,
-                            image: image && image,
+                            image: image && image !== 'data:image/png;base64,undefined' && image,
                             _id: Date.now(),
                             conversationId: element.conversationId,
                             sender: [
@@ -128,7 +129,7 @@ const TabNavigator = () => {
                             created: createdAt,
                             createdAt: createdAt,
                             text: text && text,
-                            image: image && image,
+                            image: image && image !== 'data:image/png;base64,undefined' && image,
                             _id: Date.now(),
                             conversationId: element.conversationId,
                             sender: [
@@ -163,6 +164,25 @@ const TabNavigator = () => {
             setNumber(read.length)
         }
     }, [currentConvo, conversation])
+
+    useEffect(() => {
+        if(conversation !== undefined) {
+            socket.on('messageReceived', async({conversationId}) => {
+                dispatch(conversationReceived(conversationId))
+                const index = await conversation.findIndex((convo) => convo.conversation._id === conversationId)
+                const element = await conversation.splice(index, 1)[0]
+                await element.totalMessage.map(msg => {
+                    msg.received = true
+                })
+                element.message.received = true
+                await conversation.splice(index, 0, element)
+                dispatch({
+                    type: GET_ALL_CONVERSATIONS_SUCCESS,
+                    payload: conversation
+                })
+            })      
+        }
+    }, [socket, conversation])
 
     return (
         <Tab.Navigator

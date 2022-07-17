@@ -42,7 +42,8 @@ import {
     sendMessageReducer,
     getAllConversationReducer,
     updateReadMessageReducer,
-    currentConvoReducer
+    currentConvoReducer,
+    receiveMessageReducer
 } from './reducers/conversationReducer'
 
 import {
@@ -78,6 +79,7 @@ const reducer = combineReducers({
     getAllConversation: getAllConversationReducer,
     updateReadMessage: updateReadMessageReducer,
     currentConvo: currentConvoReducer,
+    receiveMessage: receiveMessageReducer,
 
     addNotification: addNotificationReducer
 })
