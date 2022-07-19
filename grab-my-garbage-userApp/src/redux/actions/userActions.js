@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Facebook from 'expo-facebook'
 
 import { getScheduledPickups } from './schedulePickupActions'
-import { getAcceptedPickups } from './specialPickupActions'
+import { getAcceptedPickups, getCompletedPickups, getPendingPickups } from './specialPickupActions'
 import { getConversations } from './conversationActions'
 
 import { getPushToken } from '../../helpers/notificationHelper'
@@ -31,6 +31,8 @@ export const Login = (email, password, notification_token) => async (dispatch) =
         dispatch(getScheduledPickups())
         dispatch(getAcceptedPickups())
         dispatch(getConversations())
+        dispatch(getPendingPickups())
+        dispatch(getCompletedPickups())
 
         AsyncStorage.setItem('userInfo', JSON.stringify(data))
     } catch (err) {
@@ -69,6 +71,8 @@ export const specialLogin = (info) => async(dispatch) => {
         dispatch(getScheduledPickups())
         dispatch(getAcceptedPickups())
         dispatch(getConversations())
+        dispatch(getPendingPickups())
+        dispatch(getCompletedPickups())
 
         AsyncStorage.setItem('userInfo', JSON.stringify(data))
     } catch (err) {
@@ -104,6 +108,8 @@ export const specialLoginFB = (email, name, id, token, notification_token) => as
         dispatch(getScheduledPickups())
         dispatch(getAcceptedPickups())
         dispatch(getConversations())
+        dispatch(getPendingPickups())
+        dispatch(getCompletedPickups())
 
         AsyncStorage.setItem('userInfo', JSON.stringify(data))
     } catch (err) {
@@ -173,6 +179,11 @@ export const uploadDetails = (info) => async (dispatch) => {
             type: actionTypes.USER_LOGIN_SUCCESS,
             payload: data
         })
+        dispatch(getScheduledPickups())
+        dispatch(getAcceptedPickups())
+        dispatch(getConversations())
+        dispatch(getPendingPickups())
+        dispatch(getCompletedPickups())
     } catch (err){
         dispatch({
             type: actionTypes.USER_LOGIN_FAIL,

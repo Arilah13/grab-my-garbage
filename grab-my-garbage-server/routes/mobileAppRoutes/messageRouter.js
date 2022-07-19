@@ -6,8 +6,12 @@ router.post('/user', messageController.newMessageUser)
 
 router.post('/hauler', messageController.newMessageHauler)
 
-router.get('/:id', auth, messageController.findMessage)
+router.route('/:id')
+    .get(auth, messageController.findMessage)
+    .put(messageController.messageReceived)
 
 router.post('/send', auth, messageController.sendSMS)
+
+router.put('/:id')
 
 module.exports = router

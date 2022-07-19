@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
     pushId: {
         type: Array,
         required: false
+    },
+    notification: {
+        type: Array,
+        required: false,
     }
 }, {
     timestamps: true

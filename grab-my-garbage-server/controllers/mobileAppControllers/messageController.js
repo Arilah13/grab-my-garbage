@@ -1,15 +1,15 @@
-const Messages = require('../../models/messageModel')
+const cloudinary = require('cloudinary')
 const client = require('twilio')(
     process.env.TWILIO_ACCOUNT_SID,
     process.env.TWILIO_AUTH_TOKEN
 )
 const Conversations = require('../../models/conversationModel')
-const cloudinary = require('cloudinary')
+const Messages = require('../../models/messageModel')
 
 const messageController = {
     newMessageUser: async(req, res) => {
         try{
-            const { conversationId, sender, text, createdAt, image } = req.body
+            const { conversationId, sender, text, createdAt, image, pending, received, sent, userSeen, haulerSeen } = req.body
             const sender_id = sender._id
             const sender_name = sender.name
             const sender_avatar = sender.avatar 
@@ -21,7 +21,12 @@ const messageController = {
                     conversationId: conversationId,
                     sender: [sender_id, sender_name, sender_avatar],
                     text: text,
-                    created: createdAt
+                    created: createdAt,
+                    pending: pending,
+                    userSeen: userSeen,
+                    haulerSeen: haulerSeen,
+                    received: received,
+                    sent: sent
                 })
             }
             
@@ -40,12 +45,17 @@ const messageController = {
                             conversationId: conversationId,
                             sender: [sender_id, sender_name, sender_avatar],
                             image: result.secure_url,
-                            created: createdAt
+                            created: createdAt,
+                            pending: pending,
+                            userSeen: userSeen,
+                            haulerSeen: haulerSeen,
+                            received: received,
+                            sent: sent
                         })   
                     }
                 })
             }
-            console.log(newMessage)
+            
             const savedMessage = await newMessage.save()
 
             const conversation = await Conversations.findById(conversationId)
@@ -62,7 +72,7 @@ const messageController = {
     },
     newMessageHauler: async(req, res) => {
         try{
-            const { conversationId, sender, text, createdAt, image } = req.body
+            const { conversationId, sender, text, createdAt, image, pending, received, sent, userSeen, haulerSeen } = req.body
             const sender_id = sender._id
             const sender_name = sender.name
             const sender_avatar = sender.avatar 
@@ -74,7 +84,12 @@ const messageController = {
                     conversationId: conversationId,
                     sender: [sender_id, sender_name, sender_avatar],
                     text: text,
-                    created: createdAt
+                    created: createdAt,
+                    pending: pending,
+                    userSeen: userSeen,
+                    haulerSeen: haulerSeen,
+                    received: received,
+                    sent: sent
                 })
             }
 
@@ -93,14 +108,19 @@ const messageController = {
                             conversationId: conversationId,
                             sender: [sender_id, sender_name, sender_avatar],
                             image: result.secure_url,
-                            created: createdAt
+                            created: createdAt,
+                            pending: pending,
+                            userSeen: userSeen,
+                            haulerSeen: haulerSeen,
+                            received: received,
+                            sent: sent
                         })   
                     }
                 })
             }
             
             const savedMessage = await newMessage.save()
-
+            
             const conversation = await Conversations.findById(conversationId)
 
             conversation.receiverUserRead = false
@@ -118,7 +138,6 @@ const messageController = {
             const messageid = req.params.id
 
             const message = await Messages.find({conversationId: messageid})
-            
             if(!message) return res.status(400).json({msg: 'Message does not exists.'})
 
             res.status(200).json(message)
@@ -140,6 +159,23 @@ const messageController = {
                 res.status(500).json({msg: err.message})
             })
         } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    messageReceived: async(req, res) => {
+        try{
+            const messageid = req.params.id
+
+            const message = await Messages.find({conversationId: messageid})
+            if(!message) return res.status(400).json({msg: 'Message does not exists.'})
+            
+            for(let x=0; x<message.length; x++) {
+                message[x].received = true
+                message[x].save()
+            }
+
+            res.status(200).json({msg: 'update success'})
+        } catch(err){
             return res.status(500).json({msg: err.message})
         }
     }

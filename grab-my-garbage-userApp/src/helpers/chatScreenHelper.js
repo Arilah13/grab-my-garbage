@@ -10,7 +10,7 @@ export const renderBubble = (props) => {
             {...props}
             wrapperStyle = {{
                 right: {
-                    backgroundColor: colors.darkBlue
+                    backgroundColor: colors.darkGrey
                 },
                 left: {
                     backgroundColor: colors.white,
@@ -21,6 +21,7 @@ export const renderBubble = (props) => {
                     color: colors.white
                 }
             }}
+            tickStyle = {{color: props.currentMessage.haulerSeen ? colors.darkBlue : colors.white }}
         />
     );
 }

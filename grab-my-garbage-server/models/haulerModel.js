@@ -44,6 +44,10 @@ const haulerSchema = new mongoose.Schema({
     limit: {
         type: Number,
         default: 0
+    },
+    notification: {
+        type: Array,
+        required: false,
     }
 }, {
     timestamps: true

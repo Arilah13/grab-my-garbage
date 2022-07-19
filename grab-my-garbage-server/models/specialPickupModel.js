@@ -57,7 +57,7 @@ const pickupSchema = new mongoose.Schema({
     },
     declinedHaulers:{
         type: Array,
-        required: false
+        required: false,
     },
     inactive:{
         type: Number,
@@ -69,7 +69,7 @@ const pickupSchema = new mongoose.Schema({
     },
     areaHaulers:{
         type: Array,
-        required: false
+        required: false,
     }
 }, {
     timestamps: true

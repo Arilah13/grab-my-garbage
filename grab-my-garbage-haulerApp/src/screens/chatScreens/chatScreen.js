@@ -202,8 +202,8 @@ const Chatscreen = ({route, navigation}) => {
 
     useEffect(() => {
         socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId, image}) => {
-            console.log(text)
             if(senderid === userid._id) {
+                socket.emit('messageSeen', {id: conversationId, receiverRole: 'hauler', receiverId: userid._id})
                 if(text) {
                     const message = [{text, user: sender, createdAt, _id: Date.now()}]
                     onSend(message)
@@ -224,6 +224,12 @@ const Chatscreen = ({route, navigation}) => {
                     messages.map(msg => msg.received = true)
                     setMessages(messages)
                 }     
+            })
+            socket.on('messageSeen', ({conversationId}) => {
+                if(conversationId === id) {
+                    messages.map(msg => msg.userSeen = true)
+                    setMessages(messages)
+                }
             })
         }
     }, [socket, messages])
@@ -266,6 +272,7 @@ const Chatscreen = ({route, navigation}) => {
         <SafeAreaView style = {{backgroundColor: colors.white, height: SCREEN_HEIGHT}}>
             <View style = {{height: 1*SCREEN_HEIGHT/10, flexDirection: 'row', backgroundColor: colors.white}}>
                 <Pressable onPress = {() => {
+                    socket.emit('removeCurrentMsg', {userId: userInfo._id, senderRole: 'hauler'})
                     navigation.goBack()
                     dispatch({
                         type: RESET_CURRENT_CONVO
@@ -330,7 +337,6 @@ const Chatscreen = ({route, navigation}) => {
                             />
                         </Pressable>
                     )}
-                    //renderMessageText = {renderMessageText}
                 />
                 {
                     Platform.OS === 'android' && <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {1.4*SCREEN_HEIGHT/10} />

@@ -85,7 +85,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
             createdAt: message[0].createdAt,
             senderRole: 'user',
             receiver: haulerid,
-            conversationId: convo.conversation._id
+            conversationId: convo.conversation._id,
         }))
     }, [conversation])
 
@@ -203,12 +203,34 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                     onSend(undefined, message)
                 } 
                 dispatch(receiverRead(conversationId))
+                socket.emit('messageSeen', {id: conversationId, receiverRole: 'user', receiverId: sender._id})
             }       
         }) 
     }, [socket])
 
+    useEffect(() => {
+        if(messages.length > 0) {
+            socket.on('messageReceived', ({conversationId}) => {
+                if(conversationId === convo.conversation._id) {
+                    messages.map(msg => msg.received = true)
+                    setMessages(messages)
+                }     
+            })
+            socket.on('messageSeen', ({conversationId}) => {
+                if(conversationId === convo.conversation._id) {
+                    messages.map(msg => msg.haulerSeen = true)
+                    setMessages(messages)
+                }
+            })
+        }
+    }, [socket, messages])
+
     useEffect(async() => {
         dispatch(addCurrentConvo(haulerid._id))
+        if(convo.conversation.receiverUserRead === false) {
+            socket.emit('messageSeen', {id: convo.conversation._id, receiverRole: 'user', receiverId: haulerid._id})
+        }
+        socket.emit('currentMsg', {userId: userInfo._id, conversationId: convo.conversation._id, senderRole: 'user'})
         let array = []
         if(convo.totalMessage.length > 0) {
             await convo.totalMessage.slice(0).reverse().map((message) => {
@@ -246,6 +268,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
         <View style = {{backgroundColor: colors.white, borderTopRightRadius: 15, borderTopLeftRadius: 15, overflow: 'hidden'}}>
             <View style = {{height: 1*SCREEN_HEIGHT/10, flexDirection: 'row', backgroundColor: colors.white}}>
                 <Pressable onPress = {() => {
+                    socket.emit('removeCurrentMsg', {userId: userInfo._id, senderRole: 'user'})
                     setModalVisible(false)
                     dispatch({
                         type: RESET_CURRENT_CONVO

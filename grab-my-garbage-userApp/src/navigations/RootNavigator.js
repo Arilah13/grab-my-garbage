@@ -6,16 +6,9 @@ import Authnavigator from './AuthNavigator'
 
 const Rootnavigator = ({first, setFirst}) => {
     const userLogin = useSelector((state) => state.userLogin)
-    const { loading } = userLogin
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
-    const { loading: conversations } = getAllConversation
-
-    const retrieveAcceptedPickups = useSelector(state => state.retrieveAcceptedPickups)
-    const { loading: acceptedLoading } = retrieveAcceptedPickups
-
-    const retrieveScheduledPickup = useSelector(state => state.retrieveScheduledPickup)
-    const { loading: scheduleLoading } = retrieveScheduledPickup
+    const { loading, conversation } = getAllConversation
 
     useEffect(() => {
         if(first === true && loading === false) {
@@ -26,13 +19,10 @@ const Rootnavigator = ({first, setFirst}) => {
     return (
         <>
             {
-                loading === false && userLogin.userInfo !== undefined && (conversations === false || 
-                    acceptedLoading === false || scheduleLoading === false || conversations !== undefined || 
-                    acceptedLoading !== undefined || scheduleLoading !== undefined) ? (
+                userLogin.userInfo !== undefined && conversation !== undefined ?
                     <StackNavigator />
-                ) : (
+                : 
                     <Authnavigator />
-                )
             }
         </>
     );

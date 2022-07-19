@@ -1,8 +1,8 @@
-const Haulers = require('../../models/haulerModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const schedule = require('node-schedule')
 const { Expo } = require('expo-server-sdk')
+const Haulers = require('../../models/haulerModel')
 
 let expo = new Expo({})
 
@@ -108,7 +108,7 @@ const haulerController = {
             if(!hauler) return res.status(400).json({msg: 'Hauler does not exists.'})
 
             await hauler.pushId.filter(pushId => pushId !== req.body.id)
-            hauler.save()
+            await hauler.save()
 
             res.status(200).json({msg: 'Pushtoken removed'})
         } catch (err) {

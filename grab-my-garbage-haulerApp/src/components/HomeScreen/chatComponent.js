@@ -208,6 +208,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                     onSend(undefined, message)
                 }
                 dispatch(receiverRead(conversationId))
+                socket.emit('messageSeen', {id: conversationId, receiverRole: 'hauler', receiverId: sender._id})
             }
         })
     }, [socket])
@@ -215,16 +216,26 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
     useEffect(() => {
         if(messages.length > 0) {
             socket.on('messageReceived', ({conversationId}) => {
-                if(conversationId === id) {
+                if(conversationId === convo.conversation._id) {
                     messages.map(msg => msg.received = true)
                     setMessages(messages)
                 }     
+            })
+            socket.on('messageSeen', ({conversationId}) => {
+                if(conversationId === convo.conversation._id) {
+                    messages.map(msg => msg.userSeen = true)
+                    setMessages(messages)
+                }
             })
         }
     }, [socket, messages])
 
     useEffect(async() => {
         dispatch(addCurrentConvo(userid._id))
+        if(convo.conversation.receiverHaulerRead === false) {
+            socket.emit('messageSeen', {id: convo.conversation._id, receiverRole: 'hauler', receiverId: userid._id})
+        }
+        socket.emit('currentMsg', {userId: userInfo._id, conversationId: convo.conversation._id, senderRole: 'hauler'})
         let array = []
         if(convo.totalMessage.length > 0) {
             await convo.totalMessage.slice(0).reverse().map((message) => {
@@ -261,6 +272,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
         <View style = {{backgroundColor: colors.white, borderTopRightRadius: 15, borderTopLeftRadius: 15, overflow: 'hidden', height: SCREEN_HEIGHT}}>
             <View style = {{height: 1*SCREEN_HEIGHT/10, flexDirection: 'row', backgroundColor: colors.white}}>
                 <Pressable onPress = {() => {
+                    socket.emit('removeCurrentMsg', {userId: userInfo._id, senderRole: 'hauler'})
                     setModalVisible(false)
                     dispatch({
                         type: RESET_CURRENT_CONVO

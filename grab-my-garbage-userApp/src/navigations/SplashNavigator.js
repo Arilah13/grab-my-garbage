@@ -38,24 +38,17 @@ const Splashnavigator = () => {
     }, [])
 
     useEffect(() => {
-        if(loading === false) {
+        if(first === true && conversations === false) {
             setFirst(false)
-            if(userInfo !== undefined) {
-                dispatch(getConversations())
-                dispatch(getAcceptedPickups())
-                dispatch(getScheduledPickups())
-                dispatch(getPendingPickups())
-                dispatch(getAcceptedPickups())
-                dispatch(getCompletedPickups())
-            }
         }
-    }, [loading])
+    }, [conversations])
 
     return (
         <NavigationContainer>
             {
-                first === true && (loading === true || loading === undefined ||  conversations === true || scheduleLoading === true ||
-                    acceptedLoading === true || conversations === undefined || scheduleLoading === undefined || acceptedLoading === undefined) ? (
+                first === true && (loading === true || loading === undefined ||  conversations === true || 
+                    scheduleLoading === true || acceptedLoading === true || conversations === undefined || 
+                    scheduleLoading === undefined || acceptedLoading === undefined) ? (
                     <Splashscreen />
                 ) : (
                     <Rootnavigator setFirst = {setFirst} first = {first} />

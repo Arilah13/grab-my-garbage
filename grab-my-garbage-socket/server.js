@@ -212,12 +212,15 @@ io.on('connection', socket => {
         pickupSocket.haulerDisconnect({id: socket.id})
     })
 
-    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, pickupid, senderRole, conversationId, image, receiver}) => {
+    socket.on('sendMessage', async({senderid, receiverid, text, sender, createdAt, senderRole, conversationId, image, receiver}) => {
         if(senderRole === 'hauler') {
             const user = await chatSocket.returnUserSocketid({userid: receiverid})
             
             if(user !== false) {
-                socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid, conversationId: conversationId, image: 'data:image/png;base64,' + image})
+                const current = await chatSocket.checkUserCurrentChat({id: receiverid})
+
+                await socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, conversationId: conversationId, image: 'data:image/png;base64,' + image, current})
+                await socket.emit('messageReceived', {conversationId: conversationId})
             } else {
                 notificationHelper.notifyMessages(receiver)
             }
@@ -225,12 +228,59 @@ io.on('connection', socket => {
             const hauler = await chatSocket.returnHaulerSocketid({haulerid: receiverid})
 
             if(hauler !== false) {
-                socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, Pickupid: pickupid, conversationId: conversationId, image: 'data:image/png;base64,' + image})
+                const current = await chatSocket.checkHaulerCurrentChat({id: receiverid})
+
+                await socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, conversationId: conversationId, image: 'data:image/png;base64,' + image, current})
+                await socket.emit('messageReceived', {conversationId: conversationId})
             } else {
                 notificationHelper.notifyMessages(receiver)
             }
         }
         
+    })
+
+    socket.on('messageDelayReceived', async({id, receiverId, senderRole}) => {
+        if(senderRole === 'hauler') {
+            const user = await chatSocket.returnUserSocketid({userid: receiverId})
+            if(user !== false) {
+                socket.to(user).emit('messageReceived', {conversationId: id})
+            }
+        } else {
+            const hauler = await chatSocket.returnHaulerSocketid({haulerid: receiverId})
+            if(hauler !== false) {
+                socket.to(hauler).emit('messageReceived', {conversationId: id})
+            }
+        }
+    })
+
+    socket.on('messageSeen', async({id, receiverRole, receiverId}) => {
+        if(receiverRole === 'hauler') {
+            const user = await chatSocket.returnUserSocketid({userid: receiverId})
+            if(user !== false) {
+                socket.to(user).emit('messageSeen', {conversationId: id})
+            }
+        } else {
+            const hauler = await chatSocket.returnHaulerSocketid({haulerid: receiverId})
+            if(hauler !== false) {
+                socket.to(hauler).emit('messageSeen', {conversationId: id})
+            }
+        }
+    })
+
+    socket.on('currentMsg', async({userId, conversationId, senderRole}) => {
+        if(senderRole === 'user') {
+            chatSocket.userCurrentChat({userid: userId, conversationId: conversationId})
+        } else {
+            chatSocket.haulerCurrentChat({userid: userId, conversationId: conversationId})
+        }
+    })
+
+    socket.on('removeCurrentMsg', async({userId, senderRole}) => {
+        if(senderRole === 'user') {
+            chatSocket.removeUserCurrentChat({id: userId})
+        } else {
+            chatSocket.removeHaulerCurrentChat({id: userId})
+        }
     })
 
     socket.on('refresh', async({userid}) => {

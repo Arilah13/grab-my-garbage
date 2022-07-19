@@ -27,6 +27,9 @@ const Chatmenuscreen = ({navigation}) => {
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
+    const socketHolder = useSelector((state) => state.socketHolder)
+    const { socket } = socketHolder
+
     const messageRead = async(id) => {
         const index = await conversation.findIndex((convo) => convo.conversation._id === id)
         
@@ -92,7 +95,6 @@ const Chatmenuscreen = ({navigation}) => {
                     <View style = {{alignItems: 'center'}}>
                         <FlatList
                             data = {conversation}
-                            extraData = {conversation}
                             keyExtractor = {(item)=>item.conversation._id}
                             inverted
                             renderItem = {({item}) => (
@@ -141,7 +143,11 @@ const Chatmenuscreen = ({navigation}) => {
                                     <Pressable 
                                         style = {styles.card}
                                         onPress = {() => {
-                                            messageRead(item.conversation._id)
+                                            if(item.conversation.receiverHaulerRead === false) {
+                                                messageRead(item.conversation._id)
+                                                socket.emit('messageSeen', {id: item.conversation._id, receiverRole: 'hauler', receiverId: item.conversation.userId._id})
+                                            }
+                                            socket.emit('currentMsg', {userId: userInfo._id, conversationId: item.conversation._id, senderRole: 'hauler'})
                                             dispatch(addCurrentConvo(item.conversation.userId._id))
                                             navigation.navigate('Message', {userid: item.conversation.userId, message: item.totalMessage, id: item.conversation._id})
                                         }}

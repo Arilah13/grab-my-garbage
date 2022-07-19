@@ -8,6 +8,8 @@ const cloudinary = require('cloudinary')
 const userController = {
     google: async(req, res) => {
         try{
+            let dates = []
+            
             const {name, email, registerrole, photoUrl, notification_token} = req.body
 
             const user = await Users.findOne({email}) 
@@ -29,6 +31,22 @@ const userController = {
 
                 const count = scheduleCount + specialCount
 
+                if(user.notification.length > 0) {
+                    for(let i=0; i<user.notification.length; i++) {
+                        dates.push(user.notification[i].date.toString().split('T')[0])
+                    }
+                }
+    
+                let uniqueDates = getUnique(dates)
+    
+                for(let n=0; n<uniqueDates.length; n++) {
+                    for(let j=0; j<user.notification.length; j++) {
+                        if(user.notification[j].date.toString().split('T')[0] === uniqueDates[n].date){
+                            uniqueDates[n].description = user.notification[j].description
+                        }
+                    }
+                }
+
                 res.json({
                     _id: user._id,
                     name: user.name,
@@ -39,6 +57,7 @@ const userController = {
                     schedule: schedule,
                     special: special,
                     pushId: user.pushId,
+                    notification: uniqueDates,
                     token: accesstoken
                 })
             } else {
@@ -93,6 +112,14 @@ const userController = {
                     await user.save()
                 }
 
+                const scheduleCount = await Schedule.countDocuments({customerId: user._id})
+                const specialCount = await Special.countDocuments({customerId: user._id})
+
+                const schedule = await Schedule.find({customerId: user._id})
+                const special = await Special.find({customerId: user._id})
+
+                const count = scheduleCount + specialCount
+
                 res.json({
                     _id: user._id,
                     name: user.name,
@@ -101,6 +128,9 @@ const userController = {
                     fbid: id,
                     fbtoken: token,
                     pushId: user.pushId,
+                    count: count,
+                    schedule: schedule,
+                    special: special,
                     token: accesstoken
                 })
             } else {
@@ -115,6 +145,14 @@ const userController = {
 
                 const accesstoken = createAccessToken(newUser._id)
 
+                const scheduleCount = await Schedule.countDocuments({customerId: newUser._id})
+                const specialCount = await Special.countDocuments({customerId: newUser._id})
+
+                const schedule = await Schedule.find({customerId: newUser._id})
+                const special = await Special.find({customerId: newUser._id})
+
+                const count = scheduleCount + specialCount
+
                 res.status(200).json({
                     _id: newUser._id,
                     name: newUser.name,
@@ -123,6 +161,9 @@ const userController = {
                     fbid: id,
                     pushId: newUser.pushId,
                     fbtoken: token,
+                    count: count,
+                    schedule: schedule,
+                    special: special,
                     token: accesstoken
                 })
             }
@@ -149,12 +190,19 @@ const userController = {
                 role: registerrole === 'user' ? 0 : 1,
                 password: passwordHash,
                 pushId: notification_token,
-                //image: photoUrl
             })
 
             await newUser.save()
 
             const accesstoken = createAccessToken(newUser._id)
+
+            const scheduleCount = await Schedule.countDocuments({customerId: newUser._id})
+            const specialCount = await Special.countDocuments({customerId: newUser._id})
+
+            const schedule = await Schedule.find({customerId: newUser._id})
+            const special = await Special.find({customerId: newUser._id})
+
+            const count = scheduleCount + specialCount
 
             res.status(200).json({
                 _id: newUser._id,
@@ -162,6 +210,9 @@ const userController = {
                 email: newUser.email,
                 role: newUser.role,
                 pushId: newUser.pushId,
+                count: count,
+                schedule: schedule,
+                special: special,
                 token: accesstoken
             })
         } catch(err) {
@@ -170,6 +221,8 @@ const userController = {
     },
     login: async(req, res) => {
         try {
+            let dates = []
+
             const {email, password, notification_token} = req.body       
 
             const user = await Users.findOne({email})
@@ -203,6 +256,22 @@ const userController = {
 
             const count = scheduleCount + specialCount
 
+            if(user.notification.length > 0) {
+                for(let i=0; i<user.notification.length; i++) {
+                    dates.push(user.notification[i].date.toString().split('T')[0])
+                }
+            }
+
+            let uniqueDates = getUnique(dates)
+
+            for(let n=0; n<uniqueDates.length; n++) {
+                for(let j=0; j<user.notification.length; j++) {
+                    if(user.notification[j].date.toString().split('T')[0] === uniqueDates[n].date){
+                        uniqueDates[n].description = user.notification[j].description
+                    }
+                }
+            }
+
             res.status(200).json({
                 _id: user._id,
                 name: user.name,
@@ -212,16 +281,9 @@ const userController = {
                 count: count,
                 schedule: schedule,
                 special: special,
+                notification: uniqueDates,
                 token: accesstoken
             })
-        } catch(err) {
-            return res.status(500).json({msg: err.message})
-        }
-    },
-    logout: async(req, res) => {
-        try{
-            res.clearCookie('refreshtoken', {path: '/user/refresh_token'})
-            return res.status(200).json({msg: 'Logged out'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
@@ -292,6 +354,8 @@ const userController = {
     },
     returnDetails: async(req, res) => {
         try{
+            let dates = []
+
             const {email} = req.body
 
             const user = await Users.findOne({email})
@@ -307,6 +371,22 @@ const userController = {
 
             const accesstoken = createAccessToken(user._id)
 
+            if(user.notification.length > 0) {
+                for(let i=0; i<user.notification.length; i++) {
+                    dates.push(user.notification[i].date.toISOString().split('T')[0])
+                }
+            }
+
+            let uniqueDates = await getUnique(dates)
+        
+            for(let n=0; n<uniqueDates.length; n++) {
+                for(let j=0; j<user.notification.length; j++) {
+                    if(user.notification[j].date.toISOString().split('T')[0] === uniqueDates[n].date){
+                        uniqueDates[n].description.push(user.notification[j].description)
+                    }
+                }
+            }
+
             res.status(200).json({
                 _id: user._id,
                 name: user.name,
@@ -316,7 +396,8 @@ const userController = {
                 count: count,
                 schedule: schedule,
                 special: special,
-                token: accesstoken
+                token: accesstoken,
+                notification: uniqueDates
             })
         } catch(err) {
             return res.status(500).json({msg: err.message})
@@ -351,6 +432,16 @@ const userController = {
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }
+    },
+    addNotification: async(req, res) => {
+        try{
+            const user = await Users.findById(req.body._id)
+            if(!user) return res.status(400).json({msg: 'User does not exists.'})
+
+            //user.No
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
     } 
 }
 
@@ -372,6 +463,28 @@ const checkURL = (check) => {
     }
 
     return url.protocol === 'http:' || url.protocol === 'https:'
+}
+
+const getUnique = async(array) => {
+    let uniqueArray = []
+
+    for(let i=0; i<array.length; i++) {
+        if(uniqueArray.length > 0) {
+            let result = true
+            for(let n=0; n<uniqueArray.length; n++) {
+                if(array[i] === uniqueArray[n].date) {
+                    result = false
+                }
+            }
+            if(result === true) {
+                uniqueArray.push({date: array[i], description: []})
+            }
+        } else {
+            uniqueArray.push({date: array[i], description: []})
+        }
+    }
+
+    return uniqueArray
 }
 
 module.exports = userController

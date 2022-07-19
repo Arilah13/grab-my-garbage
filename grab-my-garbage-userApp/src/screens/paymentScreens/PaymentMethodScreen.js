@@ -12,7 +12,6 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Paymentmethodscreen = ({route, navigation}) => {
-
     const { name } = route.params
 
     const specialPickup = useSelector(state => state.specialPickup)

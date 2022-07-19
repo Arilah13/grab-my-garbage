@@ -52,27 +52,7 @@ const paymentController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
-    },
-    // listCard: async(req, res) => {
-    //     try{
-    //         const user = await Users.findById(req.params.id)
-
-    //         if(user.paymentId !== null && user.paymentId !== undefined) {
-    //             const paymentMethods = await stripe.customers.listPaymentMethods(
-    //                 user.paymentId,
-    //                 {type: 'card'}
-    //             )
-    //             console.log(paymentMethods)
-    //             res.json({
-    //                 paymentDetails: paymentMethods
-    //             })
-    //         } else {
-    //             res.json(null)
-    //         }
-    //     } catch(err) {
-    //         return res.status(500).json({msg: err.message})
-    //     }
-    // }
+    }
 }
 
 module.exports = paymentController

@@ -8,14 +8,37 @@ const messageSchema = new mongoose.Schema({
         type: Array
     },
     text: {
-        type: String
+        type: String,
+        required: false
     },
     created: {
         type: Date
     },
+    pending: {
+        type: Boolean,
+        required: true
+    },
+    sent: {
+        type: Boolean,
+        required: true
+    },
+    received: {
+        type: Boolean,
+        required: true
+    },
+    userSeen: {
+        type: Boolean,
+        required: true
+    },
+    haulerSeen: {
+        type: Boolean,
+        required: true
+    },
     image: {
-        type: String
-    }
+        type: String,
+        required: false
+    },
+
 }, {
     timestamps: true
 })

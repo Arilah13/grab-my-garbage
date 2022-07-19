@@ -40,6 +40,7 @@ const conversationController = {
             const conversation = await Conversations.find({
                 $or: [{userId: req.params.id}, {haulerId: req.params.id}]
             }).populate('haulerId').populate('userId')
+            if(!conversation) {return res.status(400).json({msg: 'Conversation does not exists.'})}
 
             if(conversation.length > 0) {
                 for(let i=0; i<conversation.length; i++) {
@@ -61,10 +62,18 @@ const conversationController = {
     markReadUser: async(req, res) => {
         try{
             const conversation = await Conversations.findById(req.params.id)
+            if(!conversation) {return res.status(400).json({msg: 'Conversation does not exists.'})}
 
             conversation.receiverUserRead = true
 
             await conversation.save()
+
+            const message = await Messages.find({conversationId: req.params.id})
+
+            for(let x=0; x<message.length; x++) {
+                message[x].userSeen = true
+                message[x].save()
+            }
 
             res.status(200).json({msg: 'Message Updated'})
         } catch(err) {
@@ -74,10 +83,18 @@ const conversationController = {
     markReadHauler: async(req, res) => {
         try{
             const conversation = await Conversations.findById(req.params.id)
+            if(!conversation) {return res.status(400).json({msg: 'Conversation does not exists.'})}
 
             conversation.receiverHaulerRead = true
 
             await conversation.save()
+
+            const message = await Messages.find({conversationId: req.params.id})
+
+            for(let x=0; x<message.length; x++) {
+                message[x].haulerSeen = true
+                message[x].save()
+            }
 
             res.status(200).json({msg: 'Message Updated'})
         } catch(err) {
@@ -87,6 +104,7 @@ const conversationController = {
     deleteHauler: async(req, res) => {
         try{
             const conversation = await Conversations.findById(req.params.id)
+            if(!conversation) {return res.status(400).json({msg: 'Conversation does not exists.'})}
 
             conversation.haulerVisible = false
 
@@ -100,6 +118,7 @@ const conversationController = {
     deleteUser: async(req, res) => {
         try{
             const conversation = await Conversations.findById(req.params.id)
+            if(!conversation) {return res.status(400).json({msg: 'Conversation does not exists.'})}
 
             conversation.userVisible = false
 

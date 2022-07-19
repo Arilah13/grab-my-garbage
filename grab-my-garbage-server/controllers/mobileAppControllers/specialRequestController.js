@@ -1,5 +1,6 @@
 const Pickups = require('../../models/specialPickupModel')
 const Haulers = require('../../models/haulerModel')
+const Users = require('../../models/userModel')
 const schedule = require('node-schedule')
 const { Expo } = require('expo-server-sdk')
 
@@ -49,7 +50,21 @@ const requestController = {
             const request = await Pickups.findById(req.params.id)
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
-            request.declinedHaulers.push(haulerId)
+            await request.declinedHaulers.push(haulerId)
+
+            if(request.areaHaulers.length === request.declinedHaulers.length) {
+                request.cancelled = 1
+                const user = await Users.findById(request.customerId)
+                await user.notification.push({
+                    id: request._id,
+                    date: new Date(),
+                    description: 'Your special pickup has been cancelled',
+                    data: {item: request},
+                    userVisible: true
+                })
+                await user.save()
+            }
+
             await request.save()
 
             res.status(200).json({msg: 'Specialpickup Declined'})

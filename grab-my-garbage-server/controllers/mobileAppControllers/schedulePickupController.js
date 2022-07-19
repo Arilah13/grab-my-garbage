@@ -1,7 +1,7 @@
+const turf = require('@turf/turf')
 const ScheduledPickups = require('../../models/scheduledPickupModel')
 const Haulers = require('../../models/haulerModel')
 const polygonData = require('../../helpers/polygonData')
-const turf = require('@turf/turf')
 
 const scheduledPickupController = {
     addScheduledPickup: async(req, res) => {
@@ -70,6 +70,17 @@ const scheduledPickupController = {
             })
 
             await newPickup.save()
+
+            const haulerId = await Haulers.findById(results)
+            haulerId.notification.push({
+                id: newPickup._id,
+                date: new Date(),
+                description: 'You have been assigned a new schedule pickup',
+                data: {item: newPickup},
+                haulerVisible: true
+            })
+
+            haulerId.save()
 
             res.status(201).json({
                 _id: newPickup._id,

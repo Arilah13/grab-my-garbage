@@ -27,6 +27,9 @@ const Chatmenuscreen = ({navigation}) => {
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
+    const socketHolder = useSelector((state) => state.socketHolder)
+    const { socket } = socketHolder
+
     const messageRead = async(id) => {
         const index = await conversation.findIndex((convo) => convo.conversation._id === id)
         
@@ -139,7 +142,11 @@ const Chatmenuscreen = ({navigation}) => {
                                     <Pressable 
                                         style = {styles.card}
                                         onPress = {() => {
-                                            messageRead(item.conversation._id)
+                                            if(item.conversation.receiverUserRead === false) {
+                                                messageRead(item.conversation._id)
+                                                socket.emit('messageSeen', {id: item.conversation._id, receiverRole: 'user', receiverId: item.conversation.haulerId._id})
+                                            }
+                                            socket.emit('currentMsg', {userId: userInfo._id, conversationId: item.conversation._id, senderRole: 'user'})
                                             dispatch(addCurrentConvo(item.conversation.haulerId._id))
                                             navigation.navigate('Message', {haulerid: item.conversation.haulerId, message: item.totalMessage, id: item.conversation._id})
                                         }}
@@ -157,7 +164,7 @@ const Chatmenuscreen = ({navigation}) => {
                                                     <Text style = {styles.userName}>{item.conversation.haulerId.name}</Text>
                                                     <Text style = {styles.postTime}>{date1Helper(item.conversation.updatedAt)}</Text>
                                                 </View>
-                                                <View style = {styles.userInfoText}>
+                                                <View style = {styles.userInfoText1}>
                                                     {
                                                         item.message.sender[0] === userInfo._id && (item.message.pending ? 
                                                         <Icon

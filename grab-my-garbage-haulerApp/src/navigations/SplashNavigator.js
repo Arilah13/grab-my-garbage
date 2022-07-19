@@ -17,7 +17,7 @@ const Splashnavigator = () => {
     const [first, setFirst] = useState(true)
 
     const userLogin = useSelector((state) => state.userLogin)
-    const { loading, userInfo } = userLogin
+    const { loading } = userLogin
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading: conversations } = getAllConversation
@@ -46,10 +46,10 @@ const Splashnavigator = () => {
     }, [])
 
     useEffect(() => {
-        if(loading === false) {
+        if(first === true && conversations === false) {
             setFirst(false)
         }
-    }, [loading])
+    }, [conversations])
 
     TaskManager.defineTask(TASK_FETCH_LOCATION, async({data, err}) => {
         if(err) {

@@ -12,7 +12,7 @@ router.post('/', userController.returnDetails)
 
 router.post('/login', userController.login)
 
-router.get('/logout', userController.logout)
+router.post('/notification', userController.addNotification)
 
 router.post('/refresh_token', auth, userController.refreshtoken)
 

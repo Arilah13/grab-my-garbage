@@ -1,18 +1,18 @@
-const Pickups = require('../../models/specialPickupModel')
 const cloudinary = require('cloudinary')
-const haulers = require('../../models/haulerModel')
-const polygonData = require('../../helpers/polygonData')
 const turf = require('@turf/turf')
 var io = require('socket.io-client')
+const schedule = require('node-schedule')
+const { Expo } = require('expo-server-sdk')
+const haulers = require('../../models/haulerModel')
+const polygonData = require('../../helpers/polygonData')
+const Pickups = require('../../models/specialPickupModel')
+
 // var socket = io.connect('https://grab-my-garbage-socket.herokuapp.com/', {
 //     reconnection: true
 // })
 var socket = io.connect('http://192.168.13.1:5001', {
     reconnection: true
 })
-
-const schedule = require('node-schedule')
-const { Expo } = require('expo-server-sdk')
 
 const pickupController = {
     addSpecialPickup: async(req, res) => {
@@ -60,6 +60,17 @@ const pickupController = {
                 areaHaulers: Haulers
             })
 
+            for(let j=0; j<hauler.length; j++) {
+                hauler[j].notification.push({
+                    id: newPickup._id,
+                    date: new Date(),
+                    description: 'You have a new special pickup request',
+                    data: {item: newPickup},
+                    haulerVisible: true
+                })
+                hauler[j].save()
+            }
+
             const hour = (pickupInfo.date.split('T')[1]).split(':')[0]
             const minute = (pickupInfo.date.split('T')[1]).split(':')[1]
             const year = (pickupInfo.date.split('T')[0]).split('-')[0]
@@ -80,6 +91,15 @@ const pickupController = {
                 if(result === true) {
                     await cancelPickup(newPickup._id)
                     socket.emit('pickupCancel', {id: newPickup._id, hauler: hauler, userid: id})
+
+                    for(let i=0; i<hauler.length; i++) {
+                        const index = await hauler[i].notification.findIndex(noti => noti.id === newPickup._id)
+                        const noti = await hauler[i].notification.splice(index, 1)[0]
+                        noti.haulerVisible = false
+                        await hauler[i].notification.splice(noti, 0, index)
+
+                        await hauler[i].save()
+                    }
                 }
             })
 

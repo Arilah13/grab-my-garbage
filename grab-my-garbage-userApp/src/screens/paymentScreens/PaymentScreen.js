@@ -146,8 +146,9 @@ const Paymentscreen = ({route, navigation}) => {
     }
 
     useEffect(() => {
-        if(paymentStart === false && creditcard === true)
+        if(paymentStart === false && creditcard === true) {
             dispatch(getPaymentSheet(total))
+        }      
     }, [paymentStart])
 
     return (

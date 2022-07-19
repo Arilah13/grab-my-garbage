@@ -1,5 +1,4 @@
 const scheduledPickups = require('../../models/scheduledPickupModel')
-const Haulers = require('../../models/haulerModel')
 
 const requestController = {
     getScheduledPickupforToday: async(req, res) => {
@@ -43,7 +42,11 @@ const requestController = {
             const request = await scheduledPickups.findById(req.params.id)
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
             
-            request.completedPickups.push({date, completedHauler})
+            await request.completedPickups.push({date, completedHauler})
+
+            if(checkForCompletion(request.to, request.days) === true) {
+                request.completed = 1
+            }
 
             await request.save()
 
@@ -196,6 +199,11 @@ const getLatngDiffInMeters = (lat1, lng1, lat2, lng2) => {
 
 const degtorad = (deg) => {
     return deg * (Math.PI/180)
+}
+
+const checkForCompletion = (date1, days) => {
+    const date = new Date()
+    return false
 }
 
 module.exports = requestController
