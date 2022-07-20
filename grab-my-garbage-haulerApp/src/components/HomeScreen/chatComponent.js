@@ -25,6 +25,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
     const dispatch = useDispatch()
 
     const [messages, setMessages] = useState([])
+    const [modalVisible1, setModalVisible1] = useState(false)
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
@@ -98,7 +99,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
         const state = await testConnection()
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
         if (status !== 'granted') {
-          setModalVisible(false)
+          setModalVisible1(false)
         }else{
             let image = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -107,7 +108,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                 quality: 1,
                 base64: true
             })
-            setModalVisible(false)
+            setModalVisible1(false)
             if(!image.cancelled) {
                 const msg = [{
                     _id: new Date(),
@@ -149,7 +150,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
         const state = await testConnection()
         const { status } = await ImagePicker.requestCameraPermissionsAsync()
         if (status !== 'granted') {
-          setModalVisible(false)
+          setModalVisible1(false)
         }else{
             let image = await ImagePicker.launchCameraAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -158,7 +159,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                 quality: 1,
                 base64: true
             })
-            setModalVisible(false)
+            setModalVisible1(false)
             if(!image.cancelled) {
                 const msg = [{
                     _id: new Date(),
@@ -344,11 +345,11 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
             </View>
 
             <Modal 
-                isVisible = {modalVisible}
+                isVisible = {modalVisible1}
                 swipeDirection = {'down'}
                 style = {{ justifyContent: 'flex-end', margin: 0 }}
-                onBackButtonPress = {() => setModalVisible(false)}
-                onBackdropPress = {() => setModalVisible(false)}
+                onBackButtonPress = {() => setModalVisible1(false)}
+                onBackdropPress = {() => setModalVisible1(false)}
                 useNativeDriver = {true}
                 useNativeDriverForBackdrop = {true}
             >

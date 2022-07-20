@@ -72,8 +72,7 @@ const CompletedPickupscreen = ({navigation}) => {
                                         color = {colors.blue2}
                                         style = {{
                                             marginTop: 7,
-                                            marginRight: 3,
-                                            marginLeft: 3
+                                            marginRight: 3
                                         }}
                                     />  
                                     <Text style = {styles.text5}>{item.location[0].city}</Text>                        
@@ -98,12 +97,12 @@ const CompletedPickupscreen = ({navigation}) => {
                                     <Icon
                                         type = 'material'
                                         name = 'calendar-today'
-                                        size = {16}
+                                        size = {15}
                                         color = {colors.blue2}
                                         style = {{
-                                            marginTop: 5,
+                                            marginTop: 6,
                                             marginRight: 5,
-                                            marginLeft: 3
+                                            marginLeft: 5
                                         }}
                                     />
                                     <Text style = {styles.text5}>{date1Helper(item.completedDate)}</Text>
@@ -150,7 +149,8 @@ const styles = StyleSheet.create({
         shadowColor: '#171717',
         elevation: 5,
         shadowOpacity: 0.7,
-        shadowRadius: 30
+        shadowRadius: 30,
+        marginBottom: 10
     },
     view1:{
         justifyContent: 'flex-start',

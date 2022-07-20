@@ -162,16 +162,15 @@ const Scheduledpickupdetail = ({navigation, route}) => {
     }, [])
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style = {{flex: 1}}>
             <ScrollView 
                 showsVerticalScrollIndicator = {false}
                 stickyHeaderIndices = {[0]}
-                style = {styles.container}
+                style = {{backgroundColor: colors.white}}
             >
                 <Headercomponent name = 'Scheduled Pickups' />
 
-                <View style = {{height: 9*SCREEN_HEIGHT/10, backgroundColor: colors.grey8, borderTopLeftRadius: 30, borderTopRightRadius: 30}}>
-
+                <View style = {{backgroundColor: colors.white}}>
                     <Pressable style = {styles.container2} onPress = {() => setModalVisible(true)}>
                         <Icon 
                             type = 'feather'
@@ -179,63 +178,91 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                             color = {colors.blue5}
                             size = {25}
                             style = {{
-                                marginTop: 30,
+                                marginTop: 26,
                                 alignSelf: 'flex-start'
                             }}
                         />
                         <Text style = {styles.text1}>Pick Up Location</Text>
                         <Text style = {styles.text2}>{item.location[0].city}</Text>
-                        <Icon 
-                            type = 'material-community'
-                            name = 'dots-vertical'
-                            color = {colors.blue5}
-                            size = {25}
-                            style = {{
-                                //alignSelf: 'flex-end',
-                                //marginRight: 5,
-                                //bottom: 15,
-                                position: 'absolute'
-                            }}
-                        />
                     </Pressable>
+                    
+                    <View style = {styles.container1}>
+                        <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
+                            <Icon
+                                type = 'material'
+                                name = 'schedule'
+                                size = {18}
+                                color = {colors.darkBlue}
+                                style = {{
+                                    marginTop: 2,
+                                    marginRight: 5,
+                                    marginLeft: 3
+                                }}
+                            />
+                            <Text style = {styles.title}>Schedule</Text>
+                        </View>
 
-                    <View style = {{flex: 1, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30, padding: 15}}>
                         <View style = {styles.container3}>
-                            <Text style = {styles.text3}>Pickup Scheduled Duration:</Text>
-                            <Text style = {styles.text4}>{from + ' - ' + to}</Text>
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text3}>Scheduled Duration:</Text>
+                                <Text style = {styles.text4}>{from + ' - ' + to}</Text>
+                            </View>
+
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text3}>Collection Days:</Text>
+                                <Text style = {{...styles.text4, marginLeft: 10}}>
+                                    {
+                                        item.days.map((day, index) => {
+                                            return(
+                                                dayConverter(day) + ', '
+                                            )
+                                        })
+                                    }
+                                </Text>
+                            </View>
+
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text5}>Time Slot:</Text>
+                                <Text style = {styles.text4}>{item.timeslot}</Text>
+                            </View>
                         </View>
-                        <View style = {{...styles.container5, paddingTop: 0}}>
-                            <Text style = {styles.text3}>Collection Days:</Text>
-                            <Text style = {styles.text4}>
-                                {
-                                    item.days.map((day) => {
-                                        return(
-                                            dayConverter(day) + '   '
-                                        )
-                                    })
-                                }
-                            </Text>
-                        </View>
-                        <View style = {{...styles.container5, paddingBottom: 0, paddingTop: 0}}>
-                            <Text style = {styles.text5}>Time Slot:</Text>
-                            <Text style = {styles.text4}>{item.timeslot}</Text>
-                        </View>
-                        <View style = {{...styles.container5, paddingBottom: 0}}>
-                            <Text style = {styles.text3}>Payment:</Text>
-                            <Text style = {styles.text4}>Rs. {item.payment}</Text>
-                        </View>
-                        <View style = {styles.container5}>
-                            <Text style = {styles.text3}>Payment Method:</Text>
-                            <Text style = {styles.text4}>{item.paymentMethod}</Text>
+                    </View>
+                    
+                    <View style = {styles.container1}>
+                        <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
+                            <Icon
+                                type = 'material'
+                                name = 'attach-money'
+                                size = {18}
+                                color = {colors.darkBlue}
+                                style = {{
+                                    marginTop: 2,
+                                    marginRight: 5,
+                                    marginLeft: 3
+                                }}
+                            />
+                            <Text style = {styles.title}>Payment Information</Text>
                         </View>
 
-                        <View style = {{...styles.container5, paddingTop: 0}}>
-                            <Text style = {styles.text3}>Hauler Name:</Text>
-                            <Text style = {styles.text4}>{item.pickerId.name}</Text>
-                        </View> 
+                        <View style = {styles.container3}>
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text3}>Payment:</Text>
+                                <Text style = {styles.text4}>Rs. {item.payment}</Text>
+                            </View>
 
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text3}>Payment Method:</Text>
+                                <Text style = {styles.text4}>{item.paymentMethod}</Text>
+                            </View>
+                        </View>
+                    </View>
+                    
+                    <View style = {{flexDirection: 'row'}}>
                         <TouchableOpacity 
-                            style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
+                            style = {{...styles.container1,
+                                elevation: 0, marginVertical: 10,
+                                flexDirection: 'row', backgroundColor: colors.white
+                            }}
                             onPress = {() => {
                                 messageRead(item.pickerId._id)
                                 setModalVisible1(true)
@@ -247,11 +274,14 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                                 color = {colors.darkBlue}
                                 size = {27}
                             />    
-                            <Text style = {styles.text7}>Chat With Hauler</Text>
+                            <Text style = {styles.text6}>Chat With Hauler</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity 
-                            style = {{...styles.container5, paddingTop: 5, marginBottom: 5, justifyContent: 'center'}}
+                            style = {{...styles.container1, 
+                                elevation: 0, marginVertical: 10,
+                                flexDirection: 'row', backgroundColor: colors.white
+                            }}
                             onPress = {() => setModalVisible2(true)}
                         >
                             <Icon
@@ -260,26 +290,26 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                                 color = {colors.darkBlue}
                                 size = {27}
                             />    
-                            <Text style = {styles.text7}>Completed Pickups</Text>
+                            <Text style = {styles.text6}>Completed Pickups</Text>
                         </TouchableOpacity>
+                    </View>
 
-                        <View style = {{alignSelf: 'center', flexDirection: 'row'}}>
-                            <Button
-                                title = {active ? 'Inactive' : 'Active'}
-                                buttonStyle = {{...styles.button, backgroundColor: active ? colors.darkBlue : colors.darkGrey}}
-                                loading = {loading}
-                                disabled = {loading || disable}
-                                onPress = {() => handleActive(item._id)}
-                            />
+                    <View style = {{alignSelf: 'center', flexDirection: 'row', marginTop: 10}}>
+                        <Button
+                            title = {active ? 'Inactive' : 'Active'}
+                            buttonStyle = {{...styles.button, backgroundColor: active ? colors.darkBlue : colors.darkGrey}}
+                            loading = {loading}
+                            disabled = {loading || disable}
+                            onPress = {() => handleActive(item._id)}
+                        />
 
-                            <Button
-                                title = 'Cancel'
-                                buttonStyle = {styles.button}
-                                loading = {loadingCancel}
-                                disabled = {loadingCancel || disable}
-                                onPress = {() => handleCancel(item._id)}
-                            />
-                        </View>
+                        <Button
+                            title = 'Cancel'
+                            buttonStyle = {styles.button}
+                            loading = {loadingCancel}
+                            disabled = {loadingCancel || disable}
+                            onPress = {() => handleCancel(item._id)}
+                        />
                     </View>
 
                     <Modal 
@@ -367,17 +397,17 @@ const styles = StyleSheet.create({
 
     container:{
         display: 'flex',
-        backgroundColor: colors.blue1,
-        //paddingLeft: 10,
-        //paddingTop: 10,
+        backgroundColor: colors.blue1
     },
+    container1:{
+        backgroundColor: colors.grey9,
+        elevation: 5,
+        margin: 15
+    },  
     container2:{
-        backgroundColor: colors.grey8,
+        backgroundColor: colors.grey9,
         paddingLeft: 25, 
-        marginBottom: 10,
-        height: SCREEN_HEIGHT/9,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
+        height: '16%',
     },
     text1:{
         color: colors.blue7,
@@ -385,54 +415,33 @@ const styles = StyleSheet.create({
         bottom: 30
     },
     text2:{
-        color: colors.blue2,
+        color: colors.darkBlue,
         left: 40,
         bottom: 30,
         fontWeight: 'bold'
     },
     container3:{
-        backgroundColor: colors.white,
-        padding: 25,
-        borderTopRightRadius: 30,
-        borderTopLeftRadius: 30,
-        flexDirection: 'row'
+        margin: 15,
+        padding: 10,
+        paddingTop: 0,
+        marginTop: 5,
     },
     text3:{
-        color: colors.blue2,
+        color: colors.blue7,
         fontWeight: 'bold',
+        fontSize: 15
     },
     text4:{
-        color: colors.grey,
+        color: colors.darkBlue,
         fontWeight: 'bold',
         marginLeft: 20
     },
     text5:{
-        color: colors.blue2,
+        color: colors.blue7,
         fontWeight: 'bold',
         marginBottom: 8
     },
-    container4:{
-        backgroundColor: colors.white,
-        paddingLeft: 25,
-    },
     text6:{
-        color: colors.grey,
-        fontWeight: 'bold',
-        marginLeft: 130,
-        marginTop: 5
-    },
-    container5:{
-        backgroundColor: colors.white,
-        padding: 25,
-        flexDirection: 'row'
-    },
-    image:{
-        height: 200,
-        width: 200,
-        //borderRadius: 500,
-        alignContent: 'center'
-    },
-    text7:{
         marginLeft: 5,
         fontSize: 16,
         fontWeight: 'bold',
@@ -459,5 +468,10 @@ const styles = StyleSheet.create({
         width: 140,
         marginHorizontal: 20
     },
+    title:{
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: colors.darkBlue
+    }
 
 })

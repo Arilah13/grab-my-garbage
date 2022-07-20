@@ -5,7 +5,7 @@ import LottieView from 'lottie-react-native'
 import { Button, Icon } from 'react-native-elements'
 
 import { colors } from '../../global/styles'
-import { date2Helper, date1Helper, timeHelper } from '../../helpers/specialPickuphelper'
+import { date2Helper, date1Helper, timeHelper, dateHelper } from '../../helpers/specialPickuphelper'
 
 import { getPendingPickupsOffline, getUpcomingPickups } from '../../redux/actions/specialRequestActions'
 
@@ -73,7 +73,6 @@ const PendingPickupscreen = ({navigation}) => {
                                         style = {{
                                             marginTop: 7,
                                             marginRight: 3,
-                                            marginLeft: 3
                                         }}
                                     />  
                                     <Text style = {styles.text5}>{item.location[0].city}</Text>                        
@@ -98,12 +97,12 @@ const PendingPickupscreen = ({navigation}) => {
                                     <Icon
                                         type = 'material'
                                         name = 'calendar-today'
-                                        size = {16}
+                                        size = {15}
                                         color = {colors.blue2}
                                         style = {{
-                                            marginTop: 5,
+                                            marginTop: 6,
                                             marginRight: 5,
-                                            marginLeft: 3
+                                            marginLeft: 5
                                         }}
                                     />
                                     <Text style = {styles.text3}>{date2Helper(item.datetime)}</Text>
@@ -150,7 +149,8 @@ const styles = StyleSheet.create({
         shadowColor: '#171717',
         elevation: 5,
         shadowOpacity: 0.7,
-        shadowRadius: 30
+        shadowRadius: 30,
+        marginBottom: 10
     },
     view1:{
         justifyContent: 'flex-start',

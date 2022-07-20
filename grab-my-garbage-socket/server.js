@@ -221,6 +221,9 @@ io.on('connection', socket => {
 
                 await socket.to(user).emit('getMessage', {senderid, text, sender, createdAt, conversationId: conversationId, image: 'data:image/png;base64,' + image, current})
                 await socket.emit('messageReceived', {conversationId: conversationId})
+                if(current) {
+                    socket.emit('messageSeen', {conversationId: conversationId})
+                }
             } else {
                 notificationHelper.notifyMessages(receiver)
             }
@@ -232,6 +235,9 @@ io.on('connection', socket => {
 
                 await socket.to(hauler).emit('getMessage', {senderid, text, sender, createdAt, conversationId: conversationId, image: 'data:image/png;base64,' + image, current})
                 await socket.emit('messageReceived', {conversationId: conversationId})
+                if(current) {
+                    socket.emit('messageSeen', {conversationId: conversationId})
+                }
             } else {
                 notificationHelper.notifyMessages(receiver)
             }

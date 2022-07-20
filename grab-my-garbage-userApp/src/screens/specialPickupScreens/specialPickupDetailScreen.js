@@ -94,15 +94,15 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
     }, [])
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style = {{flex: 1}}>
             <ScrollView 
                 showsVerticalScrollIndicator = {false}
                 stickyHeaderIndices = {[0]}
-                style = {styles.container}
+                style = {{backgroundColor: colors.white}}
             >
                 <Headercomponent name = {name} />    
 
-                <View style = {{height: SCREEN_HEIGHT - 45, backgroundColor: colors.grey9}}>
+                <View style = {{backgroundColor: colors.white}}>
                     <Pressable style = {styles.container2} onPress = {() => setModalVisible(true) }>
                         <Icon 
                             type = 'feather'
@@ -116,123 +116,184 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                         />
                         <Text style = {styles.text1}>Pick Up Location</Text>
                         <Text style = {styles.text2}>{item.location[0].city}</Text>
-                        <Icon 
-                            type = 'material-community'
-                            name = 'dots-vertical'
-                            color = {colors.blue5}
-                            size = {25}
-                            style = {{
-                                //alignSelf: 'flex-end',
-                                //marginRight: 5,
-                                //bottom: 15,
-                                position: 'absolute'
-                            }}
-                        />
                     </Pressable>
 
-                    <View style = {{backgroundColor: colors.grey9, padding: 15, elevation: 5, height: '88%'}}>
-                        <View style = {styles.container3}>
-                            <Text style = {styles.text3}>Pickup Scheduled on:</Text>
-                            <Text style = {styles.text4}>{date1Helper(item.datetime) + ' ' + timeHelper(item.datetime)}</Text>
-                        </View>
-
-                        <View style = {{...styles.container5, paddingTop: 0}}>
-                            <Text style = {styles.text3}>{name === 'Completed Pickups' ? 'Pickup Collected On:' : 'Collect Pickup Before:'}</Text>
-                            <Text style = {styles.text4}>{name === 'Completed Pickups' ? dateHelper(item.datetime)+' '+completedTime : dateHelper(item.datetime)+' '+timeHelper(item.datetime)}</Text>
-                        </View>
-
-                        <View style = {styles.container4}>
-                            <Text style = {styles.text5}>Trash Categories:</Text>
-                            <View style = {{position: 'absolute'}}>
-                                <Text style = {{...styles.text6, marginLeft: 155, marginTop: 0}}>{item.category[0]}</Text>
-                            </View>
-                            { item.category.length > 1 ?
-                                <View style = {{marginTop: -8}}> 
-                                    {(item.category).slice(1).map(trash =>
-                                        <Text  
-                                            key = {trash} 
-                                            style = {styles.text6}
-                                        >
-                                            {trash}
-                                        </Text>        
-                                    )}
-                                </View> : null
-                            }
-                        </View>
-
-                        <View style = {{...styles.container5, paddingTop: 20}}>
-                            <Text style = {styles.text3}>Weight:</Text>
-                            <Text style = {styles.text4}>{item.weight} kg</Text>
-                        </View>
-
-                        <View style = {{...styles.container5, paddingBottom: 5, paddingTop: 0}}>
-                            <Text style = {styles.text3}>Optional Images:</Text>
-                            {
-                                item.image === null &&
-                                <Text style = {styles.text4}>No Images Attached</Text>
-                            }
-                        </View>
-
-                        <View style = {{alignSelf: 'center'}}>
-                            {
-                                item.image !== null && 
-                                <Image 
-                                    source = {{uri: item.image}}
-                                    resizeMode = 'contain'
-                                    style = {styles.image}
-                                />
-                            }
-                        </View>
-
-                        <View style = {{...styles.container5, paddingBottom: 0, paddingTop: 0}}>
-                            <Text style = {styles.text3}>Payment:</Text>
-                            <Text style = {styles.text4}>Rs. {item.payment}</Text>
-                        </View>
-
-                        <View style = {styles.container5}>
-                            <Text style = {styles.text3}>Payment Method:</Text>
-                            <Text style = {styles.text4}>{item.paymentMethod}</Text>
-                        </View>
-
-                        {
-                            name === 'Accepted Pickups' &&
-                            <>
-                            <View style = {{...styles.container5, paddingTop: 0}}>
-                                <Text style = {styles.text3}>Hauler Name:</Text>
-                                <Text style = {styles.text4}>{item.pickerId.name}</Text>
-                            </View> 
-
-                            <TouchableOpacity 
-                                style = {{...styles.container5, paddingTop: 30, justifyContent: 'center'}}
-                                onPress = {() => {
-                                    messageRead(item.pickerId._id)
-                                    setModalVisible1(true)
+                    <View style = {styles.container1}>
+                        <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
+                            <Icon
+                                type = 'material'
+                                name = 'schedule'
+                                size = {18}
+                                color = {colors.darkBlue}
+                                style = {{
+                                    marginTop: 2,
+                                    marginRight: 5,
+                                    marginLeft: 3
                                 }}
-                            >
-                                <Icon
-                                    type = 'material'
-                                    name = 'chat'
-                                    color = {colors.darkBlue}
-                                    size = {27}
-                                />    
-                                <Text style = {styles.text7}>Chat With Hauler</Text>
-                            </TouchableOpacity>
-                            </>
-                        }
+                            />
+                            <Text style = {styles.title}>Schedule</Text>
+                        </View>
 
-                        {
-                            item.accepted === 0 && item.completed === 0 &&
-                            <View style = {{alignSelf: 'center', flexDirection: 'row', marginTop: 20}}>
-                                <Button
-                                    title = 'Cancel'
-                                    buttonStyle = {styles.button}
-                                    loading = {loading}
-                                    disabled = {loading || disable}
-                                    onPress = {() => handleCancel(item._id)}
-                                />
+                        <View style = {styles.container3}>
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text3}>Pickup Scheduled on:</Text>
+                                <Text style = {styles.text4}>{date1Helper(item.datetime) + ' ' + timeHelper(item.datetime)}</Text>
                             </View>
-                        }
+                        
+
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text3}>{name === 'Completed Pickups' ? 'Pickup Collected On:' : 'Collect Pickup Before:'}</Text>
+                                <Text style = {styles.text4}>{name === 'Completed Pickups' ? dateHelper(item.datetime)+' '+completedTime : dateHelper(item.datetime)+' '+timeHelper(item.datetime)}</Text>
+                            </View>
+                        </View>
                     </View>
+                        
+                    <View style = {{...styles.container1, marginTop: 0}}>
+                        <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
+                            <Icon
+                                type = 'material'
+                                name = 'info-outline'
+                                size = {18}
+                                color = {colors.darkBlue}
+                                style = {{
+                                    marginTop: 2,
+                                    marginRight: 5,
+                                    marginLeft: 3
+                                }}
+                            />
+                            <Text style = {styles.title}>Waste Information</Text>
+                        </View>
+
+                        <View style = {styles.container3}>
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text5}>Trash Categories:</Text>
+                                <View style = {{position: 'absolute'}}>
+                                    <Text style = {{...styles.text6, marginLeft: 155, marginTop: 0}}>{item.category[0]}</Text>
+                                </View>
+                                { item.category.length > 1 ?
+                                    <View style = {{marginTop: -8}}> 
+                                        {(item.category).slice(1).map(trash =>
+                                            <Text  
+                                                key = {trash} 
+                                                style = {styles.text6}
+                                            >
+                                                {trash}
+                                            </Text>        
+                                        )}
+                                    </View> : null
+                                }
+                            </View>
+
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text3}>Weight:</Text>
+                                <Text style = {styles.text4}>{item.weight} kg</Text>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style = {{...styles.container1, marginTop: 0}}>
+                        <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
+                            <Icon
+                                type = 'material'
+                                name = 'attach-money'
+                                size = {18}
+                                color = {colors.darkBlue}
+                                style = {{
+                                    marginTop: 2,
+                                    marginRight: 5,
+                                    marginLeft: 3
+                                }}
+                            />
+                            <Text style = {styles.title}>Payment Information</Text>
+                        </View>
+                        
+                        <View style = {styles.container3}>
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text3}>Payment:</Text>
+                                <Text style = {styles.text4}>Rs. {item.payment}</Text>
+                            </View>
+
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text3}>Payment Method:</Text>
+                                <Text style = {styles.text4}>{item.paymentMethod}</Text>
+                            </View>
+                        </View>
+                    </View>
+                    
+                    <View style = {{...styles.container1, marginTop: 0}}>
+                        <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
+                            <Icon
+                                type = 'material'
+                                name = 'info'
+                                size = {18}
+                                color = {colors.darkBlue}
+                                style = {{
+                                    marginTop: 2,
+                                    marginRight: 5,
+                                    marginLeft: 3
+                                }}
+                            />
+                            <Text style = {styles.title}>Additional Information</Text>
+                        </View>
+
+                        <View style = {styles.container3}>
+                            <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                <Text style = {styles.text3}>Optional Images:</Text>
+                                {
+                                    item.image === null &&
+                                    <Text style = {styles.text4}>No Images Attached</Text>
+                                }
+                            </View>
+
+                            <View style = {{alignSelf: 'center', marginTop: 5}}>
+                                {
+                                    item.image !== null && 
+                                    <Image 
+                                        source = {{uri: item.image}}
+                                        resizeMode = 'contain'
+                                        style = {styles.image}
+                                    />
+                                }
+                            </View>
+                        </View>
+                    </View>
+
+                    {
+                        name === 'Accepted Pickups' &&
+                        <>
+                        <TouchableOpacity 
+                            style = {{...styles.container1,
+                                justifyContent: 'center', elevation: 0, marginVertical: 10,
+                                flexDirection: 'row', backgroundColor: colors.white
+                            }}
+                            onPress = {() => {
+                                messageRead(item.pickerId._id)
+                                setModalVisible1(true)
+                            }}
+                        >
+                            <Icon
+                                type = 'material'
+                                name = 'chat'
+                                color = {colors.darkBlue}
+                                size = {27}
+                            />    
+                            <Text style = {styles.text7}>Chat With Hauler</Text>
+                        </TouchableOpacity>
+                        </>
+                    }
+
+                    {
+                        item.accepted === 0 && item.completed === 0 &&
+                        <View style = {{alignSelf: 'center', flexDirection: 'row', marginTop: 5}}>
+                            <Button
+                                title = 'Cancel'
+                                buttonStyle = {styles.button}
+                                loading = {loading}
+                                disabled = {loading || disable}
+                                onPress = {() => handleCancel(item._id)}
+                            />
+                        </View>
+                    }
 
                     <Modal 
                         isVisible = {modalVisible}
@@ -288,11 +349,15 @@ const styles = StyleSheet.create({
         display: 'flex',
         backgroundColor: colors.white,
     },
+    container1:{
+        backgroundColor: colors.grey9,
+        elevation: 5,
+        margin: 15
+    },  
     container2:{
         backgroundColor: colors.grey9,
         paddingLeft: 25, 
-        marginBottom: 10,
-        height: '12%',
+        height: '11%',
     },
     text1:{
         color: colors.blue7,
@@ -300,51 +365,41 @@ const styles = StyleSheet.create({
         bottom: 30
     },
     text2:{
-        color: colors.blue2,
+        color: colors.darkBlue,
         left: 40,
         bottom: 30,
         fontWeight: 'bold'
     },
     container3:{
-        backgroundColor: colors.grey9,
-        padding: 25,
-        borderTopRightRadius: 30,
-        borderTopLeftRadius: 30,
-        flexDirection: 'row'
+        margin: 15,
+        padding: 10,
+        paddingTop: 0,
+        marginTop: 5,
     },
     text3:{
-        color: colors.blue2,
+        color: colors.blue7,
         fontWeight: 'bold',
+        fontSize: 15
     },
     text4:{
-        color: colors.grey,
+        color: colors.darkBlue,
         fontWeight: 'bold',
         marginLeft: 20
     },
     text5:{
-        color: colors.blue2,
+        color: colors.blue7,
         fontWeight: 'bold',
         marginBottom: 8
     },
-    container4:{
-        backgroundColor: colors.grey9,
-        paddingLeft: 25,
-    },
     text6:{
-        color: colors.grey,
+        color: colors.darkBlue,
         fontWeight: 'bold',
         marginLeft: 130,
         marginTop: 5
     },
-    container5:{
-        backgroundColor: colors.grey9,
-        padding: 25,
-        flexDirection: 'row'
-    },
     image:{
         height: 150,
         width: 180,
-        //borderRadius: 500,
         alignContent: 'center'
     },
     text7:{
@@ -374,5 +429,10 @@ const styles = StyleSheet.create({
         width: 140,
         marginHorizontal: 20
     },
+    title:{
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: colors.darkBlue
+    }
 
 })

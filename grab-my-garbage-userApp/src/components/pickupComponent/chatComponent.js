@@ -9,6 +9,7 @@ import {
 import { GiftedChat } from 'react-native-gifted-chat'
 import { Icon } from 'react-native-elements'
 import NetInfo from '@react-native-community/netinfo'
+import Modal from 'react-native-modal'
 
 import { colors } from '../../global/styles'
 import { renderMessage, renderBubble, renderComposer, renderInputToolbar, renderSend, scrollToBottomComponent } from '../../helpers/chatScreenHelper'
@@ -203,7 +204,6 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                     onSend(undefined, message)
                 } 
                 dispatch(receiverRead(conversationId))
-                socket.emit('messageSeen', {id: conversationId, receiverRole: 'user', receiverId: sender._id})
             }       
         }) 
     }, [socket])

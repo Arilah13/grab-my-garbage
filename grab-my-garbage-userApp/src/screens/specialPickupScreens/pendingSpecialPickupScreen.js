@@ -102,16 +102,12 @@ const Pendingspecialpickupscreen = ({navigation}) => {
                                     </View>
                                 </View>
                                 <View style = {{position: 'absolute'}}>
-                                    {
-                                        item.active === 1 &&
-                                        <Text style = {{color: 'red', fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Active</Text>
-                                    }
                                     <Button
                                         title = 'View'
                                         buttonStyle = {{
                                             width: 70,
                                             height: 40,
-                                            marginTop: item.active === 1 ? 5 : 18,
+                                            marginTop: 18,
                                             borderRadius: 15,
                                             marginLeft: SCREEN_WIDTH/1.3,
                                             backgroundColor: colors.darkBlue
@@ -148,7 +144,8 @@ const styles = StyleSheet.create({
         shadowColor: '#171717',
         elevation: 5,
         shadowOpacity: 0.7,
-        shadowRadius: 30
+        shadowRadius: 30,
+        marginBottom: 10
     },
     view1:{
         justifyContent: 'flex-start',

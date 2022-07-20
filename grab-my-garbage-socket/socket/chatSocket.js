@@ -80,7 +80,7 @@ const chatSocket = {
     },
     removeUserCurrentChat: ({id}) => {
         usersCurrentChat = usersCurrentChat.filter(user => user.userid !== id)
-    }
+    },
 } 
 
 module.exports = chatSocket

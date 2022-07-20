@@ -117,18 +117,22 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                     <View style = {{position: 'absolute'}}>
                                         {
                                             item.inactive === 1 &&
-                                            <Text style = {{color: colors.darkGrey, fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Inactive</Text>
+                                            <View style = {{width: SCREEN_WIDTH/5, backgroundColor: colors.grey8, marginLeft: '80%', height: 25, justifyContent: 'center'}}>
+                                                <Text style = {{color: colors.darkGrey, fontSize: 15, fontWeight: 'bold', marginLeft: 5}}>Inactive</Text>
+                                            </View>
                                         }
                                         {
                                             item.active === 1 &&
-                                            <Text style = {{color: 'red', fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Active</Text>
+                                            <View style = {{width: SCREEN_WIDTH/5, backgroundColor: colors.grey8, marginLeft: '80%', height: 25, justifyContent: 'center'}}>
+                                                <Text style = {{color: 'red', fontSize: 15, fontWeight: 'bold', marginLeft: 5}}>Active</Text>
+                                            </View>
                                         }
                                         <Button
                                             title = 'View'
                                             buttonStyle = {{
                                                 width: 70,
                                                 height: 40,
-                                                marginTop: item.active === 1 || item.inactive === 1 ? 5 : 18,
+                                                marginTop: item.active === 1 || item.inactive === 1 ? 10 : 18,
                                                 borderRadius: 15,
                                                 marginLeft: SCREEN_WIDTH/1.4,
                                                 backgroundColor: colors.darkBlue

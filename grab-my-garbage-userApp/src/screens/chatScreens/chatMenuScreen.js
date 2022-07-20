@@ -36,7 +36,9 @@ const Chatmenuscreen = ({navigation}) => {
         const element = await conversation.splice(index, 1)[0]
         
         if(element.conversation.receiverUserRead === false) {
+            await element.totalMessage.map(msg => msg.userSeen = true)
             element.conversation.receiverUserRead = true
+            element.message.userSeen = true
             dispatch(receiverRead(id))
         }
         
@@ -45,6 +47,11 @@ const Chatmenuscreen = ({navigation}) => {
             type: GET_ALL_CONVERSATIONS_SUCCESS,
             payload: conversation
         })
+    }
+
+    const checkUnRead = (item) => {
+        const data = item.filter(item => item.userSeen === false)
+        return data.length
     }
 
     const checkLoading = (id) => {
@@ -164,6 +171,7 @@ const Chatmenuscreen = ({navigation}) => {
                                                     <Text style = {styles.userName}>{item.conversation.haulerId.name}</Text>
                                                     <Text style = {styles.postTime}>{date1Helper(item.conversation.updatedAt)}</Text>
                                                 </View>
+
                                                 <View style = {styles.userInfoText1}>
                                                     {
                                                         item.message.sender[0] === userInfo._id && (item.message.pending ? 
@@ -194,20 +202,15 @@ const Chatmenuscreen = ({navigation}) => {
                                                     }
                                                     {
                                                         item.conversation.receiverUserRead === false &&
-                                                            <Icon
-                                                                type = 'material-community'
-                                                                name = 'circle-medium'
-                                                                color = 'red'
-                                                                size = {26}
-                                                                style = {{
-                                                                    marginRight: 5,
-                                                                    marginBottom: -10
-                                                                }}
-                                                            />
-                                                        
+                                                        <View style = {styles.unRead}>
+                                                            <View style = {styles.circle}>
+                                                                <Text style = {styles.unReadNo}>{checkUnRead(item.totalMessage)}</Text>
+                                                            </View>
+                                                        </View>
                                                     }
                                                 </View>
                                             </View>
+
                                         </View>
                                     </Pressable>
                                 </Swipeout>
@@ -235,10 +238,9 @@ const styles = StyleSheet.create({
     },
     userInfo:{
         flexDirection: 'row',    
-        justifyContent: 'space-between',
     },
     userImgWrapper:{
-        paddingTop: 10,
+        paddingTop: 15,
         paddingBottom: 15,
         paddingLeft: 20
     },
@@ -258,11 +260,10 @@ const styles = StyleSheet.create({
     userInfoText:{
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 5,
+        marginBottom: 7,
     },
     userInfoText1:{
         flexDirection: 'row',
-        marginBottom: 5,
     },
     userName:{
         fontSize: 14,
@@ -291,6 +292,20 @@ const styles = StyleSheet.create({
     text1:{
         marginRight: 5,
         color: colors.darkBlue
+    },
+    unRead:{
+        position: 'absolute',
+        marginLeft: '90%',
+    },
+    circle:{
+        height: 20,
+        width: 20,
+        backgroundColor: colors.error,
+        borderRadius: 25,
+        alignItems: 'center'
+    },
+    unReadNo:{
+        color: colors.white
     }
 
 })

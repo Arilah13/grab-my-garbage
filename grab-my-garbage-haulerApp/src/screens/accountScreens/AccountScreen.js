@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 0
     },
     text2:{
-        color: colors.blue2,
+        color: colors.darkBlue,
         fontWeight: 'bold',
         fontSize: 16,
         paddingHorizontal: 30

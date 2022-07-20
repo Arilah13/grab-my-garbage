@@ -36,7 +36,11 @@ const TabNavigator = () => {
     const { userInfo } = userLogin
 
     useEffect(async() => {
-        if(socket) {
+        if(socket && start === true) {
+            if(start === true) {
+                setStart(false)
+            }
+            
             socket.on('getMessage', async({senderid, text, sender, createdAt, image, current}) => {
                 const index = await conversation.findIndex((convo) => convo.conversation.userId._id === senderid)
 
@@ -62,27 +66,51 @@ const TabNavigator = () => {
                             sender.name,
                             sender.avatar
                         ]
+                        element.message.userSeen = true
 
                         if(current && current === element.conversation._id) {
                             element.conversation.receiverHaulerRead = true
+                            element.message.haulerSeen = true
+
+                            const message = {
+                                _id: Date.now(),
+                                conversationId: element.conversationId,
+                                createdAt: createdAt,
+                                created: createdAt,
+                                sender: [
+                                    sender._id,
+                                    sender.name,
+                                    sender.avatar
+                                ],
+                                text: text && text,
+                                image: image && image !== 'data:image/png;base64,undefined' && image,
+                                userSeen: true,
+                                haulerSeen: true,
+                                received: true
+                            }
+                            element.totalMessage.push(message)
                         } else {
                             element.conversation.receiverHaulerRead = false
-                        }          
+                            element.message.haulerSeen = false
 
-                        const message = {
-                            _id: Date.now(),
-                            conversationId: element.conversationId,
-                            createdAt: createdAt,
-                            created: createdAt,
-                            sender: [
-                                sender._id,
-                                sender.name,
-                                sender.avatar
-                            ],
-                            text: text && text,
-                            image: image && image !== 'data:image/png;base64,undefined' && image
-                        }
-                        element.totalMessage.push(message)
+                            const message = {
+                                _id: Date.now(),
+                                conversationId: element.conversationId,
+                                createdAt: createdAt,
+                                created: createdAt,
+                                sender: [
+                                    sender._id,
+                                    sender.name,
+                                    sender.avatar
+                                ],
+                                text: text && text,
+                                image: image && image !== 'data:image/png;base64,undefined' && image,
+                                userSeen: true,
+                                haulerSeen: false,
+                                received: true
+                            }
+                            element.totalMessage.push(message)
+                        }          
 
                         await conversation.splice(0, 0, element)
                         dispatch({
@@ -110,7 +138,10 @@ const TabNavigator = () => {
                                 image: sender.avatar,
                                 name: sender.name
                             },
-                            receiverHaulerRead: false
+                            receiverHaulerRead: false,
+                            receiverUserRead: true,
+                            userVisible: true,
+                            haulerVisible: true
                         },
                         message: {
                             created: createdAt,
@@ -123,7 +154,10 @@ const TabNavigator = () => {
                                 sender._id,
                                 sender.name,
                                 sender.avatar
-                            ]
+                            ],
+                            userSeen: true,
+                            haulerSeen: false,
+                            received: true
                         },
                         lastMessage: [{
                             created: createdAt,
@@ -136,7 +170,10 @@ const TabNavigator = () => {
                                 sender._id,
                                 sender.name,
                                 sender.avatar
-                            ]
+                            ],
+                            userSeen: true,
+                            haulerSeen: false,
+                            received: true
                         }]
                     }
                     await conversation.splice(0, 0, element)
@@ -183,16 +220,13 @@ const TabNavigator = () => {
                 }
             })
 
-            if(socket && start === true) {
-                setStart(false)
-                const convo = await conversation.filter(convo => convo.message.received === false && convo.message.sender[0] !== userInfo._id)
-                if(convo.length > 0) {
-                    await convo.map((con, index) => {
-                        setTimeout(() => {
-                            socket.emit('messageDelayReceived', {id: con.conversation._id, receiverId: con.conversation.userId._id, senderRole: 'hauler'})
-                        }, 1000*index)
-                    })
-                }
+            const convo = await conversation.filter(convo => convo.message.received === false && convo.message.sender[0] !== userInfo._id)
+            if(convo.length > 0) {
+                await convo.map((con, index) => {
+                    setTimeout(() => {
+                        socket.emit('messageDelayReceived', {id: con.conversation._id, receiverId: con.conversation.userId._id, senderRole: 'hauler'})
+                    }, 1000*index)
+                })
             }
         }
     }, [socket])

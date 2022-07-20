@@ -155,7 +155,7 @@ const pickupController = {
     getCompletedPickups: async(req, res) => {
         try{
             const customerId = req.params.id
-            const pickups = await Pickups.find({ customerId, accepted: 1, cancelled: 0, completed: 1 }).populate('pickerId')
+            const pickups = await Pickups.find({ customerId, $or: [{completed: 1}, {cancelled: 1}] }).populate('pickerId')
             if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(pickups)

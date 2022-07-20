@@ -203,7 +203,6 @@ const Chatscreen = ({route, navigation}) => {
     useEffect(() => {
         socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId, image}) => {
             if(senderid === userid._id) {
-                socket.emit('messageSeen', {id: conversationId, receiverRole: 'hauler', receiverId: userid._id})
                 if(text) {
                     const message = [{text, user: sender, createdAt, _id: Date.now()}]
                     onSend(message)

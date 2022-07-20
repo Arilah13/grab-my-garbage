@@ -28,7 +28,6 @@ const Chatscreen = ({route, navigation}) => {
 
     const [messages, setMessages] = useState([])
     const [modalVisible, setModalVisible] = useState(false)
-    const [first, setFirst] = useState(true)
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
@@ -204,7 +203,6 @@ const Chatscreen = ({route, navigation}) => {
     useEffect(() => {
         socket.on('getMessage', ({senderid, text, sender, createdAt, conversationId, image}) => {
             if(senderid === haulerid._id) {
-                socket.emit('messageSeen', {id: conversationId, receiverRole: 'user', receiverId: haulerid._id})
                 if(text) {
                     const message = [{text, user: sender, createdAt, _id: Date.now()}]
                     onSend(message, undefined)
@@ -219,8 +217,7 @@ const Chatscreen = ({route, navigation}) => {
     }, [socket])
 
     useEffect(() => {
-        if(messages.length > 0 && first === true) {
-            setFirst(false)
+        if(messages.length > 0) {
             socket.on('messageReceived', ({conversationId}) => {
                 if(conversationId === id) {
                     messages.map(msg => msg.received = true)

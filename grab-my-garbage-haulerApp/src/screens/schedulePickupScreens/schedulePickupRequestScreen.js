@@ -62,71 +62,69 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                     )}
                     renderItem = {({item}) => (
                         <View style = {styles.card}>
-                            <View style = {styles.card}>
-                                <View style = {{flex: 1, flexWrap: 'wrap'}}>
-                                <View>
-                                    <View style = {{...styles.view1, flexDirection: 'row'}}> 
-                                        <Icon
-                                            type = 'material'
-                                            name = 'place'
-                                            size = {18}
-                                            color = {colors.blue2}
-                                            style = {{
-                                                marginTop: 5,
-                                                marginRight: 5
-                                            }}
-                                        /> 
-                                        <Text style = {styles.text7}>
-                                            {item.location[0].city}
-                                        </Text>                                         
-                                    </View>
-                                    <View style = {{...styles.view1, flexDirection: 'row'}}> 
-                                        <Text style = {styles.text1}>TimeSlot:</Text>   
-                                        <Icon
-                                            type = 'material'
-                                            name = 'schedule'
-                                            size = {17}
-                                            color = {colors.blue2}
-                                            style = {{
-                                                marginTop: 8,
-                                                marginRight: 3,
-                                                marginLeft: 3
-                                            }}
-                                        />  
-                                        <Text style = {styles.text1}>{item.timeslot}</Text>                        
-                                    </View>
-                                    <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                        <Text style = {styles.text4}>Duration:</Text>
-                                        <Icon
-                                            type = 'material'
-                                            name = 'hourglass-empty'
-                                            size = {16}
-                                            color = {colors.blue2}
-                                            style = {{
-                                                marginTop: 6,
-                                                marginRight: 3,
-                                                marginLeft: 3
-                                            }}
-                                        />
-                                        <Text style = {styles.text2}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
-                                        <Text style = {styles.text3}></Text>
-                                    </View>
-                                </View>
-                                <View style = {{position: 'absolute'}}>
-                                    <Button
-                                        title = 'View'
-                                        buttonStyle = {{
-                                            width: 70,
-                                            height: 40,
-                                            marginTop: 18,
-                                            borderRadius: 15,
-                                            marginLeft: SCREEN_WIDTH/1.3,
-                                            backgroundColor: colors.buttons
+                            <View style = {{flex: 1, flexWrap: 'wrap'}}>
+                            <View>
+                                <View style = {{...styles.view1, flexDirection: 'row'}}> 
+                                    <Icon
+                                        type = 'material'
+                                        name = 'place'
+                                        size = {18}
+                                        color = {colors.blue2}
+                                        style = {{
+                                            marginTop: 5,
+                                            marginRight: 5
                                         }}
-                                        onPress = {() => navigation.navigate('ScheduleDetail', {item, from: fromDate(item.from), to: fromDate(item.to)})}
+                                    /> 
+                                    <Text style = {styles.text5}>
+                                        {item.location[0].city}
+                                    </Text>                                         
+                                </View>
+                                <View style = {{...styles.view1, flexDirection: 'row'}}> 
+                                    <Text style = {styles.text1}>TimeSlot:</Text>   
+                                    <Icon
+                                        type = 'material'
+                                        name = 'schedule'
+                                        size = {17}
+                                        color = {colors.blue2}
+                                        style = {{
+                                            marginTop: 8,
+                                            marginRight: 3,
+                                            marginLeft: 3
+                                        }}
+                                    />  
+                                    <Text style = {styles.text1}>{item.timeslot}</Text>                        
+                                </View>
+                                <View style = {{...styles.view1, flexDirection: 'row'}}>
+                                    <Text style = {styles.text4}>Duration:</Text>
+                                    <Icon
+                                        type = 'material'
+                                        name = 'hourglass-empty'
+                                        size = {16}
+                                        color = {colors.blue2}
+                                        style = {{
+                                            marginTop: 6,
+                                            marginRight: 3,
+                                            marginLeft: 3
+                                        }}
                                     />
+                                    <Text style = {styles.text2}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
+                                    <Text style = {styles.text3}></Text>
                                 </View>
-                                </View>
+                            </View>
+                            <View style = {{position: 'absolute'}}>
+                                <Button
+                                    title = 'View'
+                                    buttonStyle = {{
+                                        width: 70,
+                                        height: 40,
+                                        marginTop: 18,
+                                        borderRadius: 15,
+                                        marginLeft: SCREEN_WIDTH/1.3,
+                                        backgroundColor: colors.buttons
+                                    }}
+                                    onPress = {() => navigation.navigate('ScheduleDetail', {item, from: fromDate(item.from), to: fromDate(item.to)})}
+                                />
+                            </View>
                             </View>
                         </View>                        
                     )}
@@ -144,19 +142,18 @@ const styles = StyleSheet.create({
         display: 'flex',
         height: SCREEN_HEIGHT - (95 + Height),
         backgroundColor: colors.grey9,
-        paddingTop: 10,
+        paddingTop: 20,
         alignItems: 'center',
     },
     card:{
-        width: SCREEN_WIDTH/1.15,
+        width: SCREEN_WIDTH,
         height: 80,
-        marginBottom: 20,
-        backgroundColor: colors.blue1,
-        borderRadius: 20,
+        backgroundColor: colors.white,
         shadowColor: '#171717',
         elevation: 5,
         shadowOpacity: 0.7,
         shadowRadius: 30,
+        marginBottom: 10
     },
     view1:{
         justifyContent: 'flex-start',
@@ -187,7 +184,7 @@ const styles = StyleSheet.create({
         fontSize: 13
     },
     text5:{
-        marginTop: 7,
+        marginTop: 4,
         fontSize: 12,
         color: colors.blue2,
         fontWeight: 'bold',

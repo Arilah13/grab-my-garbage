@@ -71,51 +71,90 @@ const Completedspecialpickupscreen = ({navigation}) => {
                                         <Text style = {styles.text1}>Weight:</Text>   
                                         <Text style = {{...styles.text1, marginLeft: 7}}>{item.weight}kg</Text>                        
                                     </View>
-                                    <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                        <Text style = {styles.text4}>completed: </Text>
-                                        <Icon
-                                            type = 'material'
-                                            name = 'schedule'
-                                            size = {16}
-                                            color = {colors.blue2}
-                                            style = {{
-                                                marginTop: 7,
-                                                marginRight: 3,
-                                                marginLeft: 3
-                                            }}
-                                        />
-                                        <Text style = {styles.text2}>{timeHelper(item.completedDate)}</Text>
-                                        <Icon
-                                            type = 'material'
-                                            name = 'calendar-today'
-                                            size = {16}
-                                            color = {colors.blue2}
-                                            style = {{
-                                                marginTop: 5,
-                                                marginRight: 5,
-                                                marginLeft: 3
-                                            }}
-                                        />
-                                        <Text style = {styles.text3}>{date2Helper(item.completedDate)}</Text>
-                                    </View>
+                                    {
+                                        item.completed === 1 &&
+                                        <View style = {{...styles.view1, flexDirection: 'row'}}>
+                                            <Text style = {styles.text4}>completed: </Text>
+                                            <Icon
+                                                type = 'material'
+                                                name = 'schedule'
+                                                size = {16}
+                                                color = {colors.blue2}
+                                                style = {{
+                                                    marginTop: 7,
+                                                    marginRight: 3,
+                                                    marginLeft: 3
+                                                }}
+                                            />
+                                            <Text style = {styles.text2}>{timeHelper(item.completedDate)}</Text>
+                                            <Icon
+                                                type = 'material'
+                                                name = 'calendar-today'
+                                                size = {16}
+                                                color = {colors.blue2}
+                                                style = {{
+                                                    marginTop: 5,
+                                                    marginRight: 5,
+                                                    marginLeft: 3
+                                                }}
+                                            />
+                                            <Text style = {styles.text3}>{date2Helper(item.completedDate)}</Text>
+                                        </View>
+                                    }
+                                    
+                                    {
+                                        item.cancelled === 1 &&
+                                        <View style = {{...styles.view1, flexDirection: 'row'}}>
+                                            <Text style = {styles.text4}>before: </Text>
+                                            <Icon
+                                                type = 'material'
+                                                name = 'schedule'
+                                                size = {16}
+                                                color = {colors.blue2}
+                                                style = {{
+                                                    marginTop: 7,
+                                                    marginRight: 3,
+                                                    marginLeft: 3
+                                                }}
+                                            />
+                                            <Text style = {styles.text2}>{timeHelper(item.datetime)}</Text>
+                                            <Icon
+                                                type = 'material'
+                                                name = 'calendar-today'
+                                                size = {16}
+                                                color = {colors.blue2}
+                                                style = {{
+                                                    marginTop: 5,
+                                                    marginRight: 5,
+                                                    marginLeft: 3
+                                                }}
+                                            />
+                                            <Text style = {styles.text3}>{date2Helper(item.datetime)}</Text>
+                                        </View>
+                                    }
                                 </View>
                                 <View style = {{position: 'absolute'}}>
                                     {
-                                        item.active === 1 &&
-                                        <Text style = {{color: 'red', fontSize: 15, fontWeight: 'bold',marginLeft: SCREEN_WIDTH/1.57}}>Active</Text>
+                                        item.cancelled === 1 &&
+                                        <View style = {{width: SCREEN_WIDTH/5, backgroundColor: colors.grey8, marginLeft: '80%', height: 25, justifyContent: 'center'}}>
+                                            <Text style = {{color: 'red', fontSize: 15, fontWeight: 'bold', marginLeft: 5}}>Cancelled</Text>
+                                        </View>
                                     }
-                                    <Button
-                                        title = 'View'
-                                        buttonStyle = {{
-                                            width: 70,
-                                            height: 40,
-                                            marginTop: item.active === 1 ? 5 : 18,
-                                            borderRadius: 15,
-                                            marginLeft: SCREEN_WIDTH/1.3,
-                                            backgroundColor: colors.darkBlue
-                                        }}
-                                        onPress = {() => navigation.navigate('pickupDetail', {item, name: 'Completed Pickups'})}
-                                    />
+                                    {
+                                        item.completed === 1 &&
+                                        <Button
+                                            title = 'View'
+                                            buttonStyle = {{
+                                                width: 70,
+                                                height: 40,
+                                                marginTop: item.cancelled === 1 ? 10 : 18,
+                                                borderRadius: 15,
+                                                marginLeft: SCREEN_WIDTH/1.3,
+                                                backgroundColor: colors.darkBlue
+                                            }}
+                                            onPress = {() => navigation.navigate('pickupDetail', {item, name: 'Completed Pickups'})}
+                                        />
+                                    }
                                 </View>
                                 </View>
                             </View>
@@ -146,7 +185,8 @@ const styles = StyleSheet.create({
         shadowColor: '#171717',
         elevation: 5,
         shadowOpacity: 0.7,
-        shadowRadius: 30
+        shadowRadius: 30,
+        marginBottom: 10
     },
     view1:{
         justifyContent: 'flex-start',

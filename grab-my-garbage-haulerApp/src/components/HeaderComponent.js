@@ -19,11 +19,11 @@ const Headercomponent = ({name, destination}) => {
                 <Icon
                     type = 'material'
                     name = 'arrow-back'
-                    color = {colors.blue5}
+                    color = {colors.grey1}
                     size = {25}
                     style = {{
                         alignSelf: 'flex-start',
-                        marginTop: 25,
+                        marginTop: 13,
                         display: 'flex'
                     }}
                 />
@@ -38,16 +38,16 @@ export default Headercomponent
 const styles = StyleSheet.create({
 
     container:{
-        backgroundColor: colors.blue1,
+        backgroundColor: colors.white,
         paddingLeft: 25, 
         //marginBottom: 0,
-        height: SCREEN_HEIGHT/10,
+        height: 45,
     },
     text:{
         display: 'flex',
-        top: 26,
+        marginTop: 15,
         left: 15,
-        color: colors.blue2,
+        color: colors.grey1,
         fontWeight: 'bold',
         fontSize: 16
     }
