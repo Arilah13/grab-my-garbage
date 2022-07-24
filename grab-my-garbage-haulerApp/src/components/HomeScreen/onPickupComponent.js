@@ -33,7 +33,9 @@ const Onpickupcomponent = ({handlePickupComplete, order, arrived}) => {
         const element = await conversation.splice(index, 1)[0]
         
         if(element.conversation.receiverHaulerRead === false) {
+            await element.totalMessage.map(msg => msg.haulerSeen = true)
             element.conversation.receiverHaulerRead = true
+            element.message.haulerSeen = true
             dispatch(receiverRead(element.conversation._id))
         }
         

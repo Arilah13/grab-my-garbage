@@ -26,7 +26,7 @@ const Acceptedstacknavigator = ({navigation, route}) => {
                     backgroundColor: colors.white,
                     height: 45,
                 },
-                swipeEnabled: true
+                swipeEnabled: false
             })
             setView(true)
         }

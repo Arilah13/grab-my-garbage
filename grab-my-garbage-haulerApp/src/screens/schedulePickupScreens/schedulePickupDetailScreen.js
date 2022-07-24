@@ -37,7 +37,9 @@ const Scheduledpickupdetail = ({navigation, route}) => {
         const element = await conversation.splice(index, 1)[0]
         
         if(element.conversation.receiverHaulerRead === false) {
+            await element.totalMessage.map(msg => msg.haulerSeen = true)
             element.conversation.receiverHaulerRead = true
+            element.message.haulerSeen = true
             dispatch(receiverRead(element.conversation._id))
         }
         
@@ -60,14 +62,14 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                 stickyHeaderIndices = {[0]}
                 style = {{backgroundColor: colors.white}}
             >
-                <Headercomponent name = 'Scheduled Pickups' />
+                <Headercomponent name = 'Scheduled Pickup Detail' />
 
                 <View style = {{backgroundColor: colors.white}}>
                     <Pressable style = {styles.container2} onPress = {() => setModalVisible(true)}>
                         <Icon 
                             type = 'feather'
                             name = 'map-pin'
-                            color = {colors.darkBlue}
+                            color = {colors.blue2}
                             size = {25}
                             style = {{
                                 marginTop: 26,
@@ -84,7 +86,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                                 type = 'material'
                                 name = 'schedule'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -120,13 +122,13 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         </View>
                     </View>
 
-                    <View style = {{...styles.container1, marginTop: 0}}>
+                    <View style = {{...styles.container1, marginTop: 0, backgroundColor: colors.green2}}>
                         <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
                             <Icon
                                 type = 'material'
                                 name = 'attach-money'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -225,7 +227,8 @@ const styles = StyleSheet.create({
     container1:{
         backgroundColor: colors.grey9,
         elevation: 5,
-        margin: 15
+        margin: 15,
+        borderRadius: 15
     },  
     container2:{
         backgroundColor: colors.grey9,
@@ -288,7 +291,7 @@ const styles = StyleSheet.create({
     title:{
         fontSize: 16,
         fontWeight: 'bold',
-        color: colors.darkBlue
+        color: colors.blue5
     }
 
 })

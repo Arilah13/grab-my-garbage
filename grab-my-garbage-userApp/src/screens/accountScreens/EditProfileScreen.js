@@ -124,8 +124,8 @@ const Editprofilescreen = ({navigation}) => {
     }, [info, success])
     
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <Headercomponent name = 'Account' />
+        <SafeAreaView>
+            <Headercomponent name = 'My Profile' />
             <KeyboardAvoidingView behavior = 'position' keyboardVerticalOffset = {-160}>
             <View style = {styles.container}>
                 <View style = {styles.view}>
@@ -290,9 +290,7 @@ const styles = StyleSheet.create({
 
     container:{
         height: 9*SCREEN_HEIGHT/10,
-        backgroundColor: colors.blue2,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
+        backgroundColor: colors.grey5,
     },
     view:{
         height: 3*SCREEN_HEIGHT/10,
@@ -300,9 +298,7 @@ const styles = StyleSheet.create({
     },
     view2:{
         height: 6*SCREEN_HEIGHT/10,
-        backgroundColor: colors.white,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30 
+        backgroundColor: colors.grey9,
     },
     text: {
         marginTop: 10,
@@ -332,7 +328,7 @@ const styles = StyleSheet.create({
         color: colors.grey1,
     },
     button:{
-        backgroundColor: colors.buttons,
+        backgroundColor: colors.darkBlue,
         borderRadius: 10,
         height: 50,
     },

@@ -120,7 +120,7 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                         marginTop: 18,
                                         borderRadius: 15,
                                         marginLeft: SCREEN_WIDTH/1.3,
-                                        backgroundColor: colors.buttons
+                                        backgroundColor: colors.darkBlue
                                     }}
                                     onPress = {() => navigation.navigate('ScheduleDetail', {item, from: fromDate(item.from), to: fromDate(item.to)})}
                                 />

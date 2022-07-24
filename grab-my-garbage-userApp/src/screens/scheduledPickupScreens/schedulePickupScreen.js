@@ -117,13 +117,13 @@ const Schedulepickupscreen = ({navigation}) => {
     }, [handleConfirmDate1, handleConfirmDate2])
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+        <SafeAreaView style = {{flex: 1}}>
             <ScrollView
                 stickyHeaderIndices = {[0]}
                 showsVerticalScrollIndicator = {false}
-                style = {{height: SCREEN_HEIGHT}}
+                style = {{backgroundColor: colors.white}}
             >
-                <Headercomponent name = 'Home' destination = 'Home'/>
+                <Headercomponent name = 'Request Schedule Pickup' destination = 'Home'/>
 
                 <Formik
                     initialValues = {initialValues}
@@ -148,7 +148,7 @@ const Schedulepickupscreen = ({navigation}) => {
                 >
                 {(props) => 
                     <>
-                    <View style = {{backgroundColor: colors.grey8, borderTopRightRadius: 30, borderTopLeftRadius: 30, height: 11*SCREEN_HEIGHT/10}}>
+                    <View style = {{backgroundColor: colors.white}}>
                         <View style = {styles.container2}>
                             <Pressable 
                                 onPress = {() => navigation.navigate('Destination', {destination: 'Schedule Pickup'})}
@@ -168,18 +168,6 @@ const Schedulepickupscreen = ({navigation}) => {
                                     <Text style = {styles.text2}>Pick Up Location</Text>
                                     <Text style = {styles.text3}>{address === 'Current Location' ? address : address_new}</Text>
                                 </View>                               
-                                {/* <Icon 
-                                    type = 'material-community'
-                                    name = 'dots-vertical'
-                                    color = {colors.blue5}
-                                    size = {25}
-                                    style = {{
-                                        alignSelf: 'flex-end',
-                                        marginRight: 5,
-                                        bottom: 15,
-                                        //position: 'absolute'
-                                    }}
-                                /> */}
                             </Pressable>               
                         </View>
 
@@ -387,20 +375,17 @@ export default Schedulepickupscreen
 const styles = StyleSheet.create({
 
     container2:{
-        backgroundColor: colors.grey8,
+        backgroundColor: colors.grey9,
         paddingLeft: 25, 
-        height: SCREEN_HEIGHT/8,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
+        height: '10%',
     },
     text2:{
         color: colors.blue7,
         marginLeft: 15,
     },
     text3:{
-        color: colors.blue2,
+        color: colors.darkBlue,
         marginLeft: 15,
-        //marginBottom: 30,
         fontWeight: 'bold'
     },
     container3:{
@@ -420,6 +405,7 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 15,
         marginTop: 10,
+        elevation: 5
     },
     view2:{
         width: "82%",
@@ -431,7 +417,7 @@ const styles = StyleSheet.create({
         marginTop: 5
     },
     button:{
-        backgroundColor: colors.buttons,
+        backgroundColor: colors.darkBlue,
         borderRadius: 10,
         height: 50,
     },

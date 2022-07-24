@@ -103,7 +103,6 @@ const Pickupdetailscreen = ({navigation, route}) => {
         const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/specialrequest/acceptPickup/${id}`, {haulerId: userInfo._id}, config)
 
         if(res.status === 200) {
-            await axios.post('https://grab-my-garbage-server.herokuapp.com/users/notification', {}, config)
             const pickup = await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
             dispatch({
                 type: PENDING_PICKUP_RETRIEVE_SUCCESS,
@@ -125,7 +124,9 @@ const Pickupdetailscreen = ({navigation, route}) => {
         const element = await conversation.splice(index, 1)[0]
         
         if(element.conversation.receiverHaulerRead === false) {
+            await element.totalMessage.map(msg => msg.haulerSeen = true)
             element.conversation.receiverHaulerRead = true
+            element.message.haulerSeen = true
             dispatch(receiverRead(element.conversation._id))
         }
         
@@ -165,7 +166,7 @@ const Pickupdetailscreen = ({navigation, route}) => {
                 stickyHeaderIndices = {[0]}
                 style = {{backgroundColor: colors.white}}
             >
-                <Headercomponent name = {name} />    
+                <Headercomponent name = {'Special Pickup Detail'} />    
 
                 <View style = {{backgroundColor: colors.white}}>
                     <Pressable style = {styles.container2} onPress = {() => {
@@ -174,7 +175,7 @@ const Pickupdetailscreen = ({navigation, route}) => {
                         <Icon 
                             type = 'feather'
                             name = 'map-pin'
-                            color = {colors.darkBlue}
+                            color = {colors.blue5}
                             size = {25}
                             style = {{
                                 marginTop: 30,
@@ -191,7 +192,7 @@ const Pickupdetailscreen = ({navigation, route}) => {
                                 type = 'material'
                                 name = 'schedule'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -214,13 +215,13 @@ const Pickupdetailscreen = ({navigation, route}) => {
                         </View>
                     </View>
                     
-                    <View style = {{...styles.container1, marginTop: 0}}>
+                    <View style = {{...styles.container1, marginTop: 0, backgroundColor: colors.green2}}>
                         <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
                             <Icon
                                 type = 'material'
                                 name = 'info-outline'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -257,13 +258,13 @@ const Pickupdetailscreen = ({navigation, route}) => {
                         </View>
                     </View>
 
-                    <View style = {{...styles.container1, marginTop: 0}}>
+                    <View style = {{...styles.container1, marginTop: 0, backgroundColor: colors.grey8}}>
                         <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
                             <Icon
                                 type = 'material'
                                 name = 'attach-money'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -292,7 +293,7 @@ const Pickupdetailscreen = ({navigation, route}) => {
                                 type = 'material'
                                 name = 'info'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -306,14 +307,14 @@ const Pickupdetailscreen = ({navigation, route}) => {
                             <View style = {{flexDirection: 'row', marginTop: 10}}>
                                 <Text style = {styles.text3}>Optional Images:</Text>
                                 {
-                                    item.image === null &&
+                                    item.image === null || item.image === undefined &&
                                     <Text style = {styles.text4}>No Images Attached</Text>
                                 }
                             </View>
 
                             <View style = {{alignSelf: 'center', marginTop: 5}}>
                                     {
-                                        item.image !== null &&
+                                        item.image && item.image !== null &&
                                         <Image 
                                             source = {{uri: item.image}}
                                             resizeMode = 'contain'
@@ -446,12 +447,13 @@ const styles = StyleSheet.create({
     container1:{
         backgroundColor: colors.grey9,
         elevation: 5,
-        margin: 15
+        margin: 15,
+        borderRadius: 15
     },  
     container2:{
         backgroundColor: colors.grey9,
         paddingLeft: 25, 
-        height: '9.5%',
+        height: '11%',
     },
     text1:{
         color: colors.blue7,
@@ -526,7 +528,7 @@ const styles = StyleSheet.create({
     title:{
         fontSize: 16,
         fontWeight: 'bold',
-        color: colors.darkBlue
+        color: colors.blue5
     }
 
 })

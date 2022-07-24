@@ -21,7 +21,7 @@ const Topnavigator = () => {
             {
                 view &&
                 <SafeAreaView>
-                    <Headercomponent name = 'Home' destination = 'Home' />
+                    <Headercomponent name = 'Special Pickups' destination = 'Home' />
                 </SafeAreaView> 
             }  
             <Tab.Navigator
@@ -38,7 +38,7 @@ const Topnavigator = () => {
                         height: 2,
                     },
                     tabBarPressColor: colors.grey9,
-                    swipeEnabled: true,
+                    swipeEnabled: false,
                     tabBarStyle: {
                         elevation: 0,
                         backgroundColor: colors.white,

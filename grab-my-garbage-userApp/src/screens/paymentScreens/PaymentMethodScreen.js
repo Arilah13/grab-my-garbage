@@ -99,8 +99,8 @@ const Paymentmethodscreen = ({route, navigation}) => {
     }
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>           
-            <Headercomponent name = {name === 'Special' ? 'Special Pickup' : 'Schedule'} />
+        <SafeAreaView>           
+            <Headercomponent name = 'Payment Method' />
 
             <View style = {styles.container2}>
                 <Text style = {styles.text2}>Payment Methods</Text>
@@ -197,8 +197,6 @@ const styles = StyleSheet.create({
         height: 9*SCREEN_HEIGHT/10,
         paddingTop: 30,
         paddingLeft: 20,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
     },
     text2:{
         color: colors.blue2,
@@ -220,7 +218,7 @@ const styles = StyleSheet.create({
         position: 'absolute'
     },
     button:{
-        backgroundColor: colors.buttons,
+        backgroundColor: colors.darkBlue,
         borderRadius: 10,
         height: 50,
     },

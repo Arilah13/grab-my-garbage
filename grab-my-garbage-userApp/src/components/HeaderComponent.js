@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions } from 'react-native'
+import { View, StyleSheet, Text, Dimensions } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { useNavigation } from '@react-navigation/native'
 
@@ -14,26 +14,19 @@ const Headercomponent = ({name, destination, timeout1, timeout2}) => {
 
     return (
         <View style = {styles.container}>    
-            <TouchableOpacity style = {{width: '40%', flexDirection: 'row'}}
+            <Icon
+                type = 'material'
+                name = 'arrow-back'
+                color = {colors.grey1}
+                size = {25}
                 onPress = {() => {
                     destination ? navigation.navigate(destination) : navigation.goBack()
                     timeout1 ? clearTimeout(timeout1) : null
                     timeout2 ? clearTimeout(timeout2) : null
                 }}
-            >
-                <Icon
-                    type = 'material'
-                    name = 'arrow-back'
-                    color = {colors.grey1}
-                    size = {25}
-                    style = {{
-                        alignSelf: 'flex-start',
-                        marginTop: 13,
-                        display: 'flex'
-                    }}
-                />
-                <Text style = {styles.text}>{name}</Text>
-            </TouchableOpacity>
+            />
+            <Text style = {styles.text}>{name}</Text>
+            <View></View>
         </View>
     );
 }
@@ -44,17 +37,18 @@ const styles = StyleSheet.create({
 
     container:{
         backgroundColor: colors.white,
-        paddingLeft: 25, 
-        //marginBottom: 0,
+        flexDirection: 'row',
         height: 45,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingLeft: 15
     },
     text:{
         display: 'flex',
-        marginTop: 15,
-        left: 15,
         color: colors.grey1,
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 16,
+        marginLeft: -15
     }
 
 })

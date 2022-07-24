@@ -160,12 +160,13 @@ const Specialpickupscreen = ({navigation}) => {
     }, [])
  
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+        <SafeAreaView style = {{flex: 1}}>
             <ScrollView 
                 showsVerticalScrollIndicator = {false}
                 stickyHeaderIndices = {[0]}
+                style = {{backgroundColor: colors.white}}
             >
-            <Headercomponent name = 'Home' destination = 'Home'/>    
+            <Headercomponent name = 'Request Special Pickup' destination = 'Home'/>    
 
             <Formik
                 initialValues = {initialValues}
@@ -191,7 +192,7 @@ const Specialpickupscreen = ({navigation}) => {
             >
             { (props) =>
                 <>
-                    <View style = {{backgroundColor: colors.grey8, borderTopStartRadius: 30, borderTopEndRadius: 30}}>
+                    <View style = {{backgroundColor: colors.white}}>
                         <View style = {styles.container2}>
                             <Pressable onPress = {() => navigation.navigate('Destination', {destination: 'Special Pickup'})}>
                                 <Icon 
@@ -206,18 +207,6 @@ const Specialpickupscreen = ({navigation}) => {
                                 />
                                 <Text style = {styles.text2}>Pick Up Location</Text>
                                 <Text style = {styles.text3}>{address === ('Current Location' || 'Home') ? address : address_new}</Text>
-                                <Icon 
-                                    type = 'material-community'
-                                    name = 'dots-vertical'
-                                    color = {colors.blue5}
-                                    size = {25}
-                                    style = {{
-                                        //alignSelf: 'flex-end',
-                                        //marginRight: 5,
-                                        //bottom: 15,
-                                        position: 'absolute'
-                                    }}
-                                />
                             </Pressable>               
                         </View>
                         
@@ -426,11 +415,9 @@ export default Specialpickupscreen
 const styles = StyleSheet.create({
 
     container2:{
-        backgroundColor: colors.grey8,
+        backgroundColor: colors.grey9,
         paddingLeft: 25, 
-        height: SCREEN_HEIGHT/8,
-        borderTopStartRadius: 30,
-        borderTopEndRadius: 30
+        height: '10%',
     },
     text2:{
         color: colors.blue7,
@@ -438,7 +425,7 @@ const styles = StyleSheet.create({
         bottom: 30
     },
     text3:{
-        color: colors.blue2,
+        color: colors.darkBlue,
         left: 40,
         bottom: 30,
         fontWeight: 'bold'
@@ -447,8 +434,6 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
         padding: 25, 
         height: "87%",
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
     },
     text4:{
         color: colors.blue2,
@@ -460,6 +445,7 @@ const styles = StyleSheet.create({
         height: 150,
         borderRadius: 15,
         marginTop: 10,
+        elevation: 5
     },
     text5:{
         color: colors.blue2,
@@ -472,16 +458,18 @@ const styles = StyleSheet.create({
         height: SCREEN_HEIGHT/8,
         borderRadius: 15,
         marginTop: 10,
+        elevation: 5
     },
     view3:{
         backgroundColor: colors.blue1,
         height: SCREEN_HEIGHT/7,
         borderRadius: 15,
         marginTop: 10,
+        elevation: 5
     },
     button:{
         marginTop: 20,
-        backgroundColor: colors.buttons,
+        backgroundColor: colors.darkBlue,
         borderRadius: 10,
         height: 50
     },
@@ -557,6 +545,7 @@ const styles = StyleSheet.create({
         height: 110,
         borderRadius: 15,
         marginTop: 10,
+        elevation: 5
     },
     text11:{
         color: colors.blue4,

@@ -20,6 +20,7 @@ const Chatmenuscreen = ({navigation}) => {
     const dispatch = useDispatch()
 
     const [loadingId, setLoadingId] = useState([])
+    const [rowIndex, setRowIndex] = useState()
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { loading, conversation } = getAllConversation
@@ -81,8 +82,8 @@ const Chatmenuscreen = ({navigation}) => {
     }
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.grey9}}>
-            <View style = {{height: 0.6*SCREEN_HEIGHT/10}}>
+        <SafeAreaView>
+            <View style = {{height: 0.6*SCREEN_HEIGHT/10, backgroundColor: colors.grey9}}>
                 <Text style = {styles.title}>Chats</Text>
             </View>
             {
@@ -103,7 +104,8 @@ const Chatmenuscreen = ({navigation}) => {
                         <FlatList
                             data = {conversation}
                             keyExtractor = {(item)=>item.conversation._id}
-                            renderItem = {({item}) => (
+                            ListEmptyComponent = {() => <Text style = {styles.text2}>No Chat Available</Text>}
+                            renderItem = {({item, index}) => (
                                 item.conversation.userVisible === true &&
                                 <Swipeout
                                     autoClose = {false}
@@ -114,14 +116,14 @@ const Chatmenuscreen = ({navigation}) => {
                                                 setLoadingId([...loadingId, item.conversation._id])
                                                 const res = await handleDelete(item.conversation._id)
                                                 if(res === true) {
-                                                    loadingId.splice(loadingId.findIndex(load => load === item.conversation._id), 1)
+                                                    setLoadingId(loadingId.filter(load => load !== item.conversation._id))
                                                     await conversation.splice(conversation.findIndex(convo => convo.conversation._id === item.conversation._id), 1)
                                                     dispatch({
                                                         type: GET_ALL_CONVERSATIONS_SUCCESS,
                                                         payload: conversation
                                                     })
                                                 } else {
-                                                    loadingId.splice(loadingId.findIndex(load => load === item.conversation._id), 1)
+                                                    setLoadingId(loadingId.filter(load => load !== item.conversation._id))
                                                 }
                                             },
                                             component: 
@@ -145,6 +147,14 @@ const Chatmenuscreen = ({navigation}) => {
                                     style = {{
                                         backgroundColor: colors.white,
                                     }}
+                                    onOpen = {() => setRowIndex(index)}
+                                    onClose = {() => {
+                                        if(index === rowIndex) {
+                                            setRowIndex(null)
+                                        }
+                                    }}
+                                    close = {rowIndex !== index}
+                                    rowId = {index}
                                 >
                                     <Pressable 
                                         style = {styles.card}
@@ -306,6 +316,12 @@ const styles = StyleSheet.create({
     },
     unReadNo:{
         color: colors.white
-    }
+    },
+    text2:{
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: colors.darkBlue,
+        marginTop: SCREEN_HEIGHT/3
+    },
 
 })

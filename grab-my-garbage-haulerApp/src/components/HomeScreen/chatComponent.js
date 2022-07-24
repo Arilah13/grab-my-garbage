@@ -209,7 +209,6 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                     onSend(undefined, message)
                 }
                 dispatch(receiverRead(conversationId))
-                socket.emit('messageSeen', {id: conversationId, receiverRole: 'hauler', receiverId: sender._id})
             }
         })
     }, [socket])

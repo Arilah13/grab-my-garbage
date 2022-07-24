@@ -53,9 +53,7 @@ export const uploadDetails = (info) => async (dispatch) => {
 
         const { email } = info
 
-        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/haulers/',
-            {email}, config, 
-        )
+        const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/haulers/', {email}, config)
 
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,
@@ -113,7 +111,7 @@ export const logout = () => async (dispatch, getState) => {
 
     const pushId = await getPushToken()
 
-    const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/haulers/pushtoken/${userInfo._id}`, {id: pushId}, config)
+    axios.put(`https://grab-my-garbage-server.herokuapp.com/haulers/pushtoken/${userInfo._id}`, {id: pushId}, config)
 
     AsyncStorage.removeItem('haulerInfo')
 

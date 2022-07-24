@@ -152,10 +152,10 @@ const Paymentscreen = ({route, navigation}) => {
     }, [paymentStart])
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
+        <SafeAreaView>
         <StripeProvider publishableKey = {paymentInfo.publishable_key}>
 
-            <Headercomponent name = 'Payment Method' />
+            <Headercomponent name = 'Payment' />
 
             <View style = {styles.container2}>
                 <Text style = {styles.text2}>Confirm Payment</Text>
@@ -259,8 +259,6 @@ const styles = StyleSheet.create({
         height: 9*SCREEN_HEIGHT/10,
         paddingTop: 30,
         paddingLeft: 20,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
     },
     text2:{
         color: colors.blue2,
@@ -285,7 +283,7 @@ const styles = StyleSheet.create({
         borderBottomColor: colors.grey
     },
     button:{
-        backgroundColor: colors.buttons,
+        backgroundColor: colors.darkBlue,
         borderRadius: 10,
         height: 50,
     },

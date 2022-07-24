@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, StyleSheet, Dimensions, Animated, Pressable } from 'react-native'
+import { View, StyleSheet, Dimensions, Animated } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Button } from 'react-native-elements'
@@ -29,7 +29,6 @@ const Homescreen = ({navigation}) => {
     const choice = useRef(null)
     const first = useRef(true)
     const responseListener = useRef()
-    const notificationListener = useRef()
 
     const [end, setEnd] = useState(null)
     const [online, setOnline] = useState(false)
@@ -39,6 +38,7 @@ const Homescreen = ({navigation}) => {
     const [redo, setRedo] = useState(false)
     const [arrived, setArrived] = useState(false)
     const [start, setStart] = useState(true)
+    const [number, setNumber] = useState(0)
 
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
@@ -151,16 +151,27 @@ const Homescreen = ({navigation}) => {
         setRedo(false)
     }, [pickupInfo, specialPickupInfo])
 
+    const choiceCall = useCallback(() => {
+        choice.current = null
+    }, [choice.current])
+
+    const handleNotification = useCallback(() => {
+        setNumber(0)
+        //userInfo.notification.map(noti => )
+    }, [userInfo])
+
+    useEffect(async() => {
+        const read = await userInfo.notification.filter(noti => {
+            const data = noti.data.filter(noti => noti.haulerVisible )
+        })
+    }, [userInfo])
+
     useEffect(async() => {
         if(socketLoading === false && start === true) {
             await socket.emit('haulerJoined', { haulerid: userInfo._id })
             setStart(false)
         }
     }, [socket])
-
-    const choiceCall = useCallback(() => {
-        choice.current = null
-    }, [choice.current])
 
     useEffect(() => {
         Notifications.setNotificationHandler({
@@ -196,23 +207,6 @@ const Homescreen = ({navigation}) => {
         }
     })
 
-    // notificationListener.current = Notifications.addNotificationReceivedListener(response => {
-    //     const {notification: {request: {content: {data: {screen, item}}}}} = response
-
-    //     if(screen) {
-    //         navigation.navigate(screen)
-    //         if(screen === 'PickupDetail') {
-    //             navigation.navigate('Special', {
-    //                 screen: 'upcomingPickup',
-    //                 params: {
-    //                     screen: 'PickupDetail',
-    //                     params: {item, time: timeHelper(item.datetime), date: dateHelper(item.datetime), date1: date1Helper(item.datetime), buttons: false, name: 'Upcoming Pickups'}
-    //                 }
-    //             })
-    //         }
-    //     }
-    // })
-
     return () => {
         Notifications.removeNotificationSubscription(responseListener.current)
     }
@@ -221,8 +215,7 @@ const Homescreen = ({navigation}) => {
     return (
         <SafeAreaView style = {{backgroundColor: colors.grey9}}>
             <View style = {styles.container1}>
-                <View style = {{flexDirection: 'row', alignItems: 'center'}}>
-                    <View style = {{position: 'absolute', marginLeft: SCREEN_WIDTH/3.8}}>
+                    <View style = {{position: 'absolute', marginLeft: SCREEN_WIDTH/3}}>
                         <Onlinecomponent 
                             animation = {animation} 
                             online = {online} 
@@ -233,7 +226,7 @@ const Homescreen = ({navigation}) => {
                         />
                     </View>
                     
-                    <Pressable onPress = {() => navigation.navigate('Notifications')}>
+                    <View style = {{position: 'absolute', marginLeft: SCREEN_WIDTH/1.15}}>
                         <Icon
                             type = 'material'
                             name = 'notifications'
@@ -242,9 +235,15 @@ const Homescreen = ({navigation}) => {
                             style = {{
                                 marginLeft: SCREEN_WIDTH/1.2
                             }}
+                            onPress = {() => navigation.navigate('Notifications')}
                         />
-                    </Pressable>
-                </View>
+                        {
+                            number > 0 &&
+                            <View style = {styles.unread}>
+                                <Text style = {styles.textUnread}>{number}</Text>
+                            </View>
+                        }
+                    </View>
             </View>
 
             <View style = {styles.container2}>
@@ -340,12 +339,11 @@ export default Homescreen
 const styles = StyleSheet.create({
 
     container1:{
-        backgroundColor: colors.grey9,
-        //paddingLeft: 25, 
+        backgroundColor: colors.grey9, 
         marginBottom: 0,
         height: 60,
         flexDirection: 'row',
-        justifyContent: 'space-around'
+        alignItems: 'center'
     },
     container2:{
         height: 9*SCREEN_HEIGHT/10 - 50,
@@ -370,6 +368,23 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginHorizontal: 30,
         backgroundColor: colors.darkBlue
+    },
+    unread: {
+        position: 'absolute',
+        backgroundColor: 'red',
+        width: 14,
+        height: 14,
+        borderRadius: 15 / 2,
+        left: 15,
+        top: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    textUnread:{
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: "#FFFFFF",
+        fontSize: 8,
     }
     
 })

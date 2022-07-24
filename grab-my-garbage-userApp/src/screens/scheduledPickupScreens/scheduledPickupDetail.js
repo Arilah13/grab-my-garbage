@@ -106,7 +106,9 @@ const Scheduledpickupdetail = ({navigation, route}) => {
         const element = await conversation.splice(index, 1)[0]
         
         if(element.conversation.receiverUserRead === false) {
+            await element.totalMessage.map(msg => msg.userSeen = true)
             element.conversation.receiverUserRead = true
+            element.message.userSeen = true
             dispatch(receiverRead(element.conversation._id))
         }
         
@@ -116,18 +118,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
             payload: conversation
         })
     }
-
-    // const findandActivePickups = () => {
-    //     const index = pickupInfo.findIndex((d, index) => {
-    //         if(d._id === item._id) {
-    //             return Promise.all(index)
-    //         }
-    //     })
-    //     Promise.all(index)
-    //     const element = pickupInfo.splice(index, 1)[0]
-    //     Promise.all(element)
-    // }
-
+    
     useEffect(() => {
         if(item.inactive === 0) {
             setActive(true)
@@ -168,7 +159,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                 stickyHeaderIndices = {[0]}
                 style = {{backgroundColor: colors.white}}
             >
-                <Headercomponent name = 'Scheduled Pickups' />
+                <Headercomponent name = 'Schedule Pickup Detail' />
 
                 <View style = {{backgroundColor: colors.white}}>
                     <Pressable style = {styles.container2} onPress = {() => setModalVisible(true)}>
@@ -192,7 +183,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                                 type = 'material'
                                 name = 'schedule'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -228,13 +219,13 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         </View>
                     </View>
                     
-                    <View style = {styles.container1}>
+                    <View style = {{...styles.container1, backgroundColor: colors.grey8}}>
                         <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
                             <Icon
                                 type = 'material'
                                 name = 'attach-money'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -402,7 +393,8 @@ const styles = StyleSheet.create({
     container1:{
         backgroundColor: colors.grey9,
         elevation: 5,
-        margin: 15
+        margin: 15,
+        borderRadius: 15
     },  
     container2:{
         backgroundColor: colors.grey9,
@@ -471,7 +463,7 @@ const styles = StyleSheet.create({
     title:{
         fontSize: 16,
         fontWeight: 'bold',
-        color: colors.darkBlue
+        color: colors.blue5
     }
 
 })

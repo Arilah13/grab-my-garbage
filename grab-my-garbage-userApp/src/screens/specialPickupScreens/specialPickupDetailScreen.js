@@ -67,7 +67,9 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
         const element = await conversation.splice(index, 1)[0]
         
         if(element.conversation.receiverUserRead === false) {
+            await element.totalMessage.map(msg => msg.userSeen = true)
             element.conversation.receiverUserRead = true
+            element.message.userSeen = true
             dispatch(receiverRead(element.conversation._id))
         }
         
@@ -100,7 +102,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                 stickyHeaderIndices = {[0]}
                 style = {{backgroundColor: colors.white}}
             >
-                <Headercomponent name = {name} />    
+                <Headercomponent name = 'Special Pickup Detail' />    
 
                 <View style = {{backgroundColor: colors.white}}>
                     <Pressable style = {styles.container2} onPress = {() => setModalVisible(true) }>
@@ -124,7 +126,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                                 type = 'material'
                                 name = 'schedule'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -148,13 +150,13 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                         </View>
                     </View>
                         
-                    <View style = {{...styles.container1, marginTop: 0}}>
+                    <View style = {{...styles.container1, marginTop: 0, backgroundColor: colors.green2}}>
                         <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
                             <Icon
                                 type = 'material'
                                 name = 'info-outline'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -191,13 +193,13 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                         </View>
                     </View>
 
-                    <View style = {{...styles.container1, marginTop: 0}}>
+                    <View style = {{...styles.container1, marginTop: 0, backgroundColor: colors.grey8}}>
                         <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
                             <Icon
                                 type = 'material'
                                 name = 'attach-money'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -226,7 +228,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                                 type = 'material'
                                 name = 'info'
                                 size = {18}
-                                color = {colors.darkBlue}
+                                color = {colors.blue5}
                                 style = {{
                                     marginTop: 2,
                                     marginRight: 5,
@@ -352,7 +354,8 @@ const styles = StyleSheet.create({
     container1:{
         backgroundColor: colors.grey9,
         elevation: 5,
-        margin: 15
+        margin: 15,
+        borderRadius: 15
     },  
     container2:{
         backgroundColor: colors.grey9,
@@ -432,7 +435,7 @@ const styles = StyleSheet.create({
     title:{
         fontSize: 16,
         fontWeight: 'bold',
-        color: colors.darkBlue
+        color: colors.blue5
     }
 
 })
