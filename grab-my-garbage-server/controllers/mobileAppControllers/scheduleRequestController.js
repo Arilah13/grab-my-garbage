@@ -1,4 +1,5 @@
 const scheduledPickups = require('../../models/scheduledPickupModel')
+const Users = require('../../models/userModel')
 
 const requestController = {
     getScheduledPickupforToday: async(req, res) => {
@@ -106,6 +107,14 @@ const requestController = {
             pickups.active = 1
             await pickups.save()
 
+            const user = await Users.findById(pickups.customerId)
+            await user.notification.push({
+                description: 'Hauler is on the way to collect your schedule pickup',
+                data: pickups,
+                userVisible: true
+            })
+            await user.save()
+
             res.status(200).json({msg: 'Schedulepickup Active'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
@@ -118,6 +127,14 @@ const requestController = {
 
             pickups.active = 0
             await pickups.save()
+
+            const user = await Users.findById(pickups.customerId)
+            await user.notification.push({
+                description: 'Hauler is on the way to collect your schedule pickup',
+                data: pickups,
+                userVisible: true
+            })
+            await user.save()
 
             res.status(200).json({msg: 'Schedulepickup Inactive'})
         } catch(err) {

@@ -1,5 +1,22 @@
 const mongoose = require('mongoose')
 
+const notificationSchema = new mongoose.Schema({
+    description: {
+        type: String,
+        required: true
+    },
+    userVisible: {
+        type: Boolean,
+        default: true
+    },
+    data: {
+        type: Object,
+        required: true
+    }
+}, {
+    timestamps: true
+})
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -34,10 +51,7 @@ const userSchema = new mongoose.Schema({
         type: Array,
         required: false
     },
-    notification: {
-        type: Array,
-        required: false,
-    }
+    notification: [notificationSchema]
 }, {
     timestamps: true
 })

@@ -142,148 +142,147 @@ const Signinscreen = ({navigation}) => {
     }, [conversations, acceptedLoading, scheduleLoading])
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <View style = {{marginTop: SCREEN_HEIGHT/10}}>
-
-            </View>
-            <View style = {{height: 9*SCREEN_HEIGHT/10, backgroundColor: colors.white, borderTopRightRadius: 30, borderTopLeftRadius: 30}}>
-            <View style = {{marginLeft: 4, marginTop: 20, height: SCREEN_HEIGHT/20 }}>
+        <SafeAreaView>
+            <View style = {{height: 80, justifyContent: 'center', backgroundColor: colors.white}}>
                 <Text style = {styles.title}>Sign In</Text>
             </View>
-            <View style = {{alignItems: 'center', marginTop: 0, height: SCREEN_HEIGHT/20}}>
-                <Text style = {styles.text2}>Please enter the name and password</Text>
-                <Text style = {styles.text2}>registered with your account</Text>
-            </View>
 
-            <Formik
-                initialValues = {initialValues}
-                enableReinitialize
-                validationSchema = {signInSchema}
-                validateOnMount = {false}
-                validateOnBlur = {false}
-                validateOnChange = {false}
-                onSubmit = {(values, actions) => {
-                    if(actions.validateForm) {
-                        setTimeout(() => {
-                            handleLogin(values)
-                        }, 400)
-                    } else {
-                        actions.setSubmitting(false)
-                    }
-                }}
-                innerRef = {formikRef}
-            >
-            {   
-                (props) =>
-                <View style = {{height: 7*SCREEN_HEIGHT/20}}>
-                    <View style = {{padding: 20}}>
-                        <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
-                            <View>
-                                <Icon
-                                    name = 'email'
-                                    color = {colors.grey1}
-                                    type = 'material'
-                                />
+            <View style = {{height: 9*SCREEN_HEIGHT/10, backgroundColor: colors.grey9}}>
+
+                <View style = {{alignItems: 'center', marginTop: 20, height: SCREEN_HEIGHT/20}}>
+                    <Text style = {styles.text2}>Please enter the name and password</Text>
+                    <Text style = {styles.text2}>registered with your account</Text>
+                </View>
+
+                <Formik
+                    initialValues = {initialValues}
+                    enableReinitialize
+                    validationSchema = {signInSchema}
+                    validateOnMount = {false}
+                    validateOnBlur = {false}
+                    validateOnChange = {false}
+                    onSubmit = {(values, actions) => {
+                        if(actions.validateForm) {
+                            setTimeout(() => {
+                                handleLogin(values)
+                            }, 400)
+                        } else {
+                            actions.setSubmitting(false)
+                        }
+                    }}
+                    innerRef = {formikRef}
+                >
+                {   
+                    (props) =>
+                    <View style = {{height: 7*SCREEN_HEIGHT/20}}>
+                        <View style = {{padding: 20}}>
+                            <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
+                                <View>
+                                    <Icon
+                                        name = 'email'
+                                        color = {colors.grey1}
+                                        type = 'material'
+                                    />
+                                </View>
+                                <View>
+                                    <TextInput 
+                                        placeholder = 'Email'
+                                        keyboardType = 'email-address'
+                                        autoFocus = {false}
+                                        style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
+                                        onChangeText = {props.handleChange('email')}
+                                        value = {props.values.email}
+                                        onSubmitEditing = {() => password1.current.focus()}
+                                    />
+                                </View>
                             </View>
-                            <View>
-                                <TextInput 
-                                    placeholder = 'Email'
-                                    keyboardType = 'email-address'
+                            {props.errors.email && 
+                                <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.email}</Text>}
+                            
+                            <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
+                                <Icon
+                                    name = 'lock'
+                                    type = 'material'
+                                    color = {colors.grey1}
+                                />
+                                <TextInput
+                                    secureTextEntry = {show ? false : true}
+                                    placeholder = 'Password'
                                     autoFocus = {false}
                                     style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
-                                    onChangeText = {props.handleChange('email')}
-                                    value = {props.values.email}
-                                    onSubmitEditing = {() => password1.current.focus()}
-                                />
+                                    onChangeText = {props.handleChange('password')}
+                                    value = {props.values.password}
+                                    ref = {password1}
+                                />                              
+                                    {
+                                        show ? (
+                                        <Icon
+                                            name= 'visibility-off'
+                                            onPress = {() => setShow(!show)}
+                                            type = 'material'
+                                            iconStyle = {{marginLeft: 10}}
+                                            color = {colors.grey1}
+                                        />) : (
+                                        <Icon
+                                            name= 'visibility'
+                                            onPress = {() => setShow(!show)}
+                                            type = 'material'
+                                            iconStyle = {{marginLeft: 10}}
+                                            color = {colors.grey1}
+                                        /> )
+                                    }
                             </View>
-                        </View>
-                        {props.errors.email && 
-                            <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.email}</Text>}
-                        
-                        <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
-                            <Icon
-                                name = 'lock'
-                                type = 'material'
-                                color = {colors.grey1}
+                            {props.errors.password && 
+                                <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.password}</Text>}
+
+                            <Button 
+                                title = 'SIGN IN'
+                                buttonStyle = {styles.button}
+                                onPress = {props.handleSubmit}
+                                loading = {props.isSubmitting}
+                                disabled = {props.isSubmitting}
                             />
-                            <TextInput
-                                secureTextEntry = {show ? false : true}
-                                placeholder = 'Password'
-                                autoFocus = {false}
-                                style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
-                                onChangeText = {props.handleChange('password')}
-                                value = {props.values.password}
-                                ref = {password1}
-                            />                              
-                                {
-                                    show ? (
-                                    <Icon
-                                        name= 'visibility-off'
-                                        onPress = {() => setShow(!show)}
-                                        type = 'material'
-                                        iconStyle = {{marginLeft: 10}}
-                                        color = {colors.grey1}
-                                    />) : (
-                                    <Icon
-                                        name= 'visibility'
-                                        onPress = {() => setShow(!show)}
-                                        type = 'material'
-                                        iconStyle = {{marginLeft: 10}}
-                                        color = {colors.grey1}
-                                    /> )
-                                }
                         </View>
-                        {props.errors.password && 
-                            <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.password}</Text>}
-
-                        <Button 
-                            title = 'SIGN IN'
-                            buttonStyle = {styles.button}
-                            onPress = {props.handleSubmit}
-                            loading = {props.isSubmitting}
-                            disabled = {props.isSubmitting}
-                        />
                     </View>
+                }      
+                </Formik>
+
+                <View style = {{alignItems: 'center', height: 1.5*SCREEN_HEIGHT/20}}>
+                    <Text style={styles.text2}>Forgot Password?</Text>
+                    <Text style = {{fontSize: 20, fontWeight: 'bold'}}>OR</Text>
                 </View>
-            }      
-            </Formik>
+                
+                <View style = {{marginLeft: 10, marginRight: 10, height: 4*SCREEN_HEIGHT/20}}>
+                    <SocialIcon
+                        title = 'Sign In With Facebook'
+                        button
+                        type = 'facebook'
+                        style = {styles.SocialIcon}
+                        onPress = {handleFacebookSignIn}
+                        loading = {fbSubmitting}
+                        disabled = {fbSubmitting}
+                    />
+                    <SocialIcon
+                        title = 'Sign In With Google'
+                        button
+                        type = 'google'
+                        style = {styles.SocialIcon}
+                        onPress = {handleGoogleSignIn}
+                        loading = {googleSubmitting}
+                        disabled = {googleSubmitting}
+                    />
+                </View>
 
-            <View style = {{alignItems: 'center', height: 1.5*SCREEN_HEIGHT/20}}>
-                <Text style={styles.text2}>Forgot Password?</Text>
-                <Text style = {{fontSize: 20, fontWeight: 'bold'}}>OR</Text>
-            </View>
-            
-            <View style = {{marginLeft: 10, marginRight: 10, height: 4*SCREEN_HEIGHT/20}}>
-                <SocialIcon
-                    title = 'Sign In With Facebook'
-                    button
-                    type = 'facebook'
-                    style = {styles.SocialIcon}
-                    onPress = {handleFacebookSignIn}
-                    loading = {fbSubmitting}
-                    disabled = {fbSubmitting}
-                />
-                <SocialIcon
-                    title = 'Sign In With Google'
-                    button
-                    type = 'google'
-                    style = {styles.SocialIcon}
-                    onPress = {handleGoogleSignIn}
-                    loading = {googleSubmitting}
-                    disabled = {googleSubmitting}
-                />
-            </View>
-
-            <View style = {{marginLeft: 5, height: 2*SCREEN_HEIGHT/20, flexDirection: 'row'}}>
-                <Text style={{...styles.text1, top: 10}}>New on grab-my-trash?</Text>
-                <Button
-                    title = 'Create an account'
-                    buttonStyle = {styles.createButton}
-                    onPress={() => {
-                        navigation.navigate("SignUp")
-                    }}
-                />
-            </View>
+                <View style = {{marginLeft: 5, height: 2*SCREEN_HEIGHT/20, flexDirection: 'row', marginTop: 20}}>
+                    <Text style={{...styles.text1, top: 10}}>New on grab-my-trash?</Text>
+                    <Button
+                        title = 'Create an account'
+                        buttonStyle = {styles.createButton}
+                        onPress={() => {
+                            navigation.navigate("SignUp")
+                        }}
+                    />
+                </View>
             </View>
         </SafeAreaView>
     );
@@ -302,8 +301,8 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     title:{
-        color: colors.blue2,
-        fontSize: 20,
+        color: colors.grey1,
+        fontSize: 23,
         fontWeight: 'bold',
         marginLeft: 20
     },
@@ -328,7 +327,7 @@ const styles = StyleSheet.create({
         height: 50
     },
     createButton:{
-        backgroundColor: colors.buttons,
+        backgroundColor: colors.darkBlue,
         alignContent: 'center',
         justifyContent: 'center',
         borderRadius: 10,
@@ -338,7 +337,7 @@ const styles = StyleSheet.create({
     },
     button:{
         marginTop: SCREEN_HEIGHT/40,
-        backgroundColor: colors.buttons,
+        backgroundColor: colors.darkBlue,
         borderRadius: 10,
         height: 50,
     },

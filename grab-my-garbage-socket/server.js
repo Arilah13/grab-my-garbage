@@ -289,20 +289,6 @@ io.on('connection', socket => {
         }
     })
 
-    socket.on('refresh', async({userid}) => {
-        const user = await chatSocket.returnUserSocketid({userid: userid})
-        if(user !== false) {
-            socket.to(user).emit('refreshDone')
-        }
-    })
-
-    socket.on('pickupCancel', async({id, hauler, userid}) => {
-        const hauler1 = await chatSocket.returnHaulerSocketid({haulerid: hauler[0]._id})
-        const user = await chatSocket.returnUserSocketid({userid: userid})
-        socket.to(hauler1).emit('pickupCancel', {id})
-        socket.to(user).emit('pickupCancel', {id})
-    })
-
     socket.on('disconnect', () => {
         pickupSocket.removeUser({id: socket.id})
         chatSocket.removeUser({id: socket.id})

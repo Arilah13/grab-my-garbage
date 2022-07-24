@@ -1,9 +1,10 @@
-const Users = require('../../models/userModel')
-const Schedule = require('../../models/scheduledPickupModel')
-const Special = require('../../models/specialPickupModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('cloudinary')
+
+const Users = require('../../models/userModel')
+const Schedule = require('../../models/scheduledPickupModel')
+const Special = require('../../models/specialPickupModel')
 
 const userController = {
     google: async(req, res) => {
@@ -33,19 +34,20 @@ const userController = {
 
                 if(user.notification.length > 0) {
                     for(let i=0; i<user.notification.length; i++) {
-                        dates.push(user.notification[i].date.toString().split('T')[0])
+                        dates.push(user.notification[i].createdAt.toISOString().split('T')[0])
                     }
                 }
     
-                let uniqueDates = getUnique(dates)
+                let uniqueDates = await getUnique(dates)
     
-                for(let n=0; n<uniqueDates.length; n++) {
-                    for(let j=0; j<user.notification.length; j++) {
-                        if(user.notification[j].date.toString().split('T')[0] === uniqueDates[n].date){
-                            uniqueDates[n].description = user.notification[j].description
-                        }
+                let notifications = await getNotifications(uniqueDates, user)
+                let result = false
+
+                notifications.map(noti => {
+                    if(noti.data.length > 0) {
+                        result = true
                     }
-                }
+                })
 
                 res.json({
                     _id: user._id,
@@ -57,7 +59,7 @@ const userController = {
                     schedule: schedule,
                     special: special,
                     pushId: user.pushId,
-                    notification: uniqueDates,
+                    notification: result ? notifications : [],
                     token: accesstoken
                 })
             } else {
@@ -258,19 +260,20 @@ const userController = {
 
             if(user.notification.length > 0) {
                 for(let i=0; i<user.notification.length; i++) {
-                    dates.push(user.notification[i].date.toString().split('T')[0])
+                    dates.push(user.notification[i].createdAt.toISOString().split('T')[0])
                 }
             }
 
-            let uniqueDates = getUnique(dates)
+            let uniqueDates = await getUnique(dates)
 
-            for(let n=0; n<uniqueDates.length; n++) {
-                for(let j=0; j<user.notification.length; j++) {
-                    if(user.notification[j].date.toString().split('T')[0] === uniqueDates[n].date){
-                        uniqueDates[n].description = user.notification[j].description
-                    }
+            let notifications = await getNotifications(uniqueDates, user)
+            let result = false
+
+            notifications.map(noti => {
+                if(noti.data.length > 0) {
+                    result = true
                 }
-            }
+            })
 
             res.status(200).json({
                 _id: user._id,
@@ -281,7 +284,7 @@ const userController = {
                 count: count,
                 schedule: schedule,
                 special: special,
-                notification: uniqueDates,
+                notification: result ? notifications : [],
                 token: accesstoken
             })
         } catch(err) {
@@ -373,19 +376,20 @@ const userController = {
 
             if(user.notification.length > 0) {
                 for(let i=0; i<user.notification.length; i++) {
-                    dates.push(user.notification[i].date.toISOString().split('T')[0])
+                    dates.push(user.notification[i].createdAt.toISOString().split('T')[0])
                 }
             }
 
             let uniqueDates = await getUnique(dates)
         
-            for(let n=0; n<uniqueDates.length; n++) {
-                for(let j=0; j<user.notification.length; j++) {
-                    if(user.notification[j].date.toISOString().split('T')[0] === uniqueDates[n].date){
-                        uniqueDates[n].description.push(user.notification[j].description)
-                    }
+            let notifications = await getNotifications(uniqueDates, user)
+            let result = false
+
+            notifications.map(noti => {
+                if(noti.data.length > 0) {
+                    result = true
                 }
-            }
+            })
 
             res.status(200).json({
                 _id: user._id,
@@ -397,7 +401,7 @@ const userController = {
                 schedule: schedule,
                 special: special,
                 token: accesstoken,
-                notification: uniqueDates
+                notification: result ? notifications : []
             })
         } catch(err) {
             return res.status(500).json({msg: err.message})
@@ -433,16 +437,23 @@ const userController = {
             return res.status(500).json({msg: err.message})
         }
     },
-    addNotification: async(req, res) => {
+    removeNotification: async(req, res) => {
         try{
-            const user = await Users.findById(req.body._id)
+            const user = await Users.findById(req.params.id)
             if(!user) return res.status(400).json({msg: 'User does not exists.'})
 
-            //user.No
-        } catch (err) {
+            const index = await user.notification.findIndex(noti => noti._id.toString() === req.body.id)
+            const notification = await user.notification.splice(index, 1)[0]
+            notification.userVisible = false
+            await user.notification.splice(index, 0, notification)
+            
+            await user.save()
+
+            res.status(200).json({msg: 'Notification removed'})
+        } catch(err) {
             return res.status(500).json({msg: err.message})
         }
-    } 
+    }  
 }
 
 const createAccessToken = (user) => {
@@ -477,14 +488,31 @@ const getUnique = async(array) => {
                 }
             }
             if(result === true) {
-                uniqueArray.push({date: array[i], description: []})
+                uniqueArray.push({date: array[i], data: []})
             }
         } else {
-            uniqueArray.push({date: array[i], description: []})
+            uniqueArray.push({date: array[i], data: []})
         }
     }
 
     return uniqueArray
+}
+
+const getNotifications = async(uniqueDates, user) => {
+    for(let n=0; n<uniqueDates.length; n++) {
+        for(let j=0; j<user.notification.length; j++) {
+            if(user.notification[j].createdAt.toISOString().split('T')[0] === uniqueDates[n].date && user.notification[j].userVisible === true){
+                uniqueDates[n].data.push({
+                    description: user.notification[j].description,
+                    id: user.notification[j]._id,
+                    data: user.notification[j].createdAt,
+                    userVisible: user.notification[j].userVisible
+                })
+            }
+        }
+    }
+
+    return uniqueDates
 }
 
 module.exports = userController

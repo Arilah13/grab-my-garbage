@@ -1,4 +1,6 @@
 const turf = require('@turf/turf')
+const { v4: uuidv4 } = require('uuid')
+
 const ScheduledPickups = require('../../models/scheduledPickupModel')
 const Haulers = require('../../models/haulerModel')
 const polygonData = require('../../helpers/polygonData')
@@ -72,15 +74,13 @@ const scheduledPickupController = {
             await newPickup.save()
 
             const haulerId = await Haulers.findById(results)
-            haulerId.notification.push({
-                id: newPickup._id,
-                date: new Date(),
+            await haulerId.notification.push({
                 description: 'You have been assigned a new schedule pickup',
-                data: {item: newPickup},
+                data: newPickup,
                 haulerVisible: true
             })
 
-            haulerId.save()
+            await haulerId.save()
 
             res.status(201).json({
                 _id: newPickup._id,
@@ -110,7 +110,7 @@ const scheduledPickupController = {
     getSchedulePickup: async(req, res) => {
         try{
             const customerId = req.params.id
-            const pickups = await ScheduledPickups.find({ customerId, completed: 0, cancelled: 0 }).populate('pickerId')
+            const pickups = await ScheduledPickups.find({ customerId, userVisible: true }).populate('pickerId')
             if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(pickups)
@@ -153,6 +153,19 @@ const scheduledPickupController = {
             await pickups.save()
 
             res.status(200).json({msg: 'SchedulePickup Cancel'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    deletePickup: async(req, res) => {
+        try{
+            const pickup = await ScheduledPickups.findById(req.params.id)
+            if(!pickup) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            pickup.userVisible = false
+            await pickup.save()
+
+            res.status(200).json({msg: 'SchedulePickup Removed'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

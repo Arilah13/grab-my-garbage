@@ -8,8 +8,10 @@ router.get('/getPickup/:id', auth, scheduledPickupController.getSchedulePickup)
 
 router.put('/:id', scheduledPickupController.cancelSchedulePickup)
 
-router.put('/inactive/:id', auth, scheduledPickupController.inactiveSchedulePickup)
+router.put('/inactive/:id', scheduledPickupController.inactiveSchedulePickup)
 
-router.put('/active/:id', auth, scheduledPickupController.activeSchedulePickup)
+router.put('/active/:id', scheduledPickupController.activeSchedulePickup)
+
+router.put('/:id/remove', scheduledPickupController.deletePickup)
 
 module.exports = router

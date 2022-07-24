@@ -12,8 +12,6 @@ router.post('/', userController.returnDetails)
 
 router.post('/login', userController.login)
 
-router.post('/notification', userController.addNotification)
-
 router.post('/refresh_token', auth, userController.refreshtoken)
 
 router.route('/:id').get(auth, userController.getUserById).put(auth, userController.updateUserProfile)
@@ -21,5 +19,7 @@ router.route('/:id').get(auth, userController.getUserById).put(auth, userControl
 router.route('/password/:id').put(auth, userController.updateUserPassword)
 
 router.put('/pushtoken/:id', userController.removePushToken)
+
+router.put('/notification/:id', userController.removeNotification)
 
 module.exports = router

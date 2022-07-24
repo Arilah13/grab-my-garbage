@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const schedule = require('node-schedule')
 const { Expo } = require('expo-server-sdk')
+
 const Haulers = require('../../models/haulerModel')
 
 let expo = new Expo({})
@@ -9,6 +10,8 @@ let expo = new Expo({})
 const haulerController = {
     login: async(req, res) => {
         try {
+            let dates = []
+
             const {email, password, pushId} = req.body       
 
             const hauler = await Haulers.findOne({email})
@@ -40,6 +43,23 @@ const haulerController = {
                 await hauler.save()
             }
 
+            if(hauler.notification.length > 0) {
+                for(let i=0; i<hauler.notification.length; i++) {
+                    dates.push(hauler.notification[i].createdAt.toISOString().split('T')[0])
+                }
+            }
+
+            let uniqueDates = await getUnique(dates)
+
+            let notifications = await getNotifications(uniqueDates, hauler)
+            let result = false
+
+            notifications.map(noti => {
+                if(noti.data.length > 0) {
+                    result = true
+                }
+            })
+
             res.status(201).json({
                 _id: hauler._id,
                 name: hauler.name,
@@ -48,7 +68,8 @@ const haulerController = {
                 image: hauler.image,
                 phone: hauler.phone,
                 pushId: hauler.pushId,
-                token: accesstoken
+                token: accesstoken,
+                notification: result ? notifications : []
             })
         } catch(err) {
             return res.status(500).json({msg: err.message})
@@ -56,6 +77,8 @@ const haulerController = {
     },
     returnDetails: async(req, res) => {
         try{
+            let dates = []
+            
             const {email} = req.body
 
             const hauler = await Haulers.findOne({email})
@@ -73,13 +96,33 @@ const haulerController = {
                 await hauler.save()
             }
 
+            if(hauler.notification.length > 0) {
+                for(let i=0; i<hauler.notification.length; i++) {
+                    dates.push(hauler.notification[i].createdAt.toISOString().split('T')[0])
+                }
+            }
+
+            let uniqueDates = await getUnique(dates)
+
+            let notifications = await getNotifications(uniqueDates, hauler)
+            let result = false
+
+            notifications.map(noti => {
+                if(noti.data.length > 0) {
+                    result = true
+                }
+            })
+
             res.status(200).json({
                 _id: hauler._id,
                 name: hauler.name,
                 email: hauler.email,
                 role: hauler.role,
                 image: hauler.image,
-                token: accesstoken
+                phone: hauler.phone,
+                pushId: hauler.pushId,
+                token: accesstoken,
+                notification: result ? notifications : []
             })
         } catch(err) {
             return res.status(500).json({msg: err.message})
@@ -112,6 +155,23 @@ const haulerController = {
 
             res.status(200).json({msg: 'Pushtoken removed'})
         } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    removeNotification: async(req, res) => {
+        try{
+            const hauler = await Haulers.findById(req.params.id)
+            if(!hauler) return res.status(400).json({msg: 'Hauler does not exists.'})
+            
+            const index = await hauler.notification.findIndex(noti => noti._id.toString() === req.body.id)
+            const notification = await hauler.notification.splice(index, 1)[0]
+            notification.haulerVisible = false
+            await hauler.notification.splice(index, 0, notification)
+            
+            await hauler.save()
+
+            res.status(200).json({msg: 'Notification removed'})
+        } catch(err) {
             return res.status(500).json({msg: err.message})
         }
     }  
@@ -156,6 +216,45 @@ const createAccessToken = (user) => {
 
 const createRefreshToken = (user) => {
     return jwt.sign({user}, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '7d'})
+}
+
+const getUnique = async(array) => {
+    let uniqueArray = []
+
+    for(let i=0; i<array.length; i++) {
+        if(uniqueArray.length > 0) {
+            let result = true
+            for(let n=0; n<uniqueArray.length; n++) {
+                if(array[i] === uniqueArray[n].date) {
+                    result = false
+                }
+            }
+            if(result === true) {
+                uniqueArray.push({date: array[i], data: []})
+            }
+        } else {
+            uniqueArray.push({date: array[i], data: []})
+        }
+    }
+
+    return uniqueArray
+}
+
+const getNotifications = async(uniqueDates, hauler) => {
+    for(let n=0; n<uniqueDates.length; n++) {
+        for(let j=0; j<hauler.notification.length; j++) {
+            if(hauler.notification[j].createdAt.toISOString().split('T')[0] === uniqueDates[n].date && hauler.notification[j].haulerVisible === true){
+                uniqueDates[n].data.push({
+                    description: hauler.notification[j].description,
+                    id: hauler.notification[j]._id,
+                    data: hauler.notification[j].data,
+                    haulerVisible: hauler.notification[j].haulerVisible
+                })
+            }
+        }
+    }
+
+    return uniqueDates
 }
 
 module.exports = haulerController

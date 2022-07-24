@@ -38,7 +38,7 @@ const conversationController = {
             let endResult = []
 
             const conversation = await Conversations.find({
-                $or: [{userId: req.params.id}, {haulerId: req.params.id}]
+                $or: [{userId: req.params.id, userVisible: true}, {haulerId: req.params.id, haulerVisible: true}]
             }).populate('haulerId').populate('userId')
             if(!conversation) {return res.status(400).json({msg: 'Conversation does not exists.'})}
 

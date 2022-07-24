@@ -12,4 +12,6 @@ router.get('/acceptedPickups/:id', auth, pickupController.getAcceptedPickups)
 
 router.put('/:id', pickupController.cancelPickup)
 
+router.put('/:id/remove', pickupController.deletePickup)
+
 module.exports = router

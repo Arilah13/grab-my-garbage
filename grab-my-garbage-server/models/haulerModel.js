@@ -1,5 +1,22 @@
 const mongoose = require('mongoose')
 
+const notificationSchema = new mongoose.Schema({
+    description: {
+        type: String,
+        required: true
+    },
+    haulerVisible: {
+        type: Boolean,
+        default: true
+    },
+    data: {
+        type: Object,
+        required: true
+    }
+}, {
+    timestamps: true
+})
+
 const haulerSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -45,10 +62,7 @@ const haulerSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    notification: {
-        type: Array,
-        required: false,
-    }
+    notification: [notificationSchema]
 }, {
     timestamps: true
 })

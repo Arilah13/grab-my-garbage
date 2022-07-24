@@ -1,18 +1,17 @@
 const cloudinary = require('cloudinary')
 const turf = require('@turf/turf')
-var io = require('socket.io-client')
 const schedule = require('node-schedule')
-const { Expo } = require('expo-server-sdk')
+const io = require('socket.io-client')
+const { v4: uuidv4 } = require('uuid')
+
 const haulers = require('../../models/haulerModel')
 const polygonData = require('../../helpers/polygonData')
 const Pickups = require('../../models/specialPickupModel')
+const Users = require('../../models/userModel')
 
 // var socket = io.connect('https://grab-my-garbage-socket.herokuapp.com/', {
 //     reconnection: true
 // })
-var socket = io.connect('http://192.168.13.1:5001', {
-    reconnection: true
-})
 
 const pickupController = {
     addSpecialPickup: async(req, res) => {
@@ -61,14 +60,12 @@ const pickupController = {
             })
 
             for(let j=0; j<hauler.length; j++) {
-                hauler[j].notification.push({
-                    id: newPickup._id,
-                    date: new Date(),
+                await hauler[j].notification.push({
                     description: 'You have a new special pickup request',
-                    data: {item: newPickup},
+                    data: newPickup,
                     haulerVisible: true
                 })
-                hauler[j].save()
+                await hauler[j].save()
             }
 
             const hour = (pickupInfo.date.split('T')[1]).split(':')[0]
@@ -90,16 +87,13 @@ const pickupController = {
                 const result = await findPickup(newPickup._id)
                 if(result === true) {
                     await cancelPickup(newPickup._id)
-                    socket.emit('pickupCancel', {id: newPickup._id, hauler: hauler, userid: id})
-
-                    for(let i=0; i<hauler.length; i++) {
-                        const index = await hauler[i].notification.findIndex(noti => noti.id === newPickup._id)
-                        const noti = await hauler[i].notification.splice(index, 1)[0]
-                        noti.haulerVisible = false
-                        await hauler[i].notification.splice(noti, 0, index)
-
-                        await hauler[i].save()
-                    }
+                    const user = await Users.findById(newPickup.customerId)
+                    await user.notification.push({
+                        description: 'Your special pickup has been cancelled',
+                        data: newPickup,
+                        userVisible: true
+                    })
+                    await user.save()
                 }
             })
 
@@ -155,7 +149,7 @@ const pickupController = {
     getCompletedPickups: async(req, res) => {
         try{
             const customerId = req.params.id
-            const pickups = await Pickups.find({ customerId, $or: [{completed: 1}, {cancelled: 1}] }).populate('pickerId')
+            const pickups = await Pickups.find({ customerId, $or: [{completed: 1}, {cancelled: 1}], userVisible: true }).populate('pickerId')
             if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(pickups)
@@ -172,6 +166,19 @@ const pickupController = {
             await pickups.save()
 
             res.status(200).json({message: 'Specialpickup Cancel'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    deletePickup: async(req, res) => {
+        try{
+            const pickup = await Pickups.findById(req.params.id)
+            if(!pickup) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            pickup.userVisible = false
+            await pickup.save()
+
+            res.status(200).json({msg: 'Specialpickup Removed'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }

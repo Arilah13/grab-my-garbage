@@ -1,8 +1,10 @@
+const schedule = require('node-schedule')
+const { Expo } = require('expo-server-sdk')
+const { v4: uuidv4 } = require('uuid')
+
 const Pickups = require('../../models/specialPickupModel')
 const Haulers = require('../../models/haulerModel')
 const Users = require('../../models/userModel')
-const schedule = require('node-schedule')
-const { Expo } = require('expo-server-sdk')
 
 let expo = new Expo({})
 
@@ -35,7 +37,7 @@ const requestController = {
         try{
             const id = req.params.id
 
-            const request = await Pickups.find({accepted: 1, cancelled: 0, completed: 1, pickerId: id}).populate('customerId')
+            const request = await Pickups.find({accepted: 1, cancelled: 0, completed: 1, pickerId: id, haulerVisible: true}).populate('customerId')
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             res.status(200).json(request)
@@ -56,10 +58,8 @@ const requestController = {
                 request.cancelled = 1
                 const user = await Users.findById(request.customerId)
                 await user.notification.push({
-                    id: request._id,
-                    date: new Date(),
                     description: 'Your special pickup has been cancelled',
-                    data: {item: request},
+                    data: request,
                     userVisible: true
                 })
                 await user.save()
@@ -100,6 +100,14 @@ const requestController = {
             specialPickupNotify(date, hauler.pushId, request)
 
             await request.save()
+            
+            const user = await Users.findById(request.customerId)
+            await user.notification.push({
+                description: 'Your special pickup has been accepted',
+                data: request,
+                userVisible: true
+            })
+            await user.save()
 
             res.status(200).json({msg: 'Specialpickup Accepted'})
         } catch(err) {
@@ -117,6 +125,14 @@ const requestController = {
             request.active = 0
             request.completedDate = date
             await request.save()
+
+            const user = await Users.findById(request.customerId)
+            await user.notification.push({
+                description: 'Your special pickup has been completed',
+                data: request,
+                userVisible: true
+            })
+            await user.save()
 
             res.status(200).json({msg: 'Specialpickup Completed'})
         } catch(err) {
@@ -157,6 +173,14 @@ const requestController = {
             pickups.active = 1
             await pickups.save()
 
+            const user = await Users.findById(pickups.customerId)
+            await user.notification.push({
+                description: 'Hauler is on the way to collect your special pickup',
+                data: pickups,
+                userVisible: true
+            })
+            await user.save()
+
             res.status(200).json({msg: 'Specialpickup Active'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
@@ -189,6 +213,19 @@ const requestController = {
             return res.status(500).json({msg: err.message})
         }
     },
+    deletePickup: async(req, res) => {
+        try{
+            const pickup = await Pickups.findById(req.params.id)
+            if(!pickup) return res.status(400).json({msg: 'No Pickup is available.'})
+
+            pickup.haulerVisible = false
+            await pickup.save()
+
+            res.status(200).json({msg: 'Specialpickup Removed'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    }
 }
 
 const specialPickupNotify = (date, pushId, pickup) => {

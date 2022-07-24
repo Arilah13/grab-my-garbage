@@ -70,6 +70,14 @@ const pickupSchema = new mongoose.Schema({
     areaHaulers:{
         type: Array,
         required: false,
+    },
+    userVisible:{
+        type: Boolean,
+        default: true
+    },
+    haulerVisible:{
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true

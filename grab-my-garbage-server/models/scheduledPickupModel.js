@@ -58,6 +58,10 @@ const scheduledPickupSchema = new mongoose.Schema({
     active:{
         type: Number,
         default: 0
+    },
+    userVisible:{
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true

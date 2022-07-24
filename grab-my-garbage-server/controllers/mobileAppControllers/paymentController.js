@@ -1,4 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+
 const Users = require('../../models/userModel')
 
 const paymentController = {

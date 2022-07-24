@@ -22,6 +22,8 @@ router.put('/active/:id', requestController.activePickup)
 
 router.get('/:id/:lat/:lng', auth, requestController.getUpcomingPickupsToCollect)
 
+router.put('/:id/remove', requestController.deletePickup)
+
 //router.get('/allPickups/:id', auth, pickupController.getAllPickups)
 
 module.exports = router
