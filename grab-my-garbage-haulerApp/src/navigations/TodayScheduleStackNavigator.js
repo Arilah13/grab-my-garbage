@@ -10,8 +10,6 @@ import Scheduledpickupdetail from '../screens/schedulePickupScreens/schedulePick
 const Stack = createNativeStackNavigator()
 
 const TodayScheduleStackNavigator = ({navigation, route}) => {
-    const { navigation1 } = route.params
-
     const tabHiddenRoutes = ['TodayDetail']
 
     const routeName = getFocusedRouteNameFromRoute(route)
@@ -19,7 +17,6 @@ const TodayScheduleStackNavigator = ({navigation, route}) => {
     useLayoutEffect(() => {
         if(tabHiddenRoutes.includes(routeName)) {
             navigation.setOptions({tabBarStyle: {display: 'none'}, swipeEnabled: false})
-            navigation1.setOptions({tabBarStyle: {display: 'none'}})
         } else {
             navigation.setOptions({
                 tabBarStyle: {
@@ -29,14 +26,6 @@ const TodayScheduleStackNavigator = ({navigation, route}) => {
                 },
                 swipeEnabled: false
             })
-            navigation1.setOptions({
-                tabBarStyle: {
-                    position: 'absolute',
-                    elevation: 0,
-                    backgroundColor: colors.grey8,
-                    height: 50
-                }
-            })
         }
     })
 
@@ -44,7 +33,7 @@ const TodayScheduleStackNavigator = ({navigation, route}) => {
         <Stack.Navigator>
 
             <Stack.Screen
-                name = 'Today' 
+                name = 'TodayScreen' 
                 component = {Schedulepickuprequestscreen} 
                 options = {{
                     headerShown: false

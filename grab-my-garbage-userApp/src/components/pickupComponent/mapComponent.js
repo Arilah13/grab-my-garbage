@@ -94,10 +94,10 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
         })
     }
 
-    useEffect(() => {
+    useEffect(async() => {
         if (type === 'schedule') {
             if(ongoingPickups !== undefined && ongoingPickups.length > 0) {
-                const ongoingPickup =  ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
+                const ongoingPickup = await ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
                 if(ongoingPickup) {
                     setPickup(ongoingPickup)
                     timeChanger(ongoingPickup.time)
@@ -129,7 +129,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
             }
         } else if (type === 'special') {
             if(ongoingSpecialPickups !== undefined && ongoingSpecialPickups.length > 0) {
-                const ongoingSpecialPickup =  ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
+                const ongoingSpecialPickup = await ongoingSpecialPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
 
                 if(ongoingSpecialPickup && ongoingSpecialPickup.pickupid === item._id){
                     setShow(true)
@@ -172,20 +172,14 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
         socket.on('pickupDone', async({pickupid}) => {
             if(item._id === pickupid && first.current === true) {
                 setPickup(null)
-                dispatch(getAcceptedPickups())
-                dispatch(getCompletedPickups())
                 setComplete(true)
-                setTimeout(() => {
-                    if(modalVisible === true) {
-                        setModalVisible(false)
-                    }
-                    if(modalVisible1 === true) {
-                        setModalVisible1(false)
-                    }
-                }, 2500)
-                const timeout = setTimeout(() => {
-                    navigation.navigate('acceptedPickup')
-                }, 2800)
+                if(modalVisible1 === true) {
+                    setModalVisible1(false)
+                }
+                if(modalVisible === true) {
+                    setModalVisible(false)
+                }
+                navigation.navigate('acceptedPickup')
             }
             first.current = false
         })
@@ -194,14 +188,12 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
             if(item._id === pickupid && first.current === true) {
                 setPickup(null)
                 setComplete(true)
-                setTimeout(() => {
-                    if(modalVisible === true) {
-                        setModalVisible(false)
-                    }
-                    if(modalVisible1 === true) {
-                        setModalVisible1(false)
-                    }
-                }, 2500)
+                if(modalVisible1 === true) {
+                    setModalVisible1(false)
+                }
+                if(modalVisible === true) {
+                    setModalVisible(false)
+                }
             }
             first.current = false
         })

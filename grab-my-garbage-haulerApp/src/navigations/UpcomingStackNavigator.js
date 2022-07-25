@@ -10,8 +10,6 @@ import UpcomingPickupscreen from '../screens/specialPickupScreens/upcomingspecia
 const Stack = createNativeStackNavigator()
 
 const Upcomingstacknavigator = ({route, navigation}) => {
-    const { navigation1 } = route.params
-
     const tabHiddenRoutes = ['PickupDetail']
 
     const routeName = getFocusedRouteNameFromRoute(route)
@@ -19,7 +17,6 @@ const Upcomingstacknavigator = ({route, navigation}) => {
     useLayoutEffect(() => {
         if(tabHiddenRoutes.includes(routeName)) {
             navigation.setOptions({tabBarStyle: {display: 'none'}, swipeEnabled: false})
-            navigation1.setOptions({tabBarStyle: {display: 'none'}})
         } else {
             navigation.setOptions({
                 tabBarStyle: {
@@ -29,22 +26,14 @@ const Upcomingstacknavigator = ({route, navigation}) => {
                 },
                 swipeEnabled: false
             })
-            navigation1.setOptions({
-                tabBarStyle: {
-                    position: 'absolute',
-                    elevation: 0,
-                    backgroundColor: colors.grey8,
-                    height: 50
-                }
-            })
         }
-    }, [navigation, route])
+    }, [route, navigation])
 
     return (
         <Stack.Navigator>
 
             <Stack.Screen 
-                name = "upcomingPickupScreen" 
+                name = 'upcomingPickupScreen' 
                 component = {UpcomingPickupscreen} 
                 options = {{
                     headerShown: false

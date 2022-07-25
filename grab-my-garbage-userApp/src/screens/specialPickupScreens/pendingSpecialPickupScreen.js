@@ -99,7 +99,7 @@ const Pendingspecialpickupscreen = ({navigation}) => {
                     ListEmptyComponent = {() => (
                         <Text style = {styles.text6}>No Pickup Available</Text>
                     )}
-                    renderItem = {({item}) => (
+                    renderItem = {({item, index}) => (
                         <Swipeout
                             autoClose = {false}
                             left = {[

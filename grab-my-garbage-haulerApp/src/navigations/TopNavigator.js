@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState, useLayoutEffect } from 'react'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { StatusBar } from 'react-native'
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 
 import Completedstacknavigator from './CompletedStackNavigator'
 import Pendingstacknavigator from './PendingStackNavigator'
@@ -13,6 +14,38 @@ const Tab = createMaterialTopTabNavigator()
 const Height = StatusBar.currentHeight
 
 const Topnavigator = ({navigation}) => {
+    const [route1, setRoute1] = useState()
+    const [route2, setRoute2] = useState()
+    const [route3 , setRoute3] = useState()
+
+    useLayoutEffect(() => {
+        let routeName1, routeName2, routeName3
+        if(route1) {
+            routeName1 = getFocusedRouteNameFromRoute(route1)
+        }
+
+        if(route2) {
+            routeName2 = getFocusedRouteNameFromRoute(route2)
+        }
+
+        if(route3) {
+            routeName3 = getFocusedRouteNameFromRoute(route3)
+        }
+        
+        if(routeName1 === 'pickupDetail' || routeName2 === 'pickupDetail' || routeName3 === 'pickupDetail') {
+            navigation.setOptions({tabBarStyle: {display: 'none'}})
+        } else {
+            navigation.setOptions({
+                tabBarStyle: {
+                    position: 'absolute',
+                    elevation: 0,
+                    backgroundColor: colors.grey8,
+                    height: 50
+                }
+            })
+        }
+    }, [route1, route2, route3])
+
     return (
         <Tab.Navigator
             screenOptions = {{
@@ -42,34 +75,28 @@ const Topnavigator = ({navigation}) => {
             tabBarPosition = 'top'
         >
             <Tab.Screen 
-                name = "pendingPickup" 
+                name = 'Pending' 
                 component = {Pendingstacknavigator} 
-                options = {{
-                    tabBarLabel: 'Pending'
-                }}
-                initialParams = {{
-                    navigation1: navigation
-                }}
+                options = {({route}) => ({
+                    tabBarLabel: route.name
+                },
+                setRoute1(route))}
             />
             <Tab.Screen 
-                name = "upcomingPickup" 
+                name = 'Upcoming' 
                 component = {Upcomingstacknavigator} 
-                options = {{
-                    tabBarLabel: 'Upcoming'
-                }}
-                initialParams = {{
-                    navigation1: navigation
-                }}
+                options = {({route}) => ({
+                    tabBarLabel: route.name
+                },
+                setRoute2(route))}
             />
             <Tab.Screen 
-                name = "completedPickup" 
+                name = 'Completed' 
                 component = {Completedstacknavigator} 
-                options = {{
-                    tabBarLabel: 'Completed'
-                }}
-                initialParams = {{
-                    navigation1: navigation
-                }}
+                options = {({route}) => ({
+                    tabBarLabel: route.name
+                },
+                setRoute3(route))}
             />
         </Tab.Navigator>
     );

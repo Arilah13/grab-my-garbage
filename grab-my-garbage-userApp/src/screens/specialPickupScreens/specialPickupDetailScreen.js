@@ -102,7 +102,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                 stickyHeaderIndices = {[0]}
                 style = {{backgroundColor: colors.white}}
             >
-                <Headercomponent name = 'Special Pickup Detail' />    
+                <Headercomponent name = 'Special Pickup Detail' destination = {name === 'Completed Pickups' ? 'completedPickup' : name === 'Accepted Pickups' ? 'acceptedPickup' : 'pendingPickup'} />    
 
                 <View style = {{backgroundColor: colors.white}}>
                     <Pressable style = {styles.container2} onPress = {() => setModalVisible(true) }>
@@ -242,14 +242,14 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                             <View style = {{flexDirection: 'row', marginTop: 10}}>
                                 <Text style = {styles.text3}>Optional Images:</Text>
                                 {
-                                    item.image === null &&
+                                    (item.image === null || item.image === undefined) &&
                                     <Text style = {styles.text4}>No Images Attached</Text>
                                 }
                             </View>
 
                             <View style = {{alignSelf: 'center', marginTop: 5}}>
                                 {
-                                    item.image !== null && 
+                                    item.image && item.image !== null && 
                                     <Image 
                                         source = {{uri: item.image}}
                                         resizeMode = 'contain'
@@ -313,7 +313,7 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
                         deviceWidth = {SCREEN_WIDTH}
                     >
                         <View style = {styles.view1}>
-                            <Mapcomponent location = {item.location[0]} item = {item} setModalVisible = {setModalVisible} type = 'special' navigation = {navigation} convo = {convo} />
+                            <Mapcomponent location = {item.location[0]} item = {item} setModalVisible = {setModalVisible} type = 'special' navigation = {navigation} convo = {convo} modalVisible = {modalVisible} />
                         </View>                
                     </Modal>
 

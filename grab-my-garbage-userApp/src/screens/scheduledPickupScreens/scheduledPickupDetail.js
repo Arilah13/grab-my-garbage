@@ -150,6 +150,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
     useEffect(async() => {
         const convo = await conversation.find((convo) => convo.conversation.haulerId._id === item.pickerId._id && convo.conversation.userId._id === userInfo._id)
         setConvo(convo)
+        console.log(item)
     }, [])
 
     return (
@@ -159,7 +160,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                 stickyHeaderIndices = {[0]}
                 style = {{backgroundColor: colors.white}}
             >
-                <Headercomponent name = 'Schedule Pickup Detail' />
+                <Headercomponent name = 'Schedule Pickup Detail' destination = 'ScheduleRequests' />
 
                 <View style = {{backgroundColor: colors.white}}>
                     <Pressable style = {styles.container2} onPress = {() => setModalVisible(true)}>

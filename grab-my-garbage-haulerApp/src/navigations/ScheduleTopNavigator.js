@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState, useLayoutEffect } from 'react'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { StatusBar } from 'react-native'
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 
 import { colors } from '../global/styles'
 
@@ -12,6 +13,33 @@ const Tab = createMaterialTopTabNavigator()
 const Height = StatusBar.currentHeight
 
 const ScheduleTopNavigator = ({navigation}) => {
+    const [route1, setRoute1] = useState()
+    const [route2, setRoute2] = useState()
+
+    useLayoutEffect(() => {
+        let routeName1, routeName2
+        if(route1) {
+            routeName1 = getFocusedRouteNameFromRoute(route1)
+        }
+
+        if(route2) {
+            routeName2 = getFocusedRouteNameFromRoute(route2)
+        }
+        
+        if(routeName1 === 'pickupDetail' || routeName2 === 'pickupDetail') {
+            navigation.setOptions({tabBarStyle: {display: 'none'}})
+        } else {
+            navigation.setOptions({
+                tabBarStyle: {
+                    position: 'absolute',
+                    elevation: 0,
+                    backgroundColor: colors.grey8,
+                    height: 50
+                }
+            })
+        }
+    }, [route1, route2])
+
     return (
         <Tab.Navigator
             screenOptions = {{
@@ -41,24 +69,20 @@ const ScheduleTopNavigator = ({navigation}) => {
             tabBarPosition = 'top'
         >
             <Tab.Screen 
-                name = "TodaySchedule" 
+                name = 'Today' 
                 component = {TodayScheduleStackNavigator} 
-                options = {{
-                    tabBarLabel: 'Today'
-                }}
-                initialParams = {{
-                    navigation1: navigation
-                }}
+                options = {({route}) => ({
+                    tabBarLabel: route.name
+                },
+                setRoute1(route))}
             />
             <Tab.Screen 
-                name = "AllSchedule" 
+                name = 'All'
                 component = {Allscheduledetailscreen} 
-                options = {{
-                    tabBarLabel: 'All'
-                }}
-                initialParams = {{
-                    navigation1: navigation
-                }}
+                options = {({route}) => ({
+                    tabBarLabel: route.name
+                },
+                setRoute2(route))}
             />
         </Tab.Navigator>
     );

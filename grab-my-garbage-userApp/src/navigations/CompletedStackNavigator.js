@@ -14,12 +14,9 @@ const Completedstacknavigator = ({navigation, route}) => {
 
     const routeName = getFocusedRouteNameFromRoute(route)
 
-    const { setView } = route.params
-
     useLayoutEffect(() => {
         if(tabHiddenRoutes.includes(routeName)) {
             navigation.setOptions({tabBarStyle: {display: 'none'}, swipeEnabled: false})
-            setView(false)
         } else {
             navigation.setOptions({tabBarStyle: {
                     elevation: 0,
@@ -28,7 +25,6 @@ const Completedstacknavigator = ({navigation, route}) => {
                 },
                 swipeEnabled: false
             })
-            setView(true)
         }
     })
 

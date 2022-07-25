@@ -20,7 +20,21 @@ const Pickupcompletecomponent = ({navigation, choice, setpickupBtn, animate, cho
                     height: 45,
                     backgroundColor: colors.darkBlue
                 }}
-                onPress = {() => navigation.navigate('History')}
+                onPress = {() => {
+                    choice === 'special' ?
+                        navigation.navigate('HomeScreen', {
+                            screen: 'Special',
+                            params: {
+                                screen: 'upcomingPickup'
+                            }
+                        }) :
+                        navigation.navigate('HomeScreen', {
+                            screen: 'Schedule',
+                            params: {
+                                screen: 'TodaySchedule'
+                            }
+                        })
+                    }}
             />
             <Pressable
                 onPress = {() => {

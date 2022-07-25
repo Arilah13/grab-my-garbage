@@ -190,7 +190,7 @@ const Homescreen = ({navigation}) => {
                 navigation.navigate('HomeScreen', {
                     screen: 'Special',
                     params: {
-                        screen: 'upcomingPickup',
+                        screen: 'Upcoming',
                         params: {
                             screen: 'PickupDetail',
                             params: {item, time: timeHelper(item.datetime), date: dateHelper(item.datetime), date1: date1Helper(item.datetime), buttons: false, name: 'Upcoming Pickups'}
@@ -200,6 +200,13 @@ const Homescreen = ({navigation}) => {
             } else if(screen === 'Chat') {
                 navigation.navigate('HomeScreen', {
                     screen: 'Chat'
+                })
+            } else if(screen === 'Schedule') {
+                navigation.navigate('HomeScreen', {
+                    screen: 'Schedule',
+                    params: {
+                        screen: 'Today'
+                    }
                 })
             } else {
                 navigation.navigate(screen)

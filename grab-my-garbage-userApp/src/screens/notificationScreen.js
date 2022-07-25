@@ -96,7 +96,7 @@ const NotificationScreen = () => {
                 <Text style = {styles.title}>Notifications</Text>
             </View>
 
-            <View style = {{height: 9.4*SCREEN_HEIGHT/10 - 50}}>
+            <View style = {{height: 9.4*SCREEN_HEIGHT/10 - 75}}>
                 <FlatList
                     numColumns = {1}
                     showsHorizontalScrollIndicator = {false}
