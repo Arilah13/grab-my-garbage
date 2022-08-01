@@ -14,19 +14,14 @@ const Height = StatusBar.currentHeight
 
 const ScheduleTopNavigator = ({navigation}) => {
     const [route1, setRoute1] = useState()
-    const [route2, setRoute2] = useState()
 
     useLayoutEffect(() => {
-        let routeName1, routeName2
+        let routeName1
         if(route1) {
             routeName1 = getFocusedRouteNameFromRoute(route1)
         }
-
-        if(route2) {
-            routeName2 = getFocusedRouteNameFromRoute(route2)
-        }
         
-        if(routeName1 === 'pickupDetail' || routeName2 === 'pickupDetail') {
+        if(routeName1 === 'TodayDetail') {
             navigation.setOptions({tabBarStyle: {display: 'none'}})
         } else {
             navigation.setOptions({
@@ -38,7 +33,7 @@ const ScheduleTopNavigator = ({navigation}) => {
                 }
             })
         }
-    }, [route1, route2])
+    }, [route1])
 
     return (
         <Tab.Navigator
@@ -81,8 +76,7 @@ const ScheduleTopNavigator = ({navigation}) => {
                 component = {Allscheduledetailscreen} 
                 options = {({route}) => ({
                     tabBarLabel: route.name
-                },
-                setRoute2(route))}
+                })}
             />
         </Tab.Navigator>
     );

@@ -22,4 +22,6 @@ router.put('/pushtoken/:id', userController.removePushToken)
 
 router.put('/notification/:id', userController.removeNotification)
 
+router.put('/notification/read/:id', userController.readNotification)
+
 module.exports = router

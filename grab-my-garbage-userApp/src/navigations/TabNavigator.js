@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useLayoutEffect } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Icon } from 'react-native-elements'
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
+import axios from 'axios'
 
 import { colors } from '../global/styles'
 
@@ -12,13 +14,15 @@ import Chatmenuscreen from '../screens/chatScreens/chatMenuScreen'
 import NotificationScreen from '../screens/notificationScreen'
 
 import { GET_ALL_CONVERSATIONS_SUCCESS } from '../redux/constants/conversationConstants'
+import { USER_LOGIN_SUCCESS } from '../redux/constants/userConstants'
 import { conversationReceived } from '../redux/actions/conversationActions'
 
 const Tab = createBottomTabNavigator()
 
-const TabNavigator = () => {
+const TabNavigator = ({navigation, route}) => {
     const [number, setNumber] = useState(0)
     const [start, setStart] = useState(true)
+    const [noti, setNoti] = useState(0)
 
     const dispatch = useDispatch()
 
@@ -34,11 +38,55 @@ const TabNavigator = () => {
     const userLogin = useSelector((state) => state.userLogin)
     const { userInfo } = userLogin
 
+    const routeName = getFocusedRouteNameFromRoute(route)
+
+    const checkNotification = async() => {
+        let read = []
+        await userInfo.notification.map((noti) => {
+            noti.data.map(noti => {
+                if(noti.seen === false) {
+                    read.push(noti)
+                }
+            })
+        })
+        setNoti(read.length)
+    }
+
+    const config = {
+        headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`
+        },
+    }
+
+    const handleNotification = async() => {
+        setNoti(0)
+        await userInfo.notification.map(noti => {
+            noti.data.map(noti => noti.seen = true)
+        })
+        dispatch({
+            type: USER_LOGIN_SUCCESS,
+            payload: userInfo
+        })
+        await axios.put(`https://grab-my-garbage-server.herokuapp.com/users/notification/read/${userInfo._id}`, config)
+    }
+
+    useLayoutEffect(() => {
+        if(routeName === 'Notification') {
+            handleNotification()
+        } 
+    }, [route])
+
+    useEffect(() => {
+        checkNotification()
+    }, [])
+
     useEffect(async() => {
         if(socket && start === true) {    
             if(start === true) {
                 setStart(false)
             }   
+
             socket.on('getMessage', async({senderid, text, sender, createdAt, image, current}) => {
                 const index = await conversation.findIndex((convo) => convo.conversation.haulerId._id === senderid)
                 
@@ -219,6 +267,11 @@ const TabNavigator = () => {
                 }
             })
 
+            socket.on('newNotification', async({date, description, userVisible, seen, data}) => {
+                const result = {date, description, userVisible, seen, data}
+                console.log(result)
+            })
+
             const convo = await conversation.filter(convo => convo.message.received === false && convo.message.sender[0] !== userInfo._id)
             if(convo.length > 0) {
                 await convo.map((con, index) => {
@@ -302,13 +355,19 @@ const TabNavigator = () => {
                 component = {NotificationScreen}
                 options = {{
                     tabBarIcon: ({ focused }) => (
-                        <View>
+                        <View style = {{flex:1, alignItems: 'center',  justifyContent:'center'}}>
                             <Icon
-                            type = 'material'
-                            name = 'notifications'
-                            color = {focused ? colors.darkBlue : colors.darkGrey}
-                            size = {30}
-                        />
+                                type = 'material'
+                                name = 'notifications'
+                                color = {focused ? colors.darkBlue : colors.darkGrey}
+                                size = {30}
+                            />
+                            {
+                                noti > 0 &&
+                                <View style = {styles.unread}>
+                                    <Text style = {styles.textUnread}>{noti}</Text>
+                                </View>
+                            }
                         </View>
                     )
                 }}

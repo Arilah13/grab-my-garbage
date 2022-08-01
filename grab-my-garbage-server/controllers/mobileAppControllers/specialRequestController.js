@@ -1,6 +1,5 @@
 const schedule = require('node-schedule')
 const { Expo } = require('expo-server-sdk')
-const { v4: uuidv4 } = require('uuid')
 
 const Pickups = require('../../models/specialPickupModel')
 const Haulers = require('../../models/haulerModel')
@@ -60,7 +59,8 @@ const requestController = {
                 await user.notification.push({
                     description: 'Your special pickup has been cancelled',
                     data: request,
-                    userVisible: true
+                    userVisible: true,
+                    seen: false
                 })
                 await user.save()
             }
@@ -105,7 +105,8 @@ const requestController = {
             await user.notification.push({
                 description: 'Your special pickup has been accepted',
                 data: request,
-                userVisible: true
+                userVisible: true,
+                seen: false
             })
             await user.save()
 
@@ -130,7 +131,8 @@ const requestController = {
             await user.notification.push({
                 description: 'Your special pickup has been completed',
                 data: request,
-                userVisible: true
+                userVisible: true,
+                seen: false
             })
             await user.save()
 
@@ -177,7 +179,8 @@ const requestController = {
             await user.notification.push({
                 description: 'Hauler is on the way to collect your special pickup',
                 data: pickups,
-                userVisible: true
+                userVisible: true,
+                seen: false
             })
             await user.save()
 
@@ -194,7 +197,7 @@ const requestController = {
             const lat = req.params.lat
             const lng = req.params.lng
  
-            const request = await Pickups.find({accepted: 1, cancelled: 0, completed: 0, pickerId: id}).populate('customerId')
+            const request = await Pickups.find({accepted: 1, cancelled: 0, completed: 0, pickerId: id, inactive: 0}).populate('customerId')
             if(!request) return res.status(400).json({msg: 'No Pickup is available.'})
 
             for(let i=0; i<request.length; i++){

@@ -306,7 +306,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginLeft: 20
     },
-    
     text2:{
         color: colors.grey1,
         fontSize: 16

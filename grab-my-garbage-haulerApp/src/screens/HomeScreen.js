@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { View, StyleSheet, Dimensions, Animated } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { Button } from 'react-native-elements'
 import * as Notifications from 'expo-notifications'
 import { Icon } from 'react-native-elements'
+import axios from 'axios'
 
 import { colors } from '../global/styles'
 import { dateHelper, date1Helper, timeHelper } from '../helpers/specialPickuphelper'
@@ -13,6 +14,7 @@ import { dateHelper, date1Helper, timeHelper } from '../helpers/specialPickuphel
 import { sendSMS } from '../redux/actions/specialRequestActions'
 import { completeScheduledPickup, activeSchedulePickup, inactiveSchedulePickup } from '../redux/actions/scheduleRequestActions'
 import { completedPickup, activeSpecialPickup } from '../redux/actions/specialRequestActions'
+import { USER_LOGIN_SUCCESS } from '../redux/constants/userConstants'
 
 import Onlinecomponent from '../components/homeScreen/onlineComponent'
 import Mapcomponent from '../components/homeScreen/mapComponent'
@@ -81,10 +83,17 @@ const Homescreen = ({navigation}) => {
                     socket.emit('schedulePickupStarted', { pickup: pickupOrder })
                     first.current = false
                 }
+                
                 socket.emit('scheduledPickupOnProgress', { haulerid: userInfo._id, ongoingPickup: pickupOrder[0], pickup: pickupOrder })
+                socket.emit('newNotification', { user: pickupOrder[0].customerId._id, date: new Date(), description: 'Hauler is on the way to collect your schedule pickup',
+                            userVisible: true, seen: false, data: pickupOrder[0] })
+
                 dispatch(activeSchedulePickup(pickupOrder[0]._id))
             } else if (choice.current === 'special') {
                 socket.emit('specialPickupOnProgress', { haulerid: userInfo._id, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id, pickup: pickupOrder[0] })
+                socket.emit('newNotification', { user: pickupOrder[0].customerId._id, date: new Date(), description: 'Hauler is on the way to collect your special pickup',
+                            userVisible: true, seen: false, data: pickupOrder[0] })
+
                 dispatch(activeSpecialPickup(pickupOrder[0]._id))
             }
         } else {
@@ -118,15 +127,21 @@ const Homescreen = ({navigation}) => {
             if (choice.current === 'schedule') {
                 dispatch(completeScheduledPickup({id: order._id, completedDate: new Date(), completedHauler: userInfo}))
                 dispatch(inactiveSchedulePickup(order._id))
+
                 socket.emit('schedulePickupCompleted', {pickupid: order._id, userid: order.customerId._id, haulerid: userInfo._id, pickup: order})
-                
+                socket.emit('newNotification', { user: order.customerId._id, date: new Date(), description: 'Your schedule pickup for the day is completed',
+                            userVisible: true, seen: false, data: order })
+
                 await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === order._id), 1)
                 setPickups(pickupInfo)
                 
                 pickupHandler()
             } else if(choice.current === 'special') {
                 dispatch(completedPickup(order._id))
-                await socket.emit('specialPickupCompleted', {pickupid: order._id, pickup: order})
+
+                socket.emit('specialPickupCompleted', {pickupid: order._id, pickup: order})
+                socket.emit('newNotification', { user: order.customerId._id, date: new Date(), description: 'Your special pickup has been completed',
+                            userVisible: true, seen: false, data: order })
 
                 await specialPickupInfo.splice(specialPickupInfo.findIndex(pickup => pickup._id === order._id), 1)
                 setPickups(specialPickupInfo)
@@ -155,16 +170,40 @@ const Homescreen = ({navigation}) => {
         choice.current = null
     }, [choice.current])
 
-    const handleNotification = useCallback(() => {
-        setNumber(0)
-        //userInfo.notification.map(noti => )
-    }, [userInfo])
-
-    useEffect(async() => {
-        const read = await userInfo.notification.filter(noti => {
-            const data = noti.data.filter(noti => noti.haulerVisible )
+    const checkNotification = async() => {
+        let read = []
+        await userInfo.notification.map((noti) => {
+            noti.data.map(noti => {
+                if(noti.seen === false) {
+                    read.push(noti)
+                }
+            })
         })
-    }, [userInfo])
+        setNumber(read.length)
+    }
+
+    const config = {
+        headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`
+        },
+    }
+
+    const handleNotification = async() => {
+        setNumber(0)
+        await userInfo.notification.map(noti => {
+            noti.data.map(noti => noti.seen = true)
+        })
+        dispatch({
+            type: USER_LOGIN_SUCCESS,
+            payload: userInfo
+        })
+        await axios.put(`https://grab-my-garbage-server.herokuapp.com/haulers/notification/read/${userInfo._id}`, config)
+    }
+
+    useEffect(() => {
+        checkNotification()
+    }, [])
 
     useEffect(async() => {
         if(socketLoading === false && start === true) {
@@ -238,11 +277,14 @@ const Homescreen = ({navigation}) => {
                             type = 'material'
                             name = 'notifications'
                             color = {colors.darkGrey }
-                            size = {30}
+                            size = {38}
                             style = {{
                                 marginLeft: SCREEN_WIDTH/1.2
                             }}
-                            onPress = {() => navigation.navigate('Notifications')}
+                            onPress = {() => {
+                                handleNotification()
+                                navigation.navigate('Notifications')
+                            }}
                         />
                         {
                             number > 0 &&
@@ -379,11 +421,11 @@ const styles = StyleSheet.create({
     unread: {
         position: 'absolute',
         backgroundColor: 'red',
-        width: 14,
-        height: 14,
-        borderRadius: 15 / 2,
+        width: 18,
+        height: 18,
+        borderRadius: 18 / 2,
         left: 15,
-        top: 10,
+        top: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -391,7 +433,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         color: "#FFFFFF",
-        fontSize: 8,
+        fontSize: 12,
     }
     
 })

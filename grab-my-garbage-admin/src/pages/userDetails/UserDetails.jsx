@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { TextField, Button } from '@mui/material'
+import { Link } from 'react-router-dom'
 import { LoadingButton } from '@mui/lab'
-import { Publish } from "@mui/icons-material"
+import { Publish, ArrowBack } from "@mui/icons-material"
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import Swal from 'sweetalert2'
@@ -128,7 +129,13 @@ const UserDetails = ({ match, location }) => {
     return (
         <div className = 'user'>
             <div className = 'userTitleContainer'>
+                <Link to = {{pathname: '/users'}} className = 'back'>
+                    <ArrowBack 
+                        fontSize = 'large'
+                    />
+                </Link>
                 <h1 className = 'userTitle'>User</h1>
+                <div></div>
             </div>
             {
                 pickupList === null && paymentList === null ?

@@ -30,7 +30,7 @@ const Allscheduledetailscreen = () => {
     const { origin } = map
 
     const rotation = useRef(new Animated.Value(0)).current
-    const translation = useRef(new Animated.Value(SCREEN_HEIGHT/1.7)).current
+    const translation = useRef(new Animated.Value(SCREEN_HEIGHT/2)).current
 
     const bearingDegree = rotation.interpolate({
         inputRange: [0, 360],
@@ -54,7 +54,7 @@ const Allscheduledetailscreen = () => {
 
     const animationClose = () => {
         Animated.timing(translation, {
-            toValue: SCREEN_HEIGHT/1.7,
+            toValue: SCREEN_HEIGHT/2,
             useNativeDriver: true,
             duration: 500,
             delay: 0
@@ -113,7 +113,7 @@ const Allscheduledetailscreen = () => {
                 }
                 {
                     allSchedule && allSchedule.length > 0 && allSchedule.map(marker => 
-                        <AnimatedMarker 
+                        <Marker 
                             coordinate = {marker.location[0]} 
                             flat = {false}
                             anchor = {{x: 0.5, y: 0.5}}
@@ -124,7 +124,7 @@ const Allscheduledetailscreen = () => {
                                 animation()
                             }}
                         >
-                            <AnimatedImage
+                            <Image
                                 source = {require('../../../assets/garbage.png')}
                                 style = {{
                                     width: 25,
@@ -132,7 +132,7 @@ const Allscheduledetailscreen = () => {
                                     resizeMode: 'cover',
                                 }}
                             />
-                        </AnimatedMarker>
+                        </Marker>
                     )
                 }   
             </MapView>
@@ -147,47 +147,88 @@ const Allscheduledetailscreen = () => {
                     />
                 </Pressable>
 
-                <ScrollView style = {styles.view2}>
+                <ScrollView 
+                    showsVerticalScrollIndicator = {false}
+                    style = {styles.view2}
+                >
                     {
                         data &&
                         <>
-                        <View style = {{flexDirection: 'row'}}>
-                            <View style = {{marginTop: 20, marginLeft: 30, flexWrap: 'wrap'}}>
-                                <View style = {{flexDirection: 'row'}}>
-                                    <Text style = {styles.text1}>Duration:</Text>
-                                    <Text style = {styles.text2}>{data.from + ' - ' + data.to}</Text>
+                            <View style = {styles.container1}>
+                                <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
+                                    <Icon
+                                        type = 'material'
+                                        name = 'schedule'
+                                        size = {18}
+                                        color = {colors.blue5}
+                                        style = {{
+                                            marginTop: 2,
+                                            marginRight: 5,
+                                            marginLeft: 3
+                                        }}
+                                    />
+                                    <Text style = {styles.title}>Schedule</Text>
                                 </View>
-                                <View style = {{flexDirection: 'row'}}>
-                                    <Text style = {styles.text1}>Collection Days:</Text>
-                                    <Text style = {styles.text2}>
-                                        {
-                                            data.days.map((day) => {
-                                                return(
-                                                    dayConverter(day) + '   '
-                                                )
-                                            })
-                                        }
-                                    </Text>
-                                </View>
-                                <View style = {{flexDirection: 'row'}}>
-                                    <Text style = {styles.text1}>Time Slot:</Text>
-                                    <Text style = {styles.text2}>{data.timeslot}</Text>
-                                </View>
-                                <View style = {{flexDirection: 'row'}}>
-                                    <Text style = {styles.text1}>Payment:</Text>
-                                    <Text style = {styles.text2}>Rs. {data.payment}</Text>
-                                </View>
-                                <View style = {{flexDirection: 'row'}}>
-                                    <Text style = {styles.text1}>Payment Method:</Text>
-                                    <Text style = {styles.text2}>{data.paymentMethod}</Text>
-                                </View>
-                                <View style = {{flexDirection: 'row'}}>
-                                    <Text style = {styles.text1}>Customer Name:</Text>
-                                    <Text style = {styles.text2}>{data.customerId.name}</Text>
+
+                                <View style = {styles.container3}>
+                                    <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                        <Text style = {styles.text1}>Duration:</Text>
+                                        <Text style = {styles.text2}>{data.from + ' - ' + data.to}</Text>
+                                    </View>
+
+                                    <View style = {{flexDirection: 'row', marginTop: 5}}>
+                                        <Text style = {styles.text1}>Collection Days:</Text>
+                                        <Text style = {styles.text2}>
+                                            {
+                                                data.days.map((day) => {
+                                                    return(
+                                                        dayConverter(day) + '   '
+                                                    )
+                                                })
+                                            }
+                                        </Text>
+                                    </View>
+                                    
+                                    <View style = {{flexDirection: 'row', marginTop: 5}}>
+                                        <Text style = {styles.text1}>Time Slot:</Text>
+                                        <Text style = {styles.text2}>{data.timeslot}</Text>
+                                    </View>
                                 </View>
                             </View>
 
-                        </View>
+                            <View style = {{...styles.container1, marginTop: 0, backgroundColor: colors.green2}}>
+                                <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
+                                    <Icon
+                                        type = 'material'
+                                        name = 'attach-money'
+                                        size = {18}
+                                        color = {colors.blue5}
+                                        style = {{
+                                            marginTop: 2,
+                                            marginRight: 5,
+                                            marginLeft: 3
+                                        }}
+                                    />
+                                    <Text style = {styles.title}>Payment Information</Text>
+                                </View>
+
+                                <View style = {styles.container3}>
+                                    <View style = {{flexDirection: 'row', marginTop: 10}}>
+                                        <Text style = {styles.text1}>Payment:</Text>
+                                        <Text style = {styles.text2}>Rs. {data.payment}</Text>
+                                    </View>
+
+                                    <View style = {{flexDirection: 'row', marginTop: 5}}>
+                                        <Text style = {styles.text1}>Payment Method:</Text>
+                                        <Text style = {styles.text2}>{data.paymentMethod}</Text>
+                                    </View>
+                                </View>
+                            </View>
+
+                                {/* <View style = {{flexDirection: 'row'}}>
+                                    <Text style = {styles.text1}>Customer Name:</Text>
+                                    <Text style = {styles.text2}>{data.customerId.name}</Text>
+                                </View> */}
                         </>
                     }
                 </ScrollView>
@@ -213,9 +254,9 @@ const styles = StyleSheet.create({
     },  
     view1:{
         position: 'absolute',
-        height: SCREEN_HEIGHT/1.7,
+        height: SCREEN_HEIGHT/2,
         width: SCREEN_WIDTH/1.05,
-        marginTop: SCREEN_HEIGHT - SCREEN_HEIGHT/1.4,
+        marginTop: (SCREEN_HEIGHT - 110) - SCREEN_HEIGHT/2,
         backgroundColor: colors.white,
         borderTopRightRadius: 25,
         borderTopLeftRadius: 25,
@@ -238,6 +279,26 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         color: colors.grey1,
         fontSize: 15
-    }
+    },
+    container1:{
+        backgroundColor: colors.grey9,
+        elevation: 5,
+        margin: 15,
+        marginBottom: 20,
+        borderRadius: 15
+    }, 
+    title:{
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: colors.blue5
+    },
+    container3:{
+        margin: 15,
+        padding: 10,
+        paddingTop: 0,
+        marginTop: 5,
+        paddingBottom: 0,
+        marginBottom: 5
+    },
 
 })

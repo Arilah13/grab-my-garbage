@@ -81,6 +81,7 @@ const HaulerList = () => {
         },
         { field: 'email', headerName: 'Email', width: 250, headerAlign: 'center', align: 'center' },
         { field: 'phone', headerName: 'Phone Number', width: 200, headerAlign: 'center', align: 'center' },
+        { field: 'limit', headerName: 'Schedule Pickup Limit', width: 200, headerAlign: 'center', align: 'center' },
         { field: 'action', headerName: 'Action', width: 200, headerAlign: 'center', align: 'center',
             renderCell: (params) => {
                 return (
@@ -99,7 +100,8 @@ const HaulerList = () => {
                             location: params.row.location,
                             service_city: params.row.service_city,
                             specialPickups: params.row.specialPickups,
-                            schedulePickups: params.row.schedulePickups
+                            schedulePickups: params.row.schedulePickups,
+                            limit: params.row.limit
                         }
                     }}>
                         <button className = 'haulerListEdit'>View</button>

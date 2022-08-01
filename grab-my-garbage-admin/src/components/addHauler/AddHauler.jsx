@@ -27,8 +27,10 @@ const AddHauler = ({setOpen}) => {
     const [serviceCity, setServiceCity] = useState('')
     const [image, setImage] = useState('')
     const [pic, setPic] = useState('')
+    const [limit, setLimit] = useState('')
 
-    const initialValues = {email: email, name: name, phone: phone, image: image, pic: pic, password: password, confirm_password: c_password, service_city: serviceCity}
+    const initialValues = {email: email, name: name, phone: phone, image: image, pic: pic, password: password, 
+        confirm_password: c_password, service_city: serviceCity, limit: limit}
 
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -53,7 +55,8 @@ const AddHauler = ({setOpen}) => {
             .min(6, 'Password must be atleast 6 characters')
             .max(50, 'Password must not be more than 50 characters')
             .oneOf([Yup.ref('password'), null], "Passwords don't match"),
-        service_city: Yup.string().required('Choose a service city')
+        service_city: Yup.string().required('Choose a service city'),
+        limit: Yup.string().required('Limit is required')
     })
 
     const convertBase64 = (file) => {
@@ -88,7 +91,7 @@ const AddHauler = ({setOpen}) => {
         const { name, email, password, phone, pic: image, service_city } = values
 
         const res = await axios.post('https://grab-my-garbage-server.herokuapp.com/admin/haulers/', 
-        {email, name, phone, password, image, service_city, role: 1}, config)
+        {email, name, phone, password, image, service_city, role: 1, limit}, config)
         
         if(res.status === 201) {
             Swal.fire({
@@ -156,6 +159,7 @@ const AddHauler = ({setOpen}) => {
                 (props) =>
                 <>
                 <div>
+
                     <div className = 'form-box'>
                         <div className = 'form-field'>
                             <TextField
@@ -182,6 +186,7 @@ const AddHauler = ({setOpen}) => {
                             />    
                         </div>
                     </div>
+
                     <div className = 'form-box'>
                         <div className = 'form-field'>
                             <TextField
@@ -214,6 +219,23 @@ const AddHauler = ({setOpen}) => {
                             </Select>
                         </FormControl>
                     </div>
+
+                    <div className = 'form-box'>
+                        <div className = 'form-field'>
+                            <TextField
+                                error = {props.errors.limit && props.touched.limit}
+                                required
+                                id = 'limit'
+                                type = 'number'
+                                label = {props.errors.limit && props.touched.limit ? props.errors.limit : 'Schedule Pickup Limit'}
+                                style = {{
+                                    width: '250px'
+                                }}
+                                onChange = {(event) => setLimit(event.target.value)}
+                            />
+                        </div>
+                    </div>
+
                     <div className = 'form-box'>
                         <div className = 'form-field'>
                             <TextField

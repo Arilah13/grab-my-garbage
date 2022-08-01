@@ -45,7 +45,7 @@ const haulerController = {
         try{
             let pic 
 
-            const {name, email, password, role, image, phone, service_city} = req.body
+            const {name, email, password, role, image, phone, service_city, limit} = req.body
 
             const hauler = await Haulers.findOne({email}) 
             if(hauler) return res.status(400).json({msg: 'The email already exists.'})
@@ -60,7 +60,7 @@ const haulerController = {
                 api_secret: process.env.CLOUD_API_SECRET
             })
 
-            await cloudinary.v2.uploader.upload(req.body.image, {folder: 'grab-my-garbage'}, (err, result) =>{
+            await cloudinary.v2.uploader.upload(image, {folder: 'grab-my-garbage'}, (err, result) =>{
                 if(err) 
                     throw err
                 else
@@ -74,6 +74,7 @@ const haulerController = {
                 phone: phone,
                 role: role,
                 image: pic,
+                limit: limit,
                 service_city: service_city
             })
 
@@ -115,6 +116,7 @@ const haulerController = {
             hauler.name = req.body.name || hauler.name
             hauler.email = req.body.email || hauler.email
             hauler.phone = req.body.phone || hauler.phone
+            hauler.limit = req.body.limit || hauler.limit
             hauler.service_city = req.body.service_city || hauler.service_city
 
             if(req.body.image) {                
@@ -159,18 +161,6 @@ const haulerController = {
             return res.status(500).json({msg: err.message})
         }
     }
-}
-
-const checkURL = (check) => {
-    let url 
-
-    try {
-        url = new URL(check)
-    } catch (_) {
-        return false
-    }
-
-    return url.protocol === 'http:' || url.protocol === 'https:'
 }
 
 module.exports = haulerController

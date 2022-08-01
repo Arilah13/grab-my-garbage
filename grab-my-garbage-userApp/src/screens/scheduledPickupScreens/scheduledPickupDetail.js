@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Dimensions, ScrollView, Pressable, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, ScrollView, Pressable, TouchableOpacity, FlatList } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from 'react-native-elements'
@@ -7,7 +7,7 @@ import Modal from 'react-native-modal'
 import axios from 'axios'
 
 import { colors } from '../../global/styles'
-import { dayConverter } from '../../helpers/schedulepickupHelper'
+import { dayConverter, fromDate } from '../../helpers/schedulepickupHelper'
 
 import { SCHEDULED_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/scheduledPickupConstants'
 import { receiverRead } from '../../redux/actions/conversationActions'
@@ -16,7 +16,6 @@ import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversatio
 import Headercomponent from '../../components/headerComponent'
 import Mapcomponent from '../../components/pickupComponent/mapComponent'
 import Chatcomponent from '../../components/pickupComponent/chatComponent'
-import CompletedPickupsComponent from '../../components/completedPickupsComponent'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -28,7 +27,6 @@ const Scheduledpickupdetail = ({navigation, route}) => {
 
     const [modalVisible, setModalVisible] = useState(false)
     const [modalVisible1, setModalVisible1] = useState(false)
-    const [modalVisible2, setModalVisible2] = useState(false)
     const [active, setActive] = useState(true)
     const [loading, setLoading] = useState(false)
     const [loadingCancel, setLoadingCancel] = useState(false)
@@ -150,7 +148,6 @@ const Scheduledpickupdetail = ({navigation, route}) => {
     useEffect(async() => {
         const convo = await conversation.find((convo) => convo.conversation.haulerId._id === item.pickerId._id && convo.conversation.userId._id === userInfo._id)
         setConvo(convo)
-        console.log(item)
     }, [])
 
     return (
@@ -220,7 +217,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         </View>
                     </View>
                     
-                    <View style = {{...styles.container1, backgroundColor: colors.grey8}}>
+                    <View style = {{...styles.container1, backgroundColor: colors.green2}}>
                         <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
                             <Icon
                                 type = 'material'
@@ -248,43 +245,66 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                             </View>
                         </View>
                     </View>
-                    
-                    <View style = {{flexDirection: 'row'}}>
-                        <TouchableOpacity 
-                            style = {{...styles.container1,
-                                elevation: 0, marginVertical: 10,
-                                flexDirection: 'row', backgroundColor: colors.white
-                            }}
-                            onPress = {() => {
-                                messageRead(item.pickerId._id)
-                                setModalVisible1(true)
-                            }}
-                        >
-                            <Icon
-                                type = 'material'
-                                name = 'chat'
-                                color = {colors.darkBlue}
-                                size = {27}
-                            />    
-                            <Text style = {styles.text6}>Chat With Hauler</Text>
-                        </TouchableOpacity>
 
-                        <TouchableOpacity 
-                            style = {{...styles.container1, 
-                                elevation: 0, marginVertical: 10,
-                                flexDirection: 'row', backgroundColor: colors.white
-                            }}
-                            onPress = {() => setModalVisible2(true)}
-                        >
+                    <View style = {{...styles.container1, backgroundColor: colors.grey8}}>
+                        <View style = {{marginTop: 10, marginLeft: 10, flexDirection: 'row'}}>
                             <Icon
                                 type = 'material'
                                 name = 'airport-shuttle'
-                                color = {colors.darkBlue}
-                                size = {27}
-                            />    
-                            <Text style = {styles.text6}>Completed Pickups</Text>
-                        </TouchableOpacity>
+                                size = {18}
+                                color = {colors.blue5}
+                                style = {{
+                                    marginTop: 2,
+                                    marginRight: 5,
+                                    marginLeft: 3
+                                }}
+                            />
+                            <Text style = {styles.title}>Completed Pickups</Text>
+                        </View>
+
+                        <View style = {styles.container3}>
+                            <FlatList
+                                numColumns = {1}
+                                showsHorizontalScrollIndicator = {true}
+                                data = {item.completedPickups}
+                                keyExtractor = {(item, index) => index}
+                                renderItem = {({item}) => (
+                                    <View style = {styles.card}>
+                                        <View style = {styles.view3}>   
+                                            <View style = {{flexDirection: 'row'}}>
+                                                <View style = {{width: '50%'}}>
+                                                    <Text style = {styles.title2}>{fromDate(item.date)}</Text>
+                                                </View>
+
+                                                <View>
+                                                    <Text style = {styles.title3}>{item.completedHauler.name}</Text>
+                                                </View>
+                                            </View> 
+                                        </View>
+                                    </View>
+                                )}
+                            />
+                        </View>
                     </View>
+                    
+                    <TouchableOpacity 
+                        style = {{...styles.container1,
+                            justifyContent: 'center', elevation: 0, marginVertical: 10,
+                            flexDirection: 'row', backgroundColor: colors.white
+                        }}
+                        onPress = {() => {
+                            messageRead(item.pickerId._id)
+                            setModalVisible1(true)
+                        }}
+                    >
+                        <Icon
+                            type = 'material'
+                            name = 'chat'
+                            color = {colors.darkBlue}
+                            size = {27}
+                        />    
+                        <Text style = {styles.text6}>Chat With Hauler</Text>
+                    </TouchableOpacity>
 
                     <View style = {{alignSelf: 'center', flexDirection: 'row', marginTop: 10}}>
                         <Button
@@ -304,81 +324,62 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         />
                     </View>
 
-                    <Modal 
-                        isVisible = {modalVisible}
-                        swipeDirection = {'down'}
-                        style = {{ justifyContent: 'center', margin: 10 }}
-                        onBackButtonPress = {() => setModalVisible(false)}
-                        onBackdropPress = {() => setModalVisible(false)}
-                        animationIn = 'zoomIn'
-                        animationOut = 'zoomOut'
-                        animationInTiming = {500}
-                        animationOutTiming = {500}
-                        useNativeDriver = {true}
-                        useNativeDriverForBackdrop = {true}
-                        deviceHeight = {SCREEN_HEIGHT}
-                        deviceWidth = {SCREEN_WIDTH}
-                    >
-                        <View style = {styles.view1}>
-                            <Mapcomponent 
-                                location = {item.location[0]} 
-                                item = {item} 
-                                setModalVisible = {setModalVisible} 
-                                type = 'schedule' 
-                                navigation = {navigation} 
-                                modalVisible = {modalVisible}
-                                convo = {convo}
-                            />
-                        </View>                
-                    </Modal>
-
-                    <Modal 
-                        isVisible = {modalVisible1}
-                        swipeDirection = {'down'}
-                        style = {{ justifyContent: 'center', margin: 10 }}
-                        onBackButtonPress = {() => setModalVisible1(false)}
-                        onBackdropPress = {() => setModalVisible1(false)}
-                        animationIn = 'zoomIn'
-                        animationOut = 'zoomOut'
-                        animationInTiming = {500}
-                        animationOutTiming = {500}
-                        useNativeDriver = {true}
-                        useNativeDriverForBackdrop = {true}
-                        deviceHeight = {SCREEN_HEIGHT}
-                        deviceWidth = {SCREEN_WIDTH}
-                    >
-                        <View style = {styles.view2}>
-                            <Chatcomponent 
-                                haulerid = {item.pickerId} 
-                                pickupid = {item._id} 
-                                setModalVisible = {setModalVisible1} 
-                                convo = {convo} 
-                            />
-                        </View>                
-                    </Modal>
-
-                    <Modal 
-                        isVisible = {modalVisible2}
-                        swipeDirection = {'down'}
-                        style = {{ justifyContent: 'center', margin: 10 }}
-                        onBackButtonPress = {() => setModalVisible2(false)}
-                        onBackdropPress = {() => setModalVisible2(false)}
-                        animationIn = 'zoomIn'
-                        animationOut = 'zoomOut'
-                        animationInTiming = {500}
-                        animationOutTiming = {500}
-                        useNativeDriver = {true}
-                        useNativeDriverForBackdrop = {true}
-                        deviceHeight = {SCREEN_HEIGHT}
-                        deviceWidth = {SCREEN_WIDTH}
-                    >
-                        <View style = {{...styles.view2, height: '35%'}}>
-                            <CompletedPickupsComponent item = {item} setModalVisible2 = {setModalVisible2} />
-                        </View>                
-                    </Modal>
-
                 </View>
             </ScrollView>
+
+            <Modal 
+                isVisible = {modalVisible}
+                swipeDirection = {'down'}
+                style = {{ justifyContent: 'center', margin: 10 }}
+                onBackButtonPress = {() => setModalVisible(false)}
+                onBackdropPress = {() => setModalVisible(false)}
+                animationIn = 'zoomIn'
+                animationOut = 'zoomOut'
+                animationInTiming = {500}
+                animationOutTiming = {500}
+                useNativeDriver = {true}
+                useNativeDriverForBackdrop = {true}
+                deviceHeight = {SCREEN_HEIGHT}
+                deviceWidth = {SCREEN_WIDTH}
+            >
+                <View style = {styles.view1}>
+                    <Mapcomponent 
+                        location = {item.location[0]} 
+                        item = {item} 
+                        setModalVisible = {setModalVisible} 
+                        type = 'schedule' 
+                        navigation = {navigation} 
+                        modalVisible = {modalVisible}
+                        convo = {convo}
+                    />
+                </View>                
+            </Modal>
+
+            <Modal 
+                isVisible = {modalVisible1}
+                swipeDirection = {'down'}
+                style = {{ justifyContent: 'center', margin: 10 }}
+                onBackButtonPress = {() => setModalVisible1(false)}
+                onBackdropPress = {() => setModalVisible1(false)}
+                animationIn = 'zoomIn'
+                animationOut = 'zoomOut'
+                animationInTiming = {500}
+                animationOutTiming = {500}
+                useNativeDriver = {true}
+                useNativeDriverForBackdrop = {true}
+                deviceHeight = {SCREEN_HEIGHT}
+                deviceWidth = {SCREEN_WIDTH}
+            >
+                <View style = {styles.view2}>
+                    <Chatcomponent 
+                        haulerid = {item.pickerId} 
+                        pickupid = {item._id} 
+                        setModalVisible = {setModalVisible1} 
+                        convo = {convo} 
+                    />
+                </View>                
+            </Modal>
+            
         </SafeAreaView>
     );
 }
@@ -400,7 +401,7 @@ const styles = StyleSheet.create({
     container2:{
         backgroundColor: colors.grey9,
         paddingLeft: 25, 
-        height: '16%',
+        height: '13%',
     },
     text1:{
         color: colors.blue7,
@@ -465,6 +466,29 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: colors.blue5
-    }
+    },
+    card:{
+        flex: 1,
+        margin: 5,
+    },
+    view3:{
+        paddingBottom: 10,
+        paddingTop: 10,
+        borderRadius: 15,
+        backgroundColor: colors.grey6,
+        elevation: 1,
+        width: SCREEN_WIDTH/1.5,
+        paddingHorizontal: 0,
+    },
+    title2:{
+        marginLeft: 25,
+        fontSize: 15,
+        color: colors.darkBlue
+    },
+    title3:{
+        marginLeft: 45,
+        fontSize: 15,
+        color: colors.darkBlue
+    },
 
 })

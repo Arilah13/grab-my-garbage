@@ -32,7 +32,7 @@ const Topnavigator = ({navigation}) => {
             routeName3 = getFocusedRouteNameFromRoute(route3)
         }
         
-        if(routeName1 === 'pickupDetail' || routeName2 === 'pickupDetail' || routeName3 === 'pickupDetail') {
+        if(routeName1 === 'PickupDetail' || routeName2 === 'PickupDetail' || routeName3 === 'PickupDetail') {
             navigation.setOptions({tabBarStyle: {display: 'none'}})
         } else {
             navigation.setOptions({

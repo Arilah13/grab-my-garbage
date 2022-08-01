@@ -20,11 +20,10 @@ export const returnPerMonthPickup = (data, data1) => {
     for(let index = 0; index < 12; index++) {
         let count = 0
         dates.forEach((date) => date === index && count++)
-        if(count > 0)
-            sortedDates.push({
-                name: index,
-                'Schedule Pickups': count
-            })
+        sortedDates.push({
+            name: index,
+            'Schedule Pickups': count
+        })
     }
 
     dates = []
@@ -37,11 +36,10 @@ export const returnPerMonthPickup = (data, data1) => {
     for(let index = 0; index < 12; index++) {
         let count = 0
         dates.forEach((date) => date === index && count++)
-        if(count > 0)
-            sortedDates.push({
-                name: index,
-                'Special Pickups': count
-            })
+        sortedDates.push({
+            name: index,
+            'Special Pickups': count
+        })
     }
 
     sortedDates.map((data) => {
@@ -66,24 +64,6 @@ export const returnPerMonthPickup = (data, data1) => {
     if(d <= 6) {
         let date1 = []
         let date2 = []
-        result.forEach((date) => {
-            if(date.name > d) {
-                date1.push({
-                    name: date.name,
-                    'Schedule Pickups': date['Schedule Pickups'],
-                    'Special Pickups': date['Special Pickups']
-                })
-            }
-        })
-        date1.sort((a, b) => {return a.name - b.name})
-
-        date1.forEach((date) => {
-            finalDates.push({
-                name: months[date.name],
-                'Schedule Pickups': date['Schedule Pickups'],
-                'Special Pickups': date['Special Pickups']
-            })
-        })
 
         result.forEach((date) => {
             if(date.name <= d)
@@ -96,6 +76,25 @@ export const returnPerMonthPickup = (data, data1) => {
         date2.sort((a, b) => {return a.name - b.name})
         
         date2.forEach((date) => {
+            finalDates.push({
+                name: months[date.name],
+                'Schedule Pickups': date['Schedule Pickups'],
+                'Special Pickups': date['Special Pickups']
+            })
+        })
+        
+        result.forEach((date) => {
+            if(date.name > d) {
+                date1.push({
+                    name: date.name,
+                    'Schedule Pickups': date['Schedule Pickups'],
+                    'Special Pickups': date['Special Pickups']
+                })
+            }
+        })
+        date1.sort((a, b) => {return a.name - b.name})
+
+        date1.forEach((date) => {
             finalDates.push({
                 name: months[date.name],
                 'Schedule Pickups': date['Schedule Pickups'],
@@ -155,17 +154,16 @@ export const moneyreturn = (data, data1) => {
     data.map((p) => {
         dates.push(sixMonthsPrior(p.to, p.payment))
     })
-    
+   
     for(let index = 0; index < 12; index++) {
         let sum = 0
         dates.forEach((d) => index === d.date && (sum += Number(d.payment)))
-        if(sum > 0)
-            sortedDates.push({
-                name: index,
-                'Schedule Pickups': sum
-            })
+        sortedDates.push({
+            name: index,
+            'Schedule Pickups': sum
+        })
     }
-
+    
     dates = []
 
     data1.map((p) => {
@@ -176,11 +174,10 @@ export const moneyreturn = (data, data1) => {
     for(let index = 0; index < 12; index++) {
         let sum = 0
         dates.forEach((d) => index === d.date && (sum += Number(d.payment)))
-        if(sum > 0)
-            sortedDates.push({
-                name: index,
-                'Special Pickups': sum
-            })
+        sortedDates.push({
+            name: index,
+            'Special Pickups': sum
+        })
     }
 
     sortedDates.map((data) => {
@@ -200,29 +197,11 @@ export const moneyreturn = (data, data1) => {
         } else accumulator.push(cur)
         return accumulator 
     }, [])
-
+    
     const d = new Date().getMonth()
     if(d <= 6) {
         let date1 = []
         let date2 = []
-        result.forEach((date) => {
-            if(date.name > d) {
-                date1.push({
-                    name: date.name,
-                    'Schedule Pickups': date['Schedule Pickups'],
-                    'Special Pickups': date['Special Pickups']
-                })
-            }
-        })
-        date1.sort((a, b) => {return a.name - b.name})
-
-        date1.forEach((date) => {
-            finalDates.push({
-                name: months[date.name],
-                'Schedule Pickups': date['Schedule Pickups'],
-                'Special Pickups': date['Special Pickups']
-            })
-        })
 
         result.forEach((date) => {
             if(date.name <= d)
@@ -241,28 +220,28 @@ export const moneyreturn = (data, data1) => {
                 'Special Pickups': date['Special Pickups']
             })
         })
-        
-    } else {
-        let date1 = []
-        let date2 = []
 
         result.forEach((date) => {
-            if(date.name < d)
+            if(date.name > d) {
                 date1.push({
                     name: date.name,
-                    'Schedule Pickups': date["Schedule Pickups"],
+                    'Schedule Pickups': date['Schedule Pickups'],
                     'Special Pickups': date['Special Pickups']
                 })
+            }
         })
         date1.sort((a, b) => {return a.name - b.name})
-
+        
         date1.forEach((date) => {
             finalDates.push({
                 name: months[date.name],
                 'Schedule Pickups': date['Schedule Pickups'],
                 'Special Pickups': date['Special Pickups']
             })
-        })
+        })      
+    } else {
+        let date1 = []
+        let date2 = []
 
         result.forEach((date) => {
             if(date.name >= d)
@@ -275,6 +254,24 @@ export const moneyreturn = (data, data1) => {
         date2.sort((a, b) => {return a.name - b.name})
 
         date2.forEach((date) => {
+            finalDates.push({
+                name: months[date.name],
+                'Schedule Pickups': date['Schedule Pickups'],
+                'Special Pickups': date['Special Pickups']
+            })
+        })
+
+        result.forEach((date) => {
+            if(date.name < d)
+                date1.push({
+                    name: date.name,
+                    'Schedule Pickups': date["Schedule Pickups"],
+                    'Special Pickups': date['Special Pickups']
+                })
+        })
+        date1.sort((a, b) => {return a.name - b.name})
+
+        date1.forEach((date) => {
             finalDates.push({
                 name: months[date.name],
                 'Schedule Pickups': date['Schedule Pickups'],

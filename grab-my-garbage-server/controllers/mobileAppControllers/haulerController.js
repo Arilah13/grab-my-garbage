@@ -48,7 +48,7 @@ const haulerController = {
                     dates.push(hauler.notification[i].createdAt.toISOString().split('T')[0])
                 }
             }
-
+            dates.reverse()
             let uniqueDates = await getUnique(dates)
 
             let notifications = await getNotifications(uniqueDates, hauler)
@@ -101,7 +101,7 @@ const haulerController = {
                     dates.push(hauler.notification[i].createdAt.toISOString().split('T')[0])
                 }
             }
-
+            dates.reverse()
             let uniqueDates = await getUnique(dates)
 
             let notifications = await getNotifications(uniqueDates, hauler)
@@ -174,7 +174,22 @@ const haulerController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
-    }  
+    },
+    readNotification: async(req, res) => {
+        try{
+            const hauler = await Haulers.findById(req.params.id)
+            if(!hauler) return res.status(400).json({msg: 'Hauler does not exists.'})
+
+            for(let n=0; n<hauler.notification.length; n++) {
+                hauler.notification[n].seen = true
+            }
+            await hauler.save()
+
+            res.status(200).json({msg: 'Notification seen'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
+    }    
 }
 
 const schedulePickupNotify = (hour, minute, pushId) => {
@@ -248,7 +263,8 @@ const getNotifications = async(uniqueDates, hauler) => {
                     description: hauler.notification[j].description,
                     id: hauler.notification[j]._id,
                     data: hauler.notification[j].data,
-                    haulerVisible: hauler.notification[j].haulerVisible
+                    haulerVisible: hauler.notification[j].haulerVisible,
+                    seen: hauler.notification[j].seen
                 })
             }
         }

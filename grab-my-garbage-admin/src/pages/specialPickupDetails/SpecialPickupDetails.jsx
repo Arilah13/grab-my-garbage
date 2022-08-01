@@ -1,6 +1,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { TextField, Button } from '@mui/material'
+import { ArrowBack } from '@mui/icons-material'
 
 import { fromDate, timeHelper } from '../../helpers/timeHelpers'
 
@@ -59,7 +61,13 @@ const SpecialPickupDetails = ({history, location}) => {
     return (
         <div className = 'specialPickup'>
             <div className = 'specialPickupTitleContainer'>
+                <Link to = {{pathname: '/specialpickups'}} className = 'back'>
+                    <ArrowBack 
+                        fontSize = 'large'
+                    />
+                </Link>
                 <h1 className = 'specialPickupTitle'>Special Pickup</h1>
+                <div></div>
             </div>
 
             <div className = 'specialPickupTop'>

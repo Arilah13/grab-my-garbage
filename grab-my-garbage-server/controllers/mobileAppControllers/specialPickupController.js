@@ -1,17 +1,11 @@
 const cloudinary = require('cloudinary')
 const turf = require('@turf/turf')
 const schedule = require('node-schedule')
-const io = require('socket.io-client')
-const { v4: uuidv4 } = require('uuid')
 
 const haulers = require('../../models/haulerModel')
 const polygonData = require('../../helpers/polygonData')
 const Pickups = require('../../models/specialPickupModel')
 const Users = require('../../models/userModel')
-
-// var socket = io.connect('https://grab-my-garbage-socket.herokuapp.com/', {
-//     reconnection: true
-// })
 
 const pickupController = {
     addSpecialPickup: async(req, res) => {
@@ -91,7 +85,8 @@ const pickupController = {
                     await user.notification.push({
                         description: 'Your special pickup has been cancelled',
                         data: newPickup,
-                        userVisible: true
+                        userVisible: true,
+                        seen: false
                     })
                     await user.save()
                 }

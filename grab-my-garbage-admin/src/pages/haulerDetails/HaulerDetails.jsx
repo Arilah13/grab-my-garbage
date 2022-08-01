@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { TextField, Button, InputLabel, Select, MenuItem, FormControl } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
-import { Publish } from "@mui/icons-material"
+import { Link } from 'react-router-dom'
+import { Publish, ArrowBack } from "@mui/icons-material"
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import Swal from 'sweetalert2'
@@ -31,12 +32,13 @@ const HaulerDetails = ({location}) => {
     const [service_city, setService_city] = useState('')
     const [password, setPassword] = useState('')
     const [password1, setPassword1] = useState('')
+    const [limit, setLimit] = useState('')
 
     const haulerList = useSelector((state) => state.haulerList)
     const { haulerList: haulers } = haulerList
 
     const initialValues = {email: email, name: name, phone: phone, image: image, pic: pic, 
-                           service_city: service_city, password: password, password1: password1 }
+                           service_city: service_city, password: password, password1: password1, limit: limit }
 
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -64,7 +66,8 @@ const HaulerDetails = ({location}) => {
                         .max(50, 'Password must not be more than 50 characters')
                         .oneOf([Yup.ref('password'), null], "Passwords don't match")
             }),
-        service_city: Yup.string().required('Choose a service city')
+        service_city: Yup.string().required('Choose a service city'),
+        limit: Yup.string().required('Limit is required')
     })
 
     const convertBase64 = (file) => {
@@ -99,7 +102,7 @@ const HaulerDetails = ({location}) => {
         const image = pic
 
         const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/admin/haulers/${location.state._id}`, 
-        {email, name, phone, image, password, service_city}, config)
+        {email, name, phone, image, password, service_city, limit}, config)
 
         if(res.status === 200) {
             Swal.fire({
@@ -116,6 +119,7 @@ const HaulerDetails = ({location}) => {
             data.phone = res.data.phone
             data.image = res.data.image
             data.service_city = res.data.service_city
+            data.limit = res.data.limit
             Data.splice(index, 0, data)
             dispatch({
                 type: RETRIEVE_HAULER_LIST_SUCCESS,
@@ -137,6 +141,7 @@ const HaulerDetails = ({location}) => {
         setImage(location.state.image)
         setPhone(location.state.phone)
         setService_city(location.state.service_city)
+        setLimit(location.state.limit)
         const list = returnPerMonthPickup(location.state.schedulePickups, location.state.specialPickups)
         setPickupList(list)
         const list1 = moneyreturn(location.state.schedulePickups, location.state.specialPickups)
@@ -147,7 +152,13 @@ const HaulerDetails = ({location}) => {
     return (
         <div className = 'hauler'>
             <div className = 'haulerTitleContainer'>
+                <Link to = {{pathname: '/haulers'}} className = 'back'>
+                    <ArrowBack 
+                        fontSize = 'large'
+                    />
+                </Link>
                 <h1 className = 'haulerTitle'>Hauler</h1>
+                <div></div>
             </div>
 
             {
@@ -263,6 +274,25 @@ const HaulerDetails = ({location}) => {
                                                 <MenuItem value = 'bambalapitiya'>Bambalapitiya</MenuItem>
                                             </Select>
                                         </FormControl>
+                                    </div>
+                                </div>
+
+                                <div className = 'haulerFlex'>
+                                    <div className = 'form-field'>
+                                        <TextField
+                                            error = {props.errors.limit && props.touched.limit}
+                                            id = 'limit'
+                                            label = {props.errors.limit && props.touched.limit ? props.errors.limit : 'Limit'}
+                                            style = {{
+                                                width: '250px'
+                                            }}
+                                            InputLabelProps = {{
+                                                shrink: props.values.limit !== '' ? true : false
+                                            }}
+                                            type = 'number'
+                                            value = {props.values.limit}
+                                            onChange = {(event) => setLimit(event.target.value)}
+                                        />
                                     </div>
                                 </div>
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import { View, StyleSheet, Image, Dimensions, Animated, Platform } from 'react-native'
-import MapView, { PROVIDER_GOOGLE, Marker, Polyline, AnimatedRegion } from 'react-native-maps'
+import { View, StyleSheet, Dimensions, Platform, Animated, Image } from 'react-native'
+import MapView, { PROVIDER_GOOGLE, Marker, AnimatedRegion } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 
 import { mapStyle } from '../../global/mapStyles'
@@ -47,26 +47,18 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                 }))
                 first.current = false
             }
-            // if(mapView.current) {
-            //     mapView.current.animateToRegion({
-            //         latitude: origin.latitude,
-            //         longitude: origin.longitude,
-            //         latitudeDelta: 0.0005,
-            //         longitudeDelta: 0.00025
-            //     }, 2000)
-            // }
-            // mapView.current.animateCamera({
-            //     center: {
-            //         latitude: origin.latitude,
-            //         longitude: origin.longitude,
-            //     },
-            //     heading: origin.heading,
-            //     zoom: 18
-            // })
+            if(mapView.current) {
+                mapView.current.animateToRegion({
+                    latitude: origin.latitude,
+                    longitude: origin.longitude,
+                    latitudeDelta: 0.0005,
+                    longitudeDelta: 0.00025
+                }, 2000)
+            }
 
             if(Platform.OS === 'android') {
                 if(marker.current) {
-                    marker.current.animateMarkerToCoordinate({latitude: origin.latitude, longitude: origin.longitude}, 1)
+                    marker.current.animateMarkerToCoordinate({latitude: origin.latitude, longitude: origin.longitude}, 1000)
                     Animated.timing(rotation, {
                         toValue: origin.heading,
                         useNativeDriver: true,
@@ -94,6 +86,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
             showsUserLocation = {false}
             minZoomLevel = {8}
             maxZoomLevel = {20}
+            showsMyLocationButton = {true}
             followsUserLocation = {true}
             initialRegion = {
                 origin ? {latitude: origin.latitude, longitude: origin.longitude, latitudeDelta: 0.04, longitudeDelta: 0.02} :
@@ -129,11 +122,10 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                     coordinate = {origin}
                     identifier = 'Marker1'
                     ref = {marker}
-                    flat = {false}
                     anchor = {{x: 0.5, y: 0.5}}
                     tracksViewChanges = {true}
                 >
-                    <AnimatedImage 
+                    <AnimatedImage
                         source = {require('../../../assets/map/arrow.png')} 
                         style = {{
                             width: 25,
@@ -149,11 +141,11 @@ const Mapcomponent = ({end, redo, setLoading}) => {
             {
                 end !== null ?
                 <>
-                    <Marker.Animated 
+                    <Marker 
                         coordinate = {end} 
                         anchor = {{x: 0.5, y: 0.5}}
                     >
-                        <AnimatedImage
+                        <Image
                             source = {require('../../../assets/garbage.png')}
                             style = {{
                                 resizeMode: 'cover',
@@ -161,7 +153,8 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                                 width: 40
                             }}
                         />
-                    </Marker.Animated>
+                    </Marker>
+
                     <MapViewDirections
                         origin = {origin}
                         destination = {end}

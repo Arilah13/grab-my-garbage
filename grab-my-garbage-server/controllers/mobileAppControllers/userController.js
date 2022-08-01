@@ -37,7 +37,7 @@ const userController = {
                         dates.push(user.notification[i].createdAt.toISOString().split('T')[0])
                     }
                 }
-    
+                dates.reverse()
                 let uniqueDates = await getUnique(dates)
     
                 let notifications = await getNotifications(uniqueDates, user)
@@ -263,7 +263,7 @@ const userController = {
                     dates.push(user.notification[i].createdAt.toISOString().split('T')[0])
                 }
             }
-
+            dates.reverse()
             let uniqueDates = await getUnique(dates)
 
             let notifications = await getNotifications(uniqueDates, user)
@@ -379,7 +379,7 @@ const userController = {
                     dates.push(user.notification[i].createdAt.toISOString().split('T')[0])
                 }
             }
-
+            dates.reverse()
             let uniqueDates = await getUnique(dates)
         
             let notifications = await getNotifications(uniqueDates, user)
@@ -453,6 +453,21 @@ const userController = {
         } catch(err) {
             return res.status(500).json({msg: err.message})
         }
+    },
+    readNotification: async(req, res) => {
+        try{
+            const user = await Users.findById(req.params.id)
+            if(!user) return res.status(400).json({msg: 'User does not exists.'})
+
+            for(let n=0; n<user.notification.length; n++) {
+                user.notification[n].seen = true
+            }
+            await user.save()
+
+            res.status(200).json({msg: 'Notification seen'})
+        } catch(err) {
+            return res.status(500).json({msg: err.message})
+        }
     }  
 }
 
@@ -506,7 +521,8 @@ const getNotifications = async(uniqueDates, user) => {
                     description: user.notification[j].description,
                     id: user.notification[j]._id,
                     data: user.notification[j].createdAt,
-                    userVisible: user.notification[j].userVisible
+                    userVisible: user.notification[j].userVisible,
+                    seen: user.notification[j].seen
                 })
             }
         }

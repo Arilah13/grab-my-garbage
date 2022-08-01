@@ -84,9 +84,9 @@ const Signupscreen = ({navigation}) => {
     }, [SignUp])
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1}}>
-            <View style = {{marginTop: SCREEN_HEIGHT/10}}>
-
+        <SafeAreaView>
+            <View style = {{height: 80, justifyContent: 'center', backgroundColor: colors.white}}>
+                <Text style = {styles.title}>Sign-Up</Text>
             </View>
             
             <Formik 
@@ -111,13 +111,11 @@ const Signupscreen = ({navigation}) => {
                 {
                     (props) => (       
                         <ScrollView 
-                            contentContainerStyle = {{height: 9.8*SCREEN_HEIGHT/10}}
-                            style = {{backgroundColor: colors.white, borderTopLeftRadius: 30, borderTopRightRadius: 30, height: 9*SCREEN_HEIGHT/10}}
+                            contentContainerStyle = {{height: SCREEN_HEIGHT - 80}}
+                            style = {{backgroundColor: colors.grey9}}
                             showsVerticalScrollIndicator = {false}
                         >
-                            <Text style = {styles.title}>Sign-Up</Text>
-
-                            <Text style = {{fontSize:15, color:colors.grey1, marginHorizontal: 15}}>New on grab-my-trash ?</Text>
+                            <Text style = {{fontSize:16, color:colors.grey1, marginHorizontal: 15, marginTop: 20}}>New on grab-my-trash ?</Text>
  
                             <View style = {styles.view1}>  
                                 <TextInput 
@@ -279,16 +277,13 @@ export default Signupscreen
 const styles = StyleSheet.create({
  
     title:{
-        color: colors.blue2,
-        fontSize: 20,
+        color: colors.grey1,
+        fontSize: 23,
         fontWeight: 'bold',
-        marginLeft: 35,
-        marginTop: 10,
-        marginBottom: 10
+        marginLeft: 20
     },
     view1:{
         justifyContent: 'flex-start',
-        backgroundColor: 'white',
         paddingHorizontal: 15,
         height: 19*SCREEN_HEIGHT/20
     },
@@ -315,7 +310,7 @@ const styles = StyleSheet.create({
     },
     button:{
         marginTop: SCREEN_HEIGHT/40,
-        backgroundColor: colors.buttons,
+        backgroundColor: colors.darkBlue,
         borderRadius: 10,
         height: 50,
     },

@@ -289,6 +289,17 @@ io.on('connection', socket => {
         }
     })
 
+    socket.on('newNotification', async({user, date, description, userVisible, seen, data}) => {
+        const user = await chatSocket.returnUserSocketid({ userid: user })
+        if(user !== false) {
+            socket.to(user).emit('newNotification', {date, description, userVisible, seen, data})
+        }
+    })
+
+    socket.on('reconnect', () => {
+        console.log(socket)
+    })
+
     socket.on('disconnect', () => {
         pickupSocket.removeUser({id: socket.id})
         chatSocket.removeUser({id: socket.id})

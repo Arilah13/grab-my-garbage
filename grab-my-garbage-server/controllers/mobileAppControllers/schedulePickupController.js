@@ -1,5 +1,4 @@
 const turf = require('@turf/turf')
-const { v4: uuidv4 } = require('uuid')
 
 const ScheduledPickups = require('../../models/scheduledPickupModel')
 const Haulers = require('../../models/haulerModel')
@@ -77,7 +76,8 @@ const scheduledPickupController = {
             await haulerId.notification.push({
                 description: 'You have been assigned a new schedule pickup',
                 data: newPickup,
-                haulerVisible: true
+                haulerVisible: true,
+                seen: false
             })
 
             await haulerId.save()
@@ -150,6 +150,7 @@ const scheduledPickupController = {
             if(!pickups) return res.status(400).json({msg: 'No Pickup is available.'})
 
             pickups.cancelled = 1
+            pickups.inactive = 0
             await pickups.save()
 
             res.status(200).json({msg: 'SchedulePickup Cancel'})
