@@ -127,7 +127,7 @@ const AddSpecial = ({id}) => {
             Data.push(data)
             dispatch({
                 type: RETRIEVE_SPECIAL_PICKUP_LIST_SUCCESS,
-                payload: data
+                payload: Data
             })
         } else {
             Swal.fire({

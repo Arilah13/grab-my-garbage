@@ -105,7 +105,7 @@ const AddSchedule = ({id}) => {
             Data.push(data)
             dispatch({
                 type: RETRIEVE_SCHEDULE_PICKUP_LIST_SUCCESS,
-                payload: data
+                payload: Data
             })
         } else {
             Swal.fire({

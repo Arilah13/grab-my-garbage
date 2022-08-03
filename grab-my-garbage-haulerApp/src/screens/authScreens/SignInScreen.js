@@ -43,7 +43,7 @@ const Signinscreen = () => {
     }
 
     useEffect(() => {
-        if(success === false)
+        if(error)
         {
             Alert.alert('Login Failed', error,
                 [
@@ -59,7 +59,7 @@ const Signinscreen = () => {
         } else if(success === true) {
             formikRef.current.setSubmitting(false)
         }
-    }, [success])
+    }, [error])
 
     return (
         <SafeAreaView>

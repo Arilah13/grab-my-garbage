@@ -205,6 +205,23 @@ const SpecialPickupDetails = ({history, location}) => {
                             </div>
                         </div>
                     }
+
+                    <div className = 'specialPickupFlex'>
+                        <div className = 'form-field'>
+                            <h4 className = 'headerOptional'>Optional Image</h4>
+                        </div>
+                        <div className = 'form-field'>
+                            {
+                                image !== undefined ?
+                                <img 
+                                    src = {image}
+                                    alt = 'specialPickupImage'
+                                    className = 'specialUploadImg' 
+                                /> :
+                                <div className = 'headerImage'>No Image Available</div>
+                            }
+                        </div>
+                    </div>
                     
                     <div className = 'specialPickupFlex'>
                         <div className = 'form-field'>

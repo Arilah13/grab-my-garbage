@@ -12,11 +12,11 @@ router.post('/', userController.returnDetails)
 
 router.post('/login', userController.login)
 
-router.post('/refresh_token', auth, userController.refreshtoken)
+router.post('/refresh_token', userController.refreshtoken)
 
-router.route('/:id').get(auth, userController.getUserById).put(auth, userController.updateUserProfile)
+router.route('/:id').get(userController.getUserById).put(userController.updateUserProfile)
 
-router.route('/password/:id').put(auth, userController.updateUserPassword)
+router.route('/password/:id').put(userController.updateUserPassword)
 
 router.put('/pushtoken/:id', userController.removePushToken)
 

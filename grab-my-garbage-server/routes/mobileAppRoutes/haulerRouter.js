@@ -8,7 +8,7 @@ router.post('/', haulerController.returnDetails)
 
 //router.post('/notification', haulerController.add)
 
-router.put('/password/:id', auth, haulerController.updateHaulerPassword)
+router.put('/password/:id', haulerController.updateHaulerPassword)
 
 router.put('/pushtoken/:id', haulerController.removePushToken)
 

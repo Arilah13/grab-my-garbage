@@ -41,96 +41,73 @@ const TabNavigator = () => {
                 setStart(false)
             }
             
-            socket.on('getMessage', async({senderid, text, sender, createdAt, image, current}) => {
+            socket.on('getMessage', async({senderid, text, sender, createdAt, image, current, conversationId}) => {
                 const index = await conversation.findIndex((convo) => convo.conversation.userId._id === senderid)
-
+                
                 if(index >= 0) {
-                    const element = await conversation.find(convo => convo.conversation.userId._id === senderid)
+                    const element = await conversation.splice(index, 1)[0]
+                    element.conversation.haulerVisible = true
 
-                    if(element) {
-                        await conversation.splice(index, 1)[0]
-                        element.message.created = createdAt
-                        element.conversation.haulerVisible = true
+                    if(current && current === element.conversation._id) {
+                        element.conversation.receiverHaulerRead = true
 
-                        if(text) {
-                            element.message.text = text
-                            element.message.image = null
+                        const message1 = {
+                            _id: Date.now(),
+                            conversationId: element.conversationId,
+                            createdAt: createdAt,
+                            created: createdAt,
+                            sender: [
+                                sender._id,
+                                sender.name,
+                                sender.avatar
+                            ],
+                            text: text && text,
+                            image: image && image !== 'data:image/png;base64,undefined' && image,
+                            userSeen: true,
+                            haulerSeen: true,
+                            received: true
                         }
-                        if(image && image !== 'data:image/png;base64,undefined') {
-                            element.message.image = image
-                            element.message.text = null
+                        await element.totalMessage.push(message1)
+                    } else {
+                        element.conversation.receiverHaulerRead = false
+
+                        const message2 = {
+                            _id: Date.now(),
+                            conversationId: element.conversationId,
+                            createdAt: createdAt,
+                            created: createdAt,
+                            sender: [
+                                sender._id,
+                                sender.name,
+                                sender.avatar
+                            ],
+                            text: text && text,
+                            image: image && image !== 'data:image/png;base64,undefined' && image,
+                            userSeen: true,
+                            haulerSeen: false,
+                            received: true
                         }
+                        await element.totalMessage.push(message2)
+                    }          
 
-                        element.message.sender = [
-                            sender._id,
-                            sender.name,
-                            sender.avatar
-                        ]
-                        element.message.userSeen = true
-
-                        if(current && current === element.conversation._id) {
-                            element.conversation.receiverHaulerRead = true
-                            element.message.haulerSeen = true
-
-                            const message = {
-                                _id: Date.now(),
-                                conversationId: element.conversationId,
-                                createdAt: createdAt,
-                                created: createdAt,
-                                sender: [
-                                    sender._id,
-                                    sender.name,
-                                    sender.avatar
-                                ],
-                                text: text && text,
-                                image: image && image !== 'data:image/png;base64,undefined' && image,
-                                userSeen: true,
-                                haulerSeen: true,
-                                received: true
-                            }
-                            element.totalMessage.push(message)
-                        } else {
-                            element.conversation.receiverHaulerRead = false
-                            element.message.haulerSeen = false
-
-                            const message = {
-                                _id: Date.now(),
-                                conversationId: element.conversationId,
-                                createdAt: createdAt,
-                                created: createdAt,
-                                sender: [
-                                    sender._id,
-                                    sender.name,
-                                    sender.avatar
-                                ],
-                                text: text && text,
-                                image: image && image !== 'data:image/png;base64,undefined' && image,
-                                userSeen: true,
-                                haulerSeen: false,
-                                received: true
-                            }
-                            element.totalMessage.push(message)
-                        }          
-
-                        await conversation.splice(0, 0, element)
-                        dispatch({
-                            type: GET_ALL_CONVERSATIONS_SUCCESS,
-                            payload: conversation
-                        })
-                    }  
+                    await conversation.splice(0, 0, element)
+                    dispatch({
+                        type: GET_ALL_CONVERSATIONS_SUCCESS,
+                        payload: conversation
+                    })
 
                     if(!current || current !== element.conversation._id) {
                         const read = await conversation.filter((convo) => {
                             return convo.conversation.receiverHaulerRead === false
                         })
-    
+
                         setNumber(read.length)
                     }
                 }
                 else if(index === -1) {
                     const element = {
                         conversation: {
-                            _id: createdAt,
+                            _id: conversationId,
                             updatedAt: createdAt,
                             createdAt: createdAt,
                             userId: {
@@ -143,29 +120,13 @@ const TabNavigator = () => {
                             userVisible: true,
                             haulerVisible: true
                         },
-                        message: {
+                        totalMessage: [{
                             created: createdAt,
                             createdAt: createdAt,
                             text: text && text,
                             image: image && image !== 'data:image/png;base64,undefined' && image,
                             _id: Date.now(),
-                            conversationId: element.conversationId,
-                            sender: [
-                                sender._id,
-                                sender.name,
-                                sender.avatar
-                            ],
-                            userSeen: true,
-                            haulerSeen: false,
-                            received: true
-                        },
-                        lastMessage: [{
-                            created: createdAt,
-                            createdAt: createdAt,
-                            text: text && text,
-                            image: image && image !== 'data:image/png;base64,undefined' && image,
-                            _id: Date.now(),
-                            conversationId: element.conversationId,
+                            conversationId: conversationId,
                             sender: [
                                 sender._id,
                                 sender.name,
@@ -197,7 +158,6 @@ const TabNavigator = () => {
                 await element.totalMessage.map(msg => {
                     msg.received = true
                 })
-                element.message.received = true
                 await conversation.splice(index, 0, element)
                 dispatch({
                     type: GET_ALL_CONVERSATIONS_SUCCESS,
@@ -210,7 +170,6 @@ const TabNavigator = () => {
                 const element = await conversation.find(convo => convo.conversation._id === conversationId)
                 if(element) {
                     await conversation.splice(index, 1)[0]
-                    element.message.userSeen = true
                     await element.totalMessage.map(msg => msg.userSeen = true)
                     await conversation.splice(index, 0, element)
                     dispatch({
@@ -220,7 +179,7 @@ const TabNavigator = () => {
                 }
             })
 
-            const convo = await conversation.filter(convo => convo.message.received === false && convo.message.sender[0] !== userInfo._id)
+            const convo = await conversation.filter(convo => convo.totalMessage[convo.totalMessage.length - 1].received === false && convo.totalMessage[convo.totalMessage.length - 1].sender[0] !== userInfo._id)
             if(convo.length > 0) {
                 await convo.map((con, index) => {
                     setTimeout(() => {

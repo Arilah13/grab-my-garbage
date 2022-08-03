@@ -20,7 +20,6 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Schedulepickupscreen = ({navigation}) => {
-
     const dispatch = useDispatch()
 
     const [date1, setDate1] = useState(new Date())
@@ -151,7 +150,7 @@ const Schedulepickupscreen = ({navigation}) => {
                     <View style = {{backgroundColor: colors.white}}>
                         <View style = {styles.container2}>
                             <Pressable 
-                                onPress = {() => navigation.navigate('Destination', {destination: 'Schedule Pickup'})}
+                                onPress = {() => navigation.navigate('Destination', {destination: 'Schedule'})}
                                 style = {{flexDirection: 'row'}}
                             >
                                 <Icon 

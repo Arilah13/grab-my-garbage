@@ -39,7 +39,6 @@ const Chatmenuscreen = ({navigation}) => {
         if(element.conversation.receiverUserRead === false) {
             await element.totalMessage.map(msg => msg.userSeen = true)
             element.conversation.receiverUserRead = true
-            element.message.userSeen = true
             dispatch(receiverRead(id))
         }
         
@@ -184,21 +183,21 @@ const Chatmenuscreen = ({navigation}) => {
 
                                                 <View style = {styles.userInfoText1}>
                                                     {
-                                                        item.message.sender[0] === userInfo._id && (item.message.pending ? 
+                                                        item.totalMessage[item.totalMessage.length - 1].sender[0] === userInfo._id && (item.totalMessage[item.totalMessage.length - 1].pending ? 
                                                         <Icon
                                                             type = 'material'
                                                             name = 'image'
                                                             color = {colors.darkGrey}
                                                             size = {20}
                                                             style = {{marginRight: 3}}
-                                                        /> : item.message.haulerSeen ?
-                                                        <Text style = {styles.text1}>✓✓</Text> : item.message.received ?
+                                                        /> : item.totalMessage[item.totalMessage.length - 1].haulerSeen ?
+                                                        <Text style = {styles.text1}>✓✓</Text> : item.totalMessage[item.totalMessage.length - 1].received ?
                                                         <Text style = {styles.text}>✓✓</Text> : 
                                                         <Text style = {styles.text}>✓</Text> )
                                                     }
                                                     {
-                                                        item.message.text ?
-                                                        <Text style = {styles.messageText}>{item.message.text}</Text> :
+                                                        item.totalMessage[item.totalMessage.length - 1].text ?
+                                                        <Text style = {styles.messageText}>{item.totalMessage[item.totalMessage.length - 1].text}</Text> :
                                                         <View style = {{flexDirection: 'row'}}>
                                                             <Icon
                                                                 type = 'material'

@@ -1,9 +1,14 @@
 const schedule = require('node-schedule')
 const { Expo } = require('expo-server-sdk')
+const io = require('socket.io-client')
 
 const Pickups = require('../../models/specialPickupModel')
 const Haulers = require('../../models/haulerModel')
 const Users = require('../../models/userModel')
+
+var socket = io.connect('https://grab-my-garbage-socket.herokuapp.com/', {
+    reconnection: true
+})
 
 let expo = new Expo({})
 
@@ -136,6 +141,9 @@ const requestController = {
             })
             await user.save()
 
+            socket.emit('newNotification', { user: user._id, description: 'Your special pickup has been completed',
+                            userVisible: true, seen: false, data: request, id: user.notification[user.notification.length - 1]._id })
+
             res.status(200).json({msg: 'Specialpickup Completed'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
@@ -183,6 +191,9 @@ const requestController = {
                 seen: false
             })
             await user.save()
+
+            socket.emit('newNotification', { user: user._id, description: 'Hauler is on the way to collect your special pickup',
+                            userVisible: true, seen: false, data: pickups, id: user.notification[user.notification.length - 1]._id })
 
             res.status(200).json({msg: 'Specialpickup Active'})
         } catch(err) {
@@ -239,7 +250,7 @@ const specialPickupNotify = (date, pushId, pickup) => {
             messages.push({
                 to: push,
                 sound: 'default',
-                title: 'Schedule Pickup',
+                title: 'Special Pickup',
                 body: 'Check your schedule for Special Pickup',
                 data: { 
                     screen: 'PickupDetail',

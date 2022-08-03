@@ -181,7 +181,7 @@ const style = {
     left: 550,
     transform: 'translate(-50%, -50%)',
     width: 580,
-    height: 600,
+    height: 640,
     bgcolor: 'background.paper',
     boxShadow: 24,
     borderRadius: 5

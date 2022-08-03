@@ -85,14 +85,10 @@ const Homescreen = ({navigation}) => {
                 }
                 
                 socket.emit('scheduledPickupOnProgress', { haulerid: userInfo._id, ongoingPickup: pickupOrder[0], pickup: pickupOrder })
-                socket.emit('newNotification', { user: pickupOrder[0].customerId._id, date: new Date(), description: 'Hauler is on the way to collect your schedule pickup',
-                            userVisible: true, seen: false, data: pickupOrder[0] })
 
                 dispatch(activeSchedulePickup(pickupOrder[0]._id))
             } else if (choice.current === 'special') {
                 socket.emit('specialPickupOnProgress', { haulerid: userInfo._id, pickupid: pickupOrder[0]._id, userid: pickupOrder[0].customerId._id, pickup: pickupOrder[0] })
-                socket.emit('newNotification', { user: pickupOrder[0].customerId._id, date: new Date(), description: 'Hauler is on the way to collect your special pickup',
-                            userVisible: true, seen: false, data: pickupOrder[0] })
 
                 dispatch(activeSpecialPickup(pickupOrder[0]._id))
             }
@@ -129,8 +125,6 @@ const Homescreen = ({navigation}) => {
                 dispatch(inactiveSchedulePickup(order._id))
 
                 socket.emit('schedulePickupCompleted', {pickupid: order._id, userid: order.customerId._id, haulerid: userInfo._id, pickup: order})
-                socket.emit('newNotification', { user: order.customerId._id, date: new Date(), description: 'Your schedule pickup for the day is completed',
-                            userVisible: true, seen: false, data: order })
 
                 await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === order._id), 1)
                 setPickups(pickupInfo)
@@ -140,8 +134,6 @@ const Homescreen = ({navigation}) => {
                 dispatch(completedPickup(order._id))
 
                 socket.emit('specialPickupCompleted', {pickupid: order._id, pickup: order})
-                socket.emit('newNotification', { user: order.customerId._id, date: new Date(), description: 'Your special pickup has been completed',
-                            userVisible: true, seen: false, data: order })
 
                 await specialPickupInfo.splice(specialPickupInfo.findIndex(pickup => pickup._id === order._id), 1)
                 setPickups(specialPickupInfo)

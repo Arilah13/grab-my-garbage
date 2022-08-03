@@ -194,7 +194,7 @@ const Specialpickupscreen = ({navigation}) => {
                 <>
                     <View style = {{backgroundColor: colors.white}}>
                         <View style = {styles.container2}>
-                            <Pressable onPress = {() => navigation.navigate('Destination', {destination: 'Special Pickup'})}>
+                            <Pressable onPress = {() => navigation.navigate('Destination', {destination: 'Special'})}>
                                 <Icon 
                                     type = 'feather'
                                     name = 'map-pin'

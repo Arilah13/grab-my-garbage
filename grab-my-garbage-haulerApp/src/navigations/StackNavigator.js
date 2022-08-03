@@ -35,20 +35,16 @@ const Stacknavigator = () => {
     }, [origin])
 
     useEffect(async() => {   
-        // const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/', {
+        const socket = await socketIO.connect('https://grab-my-garbage-socket.herokuapp.com/', {
+            reconnection: true,
+        })
+        // const socket = await socketIO.connect('http://192.168.13.1:5001', {
         //     reconnection: true,
         //     query: {
         //         'type': 'hauler',
         //         'id': userInfo._id
         //     }
         // })
-        const socket = await socketIO.connect('http://192.168.13.1:5001', {
-            reconnection: true,
-            query: {
-                'type': 'hauler',
-                'id': userInfo._id
-            }
-        })
         dispatch(addSocket(socket))
     }, [])
 

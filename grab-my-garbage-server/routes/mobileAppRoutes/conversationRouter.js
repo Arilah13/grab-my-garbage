@@ -2,9 +2,9 @@ const router = require('express').Router()
 const conversationController = require('../../controllers/mobileAppControllers/coversationController')
 const auth = require('../../middleware/auth')
 
-router.post('/', auth, conversationController.newConversation)
+router.post('/', conversationController.newConversation)
 
-router.get('/:id1/:id2', auth, conversationController.findConversation)
+router.get('/:id1/:id2', conversationController.findConversation)
 
 router.get('/:id', conversationController.getConversation)
 

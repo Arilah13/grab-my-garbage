@@ -1,5 +1,11 @@
+const io = require('socket.io-client')
+
 const scheduledPickups = require('../../models/scheduledPickupModel')
 const Users = require('../../models/userModel')
+
+var socket = io.connect('https://grab-my-garbage-socket.herokuapp.com/', {
+    reconnection: true
+})
 
 const requestController = {
     getScheduledPickupforToday: async(req, res) => {
@@ -116,6 +122,9 @@ const requestController = {
             })
             await user.save()
 
+            socket.emit('newNotification', { user: user._id, description: 'Hauler is on the way to collect your schedule pickup',
+                            userVisible: true, seen: false, data: pickups, id: user.notification[user.notification.length - 1]._id })
+
             res.status(200).json({msg: 'Schedulepickup Active'})
         } catch(err) {
             return res.status(500).json({msg: err.message})
@@ -137,6 +146,9 @@ const requestController = {
                 seen: false
             })
             await user.save()
+
+            socket.emit('newNotification', { user: user._id, description: 'Your schedule pickup for the day is completed',
+                            userVisible: true, seen: false, data: pickups, id: user.notification[user.notification.length - 1]._id })
 
             res.status(200).json({msg: 'Schedulepickup Inactive'})
         } catch(err) {

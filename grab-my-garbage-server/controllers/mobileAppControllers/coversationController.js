@@ -46,11 +46,11 @@ const conversationController = {
                 for(let i=0; i<conversation.length; i++) {
                     const message = await Messages.find({conversationId: conversation[i]._id})
                     if(message.length > 0) {
-                        endResult.push({conversation: conversation[i], message: message[message.length-1], totalMessage: message})
+                        endResult.push({conversation: conversation[i], totalMessage: message})
                     }
                 }
                 if(endResult.length > 1 ) {
-                    endResult.sort((a, b) => b.message.createdAt - a.message.createdAt)
+                    endResult.sort((a, b) => b.totalMessage[b.totalMessage.length - 1].createdAt - a.totalMessage[b.totalMessage.length - 1].createdAt)
                 }
             }
             

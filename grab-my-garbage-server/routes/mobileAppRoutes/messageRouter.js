@@ -7,10 +7,10 @@ router.post('/user', messageController.newMessageUser)
 router.post('/hauler', messageController.newMessageHauler)
 
 router.route('/:id')
-    .get(auth, messageController.findMessage)
+    .get(messageController.findMessage)
     .put(messageController.messageReceived)
 
-router.post('/send', auth, messageController.sendSMS)
+router.post('/send', messageController.sendSMS)
 
 router.put('/:id')
 

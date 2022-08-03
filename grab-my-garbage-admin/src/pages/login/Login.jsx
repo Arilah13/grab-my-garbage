@@ -57,8 +57,8 @@ const Login = ({setLogin}) => {
     useEffect(() => {
         const adminInfoFromStorage = JSON.parse(localStorage.getItem('admingarbage'))
         if(adminInfoFromStorage) {
-            setLogin(true)
             dispatch(adminLogin(adminInfoFromStorage))
+            setLogin(true)
         }
     }, [])
 

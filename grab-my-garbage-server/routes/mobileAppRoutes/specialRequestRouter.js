@@ -2,17 +2,17 @@ const router = require('express').Router()
 const requestController = require('../../controllers/mobileAppControllers/specialRequestController')
 const auth = require('../../middleware/auth')
 
-router.get('/pendingOfflinePickup/:id', auth, requestController.getPendingOfflinePickups)
+router.get('/pendingOfflinePickup/:id', requestController.getPendingOfflinePickups)
 
-router.get('/upcomingPickup/:id', auth, requestController.getUpcomingPickups)
+router.get('/upcomingPickup/:id', requestController.getUpcomingPickups)
 
-router.get('/completedPickup/:id', auth, requestController.getCompletedPickups)
+router.get('/completedPickup/:id', requestController.getCompletedPickups)
 
-router.put('/declinePickup/:id', auth, requestController.updateDeclinedHauler)
+router.put('/declinePickup/:id', requestController.updateDeclinedHauler)
 
-router.put('/acceptPickup/:id', auth, requestController.updateAcceptHauler)
+router.put('/acceptPickup/:id', requestController.updateAcceptHauler)
 
-router.put('/updateCompletedPickup/:id', auth, requestController.updateCompletedPickup)
+router.put('/updateCompletedPickup/:id', requestController.updateCompletedPickup)
 
 router.put('/exclude/:id', requestController.excludePickup)
 
@@ -20,7 +20,7 @@ router.put('/include/:id', requestController.includePickup)
 
 router.put('/active/:id', requestController.activePickup)
 
-router.get('/:id/:lat/:lng', auth, requestController.getUpcomingPickupsToCollect)
+router.get('/:id/:lat/:lng', requestController.getUpcomingPickupsToCollect)
 
 router.put('/:id/remove', requestController.deletePickup)
 

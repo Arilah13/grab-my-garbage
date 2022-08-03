@@ -54,7 +54,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                 message[0].user.avatar
             ],
             text: message[0].text && message[0].text,
-            image: message[0].image && message[0].image
+            image: message[0].image && 'data:image/png;base64,' + message[0].image
         }
         await conv.totalMessage.splice(conv.totalMessage.length, 0, element)
         conv.message = element

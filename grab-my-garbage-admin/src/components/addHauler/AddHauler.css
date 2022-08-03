@@ -67,8 +67,8 @@
 }
 
 .haulerUploadImg {
-    width: 130px;
-    height: 140px;
+    width: 120px;
+    height: 130px;
     border-radius: 10px;
     object-fit: cover;
 }
