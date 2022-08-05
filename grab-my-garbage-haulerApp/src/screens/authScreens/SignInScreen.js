@@ -7,7 +7,6 @@ import { Icon, Button } from 'react-native-elements'
 import * as Yup from 'yup'
 
 import { colors } from '../../global/styles'
-import { ANDROID_CLIENT_ID } from '@env'
 import { getPushToken } from '../../helpers/notificationHelper'
 
 import { Login } from '../../redux/actions/userActions'
@@ -39,7 +38,7 @@ const Signinscreen = () => {
     })
 
     const handleLogin = async(values) => {
-        dispatch(Login({email: values.email, password: values.password, pushId: await getPushToken()}))
+        dispatch(Login({email: values.email, password: values.password}))
     }
 
     useEffect(() => {

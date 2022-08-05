@@ -54,8 +54,8 @@ const Onlinecomponent = ({animation, online, setOnline, pickupBtn, choice, order
             setTimeout(() => {
                 Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
                     accuracy: Location.Accuracy.High,
-                    distanceInterval: 0,
-                    deferredUpdatesInterval: 1000,
+                    distanceInterval: 10,
+                    deferredUpdatesInterval: 0,
                     showsBackgroundLocationIndicator: true,
                     foregroundService: {
                         notificationTitle: 'Using your location',

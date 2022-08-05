@@ -1,6 +1,5 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
-import { composeWithDevTools } from 'redux-devtools-extension'
 
 import { USER_LOGOUT } from './constants/userConstants'
 
@@ -95,7 +94,7 @@ const middleware = [thunk]
 
 const store = createStore(
     rootReducer,
-    composeWithDevTools(applyMiddleware(...middleware))
+    applyMiddleware(...middleware)
 )
 
 export default store

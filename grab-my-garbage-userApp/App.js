@@ -6,7 +6,7 @@ import Splashnavigator from './src/navigations/SplashNavigator'
 import store from './src/redux/store'
 
 export default function App() {
-  //LogBox.ignoreAllLogs()
+  LogBox.ignoreAllLogs()
   return (
     <Provider store = {store}>
         <Splashnavigator />

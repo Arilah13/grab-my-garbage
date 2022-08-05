@@ -262,14 +262,12 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                             <Text style = {styles.title}>Completed Pickups</Text>
                         </View>
 
-                        <View style = {styles.container3}>
-                            <FlatList
-                                numColumns = {1}
-                                showsHorizontalScrollIndicator = {true}
-                                data = {item.completedPickups}
-                                keyExtractor = {(item, index) => index}
-                                renderItem = {({item}) => (
-                                    <View style = {styles.card}>
+                        <View style = {{...styles.container3, height: 110}}>
+                            <ScrollView
+                                showsVerticalScrollIndicator = {true}
+                            >
+                                {item.completedPickups.map((item, index) => (
+                                    <View style = {styles.card} key = {index}>
                                         <View style = {styles.view3}>   
                                             <View style = {{flexDirection: 'row'}}>
                                                 <View style = {{width: '50%'}}>
@@ -282,8 +280,8 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                                             </View> 
                                         </View>
                                     </View>
-                                )}
-                            />
+                                ))}
+                            </ScrollView>
                         </View>
                     </View>
                     

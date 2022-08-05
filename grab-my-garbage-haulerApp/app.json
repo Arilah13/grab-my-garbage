@@ -2,7 +2,7 @@
   "expo": {
     "name": "grab-my-garbage-driver",
     "slug": "grab-my-garbage-driver",
-    "version": "2.0.0",
+    "version": "7.0.0",
     "orientation": "portrait",
     "icon": "./assets/app/icon.png",
     "splash": {
@@ -18,14 +18,23 @@
     ],
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rilah.grabmygarbagedriver",
+      "config": {
+        "googleMapsApiKey": "AIzaSyCgb5cfXgbc-1mXfnrgAJ16w0Y-eN1SG6M"
+      }
     },
     "android": {
       "package": "com.rilah.grabmygarbagedriver",
-      "versionCode": 2,
+      "versionCode": 7,
       "adaptiveIcon": {
         "foregroundImage": "./assets/app/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCgb5cfXgbc-1mXfnrgAJ16w0Y-eN1SG6M"
+        }
       }
     },
     "web": {
