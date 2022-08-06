@@ -103,7 +103,7 @@ const userController = {
     },
     facebook: async(req, res) => {
         try{
-            const {name, email, registerrole, id, token, notification_token} = req.body
+            const {name, email, registerrole, notification_token} = req.body
 
             const user = await Users.findOne({email}) 
             if(user) {
@@ -127,8 +127,6 @@ const userController = {
                     name: user.name,
                     email: user.email,
                     role: user.role,
-                    fbid: id,
-                    fbtoken: token,
                     pushId: user.pushId,
                     count: count,
                     schedule: schedule,
@@ -160,9 +158,7 @@ const userController = {
                     name: newUser.name,
                     email: newUser.email,
                     role: newUser.role,
-                    fbid: id,
                     pushId: newUser.pushId,
-                    fbtoken: token,
                     count: count,
                     schedule: schedule,
                     special: special,
