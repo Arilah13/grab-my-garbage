@@ -17,7 +17,7 @@ const scheduledPickupController = {
             const service_city = await isPointInPolygon(pickupInfo.location.latitude, pickupInfo.location.longitude, polygonData)
             
             const hauler = await Haulers.find({service_city: service_city})
-            
+
             if(hauler.length > 0) {
                 for(let n=0; n<hauler.length; n++) {
                     const pickup = await ScheduledPickups.find({pickerId: hauler[n]._id, cancelled: 0, days: {$in: pickupInfo.days}, completed: 0})
@@ -25,8 +25,8 @@ const scheduledPickupController = {
                         for(let i=0; i<pickup.length; i++){
                             if(pickup[i].timeslot === pickupInfo.time) {
                                 const index = await requests.find(pick => pick.hauler === hauler[n]._id)
-                                const pick = await requests.splice((pick => pick.hauler === hauler[n]._id), 1)[0]
                                 if(index) {
+                                    const pick = await requests.splice((pick => pick.hauler === hauler[n]._id), 1)[0]
                                     pick.pickup.push(pickup[i])
                                     pick.on += 1
                                     requests.push(pick)
@@ -41,13 +41,21 @@ const scheduledPickupController = {
                                 }                   
                             }
                         }
+                    } else {
+                        requests.push({
+                            hauler: hauler[n]._id,
+                            haulerDetail: hauler[n],
+                            limit: hauler[n].limit,
+                            on: 0,
+                            pickup: []
+                        })
                     }
                 }
             }
             
             if(requests.length > 0) {
                 for(let n=0; n<requests.length; n++) {
-                    if(requests[n].pickup.length <= requests[n].limit) {
+                    if(requests[n].pickup.length < requests[n].limit) {
                         results = requests[n].haulerDetail
                     }
                 }
