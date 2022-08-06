@@ -4,12 +4,13 @@ import { View, Text, StyleSheet, TextInput, Dimensions, Alert } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Formik } from 'formik'
 import { Icon, SocialIcon, Button } from 'react-native-elements'
-import * as Google from 'expo-google-app-auth'
-import * as Facebook from 'expo-facebook'
+import * as Google from 'expo-auth-session/providers/google'
+import { makeRedirectUri } from 'expo-auth-session'
+import * as Facebook from 'expo-auth-session/providers/facebook'
 import * as Yup from 'yup'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { colors } from '../../global/styles'
-import { ANDROID_CLIENT_ID } from '@env'
 import { getPushToken } from '../../helpers/notificationHelper'
 
 import { specialLogin, specialLoginFB ,Login } from '../../redux/actions/userActions'
@@ -57,60 +58,83 @@ const Signinscreen = ({navigation}) => {
         setTimeout(() => setStatus(true), 200)
     }
 
-    const handleGoogleSignIn = async() => {
+    const [, responseGoogle, promtAsyncGoogle] = Google.useAuthRequest({
+        androidClientId: '823771858202-s1uhbkb2eci4pmc458tv8v30hlj8m7pq.apps.googleusercontent.com',
+        expoClientId: '823771858202-8a1fo1834oq5e8im7blte39k2fjshqh2.apps.googleusercontent.com',
+        redirectUri: makeRedirectUri({
+            scheme: 'com.rilah.grabmygarbage'
+        })
+    })
+
+    const [, responseFb, promtAsyncFb] = Facebook.useAuthRequest({
+        androidClientId: '619829139115277',
+        expoClientId: '619829139115277',
+        redirectUri: makeRedirectUri({
+            scheme: 'com.rilah.grabmygarbage'
+        })
+    })
+
+    const handleGoogleSignIn = () => {
         setGoogleSubmitting(true)
-        const config = {
-            androidClientId: ANDROID_CLIENT_ID,
-            scopes: ['profile', 'email']
-        }
-
-        Google
-            .logInAsync(config)
-            .then(async(result) => {
-                const {type, user} = result
-
-                dispatch(specialLogin({user, notification_token: await getPushToken()}))
-
-                if(type !== 'success') 
-                {      
-                    setGoogleSubmitting(false)
-                    Alert.alert('Google SignIn UnSuccessful',
-                    [
-                        {
-                            text: 'Ok',
-                        }
-                    ],
-                    {
-                        cancelable: true
-                    }
-                    )    
-                }
-            })
-            .catch(error => {
-                console.log(error)
-            })
+        promtAsyncGoogle() 
     }
 
     const handleFacebookSignIn = async() => {
         setFbSubmitting(true)
-        try {
-            await Facebook.initializeAsync({
-                appId: '619829139115277',
-            });
-            const { type, token } =
-                await Facebook.logInWithReadPermissionsAsync({
-                permissions: ['public_profile', 'email'],
-                });
-            const response = await fetch(`https://graph.facebook.com/me?fields=id,name,picture,email&access_token=${token}`)
-            setFbSubmitting(false)
-            if (type === 'success') {
-                const data = await response.json()
-                dispatch(specialLoginFB({email: data.email, name: data.name, id: data.id, token, notification_token: await getPushToken()}))
-            }
-        } catch ({ message }) {
-            Alert.alert(`Facebook Login Error: ${message}`);
-        }
+        promtAsyncFb()
     }
+
+    useEffect(async() => {
+        if(responseGoogle?.type === 'success') {
+            const userInfo = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+                headers: { Authorization: `Bearer ${responseGoogle.authentication.accessToken}` }
+            })
+            AsyncStorage.setItem('gmg:googleToken', JSON.stringify(responseGoogle.authentication.accessToken))
+            userInfo.json().then(async(data) => {
+                dispatch(specialLogin({user: data, notification_token: await getPushToken()}))
+            })
+        } else if (responseGoogle?.type === 'error' || responseGoogle?.type === 'locked') {
+            setGoogleSubmitting(false)
+            Alert.alert('Google SignIn UnSuccessful',
+                [
+                    {
+                        text: 'Ok',
+                    }
+                ],
+                {
+                    cancelable: true
+                }
+            )    
+        } else if (responseGoogle?.type === 'cancel' || responseGoogle?.type === 'dismiss') {
+            setGoogleSubmitting(false)
+        }
+    }, [responseGoogle])
+
+    useEffect(async() => {
+        if(responseFb?.type === 'success') {
+            const userInfo = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+                headers: { Authorization: `Bearer ${responseGoogle.authentication.accessToken}` }
+            })
+            AsyncStorage.setItem('gmg:facebookToken', JSON.stringify(responseGoogle.authentication.accessToken))
+            userInfo.json().then(async(data) => {
+                dispatch(specialLoginFB({email: data.email, name: data.name, notification_token: await getPushToken()}))
+            })
+        } else if (responseFb?.type === 'error' || responseFb?.type === 'locked') {
+            setFbSubmitting(false)
+            Alert.alert('Facebook SignIn UnSuccessful',
+                [
+                    {
+                        text: 'Ok',
+                    }
+                ],
+                {
+                    cancelable: true
+                }
+            )    
+        } else if (responseFb?.type === 'cancel' || responseFb?.type === 'dismiss') {
+            setFbSubmitting(false)
+        }
+    }, [responseFb])
 
     useEffect(() => {
         if(status)
@@ -119,7 +143,7 @@ const Signinscreen = ({navigation}) => {
             {
                 setStatus(false)
                 formikRef.current.setSubmitting(false)
-                Alert.alert(error,
+                Alert.alert('Login Error',
                     [
                         {
                             text: 'Ok',

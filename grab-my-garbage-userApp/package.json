@@ -24,13 +24,14 @@
     "@stripe/stripe-react-native": "0.2.3",
     "axios": "^0.24.0",
     "expo": "~44.0.0",
-    "expo-dev-client": "~0.8.0",
+    "expo-auth-session": "~3.5.0",
+    "expo-dev-client": "~0.8.6",
     "expo-facebook": "~12.1.0",
-    "expo-google-app-auth": "~8.3.0",
     "expo-image-picker": "~12.0.1",
     "expo-linking": "~3.0.0",
     "expo-location": "~14.0.1",
     "expo-notifications": "~0.14.0",
+    "expo-random": "~12.1.1",
     "expo-status-bar": "~1.2.0",
     "formik": "^2.2.9",
     "lottie-react-native": "^5.0.1",
@@ -57,14 +58,14 @@
     "react-native-webview": "^11.15.0",
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
-    "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.4.1",
     "sharingan-rn-modal-dropdown": "^1.4.0",
     "socket.io-client": "^4.4.1",
     "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "redux-devtools-extension": "^2.13.9"
   },
   "private": true
 }

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as actionTypes from '../constants/userConstants'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import * as Facebook from 'expo-facebook'
+import * as AuthSession from 'expo-auth-session'
 
 import { getScheduledPickups } from './schedulePickupActions'
 import { getAcceptedPickups, getCompletedPickups, getPendingPickups } from './specialPickupActions'
@@ -56,7 +56,7 @@ export const specialLogin = (info) => async(dispatch) => {
         }
         const registerrole = 'user'
         
-        const { name, email, photoUrl } = info.user
+        const { name, email, picture: photoUrl } = info.user
         const { notification_token } = info
         
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/googleregister',
@@ -83,7 +83,7 @@ export const specialLogin = (info) => async(dispatch) => {
     }
 }
 
-export const specialLoginFB = (email, name, id, token, notification_token) => async(dispatch) => {
+export const specialLoginFB = (email, name, notification_token) => async(dispatch) => {
     try{
         dispatch({
             type: actionTypes.USER_LOGIN_REQUEST
@@ -97,7 +97,7 @@ export const specialLoginFB = (email, name, id, token, notification_token) => as
         const registerrole = 'user'
 
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/facebookregister',
-            {name, email, registerrole, id, token, notification_token}, config, 
+            {name, email, registerrole, notification_token}, config, 
         )
 
         dispatch({
@@ -173,7 +173,6 @@ export const uploadDetails = (info) => async (dispatch) => {
         const { email } = info
 
         const { data } = await axios.post('https://grab-my-garbage-server.herokuapp.com/users/', {email}, config)
-        //const { data } = await axios.post('http://192.168.13.1:5000/users/', {email}, config)
 
         dispatch({
             type: actionTypes.USER_LOGIN_SUCCESS,
@@ -253,13 +252,13 @@ export const updateUserPassword = (password) => async (dispatch, getState) => {
 
 export const logout = () => async (dispatch, getState) => {
     const { userLogin: { userInfo }} = getState()
-    // if(userInfo.fbid !== '' && userInfo.fbid !== null) {
-    //     await Facebook.initializeAsync({
-    //         appId: '619829139115277',
-    //     });
-    //     var IParams = `access_token=${userInfo.fbtoken}`
-    //     await fetch(`https://graph.facebook.com/${userInfo.fbid}/permissions`,{method: 'DELETE', body: IParams})
-    // }
+    
+    const token = await AsyncStorage.getItem('gmg:googleToken')
+    
+    if(token) {
+        await AuthSession.revokeAsync({ token: JSON.parse(token) }, { revocationEndpoint: 'https://oauth2.googleapis.com/revoke' })
+        await AsyncStorage.removeItem('googleToken')
+    }
 
     const config = {
         headers: {

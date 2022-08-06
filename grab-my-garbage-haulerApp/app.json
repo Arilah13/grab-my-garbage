@@ -21,21 +21,29 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.rilah.grabmygarbagedriver",
       "config": {
-        "googleMapsApiKey": "AIzaSyCgb5cfXgbc-1mXfnrgAJ16w0Y-eN1SG6M"
+        "googleMapsApiKey": "AIzaSyAbfkVeoFpJ3IFgmb48FSWuKFWQsLYteKA"
       }
     },
     "android": {
       "package": "com.rilah.grabmygarbagedriver",
       "versionCode": 7,
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/app/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyCgb5cfXgbc-1mXfnrgAJ16w0Y-eN1SG6M"
+          "apiKey": "AIzaSyAbfkVeoFpJ3IFgmb48FSWuKFWQsLYteKA"
         }
-      }
+      },
+      "permissions": [
+        "ACCESS_BACKGROUND_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./assets/app/icon.png"

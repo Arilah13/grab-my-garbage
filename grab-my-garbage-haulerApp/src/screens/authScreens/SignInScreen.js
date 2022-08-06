@@ -38,7 +38,7 @@ const Signinscreen = () => {
     })
 
     const handleLogin = async(values) => {
-        dispatch(Login({email: values.email, password: values.password}))
+        dispatch(Login({email: values.email, password: values.password, pushId: await getPushToken()}))
     }
 
     useEffect(() => {

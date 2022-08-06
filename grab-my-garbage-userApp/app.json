@@ -2,6 +2,7 @@
   "expo": {
     "name": "grab-my-garbage",
     "slug": "grab-my-garbage",
+    "scheme": "com.rilah.grabmygarbage",
     "facebookScheme": "fb619829139115277",
     "facebookAppId": "619829139115277",
     "facebookDisplayName": "grab-my-garbage",
@@ -37,13 +38,28 @@
     },
     "android": {
       "versionCode": 2,
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/app/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.rilah.grabmygarbage",
-      "permissions": ["NOTIFICATIONS"],
-      "useNextNotificationsApi": true
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAbfkVeoFpJ3IFgmb48FSWuKFWQsLYteKA"
+        },
+        "googleSignIn": {
+          "apiKey": "AIzaSyAbfkVeoFpJ3IFgmb48FSWuKFWQsLYteKA",
+          "certificateHash": "F3:59:7B:61:98:F6:6C:F9:3F:2E:E3:38:8D:E2:87:6E:BF:85:D8:25"
+        }
+      },
+      "permissions": [
+        "ACCESS_BACKGROUND_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./assets/app/icon.png"

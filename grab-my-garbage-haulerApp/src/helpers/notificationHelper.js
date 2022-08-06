@@ -1,7 +1,8 @@
 import * as Notifications from 'expo-notifications'
 
 export const getPushToken = async() => {
-    const token = (await Notifications.getExpoPushTokenAsync()).data
+    let experienceId = '@rilah/grab-my-garbage-driver'
+    const token = (await Notifications.getExpoPushTokenAsync({experienceId})).data
     return token
 }
  

@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "41775083231",
+    "project_id": "grab-my-garbage",
+    "storage_bucket": "grab-my-garbage.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:41775083231:android:e47b35d35a30d74e8ec36a",
+        "android_client_info": {
+          "package_name": "com.rilah.grabmygarbage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "41775083231-gllc76jt7930nnhbncruu31loetdftf8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOeeXeNnhVYPuJv0No1nodAJN28M1m5nE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "41775083231-gllc76jt7930nnhbncruu31loetdftf8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:41775083231:android:2f8d86dbd6e5e1758ec36a",
+        "android_client_info": {
+          "package_name": "com.rilah.grabmygarbagedriver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "41775083231-gllc76jt7930nnhbncruu31loetdftf8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOeeXeNnhVYPuJv0No1nodAJN28M1m5nE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "41775083231-gllc76jt7930nnhbncruu31loetdftf8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -29,7 +29,6 @@ const Mapcomponent = ({end, redo, setLoading}) => {
     })
 
     const [currentCoordinate, setCurrentCoordinate] = useState()
-    const [distance, setDistance] = useState(null)
     const [timeout1, setTimeoutValue1] = useState(null)
     const [timeout2, setTimeoutValue2] = useState(null)
     const [timeout3, setTimeoutValue3] = useState(null)
@@ -166,7 +165,6 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                         resetOnChange = {false}
                         
                         onReady = {(result) => {
-                            setDistance(result.distance)
                             if(redo === true){
                                 mapView.current.fitToCoordinates(result.coordinates, {
                                     edgePadding: {
