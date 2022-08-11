@@ -23,7 +23,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Scheduledpickupdetail = ({navigation, route}) => {
     const dispatch = useDispatch()
 
-    const { item, from, to } = route.params
+    const { item } = route.params
 
     const [modalVisible, setModalVisible] = useState(false)
     const [modalVisible1, setModalVisible1] = useState(false)
@@ -116,8 +116,15 @@ const Scheduledpickupdetail = ({navigation, route}) => {
             payload: conversation
         })
     }
-    
+
+    const convoPush = async() => {
+        const convo = await conversation.find((convo) => convo.conversation.haulerId._id === item.pickerId._id && convo.conversation.userId._id === userInfo._id)
+        setConvo(convo)
+    }
+     
     useEffect(() => {
+        convoPush()
+
         if(item.inactive === 0) {
             setActive(true)
         } else if(item.inactive === 1) {
@@ -135,6 +142,9 @@ const Scheduledpickupdetail = ({navigation, route}) => {
         socket.on('schedulePickupDone', async({pickupid}) => {
             if(pickupid === item._id) {
                 setDisable(false)
+                if(modalVisible === true) {
+                    setModalVisible(false)
+                }
             }
         })
 
@@ -144,11 +154,6 @@ const Scheduledpickupdetail = ({navigation, route}) => {
             }
         })
     }, [socket])
-
-    useEffect(async() => {
-        const convo = await conversation.find((convo) => convo.conversation.haulerId._id === item.pickerId._id && convo.conversation.userId._id === userInfo._id)
-        setConvo(convo)
-    }, [])
 
     return (
         <SafeAreaView style = {{flex: 1}}>
@@ -194,7 +199,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         <View style = {styles.container3}>
                             <View style = {{flexDirection: 'row', marginTop: 10}}>
                                 <Text style = {styles.text3}>Scheduled Duration:</Text>
-                                <Text style = {styles.text4}>{from + ' - ' + to}</Text>
+                                <Text style = {styles.text4}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
                             </View>
 
                             <View style = {{flexDirection: 'row', marginTop: 10}}>
@@ -266,7 +271,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                             <ScrollView
                                 showsVerticalScrollIndicator = {true}
                             >
-                                {item.completedPickups.map((item, index) => (
+                                {item.completedPickups.length > 0 && item.completedPickups.map((item, index) => (
                                     <View style = {styles.card} key = {index}>
                                         <View style = {styles.view3}>   
                                             <View style = {{flexDirection: 'row'}}>
@@ -281,6 +286,16 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                                         </View>
                                     </View>
                                 ))}
+                                {
+                                    item.completedPickups.length === 0 &&
+                                        <View style = {{alignItems: 'center'}}>
+                                            <Text 
+                                                style = {{color: colors.darkBlue, fontSize: 16, fontWeight: 'bold', marginTop: 30}}
+                                            >
+                                                No Pickup Available
+                                            </Text>
+                                        </View>
+                                }
                             </ScrollView>
                         </View>
                     </View>
@@ -399,7 +414,7 @@ const styles = StyleSheet.create({
     container2:{
         backgroundColor: colors.grey9,
         paddingLeft: 25, 
-        height: '13%',
+        height: '12%',
     },
     text1:{
         color: colors.blue7,

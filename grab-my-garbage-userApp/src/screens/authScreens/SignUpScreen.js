@@ -248,7 +248,7 @@ const Signupscreen = ({navigation}) => {
                                 </View>
 
                                 <View style = {styles.view5}>
-                                    <Text style = {{fontSize:15, fontWeight:'bold',}}>OR</Text>
+                                    <Text style = {{fontSize:15, fontWeight:'bold', marginVertical: 10}}>OR</Text>
                                 </View>
                                 </KeyboardAvoidingView>
                                 <View style = {styles.view6}>
@@ -258,7 +258,7 @@ const Signupscreen = ({navigation}) => {
                                     <View>
                                         <Button
                                             title = 'Sign-In'
-                                            buttonStyle = {{...styles.button, marginTop: 5, height: 45, width: SCREEN_WIDTH/3, alignSelf: 'flex-end'}}
+                                            buttonStyle = {{...styles.button, marginTop: 15, height: 45, width: SCREEN_WIDTH/3, alignSelf: 'flex-end'}}
                                             onPress = {() => {navigation.navigate('SignIn')}}
                                         />
                                     </View>
@@ -319,7 +319,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     view6:{
-        backgroundColor: 'white',
         paddingHorizontal: 5,   
     },
 

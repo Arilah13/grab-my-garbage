@@ -205,7 +205,7 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                     marginLeft: SCREEN_WIDTH/1.4,
                                     backgroundColor: colors.darkBlue
                                 }}
-                                onPress = {() => navigation.navigate('PickupScheduleDetail', {item, from: fromDate(item.from), to: fromDate(item.to)})}
+                                onPress = {() => navigation.navigate('PickupScheduleDetail', {item})}
                             />
                         }
                     </View>
@@ -279,24 +279,28 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                                     type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
                                                     payload: pickupInfo
                                                 })
+                                                setRowIndex(null)
                                             } else {
                                                 loadingId1.splice(loadingId1.findIndex(load => load === item._id), 1)
                                             }
                                         },
                                         component: 
-                                        <View style = {{paddingVertical: 22}}>
+                                        <View style = {{paddingVertical: 20}}>
                                             {
                                                 checkLoading1(item._id) === true ?
                                                 <ActivityIndicator 
                                                     color = {colors.white} 
                                                     size = {30}
                                                 /> :
-                                                <Icon
-                                                    type = 'material'
-                                                    name = 'close'
-                                                    color = 'white'
-                                                    size = {30}
-                                                />
+                                                <View>
+                                                    <Icon
+                                                        type = 'material'
+                                                        name = 'close'
+                                                        color = 'white'
+                                                        size = {30}
+                                                    />
+                                                    <Text style = {{alignSelf: 'center', color: colors.white}}>Cancel</Text>
+                                                </View>
                                             }
                                         </View>
                                     }
@@ -317,6 +321,7 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                                     type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
                                                     payload: pickupInfo
                                                 })
+                                                setRowIndex(null)
                                             } else {
                                                 setLoadingId1(loadingId1.filter(load => load !== item._id))
                                             }
@@ -329,12 +334,15 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                                     color = {colors.white} 
                                                     size = {30}
                                                 /> :
-                                                <Icon
-                                                    type = 'material'
-                                                    name = {item.inactive === 0 ? 'toggle-off' : 'toggle-on'}
-                                                    color = 'white'
-                                                    size = {30}
-                                                />
+                                                <View>
+                                                    <Icon
+                                                        type = 'material'
+                                                        name = {item.inactive === 0 ? 'toggle-off' : 'toggle-on'}
+                                                        color = 'white'
+                                                        size = {30}
+                                                    />
+                                                    <Text style = {{alignSelf: 'center', color: colors.white}}>{item.inactive === 0 ? 'Inactivate' : 'Activate'}</Text>
+                                                </View>
                                             }
                                         </View>
                                     }
@@ -372,19 +380,22 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                             }
                                         },
                                         component: 
-                                        <View style = {{paddingVertical: 22}}>
+                                        <View style = {{paddingVertical: 20}}>
                                             {
                                                 checkLoading(item._id) === true ?
                                                 <ActivityIndicator 
                                                     color = {colors.white} 
                                                     size = {30}
                                                 /> :
-                                                <Icon
-                                                    type = 'material'
-                                                    name = 'delete-outline'
-                                                    color = 'white'
-                                                    size = {30}
-                                                />
+                                                <View>
+                                                     <Icon
+                                                        type = 'material'
+                                                        name = 'delete-outline'
+                                                        color = 'white'
+                                                        size = {30}
+                                                    />
+                                                    <Text style = {{alignSelf: 'center', color: colors.white}}>Delete</Text>
+                                                </View>
                                             }
                                         </View>
                                     }

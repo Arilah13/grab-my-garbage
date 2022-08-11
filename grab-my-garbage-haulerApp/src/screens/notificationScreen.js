@@ -141,24 +141,28 @@ const NotificationScreen = ({navigation}) => {
                                                                 payload: userInfo
                                                             })
                                                         }
+                                                        setRowIndex(null)
                                                     } else {
                                                         loadingId.splice(loadingId.findIndex(load => load === data.id), 1)
                                                     }
                                                 },
                                                 component: 
-                                                <View style = {{paddingVertical: 20}} key = {parseInt(index) + 100}>
+                                                <View style = {{paddingVertical: 16}}>
                                                     {
                                                         checkLoading(data.id) === true ?
                                                         <ActivityIndicator 
                                                             color = {colors.white} 
                                                             size = {30}
                                                         /> :
-                                                        <Icon
-                                                            type = 'material'
-                                                            name = 'delete-outline'
-                                                            color = 'white'
-                                                            size = {30}
-                                                        />
+                                                        <View>
+                                                            <Icon
+                                                                type = 'material'
+                                                                name = 'delete-outline'
+                                                                color = 'white'
+                                                                size = {30}
+                                                            />
+                                                            <Text style = {{alignSelf: 'center', color: colors.white}}>Delete</Text>
+                                                        </View>
                                                     }
                                                 </View>
                                             }

@@ -6,7 +6,7 @@ import { Icon } from 'react-native-elements'
 import Modal from 'react-native-modal'
 
 import { colors } from '../../global/styles'
-import { dayConverter } from '../../helpers/schedulePickuphelper'
+import { dayConverter, fromDate } from '../../helpers/schedulePickuphelper'
 
 import { receiverRead } from '../../redux/actions/conversationActions'
 import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
@@ -19,7 +19,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Scheduledpickupdetail = ({navigation, route}) => {
-    const { item, from, to } = route.params
+    const { item } = route.params
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { conversation } = getAllConversation
@@ -99,7 +99,7 @@ const Scheduledpickupdetail = ({navigation, route}) => {
                         <View style = {styles.container3}>
                             <View style = {{flexDirection: 'row', marginTop: 10}}>
                                 <Text style = {styles.text3}>Pickup Scheduled Duration:</Text>
-                                <Text style = {styles.text4}>{from + ' - ' + to}</Text>
+                                <Text style = {styles.text4}>{fromDate(item.from) + ' - ' + fromDate(item.to)}</Text>
                             </View>
                             
                             <View style = {{flexDirection: 'row', marginTop: 10}}>

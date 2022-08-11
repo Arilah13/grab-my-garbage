@@ -142,24 +142,28 @@ const NotificationScreen = () => {
                                                                 payload: userInfo
                                                             })
                                                         }
+                                                        setRowIndex(null)
                                                     } else {
                                                         setLoadingId(loadingId.filter(load => load !== data.id))
                                                     }
                                                 },
                                                 component: 
-                                                <View style = {{paddingVertical: 22}}>
+                                                <View style = {{paddingVertical: 20}}>
                                                     {
                                                         checkLoading(data.id) === true ?
                                                         <ActivityIndicator 
                                                             color = {colors.white} 
                                                             size = {30}
                                                         /> :
-                                                        <Icon
-                                                            type = 'material'
-                                                            name = 'delete-outline'
-                                                            color = 'white'
-                                                            size = {30}
-                                                        />
+                                                        <View>
+                                                            <Icon
+                                                                type = 'material'
+                                                                name = 'delete-outline'
+                                                                color = 'white'
+                                                                size = {30}
+                                                            />
+                                                            <Text style = {{alignSelf: 'center', color: colors.white}}>Delete</Text>
+                                                        </View>
                                                     }
                                                 </View>
                                             }

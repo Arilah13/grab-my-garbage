@@ -67,11 +67,10 @@ const Signinscreen = ({navigation}) => {
     })
 
     const [, responseFb, promtAsyncFb] = Facebook.useAuthRequest({
-        androidClientId: '619829139115277',
         expoClientId: '619829139115277',
-        redirectUri: makeRedirectUri({
-            scheme: 'com.rilah.grabmygarbage'
-        })
+        // redirectUri: makeRedirectUri({
+        //     scheme: 'com.rilah.grabmygarbage'
+        // })
     })
 
     const handleGoogleSignIn = () => {
@@ -95,7 +94,7 @@ const Signinscreen = ({navigation}) => {
             })
         } else if (responseGoogle?.type === 'error' || responseGoogle?.type === 'locked') {
             setGoogleSubmitting(false)
-            Alert.alert('Google SignIn UnSuccessful',
+            Alert.alert('Google SignIn UnSuccessful', 'Google SignIn Failed'
                 [
                     {
                         text: 'Ok',
@@ -121,7 +120,7 @@ const Signinscreen = ({navigation}) => {
             })
         } else if (responseFb?.type === 'error' || responseFb?.type === 'locked') {
             setFbSubmitting(false)
-            Alert.alert('Facebook SignIn UnSuccessful',
+            Alert.alert('Facebook SignIn UnSuccessful', 'Facebook SignIn Failed',
                 [
                     {
                         text: 'Ok',
@@ -143,7 +142,7 @@ const Signinscreen = ({navigation}) => {
             {
                 setStatus(false)
                 formikRef.current.setSubmitting(false)
-                Alert.alert('Login Error',
+                Alert.alert('Login Error', error,
                     [
                         {
                             text: 'Ok',

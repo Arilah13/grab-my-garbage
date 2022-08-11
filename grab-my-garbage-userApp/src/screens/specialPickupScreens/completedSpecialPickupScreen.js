@@ -7,7 +7,7 @@ import axios from 'axios'
 import Swipeout from 'react-native-swipeout'
 
 import { colors } from '../../global/styles'
-import { date2Helper, timeHelper } from '../../helpers/pickupHelper'
+import { date3Helper, timeHelper } from '../../helpers/pickupHelper'
 
 import { getCompletedPickups } from '../../redux/actions/specialPickupActions'
 import { COMPLETED_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialPickupConstants'
@@ -110,24 +110,28 @@ const Completedspecialpickupscreen = ({navigation}) => {
                                                 type: COMPLETED_PICKUP_RETRIEVE_SUCCESS,
                                                 payload: pickupInfo
                                             })
+                                            setRowIndex(null)
                                         } else {
                                             setLoadingId(loadingId.filter(load => load !== item._id))
                                         }
                                     },
                                     component: 
-                                    <View style = {{paddingVertical: 22}}>
+                                    <View style = {{paddingVertical: 20}}>
                                         {
                                             checkLoading(item._id) === true ?
                                             <ActivityIndicator 
                                                 color = {colors.white} 
                                                 size = {30}
                                             /> :
-                                            <Icon
-                                                type = 'material'
-                                                name = 'delete-outline'
-                                                color = 'white'
-                                                size = {30}
-                                            />
+                                            <View>
+                                                <Icon
+                                                    type = 'material'
+                                                    name = 'delete-outline'
+                                                    color = 'white'
+                                                    size = {30}
+                                                />
+                                                <Text style = {{alignSelf: 'center', color: colors.white}}>Delete</Text>
+                                            </View>
                                         }
                                     </View>
                                 }
@@ -180,14 +184,14 @@ const Completedspecialpickupscreen = ({navigation}) => {
                                                         marginLeft: 3
                                                     }}
                                                 />
-                                                <Text style = {styles.text3}>{date2Helper(item.completedDate)}</Text>
+                                                <Text style = {styles.text3}>{date3Helper(item.completedDate)}</Text>
                                             </View>
                                         }
                                         
                                         {
                                             item.cancelled === 1 &&
                                             <View style = {{...styles.view1, flexDirection: 'row'}}>
-                                                <Text style = {styles.text4}>before: </Text>
+                                                <Text style = {styles.text4}>scheduled: </Text>
                                                 <Icon
                                                     type = 'material'
                                                     name = 'schedule'
@@ -211,7 +215,7 @@ const Completedspecialpickupscreen = ({navigation}) => {
                                                         marginLeft: 3
                                                     }}
                                                 />
-                                                <Text style = {styles.text3}>{date2Helper(item.datetime)}</Text>
+                                                <Text style = {styles.text3}>{date3Helper(item.datetime)}</Text>
                                             </View>
                                         }
                                     </View>

@@ -269,7 +269,7 @@ export const logout = () => async (dispatch, getState) => {
 
     const pushId = await getPushToken()
 
-    const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/users/pushtoken/${userInfo._id}`, {id: pushId}, config)
+    axios.put(`https://grab-my-garbage-server.herokuapp.com/users/pushtoken/${userInfo._id}`, {id: pushId}, config)
 
     AsyncStorage.removeItem('userInfo')
 

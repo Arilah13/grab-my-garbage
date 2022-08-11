@@ -121,24 +121,28 @@ const Chatmenuscreen = ({navigation}) => {
                                                         type: GET_ALL_CONVERSATIONS_SUCCESS,
                                                         payload: conversation
                                                     })
+                                                    setRowIndex(null)
                                                 } else {
                                                     setLoadingId(loadingId.filter(load => load !== item.conversation._id))
                                                 }
                                             },
                                             component: 
-                                            <View style = {{paddingVertical: 15}}>
+                                            <View style = {{paddingVertical: 12}}>
                                                 {
                                                     checkLoading(item.conversation._id) === true ?
                                                     <ActivityIndicator 
                                                         color = {colors.white} 
                                                         size = {30}
                                                     /> :
-                                                    <Icon
-                                                        type = 'material'
-                                                        name = 'delete-outline'
-                                                        color = 'white'
-                                                        size = {30}
-                                                    />
+                                                    <View>
+                                                        <Icon
+                                                            type = 'material'
+                                                            name = 'delete-outline'
+                                                            color = 'white'
+                                                            size = {30}
+                                                        />
+                                                        <Text style = {{alignSelf: 'center', color: colors.white}}>Delete</Text>
+                                                    </View>
                                                 }
                                             </View>
                                         }

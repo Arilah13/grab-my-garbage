@@ -7,7 +7,7 @@ import Swipeout from 'react-native-swipeout'
 import axios from 'axios'
 
 import { colors } from '../../global/styles'
-import { timeHelper, date1Helper } from '../../helpers/specialPickuphelper'
+import { timeHelper, date3Helper } from '../../helpers/specialPickuphelper'
 
 import { getCompletedPickups } from '../../redux/actions/specialRequestActions'
 import { COMPLETED_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialRequestConstants'
@@ -111,24 +111,28 @@ const CompletedPickupscreen = ({navigation}) => {
                                                 type: COMPLETED_PICKUP_RETRIEVE_SUCCESS,
                                                 payload: pickupInfo
                                             })
+                                            setRowIndex(null)
                                         } else {
                                             setLoadingId(loadingId.filter(load => load !== item._id))
                                         }
                                     },
                                     component: 
-                                    <View style = {{paddingVertical: 22}}>
+                                    <View style = {{paddingVertical: 20}}>
                                         {
                                             checkLoading(item._id) === true ?
                                             <ActivityIndicator 
                                                 color = {colors.white} 
                                                 size = {30}
                                             /> :
-                                            <Icon
-                                                type = 'material'
-                                                name = 'delete-outline'
-                                                color = 'white'
-                                                size = {30}
-                                            />
+                                            <View>
+                                                <Icon
+                                                    type = 'material'
+                                                    name = 'delete-outline'
+                                                    color = 'white'
+                                                    size = {30}
+                                                />
+                                                <Text style = {{alignSelf: 'center', color: colors.white}}>Delete</Text>
+                                            </View>
                                         }
                                     </View>
                                 }
@@ -187,7 +191,7 @@ const CompletedPickupscreen = ({navigation}) => {
                                                 marginLeft: 5
                                             }}
                                         />
-                                        <Text style = {styles.text5}>{date1Helper(item.completedDate)}</Text>
+                                        <Text style = {styles.text5}>{date3Helper(item.completedDate)}</Text>
                                     </View>
                                 </View>
                                 <View style = {{position: 'absolute'}}>
@@ -201,7 +205,7 @@ const CompletedPickupscreen = ({navigation}) => {
                                             marginLeft: SCREEN_WIDTH/1.3,
                                             backgroundColor: colors.darkBlue
                                         }}
-                                        onPress = {() => navigation.navigate('PickupDetail', {item, time: timeHelper(item.datetime), completedTime: timeHelper(item.completedDate), date: date1Helper(item.completedDate), date1: date1Helper(item.datetime), buttons: false, name: 'Completed Pickups'})}
+                                        onPress = {() => navigation.navigate('PickupDetail', {item, buttons: false, name: 'Completed Pickups'})}
                                     />
                                 </View>
                                 </View>
@@ -264,7 +268,7 @@ const styles = StyleSheet.create({
         fontSize: 13
     },
     text5:{
-        marginTop: 7,
+        marginTop: 5,
         fontSize: 12,
         color: colors.blue2,
         fontWeight: 'bold',

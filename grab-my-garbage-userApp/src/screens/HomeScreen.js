@@ -105,7 +105,7 @@ const Homescreen = ({navigation}) => {
                 navigation.navigate('ScheduleRequests', {
                     screen: 'PickupScheduleDetail',
                     params: {
-                        item, from: fromDate(item.from), to: fromDate(item.to)
+                        item
                     }
                 })
             } else if(screen === 'ScheduleRequests') {
@@ -193,6 +193,7 @@ const Homescreen = ({navigation}) => {
                 })
                 pickup.active = 0
                 pickup.completed = 1
+                pickup.completedDate = new Date().toISOString()
                 completed.push(pickup)
                 dispatch({
                     type: COMPLETED_PICKUP_RETRIEVE_SUCCESS,

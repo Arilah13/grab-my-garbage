@@ -23,7 +23,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Specialpickupdetailscreen = ({route, navigation}) => {
     const dispatch = useDispatch()
 
-    const { item, name, completedTime } = route.params
+    const { item, name } = route.params
 
     const [modalVisible, setModalVisible] = useState(false)
     const [modalVisible1, setModalVisible1] = useState(false)
@@ -39,6 +39,9 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
 
     const getAllConversation = useSelector((state) => state.getAllConversation)
     const { conversation } = getAllConversation
+
+    const socketHolder = useSelector((state) => state.socketHolder)
+    const { socket } = socketHolder
 
     const config = {
         headers: {
@@ -95,6 +98,17 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
         }
     }, [])
 
+    useEffect(() => {
+        socket.on('pickupDone', async({pickupid}) => {
+            if(pickupid === item._id) {
+                if(modalVisible === true) {
+                    setModalVisible(false)
+                }
+                navigation.navigate('acceptedPickup')
+            }
+        })
+    }, [socket])
+
     return (
         <SafeAreaView style = {{flex: 1}}>
             <ScrollView 
@@ -145,7 +159,10 @@ const Specialpickupdetailscreen = ({route, navigation}) => {
 
                             <View style = {{flexDirection: 'row', marginTop: 10}}>
                                 <Text style = {styles.text3}>{name === 'Completed Pickups' ? 'Pickup Collected On:' : 'Collect Pickup Before:'}</Text>
-                                <Text style = {styles.text4}>{name === 'Completed Pickups' ? dateHelper(item.datetime)+' '+completedTime : dateHelper(item.datetime)+' '+timeHelper(item.datetime)}</Text>
+                                <Text style = {styles.text4}>
+                                    {name === 'Completed Pickups' ? date1Helper(item.completedDate) + ' ' + timeHelper(item.completedDate) : 
+                                    dateHelper(item.datetime) + ' ' + timeHelper(item.datetime)}
+                                </Text>
                             </View>
                         </View>
                     </View>

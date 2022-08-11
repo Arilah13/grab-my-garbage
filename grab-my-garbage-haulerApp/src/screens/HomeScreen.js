@@ -9,7 +9,6 @@ import { Icon } from 'react-native-elements'
 import axios from 'axios'
 
 import { colors } from '../global/styles'
-import { dateHelper, date1Helper, timeHelper } from '../helpers/specialPickuphelper'
 
 import { sendSMS } from '../redux/actions/specialRequestActions'
 import { completeScheduledPickup, activeSchedulePickup, inactiveSchedulePickup } from '../redux/actions/scheduleRequestActions'
@@ -224,7 +223,7 @@ const Homescreen = ({navigation}) => {
                         screen: 'Upcoming',
                         params: {
                             screen: 'PickupDetail',
-                            params: {item, time: timeHelper(item.datetime), date: dateHelper(item.datetime), date1: date1Helper(item.datetime), buttons: false, name: 'Upcoming Pickups'}
+                            params: {item, buttons: false, name: 'Upcoming Pickups'}
                         }
                     }
                 })

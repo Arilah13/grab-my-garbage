@@ -23,7 +23,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 
-const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalVisible, convo}) => {
+const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
     const dispatch = useDispatch()
 
     const mapView = useRef()
@@ -176,10 +176,6 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
                 if(modalVisible1 === true) {
                     setModalVisible1(false)
                 }
-                if(modalVisible === true) {
-                    setModalVisible(false)
-                }
-                navigation.navigate('acceptedPickup')
             }
             first.current = false
         })
@@ -190,9 +186,6 @@ const Mapcomponent = ({location, item, setModalVisible, type, navigation, modalV
                 setComplete(true)
                 if(modalVisible1 === true) {
                     setModalVisible1(false)
-                }
-                if(modalVisible === true) {
-                    setModalVisible(false)
                 }
             }
             first.current = false

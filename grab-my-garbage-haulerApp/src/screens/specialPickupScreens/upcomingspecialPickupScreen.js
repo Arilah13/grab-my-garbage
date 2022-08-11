@@ -7,7 +7,7 @@ import Swipeout from 'react-native-swipeout'
 import axios from 'axios'
 
 import { colors } from '../../global/styles'
-import { date2Helper, date1Helper, timeHelper, dateHelper } from '../../helpers/specialPickuphelper'
+import { date2Helper, timeHelper } from '../../helpers/specialPickuphelper'
 
 import { getUpcomingPickups } from '../../redux/actions/specialRequestActions'
 import { UPCOMING_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialRequestConstants'
@@ -136,19 +136,22 @@ const UpcomingPickupscreen = ({navigation}) => {
                                         }
                                     },
                                     component: 
-                                    <View style = {{paddingVertical: 22}}>
+                                    <View style = {{paddingVertical: 20}}>
                                         {
                                             checkLoading(item._id) === true ?
                                             <ActivityIndicator 
                                                 color = {colors.white} 
                                                 size = {30}
                                             /> :
-                                            <Icon
-                                                type = 'material'
-                                                name = {item.inactive === 0 ? 'toggle-off' : 'toggle-on'}
-                                                color = 'white'
-                                                size = {30}
-                                            />
+                                            <View>
+                                                <Icon
+                                                    type = 'material'
+                                                    name = {item.inactive === 0 ? 'toggle-off' : 'toggle-on'}
+                                                    color = 'white'
+                                                    size = {30}
+                                                />
+                                                <Text style = {{alignSelf: 'center', color: colors.white}}>{item.inactive === 0 ? 'Exclude' : 'Include'}</Text>
+                                            </View>
                                         }
                                     </View>
                                 }
@@ -234,7 +237,7 @@ const UpcomingPickupscreen = ({navigation}) => {
                                             backgroundColor: colors.darkBlue
                                         }}
                                         onPress = {() => {
-                                            navigation.navigate('PickupDetail', {item, time: timeHelper(item.datetime), date: dateHelper(item.datetime), date1: date1Helper(item.datetime), buttons: false, name: 'Upcoming Pickups'}
+                                            navigation.navigate('PickupDetail', {item, buttons: false, name: 'Upcoming Pickups'}
                                         )}}
                                     />
                                 </View>

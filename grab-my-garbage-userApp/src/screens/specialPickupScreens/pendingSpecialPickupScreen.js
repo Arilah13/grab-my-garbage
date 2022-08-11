@@ -121,24 +121,28 @@ const Pendingspecialpickupscreen = ({navigation}) => {
                                                 type: COMPLETED_PICKUP_RETRIEVE_SUCCESS,
                                                 payload: completed
                                             })
+                                            setRowIndex(null)
                                         } else {
                                             setLoadingId(loadingId.filter(load => load !== item._id))
                                         }
                                     },
                                     component: 
-                                    <View style = {{paddingVertical: 22}}>
+                                    <View style = {{paddingVertical: 20}}>
                                         {
                                             checkLoading(item._id) === true ?
                                             <ActivityIndicator 
                                                 color = {colors.white} 
                                                 size = {30}
                                             /> :
-                                            <Icon
-                                                type = 'material'
-                                                name = 'close'
-                                                color = 'white'
-                                                size = {30}
-                                            />
+                                            <View>
+                                                <Icon
+                                                    type = 'material'
+                                                    name = 'close'
+                                                    color = 'white'
+                                                    size = {30}
+                                                />
+                                                <Text style = {{alignSelf: 'center', color: colors.white}}>Cancel</Text>
+                                            </View>
                                         }
                                     </View>
                                 }

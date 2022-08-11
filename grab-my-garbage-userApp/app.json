@@ -70,12 +70,6 @@
         {
           "enableGooglePay": false
         }
-      ],
-      [
-        "expo-facebook",
-        {
-          "userTrackingPermission": false
-        }
       ]
     ]
   }

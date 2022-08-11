@@ -7,7 +7,7 @@ import Swipeout from 'react-native-swipeout'
 import axios from 'axios'
 
 import { colors } from '../../global/styles'
-import { date2Helper, date1Helper, timeHelper, dateHelper } from '../../helpers/specialPickuphelper'
+import { date2Helper, timeHelper } from '../../helpers/specialPickuphelper'
 
 import { getPendingPickupsOffline, getUpcomingPickups } from '../../redux/actions/specialRequestActions'
 import { PENDING_PICKUP_RETRIEVE_SUCCESS, UPCOMING_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialRequestConstants'
@@ -131,24 +131,28 @@ const PendingPickupscreen = ({navigation}) => {
                                                 type: PENDING_PICKUP_RETRIEVE_SUCCESS,
                                                 payload: pickupInfo
                                             })
+                                            setRowIndex(null)
                                         } else {
                                             loadingId.splice(loadingId.findIndex(load => load === item._id), 1)
                                         }
                                     },
                                     component: 
-                                    <View style = {{paddingVertical: 22}}>
+                                    <View style = {{paddingVertical: 20}}>
                                         {
                                             checkLoading(item._id) === true ?
                                             <ActivityIndicator 
                                                 color = {colors.white} 
                                                 size = {30}
                                             /> :
-                                            <Icon
-                                                type = 'material'
-                                                name = 'close'
-                                                color = 'white'
-                                                size = {30}
-                                            />
+                                            <View>
+                                                <Icon
+                                                    type = 'material'
+                                                    name = 'close'
+                                                    color = 'white'
+                                                    size = {30}
+                                                />
+                                                <Text style = {{alignSelf: 'center', color: colors.white}}>Decline</Text>
+                                            </View>
                                         }
                                     </View>
                                 }
@@ -172,24 +176,28 @@ const PendingPickupscreen = ({navigation}) => {
                                                 type: UPCOMING_PICKUP_RETRIEVE_SUCCESS,
                                                 payload: upcoming
                                             })
+                                            setRowIndex(null)
                                         } else {
                                             setLoadingId(loadingId.filter(load => load !== item._id))
                                         }
                                     },
                                     component: 
-                                    <View style = {{paddingVertical: 22}}>
+                                    <View style = {{paddingVertical: 20}}>
                                         {
                                             checkLoading(item._id) === true ?
                                             <ActivityIndicator 
                                                 color = {colors.white} 
                                                 size = {30}
                                             /> :
-                                            <Icon
-                                                type = 'material'
-                                                name = 'done'
-                                                color = 'white'
-                                                size = {30}
-                                            />
+                                            <View>
+                                                <Icon
+                                                    type = 'material'
+                                                    name = 'done'
+                                                    color = 'white'
+                                                    size = {30}
+                                                />
+                                                <Text style = {{alignSelf: 'center', color: colors.white}}>Accept</Text>
+                                            </View>
                                         }
                                     </View>
                                 }
@@ -262,7 +270,7 @@ const PendingPickupscreen = ({navigation}) => {
                                             marginLeft: SCREEN_WIDTH/1.3,
                                             backgroundColor: colors.darkBlue
                                         }}
-                                        onPress = {() => navigation.navigate('PickupDetail', {item, time: timeHelper(item.datetime), date: dateHelper(item.datetime), date1: date1Helper(item.datetime), buttons: true, name: 'Pending Pickups'})}
+                                        onPress = {() => navigation.navigate('PickupDetail', {item, buttons: true, name: 'Pending Pickups'})}
                                     />
                                 </View>
                                 </View>

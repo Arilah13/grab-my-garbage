@@ -6,6 +6,7 @@ import Modal from 'react-native-modal'
 import axios from 'axios'
 
 import { colors } from '../../global/styles'
+import { timeHelper, date1Helper, dateHelper } from '../../helpers/specialPickuphelper'
 
 import { PENDING_PICKUP_RETRIEVE_SUCCESS, UPCOMING_PICKUP_RETRIEVE_SUCCESS } from '../../redux/constants/specialRequestConstants'
 import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
@@ -21,7 +22,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height
 const Pickupdetailscreen = ({navigation, route}) => {
     const dispatch = useDispatch()
 
-    const { item, time, date, buttons, name, date1, completedTime } = route.params
+    const { item, buttons, name } = route.params
 
     const [loading1, setLoading1] = useState(false)
     const [loading2, setLoading2] = useState(false)
@@ -205,12 +206,15 @@ const Pickupdetailscreen = ({navigation, route}) => {
                         <View style = {styles.container3}>
                             <View style = {{flexDirection: 'row', marginTop: 10}}>
                                 <Text style = {styles.text3}>Pickup Scheduled on:</Text>
-                                <Text style = {styles.text4}>{date1 + ' ' + time}</Text>
+                                <Text style = {styles.text4}>{date1Helper(item.datetime) + ' ' + timeHelper(item.datetime)}</Text>
                             </View>
 
                             <View style = {{flexDirection: 'row', marginTop: 10}}>
                                 <Text style = {styles.text3}>{name === 'Completed Pickups' ? 'Pickup Collected On:' : 'Collect Pickup Before:'}</Text>
-                                <Text style = {styles.text4}>{name === 'Completed Pickups' ? date+' '+completedTime : date+' '+time}</Text>
+                                <Text style = {styles.text4}>
+                                    {name === 'Completed Pickups' ? date1Helper(item.completedDate) + ' ' + timeHelper(item.completedDate) :
+                                    dateHelper(item.datetime) + ' ' + timeHelper(item.datetime)}
+                                </Text>
                             </View>
                         </View>
                     </View>
@@ -307,7 +311,7 @@ const Pickupdetailscreen = ({navigation, route}) => {
                             <View style = {{flexDirection: 'row', marginTop: 10}}>
                                 <Text style = {styles.text3}>Optional Images:</Text>
                                 {
-                                    item.image === null || item.image === undefined &&
+                                    (item.image === null || item.image === undefined) &&
                                     <Text style = {styles.text4}>No Images Attached</Text>
                                 }
                             </View>
