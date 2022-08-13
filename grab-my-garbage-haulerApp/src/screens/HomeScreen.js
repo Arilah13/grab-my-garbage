@@ -14,6 +14,8 @@ import { sendSMS } from '../redux/actions/specialRequestActions'
 import { completeScheduledPickup, activeSchedulePickup, inactiveSchedulePickup } from '../redux/actions/scheduleRequestActions'
 import { completedPickup, activeSpecialPickup } from '../redux/actions/specialRequestActions'
 import { USER_LOGIN_SUCCESS } from '../redux/constants/userConstants'
+import { SCHEDULED_PICKUP_RETRIEVE_SUCCESS } from '../redux/constants/scheduleRequestConstants'
+import { COMPLETED_PICKUP_RETRIEVE_SUCCESS, UPCOMING_PICKUP_RETRIEVE_SUCCESS } from '../redux/constants/specialRequestConstants'
 
 import Onlinecomponent from '../components/homeScreen/onlineComponent'
 import Mapcomponent from '../components/homeScreen/mapComponent'
@@ -47,8 +49,17 @@ const Homescreen = ({navigation}) => {
     const retrieveCollectSchedulePickup = useSelector((state) => state.retrieveCollectSchedulePickup)
     const { loading: pickupLoading, pickupInfo } = retrieveCollectSchedulePickup
 
+    const scheduledPickups = useSelector((state) => state.retrieveSchedulePickup)
+    const { pickupInfo: scheduled } = scheduledPickups
+
     const retrieveCollectSpecialPickup = useSelector((state) => state.retrieveCollectSpecialPickup)
     const { loading: specialPickupLoading, pickupInfo: specialPickupInfo } = retrieveCollectSpecialPickup
+
+    const upcomingPickups = useSelector((state) => state.upcomingPickups)
+    const { pickupInfo: upcoming } = upcomingPickups
+
+    const completedPickups = useSelector((state) => state.completedPickups)
+    const { pickupInfo: completed } = completedPickups
 
     const socketHolder = useSelector((state) => state.socketHolder)
     const { loading: socketLoading, socket } = socketHolder
@@ -123,6 +134,12 @@ const Homescreen = ({navigation}) => {
                 dispatch(completeScheduledPickup({id: order._id, completedDate: new Date(), completedHauler: userInfo}))
                 dispatch(inactiveSchedulePickup(order._id))
 
+                await scheduled.splice((pickup => pickup._id === order._id), 1)
+                dispatch({
+                    type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
+                    payload: scheduled
+                })
+
                 socket.emit('schedulePickupCompleted', {pickupid: order._id, userid: order.customerId._id, haulerid: userInfo._id, pickup: order})
 
                 await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === order._id), 1)
@@ -132,6 +149,20 @@ const Homescreen = ({navigation}) => {
             } else if(choice.current === 'special') {
                 dispatch(completedPickup(order._id))
 
+                const pickup = await upcoming.splice(upcoming.findIndex(pickup => pickup._id === order._id), 1)[0]
+                pickup.completed = 1
+                pickup.completedDate = new Date().toISOString()
+
+                await completed.push(pickup)
+
+                dispatch({
+                    type: UPCOMING_PICKUP_RETRIEVE_SUCCESS,
+                    payload: upcoming
+                })
+                dispatch({
+                    type: COMPLETED_PICKUP_RETRIEVE_SUCCESS,
+                    payload: completed
+                })
                 socket.emit('specialPickupCompleted', {pickupid: order._id, pickup: order})
 
                 await specialPickupInfo.splice(specialPickupInfo.findIndex(pickup => pickup._id === order._id), 1)

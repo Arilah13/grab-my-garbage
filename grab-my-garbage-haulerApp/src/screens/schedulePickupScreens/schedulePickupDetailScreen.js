@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, ScrollView, Pressable, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Icon } from 'react-native-elements'
@@ -19,6 +19,8 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 const Scheduledpickupdetail = ({navigation, route}) => {
+    const dispatch = useDispatch()
+
     const { item } = route.params
 
     const getAllConversation = useSelector((state) => state.getAllConversation)

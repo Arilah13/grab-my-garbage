@@ -26,7 +26,7 @@ const Changepasswordscreen = () => {
     const [show1, setShow1] = useState(false)
 
     const formikRef = useRef()
-    const password1 = useRef('password')
+    const password1 = useRef('password1')
 
     const initialValues = { password: '', password_1: '' }
 
@@ -37,8 +37,6 @@ const Changepasswordscreen = () => {
                     .max(50, 'Password must not be more than 50 characters'),
         password_1: Yup.string()
                     .required('Confirm Password is required')
-                    .min(6, 'Password must be atleast 6 characters')
-                    .max(50, 'Password must not be more than 50 characters')
                     .oneOf([Yup.ref('password'), null], "Passwords don't match")
     })
 
@@ -52,6 +50,7 @@ const Changepasswordscreen = () => {
     useEffect(() => {
         if(success === true) {
             formikRef.current.setSubmitting(false)
+            formikRef.current.resetForm()
             dispatch({ type: USER_UPDATE_PROFILE_RESET })
             Alert.alert('Profile Password Update Successful', 'Profile Password Detail has been updated successfully',
                 [

@@ -46,6 +46,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                 }))
                 first.current = false
             }
+            
             if(mapView.current) {
                 mapView.current.animateToRegion({
                     latitude: origin.latitude,
@@ -64,15 +65,6 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                         duration: 1000
                     }).start()
                 }
-            } else {
-                if(currentCoordinate) {
-                    currentCoordinate.timing({
-                        latitude: origin.latitude,
-                        longitude: origin.longitude,
-                        duration: 500,
-                        useNativeDriver: true
-                    }).start()
-                }       
             }
         }
     }, [origin])
@@ -116,7 +108,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                 }
             }}
         >
-            {origin ?
+            {origin &&
                 <AnimatedMarker
                     coordinate = {origin}
                     identifier = 'Marker1'
@@ -136,9 +128,9 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                         }}
                     />
                 </AnimatedMarker>
-            : null}
+            }
             {
-                end !== null ?
+                end !== null &&
                 <>
                     <Marker 
                         coordinate = {end} 
@@ -191,7 +183,6 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                         }}
                     /> 
                 </>
-                : null
             }
                 
         </MapView>

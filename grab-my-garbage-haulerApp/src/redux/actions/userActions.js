@@ -3,7 +3,7 @@ import * as actionTypes from '../constants/userConstants'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { getScheduledPickups } from './scheduleRequestActions'
-import { getUpcomingPickups } from './specialRequestActions'
+import { getCompletedPickups, getUpcomingPickups } from './specialRequestActions'
 import { getConversations } from './conversationActions'
 
 import { getPushToken } from '../../helpers/notificationHelper'
@@ -28,6 +28,7 @@ export const Login = ({email, password, pushId}) => async (dispatch) => {
         })
         dispatch(getScheduledPickups())
         dispatch(getUpcomingPickups())
+        dispatch(getCompletedPickups())
         dispatch(getConversations())
 
         AsyncStorage.setItem('haulerInfo', JSON.stringify(data))
@@ -61,6 +62,7 @@ export const uploadDetails = (info) => async (dispatch) => {
         })
         dispatch(getScheduledPickups())
         dispatch(getUpcomingPickups())
+        dispatch(getCompletedPickups())
         dispatch(getConversations())
     } catch (err){
         dispatch({

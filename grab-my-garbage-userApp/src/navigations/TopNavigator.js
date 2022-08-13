@@ -15,31 +15,31 @@ const Tab = createMaterialTopTabNavigator()
 
 const Topnavigator = () => {
     const [view, setView] = useState(true)
-    const [route1, setRoute1] = useState()
-    const [route2, setRoute2] = useState()
-    const [route3 , setRoute3] = useState()
+    // const [route1, setRoute1] = useState()
+    // const [route2, setRoute2] = useState()
+    // const [route3 , setRoute3] = useState()
     
-    useLayoutEffect(() => {
-        let routeName1, routeName2, routeName3
+    // useLayoutEffect(() => {
+    //     let routeName1, routeName2, routeName3
 
-        if(route1) {
-            routeName1 = getFocusedRouteNameFromRoute(route1)
-        }
+    //     if(route1) {
+    //         routeName1 = getFocusedRouteNameFromRoute(route1)
+    //     }
 
-        if(route2) {
-            routeName2 = getFocusedRouteNameFromRoute(route2)
-        }
+    //     if(route2) {
+    //         routeName2 = getFocusedRouteNameFromRoute(route2)
+    //     }
         
-        if(route3) {
-            routeName3 = getFocusedRouteNameFromRoute(route3)
-        }
+    //     if(route3) {
+    //         routeName3 = getFocusedRouteNameFromRoute(route3)
+    //     }
 
-        if(routeName1 === 'pickupDetail' || routeName2 === 'pickupDetail' || routeName3 === 'pickupDetail') {
-            setView(false)
-        } else {
-            setView(true)
-        }
-    }, [route1, route2, route3])
+    //     if(routeName1 === 'pickupDetail' || routeName2 === 'pickupDetail' || routeName3 === 'pickupDetail') {
+    //         setView(false)
+    //     } else {
+    //         setView(true)
+    //     }
+    // }, [route1, route2, route3])
 
     return (
         <>  
@@ -78,26 +78,38 @@ const Topnavigator = () => {
                 <Tab.Screen 
                     name = 'Pending'
                     component = {Pendingstacknavigator} 
-                    options = {({route}) => ({
-                        tabBarLabel: route.name,
-                    },
-                    setRoute1(route))}
+                    options = {({route}) => {
+                        const routeName = getFocusedRouteNameFromRoute(route)
+                        if(routeName === 'pickupDetail') {
+                            setView(false)
+                        } else {
+                            setView(true)
+                        }
+                    }}
                 />
                 <Tab.Screen 
                     name = 'Accepted'
                     component = {Acceptedstacknavigator} 
-                    options = {({route}) => ({
-                        tabBarLabel: route.name,
-                    },
-                    setRoute2(route))}
+                    options = {({route}) => {
+                        const routeName = getFocusedRouteNameFromRoute(route)
+                        if(routeName === 'pickupDetail') {
+                            setView(false)
+                        } else {
+                            setView(true)
+                        }
+                    }}
                 />
                 <Tab.Screen 
                     name = 'Completed'
                     component = {Completedstacknavigator} 
-                    options = {({route}) => ({
-                        tabBarLabel: route.name,
-                    },
-                    setRoute3(route))}
+                    options = {({route}) => {
+                        const routeName = getFocusedRouteNameFromRoute(route)
+                        if(routeName === 'pickupDetail') {
+                            setView(false)
+                        } else {
+                            setView(true)
+                        }
+                    }}
                 />
             </Tab.Navigator>
         </>

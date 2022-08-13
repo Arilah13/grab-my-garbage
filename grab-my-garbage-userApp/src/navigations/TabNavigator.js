@@ -246,7 +246,7 @@ const TabNavigator = ({navigation, route}) => {
                         date: new Date().toISOString().split('T')[0],
                         data: [{description, userVisible, seen, data, id}]
                     }
-                    await userInfo.notification.push(notification)
+                    await userInfo.notification.splice(0, 0, notification)
                     dispatch({
                         type: USER_LOGIN_SUCCESS,
                         payload: userInfo

@@ -60,7 +60,7 @@ const haulerController = {
                 }
             })
 
-            res.status(201).json({
+            res.status(200).json({
                 _id: hauler._id,
                 name: hauler.name,
                 email: hauler.email,

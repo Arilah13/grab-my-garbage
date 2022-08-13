@@ -132,6 +132,18 @@ io.on('connection', socket => {
 
     socket.on('schedulePickupStarted', async({pickup}) => {
         let messages = []
+        let notiPickups = []
+
+        pickup.map(async(pickup) => {
+            if(notiPickups.length > 0) {
+                const available = await notiPickups.find(pick => pick.customerId._id === pickup.customerId._id)
+                if(!available) {
+                    notiPickups.push(pickup)
+                }
+            } else {
+                notiPickups.push(pickup)
+            }
+        })
 
         pickup.map((pickup) => {
             const socketId = pickupSocket.returnUserSocketid({userid: pickup.customerId._id})
