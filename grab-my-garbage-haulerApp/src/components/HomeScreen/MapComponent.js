@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { View, StyleSheet, Dimensions, Platform, Animated, Image } from 'react-native'
+import { StyleSheet, Dimensions, Platform, Animated, Image } from 'react-native'
 import MapView, { PROVIDER_GOOGLE, Marker, AnimatedRegion } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 
@@ -11,42 +11,32 @@ import { colors } from '../../global/styles'
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const AnimatedImage = Animated.createAnimatedComponent(Image)
-const AnimatedMarker = Animated.createAnimatedComponent(Marker)
-
 const Mapcomponent = ({end, redo, setLoading}) => {
     const map = useSelector((state) => state.map)
     const { origin } = map
 
-    const first = useRef(true)
     const mapView = useRef()
     const marker = useRef()
     const rotation = useRef(new Animated.Value(0)).current
+
+    const [coordinate, setCoordinate] = useState(
+        new AnimatedRegion({
+            latitude: origin.latitude,
+            longitude: origin.longitude,
+            latitudeDelta: 0.0005,
+            longitudeDelta: 0.00025 
+        })
+    )
     
     const bearingDegree = rotation.interpolate({
         inputRange: [0, 360],
         outputRange: ['0deg', '360deg']
     })
 
-    const [currentCoordinate, setCurrentCoordinate] = useState()
-    const [timeout1, setTimeoutValue1] = useState(null)
-    const [timeout2, setTimeoutValue2] = useState(null)
-    const [timeout3, setTimeoutValue3] = useState(null)
-
     const markerID = ['Marker1']
 
     useEffect(() => {
-        if(origin !== undefined) {
-            if(first.current === true) {
-                setCurrentCoordinate(new AnimatedRegion({
-                    latitude: origin.latitude,
-                    longitude: origin.longitude,
-                    latitudeDelta: 0,
-                    longitudeDelta: 0
-                }))
-                first.current = false
-            }
-            
+        if(origin !== undefined) {      
             if(mapView.current) {
                 mapView.current.animateToRegion({
                     latitude: origin.latitude,
@@ -58,7 +48,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
 
             if(Platform.OS === 'android') {
                 if(marker.current) {
-                    marker.current.animateMarkerToCoordinate({latitude: origin.latitude, longitude: origin.longitude}, 1000)
+                    marker.current.animateMarkerToCoordinate({latitude: origin.latitude, longitude: origin.longitude}, 2000)
                     Animated.timing(rotation, {
                         toValue: origin.heading,
                         useNativeDriver: true,
@@ -70,7 +60,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
     }, [origin])
 
     return (
-        <MapView
+        <MapView.Animated
             provider = {PROVIDER_GOOGLE}
             style = {styles.map}
             customMapStyle = {mapStyle}
@@ -89,7 +79,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
             onMapReady = {() => {
                 if(origin) {
                     setLoading(true)
-                    const timeout1 = setTimeout(() => {
+                    setTimeout(() => {
                         mapView.current.fitToSuppliedMarkers(markerID, {
                             animated: true,
                             edgePadding: {
@@ -100,23 +90,20 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                             }
                         })
                     }, 1000)
-                    const timeout2 = setTimeout(() => {
+                    setTimeout(() => {
                         setLoading(false)
                     }, 2000)
-                    setTimeoutValue1(timeout1)
-                    setTimeoutValue2(timeout2)
                 }
             }}
         >
             {origin &&
-                <AnimatedMarker
-                    coordinate = {origin}
+                <Marker.Animated
+                    coordinate = {coordinate}
                     identifier = 'Marker1'
                     ref = {marker}
                     anchor = {{x: 0.5, y: 0.5}}
-                    tracksViewChanges = {true}
                 >
-                    <AnimatedImage
+                    <Animated.Image
                         source = {require('../../../assets/map/arrow.png')} 
                         style = {{
                             width: 25,
@@ -127,7 +114,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                             }]
                         }}
                     />
-                </AnimatedMarker>
+                </Marker.Animated>
             }
             {
                 end !== null &&
@@ -167,7 +154,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                                     }
                                 })
 
-                                const timeout = setTimeout(() => {
+                                setTimeout(() => {
                                     mapView.current.fitToSuppliedMarkers(markerID, {
                                         animated: true,
                                         edgePadding: {
@@ -178,14 +165,13 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                                         }
                                     })
                                 }, 4000)
-                                setTimeoutValue3(timeout)
                             }
                         }}
                     /> 
                 </>
             }
                 
-        </MapView>
+        </MapView.Animated>
     );
 }
 

@@ -172,6 +172,7 @@ const Schedulepickupscreen = ({navigation}) => {
 
                         <View style = {styles.container3} >
                             <Text style = {styles.text4}>Schedule Service</Text>
+                            <Text style = {{fontSize: 12, color: colors.blue2}}>*Duration of scheduled pickup should be selected</Text>
                             <View style = {styles.view1}>
                                 <View style = {{flexDirection: 'row'}}>
                                     <Icon

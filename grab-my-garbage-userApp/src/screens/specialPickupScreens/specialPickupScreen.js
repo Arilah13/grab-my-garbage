@@ -112,22 +112,20 @@ const Specialpickupscreen = ({navigation}) => {
     }
 
     const validateForm = () => {
-        if (categories.length !== 0)
+        if (categories.length !== 0 && weight > 0.0)
             return true
         else
             return false
     }
 
     const alert = () => {
-        // if(dateTime.getTime() < new Date().getTime() + (1*24*60*60*1000) && categories.length !== 0) {
-        //     alertMsg('Date Error', 'Pickup Date should be 24hour from current time')
-        // } else if(categories.length === 0 && dateTime.getTime() >= new Date().getTime() + (1*24*60*60*1000)) {
-        //     alertMsg('Category Not Selected', 'Atleast one category should be selected')
-        // } else {
-        //     alertMsg('Date and Category Error', 'A category should be selected and the date should be more than 24h from current time')
-        // }  
-        if(categories.length === 0)    
+        if(categories.length === 0 && weight === 0.0) {
+            alertMsg('Category and Weight not added', 'Atleast one category and a value for weight should be added')
+        }else if(categories.length === 0) {
             alertMsg('Category Not Selected', 'Atleast one category should be selected')
+        } else if(weight === 0.0) {
+            alertMsg('Weight Not Added', 'Weight should be Added')
+        }
     }
 
     const alertMsg = (heading, msg) => {
@@ -211,6 +209,7 @@ const Specialpickupscreen = ({navigation}) => {
                         </View>
                         
                         <View style = {styles.container3} >
+                            
                             <Text style = {styles.text4}>Schedule Pickup</Text>
                             <Text style = {{fontSize: 12, color: colors.blue2}}>*Pickup will be completed within 24 hour from selected time</Text>
                             <View style = {styles.view8}>
@@ -306,6 +305,7 @@ const Specialpickupscreen = ({navigation}) => {
                             </View>                  
 
                             <Text style = {styles.text5}>Weight Estimation</Text>
+                            <Text style = {{fontSize: 12, color: colors.blue2}}>*Approximate weight should be included</Text>
                             <View style = {styles.view2}>
                                 <View>
                                     <Pressable style = {styles.view4} onPress = {() => reduceWeight(weight)}><Text style = {styles.text8}>-</Text></Pressable>

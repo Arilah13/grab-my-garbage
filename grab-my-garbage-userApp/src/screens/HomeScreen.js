@@ -13,7 +13,7 @@ import { addOngoingPickupLocation, removeOngoingPickup } from '../redux/actions/
 import { addOngoingSchedulePickupLocation, removeOngoingSchedulePickup } from '../redux/actions/schedulePickupActions'
 import { getPaymentIntent } from '../redux/actions/paymentActions'
 import { SCHEDULED_PICKUP_RETRIEVE_SUCCESS } from '../redux/constants/scheduledPickupConstants'
-import { ACCEPTED_PICKUP_RETRIEVE_SUCCESS, COMPLETED_PICKUP_RETRIEVE_SUCCESS } from '../redux/constants/specialPickupConstants'
+import { ACCEPTED_PICKUP_RETRIEVE_SUCCESS, COMPLETED_PICKUP_RETRIEVE_SUCCESS, PENDING_PICKUP_RETRIEVE_SUCCESS } from '../redux/constants/specialPickupConstants'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -38,6 +38,9 @@ const Homescreen = ({navigation}) => {
 
     const retrieveCompletedPickups = useSelector(state => state.retrieveCompletedPickups)
     const { pickupInfo: completed } = retrieveCompletedPickups
+
+    const retrievePendingPickups = useSelector(state => state.retrievePendingPickups)
+    const { pickupInfo: pending } = retrievePendingPickups
 
     const [activeScheduleStatus, setActiveScheduleStatus] = useState(false)
     const [activeSpecialStatus, setActiveSpecialStatus] = useState(false)
@@ -217,6 +220,23 @@ const Homescreen = ({navigation}) => {
 
                 setFirstScheduleStart(true)
             })
+
+            socket.on('pickupAccepted', async({data}) => {
+                const pickup = await pending.splice(pending.findIndex(pickup => pickup._id === data._id), 1)[0]
+                dispatch({
+                    type: PENDING_PICKUP_RETRIEVE_SUCCESS,
+                    payload: pending
+                })
+
+                pickup.accepted = 1
+                pickup.pickerId = data
+
+                await acceptedPickups.push(pickup)
+                dispatch({
+                    type: ACCEPTED_PICKUP_RETRIEVE_SUCCESS,
+                    payload: acceptedPickups
+                })
+            })
         }
     }, [socket, acceptedPickups, schedulePickup, completed])
 
@@ -287,10 +307,19 @@ const Homescreen = ({navigation}) => {
                                         if(pickupInfo === undefined) {
                                             navigation.navigate(item.destination, {destination: item.name})
                                         } else {
-                                            if(item.name === 'Schedule Pickup')
-                                                navigation.navigate('Schedule')
-                                            else
-                                                navigation.navigate('SpecialPickup')
+                                            if(item.name === 'Schedule') {
+                                                if(pickupInfo.categories.length === 0) {
+                                                    navigation.navigate('Schedule')
+                                                } else {
+                                                    navigation.navigate('Destination', {destination: 'Schedule'})
+                                                }
+                                            } else {
+                                                if(pickupInfo.categories.length > 0) {
+                                                    navigation.navigate('SpecialPickup')
+                                                } else {
+                                                    navigation.navigate('Destination', {destination: 'Special'})
+                                                }
+                                            }
                                         }
                                     }}
                                 >

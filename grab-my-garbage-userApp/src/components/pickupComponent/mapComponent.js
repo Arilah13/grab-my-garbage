@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, Animated } from 'react-native'
 import { Icon } from 'react-native-elements'
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
+import MapView, { PROVIDER_GOOGLE, Marker, AnimatedRegion } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import * as Linking from 'expo-linking'
 import LottieView from 'lottie-react-native'
@@ -12,7 +12,6 @@ import { colors } from '../../global/styles'
 import { mapStyle } from '../../global/mapStyle'
 import { GOOGLE_MAPS_APIKEY } from '@env'
 
-import { getAcceptedPickups, getCompletedPickups } from '../../redux/actions/specialPickupActions'
 import { receiverRead } from '../../redux/actions/conversationActions'
 import { GET_ALL_CONVERSATIONS_SUCCESS } from '../../redux/constants/conversationConstants'
 
@@ -30,7 +29,6 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
     const marker = useRef()
     const first = useRef(true)
     const translation = useRef(new Animated.Value(SCREEN_HEIGHT/4.3)).current
-    const fade = useRef(new Animated.Value(0)).current
     const rotation = useRef(new Animated.Value(0)).current
 
     const bearingDegree = rotation.interpolate({
@@ -62,6 +60,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
     const [timeout2, setTimeoutValue2] = useState(null)
     const [timeout3, setTimeoutValue3] = useState(null)
     const [modalVisible1, setModalVisible1] = useState(false)
+    const [coordinate, setCoordinate] = useState()
 
     const timeChanger = (duration) => {
         const date = new Date().getTime() 
@@ -99,6 +98,14 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
             if(ongoingPickups !== undefined && ongoingPickups.length > 0) {
                 const ongoingPickup = await ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
                 if(ongoingPickup) {
+                    setCoordinate(
+                        new AnimatedRegion({
+                            latitude: ongoingPickup.latitude,
+                            longitude: ongoingPickup.longitude,
+                            latitudeDelta: 0.0005,
+                            longitudeDelta: 0.00025 
+                        })
+                    )
                     setPickup(ongoingPickup)
                     timeChanger(ongoingPickup.time)
                     Animated.timing(rotation, {
@@ -117,7 +124,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
                         //     }, 2000)
                         // }
                         if(marker.current) {
-                            marker.current.animateMarkerToCoordinate({latitude: ongoingPickup.latitude, longitude: ongoingPickup.longitude}, 500)
+                            marker.current.animateMarkerToCoordinate({latitude: ongoingPickup.latitude, longitude: ongoingPickup.longitude}, 2000)
                         }
                     }
                     Animated.timing(translation, {
@@ -133,13 +140,16 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
 
                 if(ongoingSpecialPickup && ongoingSpecialPickup.pickupid === item._id){
                     setShow(true)
+                    setCoordinate(
+                        new AnimatedRegion({
+                            latitude: ongoingSpecialPickup.latitude,
+                            longitude: ongoingSpecialPickup.longitude,
+                            latitudeDelta: 0.0005,
+                            longitudeDelta: 0.00025 
+                        })
+                    )
                     setPickup(ongoingSpecialPickup)
                     timeChanger(ongoingSpecialPickup.time)
-                    Animated.timing(rotation, {
-                        toValue: ongoingSpecialPickup.heading,
-                        useNativeDriver: true,
-                        duration: 2000
-                    }).start()
                     // if(mapView.current) {
                     //     mapView.current.animateToRegion({
                     //         latitude: ongoingSpecialPickup.latitude,
@@ -149,7 +159,12 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
                     //     }, 2000)
                     // }
                     if(marker.current) {
-                        marker.current.animateMarkerToCoordinate({latitude: ongoingSpecialPickup.latitude, longitude: ongoingSpecialPickup.longitude}, 500)
+                        marker.current.animateMarkerToCoordinate({latitude: ongoingSpecialPickup.latitude, longitude: ongoingSpecialPickup.longitude}, 2000)
+                        Animated.timing(rotation, {
+                            toValue: ongoingSpecialPickup.heading,
+                            useNativeDriver: true,
+                            duration: 2000
+                        }).start()
                     }
                     Animated.timing(translation, {
                         toValue: 0,
@@ -192,17 +207,9 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
         })
     }, [socket])
 
-    useEffect(() => {
-        Animated.timing(fade, {
-            toValue: 1,
-            duration: 3000,
-            useNativeDriver: true
-        }).start()
-    }, [])
-
     return (
         <View style  = {styles.container}>     
-            <MapView
+            <MapView.Animated
                 provider = {PROVIDER_GOOGLE}
                 style = {styles.map}
                 customMapStyle = {mapStyle}
@@ -213,11 +220,11 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
                 minZoomLevel = {8}
                 maxZoomLevel = {20}
             >
-                <Marker.Animated 
+                <Marker
                     coordinate = {{latitude: location.latitude, longitude: location.longitude}} 
                     anchor = {{x: 0.5, y: 0.5}}
                 >
-                    <AnimatedImage
+                    <Image
                         source = {require('../../../assets/map/marker.png')}
                         style = {{
                             width: 25,
@@ -225,16 +232,16 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
                             resizeMode: 'cover',
                         }}
                     />
-                </Marker.Animated>
+                </Marker>
                 {
-                    pickup !== null && complete === false ? 
+                    pickup !== null && complete === false &&
                     <>
                         <Marker.Animated
                             ref = {marker}
-                            coordinate = {{latitude: pickup.latitude, longitude: pickup.longitude}}
+                            coordinate = {coordinate}
                             anchor = {{x: 0.5, y: 0.5}}
                         >
-                            <AnimatedImage
+                            <Animated.Image
                                 source = {require('../../../assets/map/truck_garbage.png')}
                                 style = {{
                                     width: 35,
@@ -246,6 +253,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
                                 }}
                             />
                         </Marker.Animated>
+
                         <MapViewDirections
                             origin = {{latitude: pickup.latitude, longitude: pickup.longitude}}
                             destination = {{latitude: location.latitude, longitude: location.longitude}}
@@ -259,7 +267,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
                             
                             onReady = {(result) => {
                                 const timeout = setTimeout(() => {
-                                    redo === true ?
+                                    redo === true &&
                                     mapView.current.fitToCoordinates(result.coordinates, {
                                         edgePadding: {
                                             right: SCREEN_WIDTH/20,
@@ -268,17 +276,15 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
                                             top: SCREEN_HEIGHT/20
                                         }
                                     })
-                                : null
                                 }, 100)
                                 setTimeoutValue1(timeout)
                             }}
                         />
                     </>
-                    : null
                 }
-            </MapView>
+            </MapView.Animated>
 
-            <Animated.View style = {{...styles.view, opacity: fade}}>
+            <Animated.View style = {styles.view}>
                 <TouchableOpacity onPress = {() => {
                         //clearTimeout(timeout)
                         setModalVisible(false)

@@ -13,27 +13,27 @@ const Tab = createMaterialTopTabNavigator()
 const Height = StatusBar.currentHeight
 
 const ScheduleTopNavigator = ({navigation}) => {
-    // const [route1, setRoute1] = useState()
+    const [route1, setRoute1] = useState()
 
-    // useLayoutEffect(() => {
-    //     let routeName1
-    //     if(route1) {
-    //         routeName1 = getFocusedRouteNameFromRoute(route1)
-    //     }
+    useLayoutEffect(() => {
+        let routeName1
+        if(route1) {
+            routeName1 = getFocusedRouteNameFromRoute(route1)
+        }
         
-    //     if(routeName1 === 'TodayDetail') {
-    //         navigation.setOptions({tabBarStyle: {display: 'none'}})
-    //     } else {
-    //         navigation.setOptions({
-    //             tabBarStyle: {
-    //                 position: 'absolute',
-    //                 elevation: 0,
-    //                 backgroundColor: colors.grey8,
-    //                 height: 50
-    //             }
-    //         })
-    //     }
-    // }, [route1])
+        if(routeName1 === 'TodayDetail') {
+            navigation.setOptions({tabBarStyle: {display: 'none'}})
+        } else {
+            navigation.setOptions({
+                tabBarStyle: {
+                    position: 'absolute',
+                    elevation: 0,
+                    backgroundColor: colors.grey8,
+                    height: 50
+                }
+            })
+        }
+    }, [route1])
 
     return (
         <Tab.Navigator
@@ -66,22 +66,9 @@ const ScheduleTopNavigator = ({navigation}) => {
             <Tab.Screen 
                 name = 'Today' 
                 component = {TodayScheduleStackNavigator} 
-                options = {({route}) => {
-                    const routeName = getFocusedRouteNameFromRoute(route)
-
-                    if(routeName === 'TodayDetail') {
-                        navigation.setOptions({tabBarStyle: {display: 'none'}})
-                    } else {
-                        navigation.setOptions({
-                            tabBarStyle: {
-                                position: 'absolute',
-                                elevation: 0,
-                                backgroundColor: colors.grey8,
-                                height: 50
-                            }
-                        })
-                    }
-                }}
+                options = {({route}) => 
+                    setRoute1(route)
+                }
             />
             <Tab.Screen 
                 name = 'All'
