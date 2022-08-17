@@ -394,7 +394,7 @@ const Schedulepickuprequestscreen = ({navigation}) => {
                                                         color = 'white'
                                                         size = {30}
                                                     />
-                                                    <Text style = {{alignSelf: 'center', color: colors.white}}>Delete</Text>
+                                                    <Text style = {{alignSelf: 'center', color: colors.white}}>Remove</Text>
                                                 </View>
                                             }
                                         </View>

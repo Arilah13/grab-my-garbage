@@ -70,6 +70,18 @@
         {
           "enableGooglePay": false
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/app/icon.png"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos."
+        }
       ]
     ]
   }

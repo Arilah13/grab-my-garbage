@@ -20,8 +20,6 @@ import Chatcomponent from './chatComponent'
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const AnimatedImage = Animated.createAnimatedComponent(Image)
-
 const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
     const dispatch = useDispatch()
 
@@ -98,14 +96,17 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
             if(ongoingPickups !== undefined && ongoingPickups.length > 0) {
                 const ongoingPickup = await ongoingPickups.find((ongoingPickup) => ongoingPickup.pickupid === item._id)
                 if(ongoingPickup) {
-                    setCoordinate(
-                        new AnimatedRegion({
-                            latitude: ongoingPickup.latitude,
-                            longitude: ongoingPickup.longitude,
-                            latitudeDelta: 0.0005,
-                            longitudeDelta: 0.00025 
-                        })
-                    )
+                    if(first.current === true) {
+                        setCoordinate(
+                            new AnimatedRegion({
+                                latitude: ongoingPickup.latitude,
+                                longitude: ongoingPickup.longitude,
+                                latitudeDelta: 0.0005,
+                                longitudeDelta: 0.00025 
+                            })
+                        )
+                        first.current = false
+                    }
                     setPickup(ongoingPickup)
                     timeChanger(ongoingPickup.time)
                     Animated.timing(rotation, {
@@ -124,7 +125,13 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
                         //     }, 2000)
                         // }
                         if(marker.current) {
-                            marker.current.animateMarkerToCoordinate({latitude: ongoingPickup.latitude, longitude: ongoingPickup.longitude}, 2000)
+                            const newCoordinate = {
+                                latitude: ongoingPickup.latitude, 
+                                longitude: ongoingPickup.longitude,
+                                latitudeDelta: 0.0005,
+                                longitudeDelta: 0.00025
+                            }
+                            coordinate.timing(newCoordinate).start()
                         }
                     }
                     Animated.timing(translation, {
@@ -140,14 +147,17 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
 
                 if(ongoingSpecialPickup && ongoingSpecialPickup.pickupid === item._id){
                     setShow(true)
-                    setCoordinate(
-                        new AnimatedRegion({
-                            latitude: ongoingSpecialPickup.latitude,
-                            longitude: ongoingSpecialPickup.longitude,
-                            latitudeDelta: 0.0005,
-                            longitudeDelta: 0.00025 
-                        })
-                    )
+                    if(first.current === true) {
+                        setCoordinate(
+                            new AnimatedRegion({
+                                latitude: ongoingSpecialPickup.latitude,
+                                longitude: ongoingSpecialPickup.longitude,
+                                latitudeDelta: 0.0005,
+                                longitudeDelta: 0.00025 
+                            })
+                        )
+                        first.current = false
+                    }
                     setPickup(ongoingSpecialPickup)
                     timeChanger(ongoingSpecialPickup.time)
                     // if(mapView.current) {
@@ -159,7 +169,14 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
                     //     }, 2000)
                     // }
                     if(marker.current) {
-                        marker.current.animateMarkerToCoordinate({latitude: ongoingSpecialPickup.latitude, longitude: ongoingSpecialPickup.longitude}, 2000)
+                        const newCoordinate = {
+                            latitude: ongoingSpecialPickup.latitude, 
+                            longitude: ongoingSpecialPickup.longitude,
+                            latitudeDelta: 0.0005,
+                            longitudeDelta: 0.00025
+                        }
+                        coordinate.timing(newCoordinate).start()
+                        
                         Animated.timing(rotation, {
                             toValue: ongoingSpecialPickup.heading,
                             useNativeDriver: true,
@@ -185,25 +202,23 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
 
     useEffect(() => {
         socket.on('pickupDone', async({pickupid}) => {
-            if(item._id === pickupid && first.current === true) {
+            if(item._id === pickupid) {
                 setPickup(null)
                 setComplete(true)
                 if(modalVisible1 === true) {
                     setModalVisible1(false)
                 }
             }
-            first.current = false
         })
 
         socket.on('schedulePickupDone', async({pickupid}) => {
-            if(item._id === pickupid && first.current === true) {
+            if(item._id === pickupid) {
                 setPickup(null)
                 setComplete(true)
                 if(modalVisible1 === true) {
                     setModalVisible1(false)
                 }
             }
-            first.current = false
         })
     }, [socket])
 

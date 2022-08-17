@@ -46,12 +46,12 @@ const Homescreen = ({navigation}) => {
     const [activeSpecialStatus, setActiveSpecialStatus] = useState(false)
     const [scheduleId, setScheduleId] = useState(null)
     const [specialId, setSpecialId] = useState(null)
-    const [firstSpecialStart, setFirstSpecialStart] = useState(true)
-    const [firstScheduleStart, setFirstScheduleStart] = useState(true)
     const [first, setFirst] = useState(true)
     const [start, setStart] = useState(true)
 
     const responseListener = useRef()
+    const firstSpecialStart = useRef(true)
+    const firstScheduleStart = useRef(true)
 
     const handleSchedulePress = async() => {
         const pickup = await schedulePickup.find((pickup) => pickup._id === scheduleId)
@@ -154,7 +154,8 @@ const Homescreen = ({navigation}) => {
                 setActiveSpecialStatus(true)
                 setSpecialId(pickup.pickupid)
 
-                if(firstSpecialStart === true) {
+                if(firstSpecialStart.current === true) {
+                    firstSpecialStart.current = false
                     const index = await acceptedPickups.findIndex(pickup => pickup._id === pickup.pickupid)
                     const pickup = await acceptedPickups.splice(index, 1)[0]
                     pickup.active = 1
@@ -163,7 +164,6 @@ const Homescreen = ({navigation}) => {
                         type: ACCEPTED_PICKUP_RETRIEVE_SUCCESS,
                         payload: acceptedPickups
                     })
-                    setFirstSpecialStart(false)
                 }
 
             })
@@ -172,7 +172,8 @@ const Homescreen = ({navigation}) => {
                 setActiveScheduleStatus(true)
                 setScheduleId(ongoingPickup)
 
-                if(firstScheduleStart === true) {
+                if(firstScheduleStart.current === true) {
+                    firstScheduleStart.current = false
                     const index = await schedulePickup.findIndex(pickup => pickup._id === pickupid)
                     const pickup = await schedulePickup.splice(index, 1)[0]
                     pickup.active = 1
@@ -181,7 +182,6 @@ const Homescreen = ({navigation}) => {
                         type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
                         payload: schedulePickup
                     })
-                    setFirstScheduleStart(false)
                 }
             })
 
@@ -203,7 +203,7 @@ const Homescreen = ({navigation}) => {
                     payload: completed
                 })
 
-                setFirstSpecialStart(true)
+                firstSpecialStart.current = true
             })
             socket.on('schedulePickupDone', async({pickupid}) => {
                 dispatch(removeOngoingSchedulePickup(pickupid))
@@ -218,7 +218,7 @@ const Homescreen = ({navigation}) => {
                     payload: schedulePickup
                 })
 
-                setFirstScheduleStart(true)
+                firstScheduleStart.current = true
             })
 
             socket.on('pickupAccepted', async({data}) => {

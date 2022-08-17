@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { StyleSheet, Dimensions, Platform, Animated, Image } from 'react-native'
+import { StyleSheet, Dimensions, Animated, Image, Platform } from 'react-native'
 import MapView, { PROVIDER_GOOGLE, Marker, AnimatedRegion } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 
@@ -21,10 +21,10 @@ const Mapcomponent = ({end, redo, setLoading}) => {
 
     const [coordinate, setCoordinate] = useState(
         new AnimatedRegion({
-            latitude: origin.latitude,
-            longitude: origin.longitude,
+            latitude: (origin && origin.latitude) ? origin.latitude : 6.9271,
+            longitude: (origin && origin.longitude) ? origin.longitude : 79.8612,
             latitudeDelta: 0.0005,
-            longitudeDelta: 0.00025 
+            longitudeDelta: 0.00025
         })
     )
     
@@ -36,7 +36,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
     const markerID = ['Marker1']
 
     useEffect(() => {
-        if(origin !== undefined) {      
+        if(origin !== undefined) {   
             if(mapView.current) {
                 mapView.current.animateToRegion({
                     latitude: origin.latitude,
@@ -48,7 +48,13 @@ const Mapcomponent = ({end, redo, setLoading}) => {
 
             if(Platform.OS === 'android') {
                 if(marker.current) {
-                    marker.current.animateMarkerToCoordinate({latitude: origin.latitude, longitude: origin.longitude}, 2000)
+                    const newCoordinate = {
+                        latitude: origin.latitude, 
+                        longitude: origin.longitude,
+                        latitudeDelta: 0.0005,
+                        longitudeDelta: 0.00025
+                    }
+                    coordinate.timing(newCoordinate).start()
                     Animated.timing(rotation, {
                         toValue: origin.heading,
                         useNativeDriver: true,
@@ -60,7 +66,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
     }, [origin])
 
     return (
-        <MapView.Animated
+        <MapView
             provider = {PROVIDER_GOOGLE}
             style = {styles.map}
             customMapStyle = {mapStyle}
@@ -77,7 +83,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
             showsCompass = {true}
 
             onMapReady = {() => {
-                if(origin) {
+                if(coordinate) {
                     setLoading(true)
                     setTimeout(() => {
                         mapView.current.fitToSuppliedMarkers(markerID, {
@@ -96,7 +102,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                 }
             }}
         >
-            {origin &&
+            {coordinate &&
                 <Marker.Animated
                     coordinate = {coordinate}
                     identifier = 'Marker1'
@@ -117,7 +123,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                 </Marker.Animated>
             }
             {
-                end !== null &&
+                end !== null && origin &&
                 <>
                     <Marker 
                         coordinate = {end} 
@@ -171,7 +177,7 @@ const Mapcomponent = ({end, redo, setLoading}) => {
                 </>
             }
                 
-        </MapView.Animated>
+        </MapView>
     );
 }
 

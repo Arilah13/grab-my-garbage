@@ -362,7 +362,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                                 marginLeft: '8%',
                             }}
                         />
-                        <Text style = {{...styles.button, color: colors.blue5, position: 'absolute'}}>Gallery</Text>
+                        <Text style = {{...styles.button, color: colors.blue5, position: 'absolute'}}>Media Library</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress = {() => selectCamera()}>
                         <Icon
