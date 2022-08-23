@@ -242,6 +242,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                 array.push({
                     _id: message._id,
                     text: message.text,
+                    image: message.image && message.image,
                     createdAt: message.createdAt,
                     user: {
                         _id: message.sender[0],
@@ -324,7 +325,7 @@ const Chatcomponent = ({userid, setModalVisible, convo}) => {
                     renderComposer = {renderComposer}
                     renderMessage = {renderMessage}
                     renderActions = {() => (
-                        <Pressable onPress = {() => setModalVisible(true)}>
+                        <Pressable onPress = {() => setModalVisible1(true)}>
                             <Icon
                                 type = 'material'
                                 name = 'photo-camera'

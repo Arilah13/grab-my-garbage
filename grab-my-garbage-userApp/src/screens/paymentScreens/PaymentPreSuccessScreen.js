@@ -57,7 +57,7 @@ const Paymentpresuccessscreen = ({navigation, route}) => {
     )
 
     return (
-        <SafeAreaView style = {{backgroundColor: colors.blue1, flex: 1}}>
+        <SafeAreaView style = {{flex: 1}}>
             <View style = {styles.container}>
                 <Text style = {styles.text2}>Payment successfully done!</Text>
                 <Text style = {styles.text3}>Creating your pickup, please wait...</Text>
@@ -81,7 +81,7 @@ export default Paymentpresuccessscreen
 const styles = StyleSheet.create({
 
     container: {
-        backgroundColor: colors.blue1,
+        backgroundColor: colors.grey9,
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1

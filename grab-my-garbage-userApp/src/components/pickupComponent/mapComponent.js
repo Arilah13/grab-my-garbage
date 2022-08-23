@@ -20,7 +20,7 @@ import Chatcomponent from './chatComponent'
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
-const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
+const Mapcomponent = ({location, item, type, convo, setModalVisible}) => {
     const dispatch = useDispatch()
 
     const mapView = useRef()
@@ -55,8 +55,6 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
     const [time, setTime] = useState(null)
     const [show, setShow] = useState(false)
     const [timeout1, setTimeoutValue1] = useState(null)
-    const [timeout2, setTimeoutValue2] = useState(null)
-    const [timeout3, setTimeoutValue3] = useState(null)
     const [modalVisible1, setModalVisible1] = useState(false)
     const [coordinate, setCoordinate] = useState()
 
@@ -301,7 +299,7 @@ const Mapcomponent = ({location, item, setModalVisible, type, convo}) => {
 
             <Animated.View style = {styles.view}>
                 <TouchableOpacity onPress = {() => {
-                        //clearTimeout(timeout)
+                        clearTimeout(timeout1)
                         setModalVisible(false)
                     }}
                 >

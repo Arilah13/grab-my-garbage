@@ -197,75 +197,73 @@ const Signinscreen = ({navigation}) => {
                 >
                 {   
                     (props) =>
-                    <View style = {{height: 7*SCREEN_HEIGHT/20}}>
-                        <View style = {{padding: 20}}>
-                            <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
-                                <View>
-                                    <Icon
-                                        name = 'email'
-                                        color = {colors.grey1}
-                                        type = 'material'
-                                    />
-                                </View>
-                                <View>
-                                    <TextInput 
-                                        placeholder = 'Email'
-                                        keyboardType = 'email-address'
-                                        autoFocus = {false}
-                                        style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
-                                        onChangeText = {props.handleChange('email')}
-                                        value = {props.values.email}
-                                        onSubmitEditing = {() => password1.current.focus()}
-                                    />
-                                </View>
-                            </View>
-                            {props.errors.email && 
-                                <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.email}</Text>}
-                            
-                            <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
+                    <View style = {{padding: 20}}>
+                        <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
+                            <View>
                                 <Icon
-                                    name = 'lock'
-                                    type = 'material'
+                                    name = 'email'
                                     color = {colors.grey1}
+                                    type = 'material'
                                 />
-                                <TextInput
-                                    secureTextEntry = {show ? false : true}
-                                    placeholder = 'Password'
+                            </View>
+                            <View>
+                                <TextInput 
+                                    placeholder = 'Email'
+                                    keyboardType = 'email-address'
                                     autoFocus = {false}
                                     style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
-                                    onChangeText = {props.handleChange('password')}
-                                    value = {props.values.password}
-                                    ref = {password1}
-                                />                              
-                                    {
-                                        show ? (
-                                        <Icon
-                                            name= 'visibility-off'
-                                            onPress = {() => setShow(!show)}
-                                            type = 'material'
-                                            iconStyle = {{marginLeft: 10}}
-                                            color = {colors.grey1}
-                                        />) : (
-                                        <Icon
-                                            name= 'visibility'
-                                            onPress = {() => setShow(!show)}
-                                            type = 'material'
-                                            iconStyle = {{marginLeft: 10}}
-                                            color = {colors.grey1}
-                                        /> )
-                                    }
+                                    onChangeText = {props.handleChange('email')}
+                                    value = {props.values.email}
+                                    onSubmitEditing = {() => password1.current.focus()}
+                                />
                             </View>
-                            {props.errors.password && 
-                                <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.password}</Text>}
-
-                            <Button 
-                                title = 'SIGN IN'
-                                buttonStyle = {styles.button}
-                                onPress = {props.handleSubmit}
-                                loading = {props.isSubmitting}
-                                disabled = {props.isSubmitting}
-                            />
                         </View>
+                        {props.errors.email && 
+                            <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.email}</Text>}
+                        
+                        <View style = {{flexDirection: 'row', ...styles.textInput, alignItems: 'center', paddingLeft: 10}}>
+                            <Icon
+                                name = 'lock'
+                                type = 'material'
+                                color = {colors.grey1}
+                            />
+                            <TextInput
+                                secureTextEntry = {show ? false : true}
+                                placeholder = 'Password'
+                                autoFocus = {false}
+                                style = {{width: SCREEN_WIDTH/1.6, paddingLeft: 10, color: colors.grey1}}
+                                onChangeText = {props.handleChange('password')}
+                                value = {props.values.password}
+                                ref = {password1}
+                            />                              
+                                {
+                                    show ? (
+                                    <Icon
+                                        name= 'visibility-off'
+                                        onPress = {() => setShow(!show)}
+                                        type = 'material'
+                                        iconStyle = {{marginLeft: 10}}
+                                        color = {colors.grey1}
+                                    />) : (
+                                    <Icon
+                                        name= 'visibility'
+                                        onPress = {() => setShow(!show)}
+                                        type = 'material'
+                                        iconStyle = {{marginLeft: 10}}
+                                        color = {colors.grey1}
+                                    /> )
+                                }
+                        </View>
+                        {props.errors.password && 
+                            <Text style = {{marginLeft: SCREEN_WIDTH/20, color: colors.error}}>{props.errors.password}</Text>}
+
+                        <Button 
+                            title = 'SIGN IN'
+                            buttonStyle = {styles.button}
+                            onPress = {props.handleSubmit}
+                            loading = {props.isSubmitting}
+                            disabled = {props.isSubmitting}
+                        />
                     </View>
                 }      
                 </Formik>
@@ -275,7 +273,7 @@ const Signinscreen = ({navigation}) => {
                     <Text style = {{fontSize: 20, fontWeight: 'bold'}}>OR</Text>
                 </View>
                 
-                <View style = {{marginLeft: 10, marginRight: 10, height: 4*SCREEN_HEIGHT/20}}>
+                <View style = {{marginLeft: 10, marginRight: 10, height: 3.5*SCREEN_HEIGHT/20}}>
                     <SocialIcon
                         title = 'Sign In With Facebook'
                         button

@@ -94,7 +94,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
         const state = await testConnection()
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
         if (status !== 'granted') {
-          setModalVisible(false)
+          setModalVisible1(false)
         }else{
             let image = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -103,7 +103,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                 quality: 1,
                 base64: true
             })
-            setModalVisible(false)
+            setModalVisible1(false)
             if(!image.cancelled) {
                 const msg = [{
                     _id: new Date(),
@@ -145,7 +145,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
         const state = await testConnection()
         const { status } = await ImagePicker.requestCameraPermissionsAsync()
         if (status !== 'granted') {
-          setModalVisible(false)
+          setModalVisible1(false)
         }else{
             let image = await ImagePicker.launchCameraAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -154,7 +154,7 @@ const Chatcomponent = ({haulerid, setModalVisible, convo}) => {
                 quality: 1,
                 base64: true
             })
-            setModalVisible(false)
+            setModalVisible1(false)
             if(!image.cancelled) {
                 const msg = [{
                     _id: new Date(),

@@ -88,7 +88,10 @@ const Scheduledpickupdetail = ({navigation, route}) => {
         setLoadingCancel(true)
         const res = await axios.put(`https://grab-my-garbage-server.herokuapp.com/schedulepickup/${id}`, config)
         if(res.status === 200) {
-            await pickupInfo.splice(pickupInfo.findIndex(pickup => pickup._id === id), 1)
+            const index = await pickupInfo.findIndex(pickup => pickup._id === id)
+            const pickup = await pickupInfo.splice(index, 1)[0]
+            pickup.cancelled = 1
+            await pickupInfo.splice(index, 0, pickup)
             dispatch({
                 type: SCHEDULED_PICKUP_RETRIEVE_SUCCESS,
                 payload: pickupInfo

@@ -58,13 +58,13 @@ export default Paymentsuccessscreen
 const styles = StyleSheet.create({
 
     container: {
-        backgroundColor: colors.blue1,
+        backgroundColor: colors.grey9,
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
     },
     button:{
-        backgroundColor: colors.buttons,
+        backgroundColor: colors.darkBlue,
         borderRadius: 10,
         height: 45,
         width: 250

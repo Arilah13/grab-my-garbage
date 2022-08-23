@@ -159,8 +159,7 @@ export const sendSMS = ({receiver, message}) => async(dispatch, getState) => {
             },
         }
 
-        const { data } = await axios.post(`https://grab-my-garbage-server.herokuapp.com/message/send`, {receiver, message},
-        config)
+        const { data } = await axios.post(`https://grab-my-garbage-server.herokuapp.com/message/send`, {receiver, message}, config)
 
         dispatch({
             type: actionTypes.SEND_MESSAGE_SUCCESS,
